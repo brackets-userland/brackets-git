@@ -1,0 +1,35 @@
+{
+    "name": "zaggino.brackets-git",
+
+    "title": "Brackets Git",
+    "description": "Integration of Git into Brackets UI",
+    "keywords": ["git", "brackets", "extension"],
+    "categories": ["general", "external"],
+    "version": "0.1.0",
+
+    "license": "MIT",
+    "homepage": "https://github.com/zaggino/brackets-git",
+    "author": {
+        "name": "Martin Zagora",
+        "email": "zaggino@gmail.com",
+        "url": "https://github.com/zaggino"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/zaggino/brackets-git.git"
+    },
+    "bugs": {
+        "url": "https://github.com/zaggino/brackets-git/issues",
+        "email": "zaggino@gmail.com"
+    },
+
+    "engines": {
+        "brackets": ">=0.29.0"
+    },
+    "dependencies": {
+        
+    },
+    "devDependencies": {
+        "q": "0.9.6"
+    }
+}

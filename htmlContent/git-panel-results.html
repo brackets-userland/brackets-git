@@ -1,0 +1,11 @@
+<table class="table table-striped table-condensed row-highlight">
+    <tbody>
+        {{#files}}
+        <tr data-file="{{file}}" data-status="{{status}}">
+            <td class="checkbox-column"><input type="checkbox" class="check-one" /></td>
+            <td class="status-column">{{status}}</td>
+            <td>{{file}}</td>
+        </tr>
+        {{/files}}
+    </tbody>
+</table>
