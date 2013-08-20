@@ -23,5 +23,24 @@ C:\Users\<username>\AppData\Roaming\Brackets\extensions\user
 - Display panel with information about modified and uncommited files.
 - Reset staged files from panel.
 - Commit files selected in panel.
+- Handy shortcut to bash console for msysgit users.
 
 More features will come later, feel free to open issues with your ideas.
+
+## Configuration
+
+Extension will create a configuration file on the first run here:
+
+```
+C:\Users\<username>\AppData\Roaming\Brackets\extensions\user\zaggino.brackets-git\_configuration.json
+```
+
+You can alter this JSON file accordingly to your machine setup.
+
+## Pull requests
+
+This extension is developed in Brackets and pull requests always need to avoid any JSLint errors.
+There is another [extension](https://github.com/MiguelCastillo/Brackets-Interactive-Linter) used for following JSHint rules specified in ```.jshintrc```
+Please check for errors before opening any pull requests.
+
+Another very handy extension to use is [brackets-todo](https://github.com/mikaeljorhult/brackets-todo) which helps you add bookmarks for things to be resolved later.

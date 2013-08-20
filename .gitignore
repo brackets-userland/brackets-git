@@ -13,3 +13,6 @@ logs
 results
 
 npm-debug.log
+
+# this file should be created on first extension startup
+_configuration.json

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+* Added shortcut to bash console for msysgit users. 
+* Added configuration file that is created on the first extension run (thx for idea to [@karuturi](https://github.com/karuturi))
+
 ## 0.1.0
 * First real functionality, basic commit from brackets is now available.
 
