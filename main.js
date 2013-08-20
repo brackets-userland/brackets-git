@@ -18,6 +18,7 @@ define(function (require, exports, module) {
         NativeFileSystem           = brackets.getModule("file/NativeFileSystem").NativeFileSystem,
         NodeConnection             = brackets.getModule("utils/NodeConnection"),
         UiControl                  = require("lib/uiControl"),
+        Strings                    = require("strings"),
         moduleDirectory            = ExtensionUtils.getModulePath(module),
         configurationFilePath      = moduleDirectory + "_configuration.json",
         domainModulePath           = moduleDirectory + "lib/domain",

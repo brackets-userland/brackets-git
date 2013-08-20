@@ -27,6 +27,12 @@ C:\Users\<username>\AppData\Roaming\Brackets\extensions\user
 
 More features will come later, feel free to open issues with your ideas.
 
+## TODO
+
+- Add an UI panel for the configuration file.
+- Display diff of what will be commited, when asking for a commit message to review commit.
+- Add diff icons to the currently edited document in a way interactive linter does it.
+
 ## Configuration
 
 Extension will create a configuration file on the first run here:

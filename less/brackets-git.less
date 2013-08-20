@@ -40,3 +40,21 @@
         text-decoration: none;
     }
 }
+
+#git-commit-dialog {
+    .modal-body {
+        input {
+            .sane-box-model;
+            width: 100%;
+            height: 2em;
+        }
+    }
+}
+
+// brackets mixins
+
+.sane-box-model {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
