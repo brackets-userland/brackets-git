@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0
+* Added diff displaying to commit dialog.
+
 ## 0.2.1
 * Added i18n support.
 * Fixed styling in commit dialog.

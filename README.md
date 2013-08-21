@@ -21,7 +21,6 @@ C:\Users\<username>\AppData\Roaming\Brackets\extensions\user
 - Display current Git version in status bar.
 - Display current branch name in file tree if working folder is a git repository.
 - Display panel with information about modified and uncommited files.
-- Reset staged files from panel.
 - Commit files selected in panel.
 - Handy shortcut to bash console for msysgit users.
 
@@ -30,7 +29,6 @@ More features will come later, feel free to open issues with your ideas.
 ## TODO
 
 - Add an UI panel for the configuration file.
-- Display diff of what will be commited, when asking for a commit message to review commit.
 - Add diff icons to the currently edited document in a way interactive linter does it.
 
 ## Configuration
