@@ -8,9 +8,9 @@ Developed (and working) on Windows 7 with [msysgit](https://code.google.com/p/ms
 
 You can use Brackets built-in [extension registry](https://brackets-registry.aboutweb.com/).
 
-Alternatively, to use the latest version, which may or may not be in the registry:
+Extension can be configured in File > Git Settings...
 
-Clone this repo into your brackets user extensions folder:
+Alternatively, to use the development version, clone this repo into your brackets user extensions folder:
 
 ```
 C:\Users\<username>\AppData\Roaming\Brackets\extensions\user
@@ -22,24 +22,9 @@ C:\Users\<username>\AppData\Roaming\Brackets\extensions\user
 - Display current branch name in file tree if working folder is a git repository.
 - Display panel with information about modified and uncommited files.
 - Commit files selected in panel.
-- Handy shortcut to bash console for msysgit users.
+- Handy shortcut to bash console for windows-msysgit users.
 
 More features will come later, feel free to open issues with your ideas.
-
-## TODO
-
-- Add an UI panel for the configuration file.
-- Add diff icons to the currently edited document in a way interactive linter does it.
-
-## Configuration
-
-Extension will create a configuration file on the first run here:
-
-```
-C:\Users\<username>\AppData\Roaming\Brackets\extensions\user\zaggino.brackets-git\_configuration.json
-```
-
-You can alter this JSON file accordingly to your machine setup.
 
 ## Pull requests
 

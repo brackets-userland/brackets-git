@@ -1,5 +1,5 @@
 /*jslint plusplus: true, vars: true, nomen: true */
-/*global define */
+/*global brackets, define */
 
 define(function (require, exports, module) {
     "use strict";
@@ -11,10 +11,10 @@ define(function (require, exports, module) {
         this._queue = [];
         this.options = options;
 
-        if (this.options.extensionConfiguration.gitIsInSystemPath) {
+        if (this.options.preferences.getValue("gitIsInSystemPath")) {
             this._git = "git";
         } else {
-            this._git = "\"" + this.options.extensionConfiguration.msysgitFolder + "bin\\git.exe" + "\"";
+            this._git = "\"" + this.options.preferences.getValue("gitPath") + "\"";
         }
     }
 
@@ -50,8 +50,8 @@ define(function (require, exports, module) {
         },
 
         bashVersion: function () {
-            if (this.options.extensionConfiguration.msysgitFolder) {
-                var cmd = "\"" + this.options.extensionConfiguration.msysgitFolder + "bin\\sh.exe" + "\"";
+            if (brackets.platform === "win") {
+                var cmd = "\"" + this.options.preferences.getValue("msysgitPath") + "bin\\sh.exe" + "\"";
                 return this.executeCommand(cmd + " --version");
             } else {
                 return q().thenReject();
@@ -59,8 +59,8 @@ define(function (require, exports, module) {
         },
 
         bashOpen: function (folder) {
-            if (this.options.extensionConfiguration.msysgitFolder) {
-                var cmd = "\"" + this.options.extensionConfiguration.msysgitFolder + "Git Bash.vbs" + "\"";
+            if (brackets.platform === "win") {
+                var cmd = "\"" + this.options.preferences.getValue("msysgitPath") + "Git Bash.vbs" + "\"";
                 var arg = " \"" + folder + "\"";
                 return this.executeCommand(cmd + arg);
             } else {

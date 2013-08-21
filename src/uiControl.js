@@ -1,18 +1,16 @@
 /*jslint plusplus: true, vars: true, nomen: true */
 /*global $, brackets, console, define, Mustache */
 
-define(function (require, exports, module) {
+define(function (require, exports) {
     "use strict";
 
-    exports.init = function (nodeConnection, extensionConfiguration) {
+    exports.init = function (nodeConnection, preferences) {
 
         var q                   = require("../thirdparty/q"),
             AppInit             = brackets.getModule("utils/AppInit"),
             Dialogs             = brackets.getModule("widgets/Dialogs"),
-            DefaultDialogs      = brackets.getModule("widgets/DefaultDialogs"),
             DocumentManager     = brackets.getModule("document/DocumentManager"),
             PanelManager        = brackets.getModule("view/PanelManager"),
-            PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
             ProjectManager      = brackets.getModule("project/ProjectManager"),
             GitControl          = require("./gitControl"),
             Strings             = require("../strings"),
@@ -21,9 +19,6 @@ define(function (require, exports, module) {
         var gitPanelTemplate        = require("text!htmlContent/git-panel.html"),
             gitPanelResultsTemplate = require("text!htmlContent/git-panel-results.html"),
             gitCommitDialogTemplate = require("text!htmlContent/git-commit-dialog.html");
-
-        var preferences         = null,
-            defaultPreferences  = {};
 
         var extensionName           = "[brackets-git] ",
             $gitStatusBar           = $(null),
@@ -59,7 +54,7 @@ define(function (require, exports, module) {
         }
 
         var gitControl = new GitControl({
-            extensionConfiguration: extensionConfiguration,
+            preferences: preferences,
             executeHandler: function (cmdString) {
                 var rv = q.defer(),
                     i = showBusyIndicator();
@@ -124,6 +119,12 @@ define(function (require, exports, module) {
                 }
             }).fail(logError);
         }
+        
+        function handleGitReset() {
+            gitControl.gitReset().then(function () {
+                refreshGitPanel();
+            }).fail(logError);
+        }
 
         function _showCommitDialog(stagedDiff) {
             // Open the dialog
@@ -131,17 +132,22 @@ define(function (require, exports, module) {
                 dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
             var $diff = dialog.getElement().find(".commit-diff");
-            stagedDiff.split("\n").forEach(function(line) {
+            stagedDiff.split("\n").forEach(function (line) {
                 if (line === " ") { line = ""; }
 
                 var lineClass;
-                if (line[0] === "+") { lineClass = "added"; }
-                else if (line[0] === "-") { lineClass = "removed"; }
-                else if (line.indexOf("@@") === 0) { lineClass = "position"; }
-                else if (line.indexOf("diff --git") === 0) { lineClass = "diffCmd"; }
+                if (line[0] === "+") {
+                    lineClass = "added";
+                } else if (line[0] === "-") {
+                    lineClass = "removed";
+                } else if (line.indexOf("@@") === 0) {
+                    lineClass = "position";
+                } else if (line.indexOf("diff --git") === 0) {
+                    lineClass = "diffCmd";
+                }
 
                 line = StringUtils.htmlEscape(line).replace(/\s/g, "&nbsp;");
-                line = line.replace(/(&nbsp;)+$/g, function(trailingWhitespace) {
+                line = line.replace(/(&nbsp;)+$/g, function (trailingWhitespace) {
                     return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
                 });
                 var $line = $("<pre/>").html(line).appendTo($diff);
@@ -203,12 +209,6 @@ define(function (require, exports, module) {
             });
         }
 
-        function handleGitReset() {
-            gitControl.gitReset().then(function () {
-                refreshGitPanel();
-            }).fail(logError);
-        }
-
         function toggleGitPanel() {
             var enabled = gitPanel.isVisible();
             if (enabled) {
@@ -217,7 +217,7 @@ define(function (require, exports, module) {
                 gitPanel.show();
                 refreshGitPanel();
             }
-            preferences.setValue("enabled", !enabled);
+            preferences.setValue("panelEnabled", !enabled);
         }
 
         // This only launches when Git is available
@@ -249,7 +249,7 @@ define(function (require, exports, module) {
                 .on("click", ".git-commit", handleGitCommit);
 
             // Show gitPanel when appropriate
-            if (preferences.getValue("enabled")) {
+            if (preferences.getValue("panelEnabled")) {
                 toggleGitPanel();
             }
         }
@@ -286,9 +286,6 @@ define(function (require, exports, module) {
                 refreshGitPanel();
             });
         }
-
-        // Initialize PreferenceStorage.
-        preferences = PreferencesManager.getPreferenceStorage(module, defaultPreferences);
 
         // Initialize items dependent on HTML DOM
         AppInit.htmlReady(function () {

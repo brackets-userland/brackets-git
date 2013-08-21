@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0
+* Added settings panel to File > Git Settings...
+* Git Settings dialog will open on first startup after the extension is installed.
+* Changelog will open in dialog after the extension is updated.
+
 ## 0.3.0
 * Added diff displaying to commit dialog.
 

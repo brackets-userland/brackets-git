@@ -1,0 +1,24 @@
+<div id="git-settings-dialog" class="modal">
+    <div class="modal-header">
+        <h3>{{GIT_SETTINGS}}</h3>
+    </div>
+    <div class="modal-body no-padding table-striped tab-content">
+        <label for="git-settings-gitIsInSystemPath">
+            <input id="git-settings-gitIsInSystemPath" type="checkbox" />
+            {{GIT_IS_IN_PATH}}
+        </label>
+        <br/>
+        <label for="git-settings-gitPath">{{PATH_TO_GIT_EXECUTABLE}}:</label>
+        <input id="git-settings-gitPath" type="text" />
+        <br/>
+        <hr/>
+        <h4>{{FOR_WINDOWS_USERS}}</h4>
+        <br/>
+        <label for="git-settings-msysgitPath">{{PATH_TO_GIT_MSYSGIT}}:</label>
+        <input id="git-settings-msysgitPath" type="text" />
+    </div>
+    <div class="modal-footer">
+        <button data-button-id="ok"     class="dialog-button btn primary left">{{BUTTON_SAVE}}</button>
+        <button data-button-id="cancel" class="dialog-button btn cancel"      >{{BUTTON_CANCEL}}</button>
+    </div>
+</div>

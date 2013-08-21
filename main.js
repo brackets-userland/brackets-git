@@ -13,67 +13,75 @@ define(function (require, exports, module) {
 
     // Get module dependencies.
     var AppInit                    = brackets.getModule("utils/AppInit"),
+        CommandManager             = brackets.getModule("command/CommandManager"),
+        Commands                   = brackets.getModule("command/Commands"),
         ExtensionUtils             = brackets.getModule("utils/ExtensionUtils"),
+        FileEntry                  = brackets.getModule("file/NativeFileSystem").NativeFileSystem.FileEntry,
         FileUtils                  = brackets.getModule("file/FileUtils"),
-        NativeFileSystem           = brackets.getModule("file/NativeFileSystem").NativeFileSystem,
+        Menus                      = brackets.getModule("command/Menus"),
         NodeConnection             = brackets.getModule("utils/NodeConnection"),
-        UiControl                  = require("lib/uiControl"),
+        PreferencesManager         = brackets.getModule("preferences/PreferencesManager"),
+        UiControl                  = require("src/uiControl"),
         Strings                    = require("strings"),
+        ChangelogDialog            = require("src/ChangelogDialog"),
+        SettingsDialog             = require("src/SettingsDialog"),
+        SETTINGS_COMMAND_ID        = "brackets-git.settings",
         moduleDirectory            = ExtensionUtils.getModulePath(module),
-        configurationFilePath      = moduleDirectory + "_configuration.json",
-        domainModulePath           = moduleDirectory + "lib/domain",
-        nodeConnection             = new NodeConnection(),
-        nodeConnectionEstabilished = false,
-        configuration              = null;
+        domainModulePath           = moduleDirectory + "src/domain",
+        nodeConnection             = new NodeConnection();
 
     // Load CSS
     ExtensionUtils.loadStyleSheet(module, "less/brackets-git.less");
 
-    // Every async setup calls this function, init executes after everything is fulfilled.
-    function startExtension() {
-        if (nodeConnectionEstabilished === false || configuration === null) { return; }
-        UiControl.init(nodeConnection, configuration);
+    // Initialize PreferenceStorage.
+    var preferences = PreferencesManager.getPreferenceStorage(module, {
+        "lastVersion":        null,
+        "panelEnabled":       true,
+        "gitIsInSystemPath":  true,
+        "gitPath":            "C:\\PF\\Git\\bin\\git.exe",
+        "msysgitPath":        "C:\\PF\\Git\\"
+    });
+    preferences.setValue("extensionDirectory", moduleDirectory);
+
+    // Handle settings dialog
+    function openSettingsPanel() {
+        SettingsDialog.show(preferences);
     }
 
-    // Load configuration, or create default one if none available.
-    // Idea is that configuration file is created after first install and updates should not delete it.
-    var configurationFileEntry = new NativeFileSystem.FileEntry(configurationFilePath);
-    FileUtils.readAsText(configurationFileEntry).done(function (content) {
+    // Load package.json
+    FileUtils.readAsText(new FileEntry(moduleDirectory + "package.json")).done(function (content) {
+        var lastVersion    = preferences.getValue("lastVersion"),
+            currentVersion = JSON.parse(content).version;
 
-        try {
-            configuration = JSON.parse(content);
-        } catch (e) {
-            return console.error("[brackets-git] configuration file is not a valid JSON, please delete it: " + configurationFilePath);
+        if (lastVersion !== currentVersion) {
+            ChangelogDialog.show(preferences);
         }
-        startExtension();
 
-    }).fail(function () {
-        // Open the default file and create a new configuration file
-        var defaultConfigurationFileEntry = new NativeFileSystem.FileEntry(configurationFilePath + ".default");
-        FileUtils.readAsText(defaultConfigurationFileEntry).done(function (content) {
+        if (lastVersion === null) {
+            openSettingsPanel();
+        }
 
-            // Parse first in case there is an exception
-            configuration = JSON.parse(content);
-            FileUtils.writeText(configurationFileEntry, content);
-            startExtension();
-
-        }).fail(function () {
-            console.error("[brackets-git] reinstall extension, failed to read file: " + configurationFilePath + ".default");
-        });
+        preferences.setValue("lastVersion", currentVersion);
     });
+
+    // Register command and add it to the menu.
+	CommandManager.register(Strings.GIT_SETTINGS, SETTINGS_COMMAND_ID, openSettingsPanel);
+	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(SETTINGS_COMMAND_ID, "", Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
 
     AppInit.appReady(function () {
         // Connects to Node
-        nodeConnection.connect(true).fail(function () {
+        nodeConnection.connect(true).fail(function (err) {
             console.error("[brackets-git] failed to connect to node");
+            console.error(err);
         }).then(function () {
             // Register the domain.
-            return nodeConnection.loadDomains([domainModulePath], true).fail(function () {
+            return nodeConnection.loadDomains([domainModulePath], true).fail(function (err) {
                 console.error("[brackets-git] failed to register domain");
+                console.error(err);
             });
         }).then(function () {
-            nodeConnectionEstabilished = true;
-            startExtension();
+            UiControl.init(nodeConnection, preferences);
         }).done();
     });
+
 });
