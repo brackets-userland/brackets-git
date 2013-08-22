@@ -53,15 +53,13 @@ define(function (require, exports, module) {
         var lastVersion    = preferences.getValue("lastVersion"),
             currentVersion = JSON.parse(content).version;
 
-        if (lastVersion !== currentVersion) {
-            ChangelogDialog.show(preferences);
-        }
-
         if (lastVersion === null) {
             openSettingsPanel();
+            preferences.setValue("lastVersion", "firstStart");
+        } else if (lastVersion !== currentVersion) {
+            ChangelogDialog.show(preferences);
+            preferences.setValue("lastVersion", currentVersion);
         }
-
-        preferences.setValue("lastVersion", currentVersion);
     });
 
     // Register command and add it to the menu.

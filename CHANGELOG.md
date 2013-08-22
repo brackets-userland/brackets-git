@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.1
+* Changelog is not shown on the first startup, when settings are shown.
+
 ## 0.4.0
 * Added settings panel to File > Git Settings...
 * Git Settings dialog will open on first startup after the extension is installed.
