@@ -33,14 +33,26 @@ define(function (require, exports, module) {
     // Load CSS
     ExtensionUtils.loadStyleSheet(module, "less/brackets-git.less");
 
-    // Initialize PreferenceStorage.
-    var preferences = PreferencesManager.getPreferenceStorage(module, {
+    // Default preferences are different for platforms
+    var defaultPreferences = {
         "lastVersion":        null,
         "panelEnabled":       true,
-        "gitIsInSystemPath":  true,
-        "gitPath":            "C:\\PF\\Git\\bin\\git.exe",
-        "msysgitPath":        "C:\\PF\\Git\\"
-    });
+        "gitIsInSystemPath":  null,
+        "gitPath":            null,
+        "msysgitPath":        null
+    };
+    if (brackets.platform === "win") {
+        defaultPreferences.gitIsInSystemPath = true;
+        defaultPreferences.gitPath = "C:\\Program Files (x86)\\Git\\bin\\git.exe";
+        defaultPreferences.msysgitPath = "C:\\Program Files (x86)\\Git\\";
+    } else {
+        // Mac (Linux?)
+        defaultPreferences.gitIsInSystemPath = false;
+        defaultPreferences.gitPath           = "/usr/local/git/bin/git";
+    }
+
+    // Initialize PreferenceStorage.
+    var preferences = PreferencesManager.getPreferenceStorage(module, defaultPreferences);
     preferences.setValue("extensionDirectory", moduleDirectory);
 
     // Handle settings dialog

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.2
+* Default preferences are different for platforms.
+
 ## 0.4.1
 * Changelog is not shown on the first startup, when settings are shown.
 
