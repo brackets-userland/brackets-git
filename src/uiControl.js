@@ -1,5 +1,5 @@
 /*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, console, define, Mustache */
+/*global $, brackets, console, define, Mustache, window */
 
 define(function (require, exports) {
     "use strict";
@@ -128,9 +128,34 @@ define(function (require, exports) {
         function _showCommitDialog(stagedDiff) {
             // Open the dialog
             var compiledTemplate = Mustache.render(gitCommitDialogTemplate, { Strings: Strings }),
-                dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+                dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+                $dialog          = dialog.getElement();
 
-            var $diff = dialog.getElement().find(".commit-diff");
+            // We need bigger commit dialog
+            var minWidth = 500,
+                minHeight = 300,
+                maxWidth = $(window).width(),
+                maxHeight = $(window).height(),
+                desiredWidth = maxWidth / 2,
+                desiredHeight = maxHeight / 2;
+
+            if (desiredWidth < minWidth) { desiredWidth = minWidth; }
+            if (desiredHeight < minHeight) { desiredHeight = minHeight; }
+
+            $dialog
+                .css("margin-left", "-" + (desiredWidth / 2) + "px")
+                .css("margin-top", "-" + (desiredHeight / 1.6) + "px")
+                .find(".modal-header")
+                    .width(desiredWidth)
+                .end()
+                .find(".modal-body")
+                    .width(desiredWidth)
+                    .css("max-height", desiredHeight)
+                    .find(".commit-diff")
+                        .css("max-height", desiredHeight - 60);
+
+            // Show nicely colored commit diff
+            var $diff = $dialog.find(".commit-diff");
             stagedDiff.split("\n").forEach(function (line) {
                 if (line === " ") { line = ""; }
 
@@ -153,8 +178,8 @@ define(function (require, exports) {
                 if (lineClass) { $line.addClass(lineClass); }
             });
 
-            dialog.getElement().find("button.primary").on("click", function (e) {
-                var $commitMessage = dialog.getElement().find("input[name='commit-message']");
+            $dialog.find("button.primary").on("click", function (e) {
+                var $commitMessage = $dialog.find("input[name='commit-message']");
                 if ($commitMessage.val().trim().length === 0) {
                     e.stopPropagation();
                     $commitMessage.addClass("invalid");
@@ -166,7 +191,7 @@ define(function (require, exports) {
             dialog.done(function (buttonId) {
                 if (buttonId === "ok") {
                     // this event won't launch when commit-message is empty so its safe to assume that it is not
-                    var commitMessage = dialog.getElement().find("input[name='commit-message']").val();
+                    var commitMessage = $dialog.find("input[name='commit-message']").val();
 
                     gitControl.gitCommit(commitMessage).then(function () {
                         return refreshGitPanel();
