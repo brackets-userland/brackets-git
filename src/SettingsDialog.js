@@ -3,36 +3,50 @@
 
 define(function (require, exports) {
     "use strict";
-    
+
     var CommandManager             = brackets.getModule("command/CommandManager"),
         Dialogs                    = brackets.getModule("widgets/Dialogs"),
+        DefaultPreferences         = require("../DefaultPreferences"),
+        ChangelogDialog            = require("../src/ChangelogDialog"),
         Strings                    = require("../strings"),
         settingsDialogTemplate     = require("text!htmlContent/settings-dialog.html");
-    
+
     var dialog,
         preferences;
-    
-    function setValues() {
-        $("#git-settings-gitIsInSystemPath").prop("checked", preferences.getValue("gitIsInSystemPath"));
+
+    function setValues(values) {
+        $("#git-settings-gitIsInSystemPath").prop("checked", values.gitIsInSystemPath);
         $("#git-settings-gitPath")
-            .val(preferences.getValue("gitPath"))
-            .prop("disabled", preferences.getValue("gitIsInSystemPath"));
+            .val(values.gitPath)
+            .prop("disabled", values.gitIsInSystemPath);
         $("#git-settings-msysgitPath")
-            .val(preferences.getValue("msysgitPath"))
+            .val(values.msysgitPath)
             .prop("disabled", brackets.platform !== "win");
     }
-    
+
+    function restorePlatformDefaults() {
+        setValues(DefaultPreferences);
+    }
+
     function assignActions() {
         $("#git-settings-gitIsInSystemPath").on("click", function () {
             $("#git-settings-gitPath").prop("disabled", $(this).is(":checked"));
         });
+        $("button[data-button-id='defaults']").on("click", function (e) {
+            e.stopPropagation();
+            restorePlatformDefaults();
+        });
+        $("button[data-button-id='changelog']").on("click", function (e) {
+            e.stopPropagation();
+            ChangelogDialog.show(preferences);
+        });
     }
-    
+
     function init() {
-        setValues();
+        setValues(preferences.getAllValues());
         assignActions();
     }
-    
+
     function showRestartDialog() {
         var restartDialogTemplate = require("text!htmlContent/restart-dialog.html");
         var compiledTemplate = Mustache.render(restartDialogTemplate, Strings);
@@ -42,15 +56,15 @@ define(function (require, exports) {
             }
         });
     }
-    
+
     exports.show = function (prefs) {
         var compiledTemplate = Mustache.render(settingsDialogTemplate, Strings);
-        
+
         dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
         preferences = prefs;
 
         init();
-        
+
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
                 var $dialog = dialog.getElement();

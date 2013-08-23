@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.3
+* Settings dialog has now a restore defaults button which restores platform specific defaults (Win, Mac).
+* Settings dialog has now a button to show changelog.
+* Minor UI tweaks.
+
 ## 0.4.2
 * Default preferences are different for platforms.
 

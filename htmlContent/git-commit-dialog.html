@@ -1,10 +1,10 @@
 <div id="git-commit-dialog" class="modal">
     <div class="modal-header">
-        {{Strings.ENTER_COMMIT_MESSAGE}}:
+        <h3>{{Strings.GIT_COMMIT}}</h3>
     </div>
     <div class="modal-body no-padding table-striped tab-content">
         <div class="commit-diff"></div>
-        <input name="commit-message" type="text" />
+        <input name="commit-message" type="text" placeholder="{{Strings.COMMIT_MESSAGE_PLACEHOLDER}}" />
     </div>
     <div class="modal-footer">
         <button data-button-id="ok"     class="dialog-button btn primary left"  >{{Strings.BUTTON_OK}}</button>

@@ -111,7 +111,6 @@ define(function (require, exports) {
                     .empty();
 
                 if (files.length === 0) {
-                    // TODO: handle no files modified
                     panel.append($("<p/>").text(Strings.NOTHING_TO_COMMIT));
                 } else {
                     panel.append(Mustache.render(gitPanelResultsTemplate, { files: files }));
@@ -155,15 +154,18 @@ define(function (require, exports) {
             });
 
             dialog.getElement().find("button.primary").on("click", function (e) {
-                var commitMessage = dialog.getElement().find("input[name='commit-message']").val();
-                if (commitMessage.trim().length === 0) {
+                var $commitMessage = dialog.getElement().find("input[name='commit-message']");
+                if ($commitMessage.val().trim().length === 0) {
                     e.stopPropagation();
+                    $commitMessage.addClass("invalid");
+                } else {
+                    $commitMessage.removeClass("invalid");
                 }
             });
 
             dialog.done(function (buttonId) {
                 if (buttonId === "ok") {
-                    // TODO: handle empty commit message
+                    // this event won't launch when commit-message is empty so its safe to assume that it is not
                     var commitMessage = dialog.getElement().find("input[name='commit-message']").val();
 
                     gitControl.gitCommit(commitMessage).then(function () {
