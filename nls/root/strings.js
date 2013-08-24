@@ -23,5 +23,5 @@ define({
     PATH_TO_GIT_MSYSGIT:                "Path to msysgit folder",
     Q_RESTART_BRACKETS:                 "Do you wish to restart Brackets to apply new settings?",
     RESTART:                            "Restart",
-    USING_GIT_VERSION:                  "Using Git version"
+    USING_GIT_VERSION:                  "Git version"
 });
