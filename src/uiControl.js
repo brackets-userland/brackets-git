@@ -27,7 +27,9 @@ define(function (require, exports) {
             $busyIndicator          = null,
             busyIndicatorIndex      = 0,
             busyIndicatorInProgress = [],
-            currentProjectRoot      = ProjectManager.getProjectRoot().fullPath;
+            currentProjectRoot      = ProjectManager.getProjectRoot().fullPath,
+            $icon                   = $("<a id='git-toolbar-icon' href='#'></a>")
+                                      .appendTo($("#main-toolbar .buttons"));
 
         // Seems just too buggy right now
         q.stopUnhandledRejectionTracking();
@@ -118,7 +120,7 @@ define(function (require, exports) {
                 }
             }).fail(logError);
         }
-        
+
         function handleGitReset() {
             gitControl.gitReset().then(function () {
                 refreshGitPanel();
@@ -239,8 +241,10 @@ define(function (require, exports) {
         function toggleGitPanel() {
             var enabled = gitPanel.isVisible();
             if (enabled) {
+                $icon.toggleClass("on");
                 gitPanel.hide();
             } else {
+                $icon.toggleClass("on");
                 gitPanel.show();
                 refreshGitPanel();
             }
@@ -251,10 +255,6 @@ define(function (require, exports) {
         function initUi() {
             // Add branch name to project tree
             $gitBranchName = $("<div id='git-branch'></div>").appendTo("#project-files-header");
-
-            // Add toolbar icon
-            var $icon = $("<a id='git-toolbar-icon' href='#'></a>")
-                .appendTo($("#main-toolbar .buttons"));
 
             // Add panel
             var panelHtml = Mustache.render(gitPanelTemplate, Strings);
