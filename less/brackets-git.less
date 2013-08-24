@@ -1,11 +1,28 @@
 @lightGrey:   #BBBBBB;
 @darkGrey:    #9c9e9e;
 @almostWhite: #f5f5f5;
-@green:       #00AA00;
-@red:         #FF0000;
-@darkBlue:    #0000FF;
-@lightBlue:   #0099FF;
-@lightRed:    #ffbbbb;
+@green:       #3B9102;
+@red:         #F74687;
+@darkBlue:    #1976DD;
+@orange:      #DB8D03;
+@lightRed:    #FF7CAD;
+
+hr
+{
+    margin: 18px 0;
+    border: 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #eee;
+}
+
+code,
+pre
+{
+    background: none;
+    border: none;
+    padding: 0 3px 2px;
+    font-family: 'SourceCodePro', monospace;
+}
 
 #git-status.error
 {
@@ -41,13 +58,23 @@
 }
 
 #git-toolbar-icon {
-    color: @lightGrey;
-    display: block;
-    font-size: 16px;
-    padding-top: 3px;
-    &:hover {
-        text-decoration: none;
-    }
+    background: url("git-icon.svg") no-repeat 0 0;
+}
+
+#git-toolbar-icon.on {
+    background: url("git-icon.svg") no-repeat 0 -24px;
+}
+
+#git-toolbar-icon.ok {
+    background: url("git-icon.svg") no-repeat 0 -48px;
+}
+
+#git-toolbar-icon.warning {
+    background: url("git-icon.svg") no-repeat 0 -72px;
+}
+
+#git-toolbar-icon.error {
+    background: url("git-icon.svg") no-repeat 0 -96px;
 }
 
 .dialogCommonMixin {
@@ -74,6 +101,7 @@
             border-radius: 3px;
             margin-bottom: 1em;
             overflow: auto;
+            padding: 7px 10px;
             pre {
                 border: none;
                 border-radius: 0px;
@@ -90,7 +118,7 @@
                     color: @darkBlue;
                 }
                 &.position {
-                    color: @lightBlue;
+                    color: @orange;
                 }
                 .trailingWhitespace {
                     background-color: @lightRed;

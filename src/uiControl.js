@@ -253,7 +253,7 @@ define(function (require, exports) {
             $gitBranchName = $("<div id='git-branch'></div>").appendTo("#project-files-header");
 
             // Add toolbar icon
-            var $icon = $("<a id='git-toolbar-icon' href='#'>[G]</a>")
+            var $icon = $("<a id='git-toolbar-icon' href='#'></a>")
                 .appendTo($("#main-toolbar .buttons"));
 
             // Add panel
