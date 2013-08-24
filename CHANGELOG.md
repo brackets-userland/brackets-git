@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.4
+* Great new icon and UI tweaks by [@larz0](https://github.com/larz0)
+* Commit dialog should be now a bit bigger depending on the screen size.
+
 ## 0.4.3
 * Settings dialog has now a restore defaults button which restores platform specific defaults (Win, Mac).
 * Settings dialog has now a button to show changelog.

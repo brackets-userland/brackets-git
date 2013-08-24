@@ -80,7 +80,9 @@ define(function (require, exports) {
                 Strings.GIT_VERSION = version;
                 $gitStatusBar.text(version);
             }).fail(function (err) {
-                $gitStatusBar.addClass("error").text(err);
+                var errText = Strings.CHECK_GIT_SETTINGS + ": " + err.toString();
+                $gitStatusBar.addClass("error").text(errText);
+                $icon.addClass("error").attr("title", errText);
                 throw err;
             });
         }
@@ -154,7 +156,7 @@ define(function (require, exports) {
                     .width(desiredWidth)
                     .css("max-height", desiredHeight)
                     .find(".commit-diff")
-                        .css("max-height", desiredHeight - 60);
+                        .css("max-height", desiredHeight - 70);
 
             // Show nicely colored commit diff
             var $diff = $dialog.find(".commit-diff");
