@@ -111,7 +111,7 @@ define(function (require, exports) {
                     .empty();
 
                 if (files.length === 0) {
-                    panel.append($("<p/>").text(Strings.NOTHING_TO_COMMIT));
+                    panel.append($("<p class='nothing-to-commit'/>").text(Strings.NOTHING_TO_COMMIT));
                 } else {
                     panel.append(Mustache.render(gitPanelResultsTemplate, { files: files }));
                     gitPanel.$panel.find(".check-all").prop("checked", false);
