@@ -254,16 +254,13 @@ define(function (require, exports) {
         }
 
         function toggleGitPanel() {
-            var enabled = gitPanel.isVisible();
+            var enabled = !gitPanel.isVisible();
+            preferences.setValue("panelEnabled", enabled);
+            $icon.toggleClass("on", enabled);
+            gitPanel.setVisible(enabled);
             if (enabled) {
-                $icon.toggleClass("on");
-                gitPanel.hide();
-            } else {
-                $icon.toggleClass("on");
-                gitPanel.show();
                 refreshGitPanel();
             }
-            preferences.setValue("panelEnabled", !enabled);
         }
 
         // This only launches when Git is available
