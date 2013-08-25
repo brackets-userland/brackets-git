@@ -8,8 +8,11 @@ define(function (require, exports) {
 
         var q                   = require("../thirdparty/q"),
             AppInit             = brackets.getModule("utils/AppInit"),
+            CommandManager      = brackets.getModule("command/CommandManager"),
+            Commands            = brackets.getModule("command/Commands"),
             Dialogs             = brackets.getModule("widgets/Dialogs"),
             DocumentManager     = brackets.getModule("document/DocumentManager"),
+            FileViewController  = brackets.getModule("project/FileViewController"),
             PanelManager        = brackets.getModule("view/PanelManager"),
             ProjectManager      = brackets.getModule("project/ProjectManager"),
             GitControl          = require("./gitControl"),
@@ -111,15 +114,25 @@ define(function (require, exports) {
             }
 
             gitControl.getGitStatus().then(function (files) {
-                var panel = gitPanel.$panel.find(".table-container")
-                    .empty();
+                var $checkAll = gitPanel.$panel.find(".check-all"),
+                    $tableContainer = gitPanel.$panel.find(".table-container").empty();
 
                 if (files.length === 0) {
-                    panel.append($("<p class='nothing-to-commit'/>").text(Strings.NOTHING_TO_COMMIT));
+                    $tableContainer.append($("<p class='nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
                 } else {
-                    panel.append(Mustache.render(gitPanelResultsTemplate, { files: files }));
-                    gitPanel.$panel.find(".check-all").prop("checked", false);
+                    $tableContainer.append(Mustache.render(gitPanelResultsTemplate, { files: files }));
+                    $checkAll.prop("checked", false);
                 }
+
+                $tableContainer.off()
+                    .on("click", "tr", function (e) {
+                        var fullPath = currentProjectRoot + $(e.currentTarget).data("file");
+                        CommandManager.execute(Commands.FILE_OPEN, {fullPath: fullPath});
+                    })
+                    .on("dblclick", "tr", function (e) {
+                        var fullPath = currentProjectRoot + $(e.currentTarget).data("file");
+                        FileViewController.addToWorkingSetAndSelect(fullPath);
+                    });
             }).fail(logError);
         }
 

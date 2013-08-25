@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.5
+* Click in the git panel now opens the file, doubleclick adds file to the working tree.
+
 ## 0.4.4
 * Great new icon and UI tweaks by [@larz0](https://github.com/larz0)
 * Commit dialog should be now a bit bigger depending on the screen size.
