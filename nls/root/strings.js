@@ -25,6 +25,8 @@ define({
     PATH_TO_GIT_EXECUTABLE:             "Path to Git executable",
     PATH_TO_GIT_MSYSGIT:                "Path to msysgit folder",
     Q_RESTART_BRACKETS:                 "Do you wish to restart Brackets to apply new settings?",
+    Q_UNDO_CHANGES:                     "Reset changes to file ",
+    Q_UNDO_CHANGES_POST:                " ?",
     RESTART:                            "Restart",
     UNDO_CHANGES:                       "Undo changes",
     USING_GIT_VERSION:                  "Git version"

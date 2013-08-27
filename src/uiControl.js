@@ -12,6 +12,7 @@ define(function (require, exports) {
             Commands            = brackets.getModule("command/Commands"),
             Dialogs             = brackets.getModule("widgets/Dialogs"),
             DocumentManager     = brackets.getModule("document/DocumentManager"),
+            FileUtils           = brackets.getModule("file/FileUtils"),
             FileViewController  = brackets.getModule("project/FileViewController"),
             PanelManager        = brackets.getModule("view/PanelManager"),
             ProjectManager      = brackets.getModule("project/ProjectManager"),
@@ -22,7 +23,8 @@ define(function (require, exports) {
         var gitPanelTemplate        = require("text!htmlContent/git-panel.html"),
             gitPanelResultsTemplate = require("text!htmlContent/git-panel-results.html"),
             gitCommitDialogTemplate = require("text!htmlContent/git-commit-dialog.html"),
-            gitDiffDialogTemplate   = require("text!htmlContent/git-diff-dialog.html");
+            gitDiffDialogTemplate   = require("text!htmlContent/git-diff-dialog.html"),
+            questionDialogTemplate  = require("text!htmlContent/question-dialog.html");
 
         var extensionName           = "[brackets-git] ",
             $gitStatusBar           = $(null),
@@ -83,7 +85,7 @@ define(function (require, exports) {
         function initGitStatusBar() {
             return gitControl.getVersion().then(function (version) {
                 Strings.GIT_VERSION = version;
-                $gitStatusBar.text(version);
+                $gitStatusBar.text("Git " + version);
             }).fail(function (err) {
                 var errText = Strings.CHECK_GIT_SETTINGS + ": " + err.toString();
                 $gitStatusBar.addClass("error").text(errText);
@@ -136,6 +138,10 @@ define(function (require, exports) {
                     .on("click", ".btn-git-diff", function (e) {
                         e.stopPropagation();
                         handleGitDiff($(e.target).closest("tr").data("file"));
+                    })
+                    .on("click", ".btn-git-undo", function (e) {
+                        e.stopPropagation();
+                        handleGitUndo($(e.target).closest("tr").data("file"));
                     })
                     .on("click", "tr", function (e) {
                         var fullPath = currentProjectRoot + $(e.currentTarget).data("file");
@@ -256,8 +262,46 @@ define(function (require, exports) {
 
         function handleGitDiff(file) {
             gitControl.gitDiffSingle(file).then(function (diff) {
-                return _showDiffDialog(file, diff);
+                _showDiffDialog(file, diff);
             }).fail(logError);
+        }
+
+        /**
+         * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
+         *
+         * @param {!Document} doc
+         * @return {$.Promise} Resolved after editor has been refreshed; rejected if unable to load the
+         *      file's new content. Errors are logged but no UI is shown.
+         */
+        function _reloadDoc(doc) {
+            var promise = FileUtils.readAsText(doc.file);
+            promise.done(function (text, readTimestamp) {
+                doc.refreshText(text, readTimestamp);
+            });
+            promise.fail(function (error) {
+                console.log("Error reloading contents of " + doc.file.fullPath, error.name);
+            });
+            return promise;
+        }
+
+        function handleGitUndo(file) {
+            var compiledTemplate = Mustache.render(questionDialogTemplate, {
+                title: Strings.UNDO_CHANGES,
+                question: Strings.Q_UNDO_CHANGES + file + Strings.Q_UNDO_CHANGES_POST,
+                Strings: Strings
+            });
+            Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
+                if (buttonId === "ok") {
+                    gitControl.gitUndoFile(file).then(function () {
+                        DocumentManager.getAllOpenDocuments().forEach(function(doc) {
+                            if (doc.file.fullPath === currentProjectRoot + file) {
+                                _reloadDoc(doc);
+                            }
+                        });
+                        refreshGitPanel();
+                    }).fail(logError);
+                }
+            });
         }
 
         function handleGitCommit() {

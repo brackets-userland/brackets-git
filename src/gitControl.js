@@ -148,6 +148,10 @@ define(function (require, exports, module) {
             return this.executeCommand(cmd);
         },
 
+        gitUndoFile: function (file) {
+            return this.executeCommand(this._git + " checkout \"" + file + "\"");
+        },
+
         gitCommit: function (message) {
             return this.executeCommand(this._git + " commit -m \"" + message + "\"");
         },

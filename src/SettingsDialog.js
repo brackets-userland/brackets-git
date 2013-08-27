@@ -48,8 +48,12 @@ define(function (require, exports) {
     }
 
     function showRestartDialog() {
-        var restartDialogTemplate = require("text!htmlContent/restart-dialog.html");
-        var compiledTemplate = Mustache.render(restartDialogTemplate, Strings);
+        var questionDialogTemplate = require("text!htmlContent/question-dialog.html");
+        var compiledTemplate = Mustache.render(questionDialogTemplate, {
+            title: Strings.RESTART,
+            question: Strings.Q_RESTART_BRACKETS,
+            Strings: Strings
+        });
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
             if (buttonId === "ok") {
                 CommandManager.execute("debug.refreshWindow");

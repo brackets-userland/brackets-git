@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.1
+* Undo changes now works and is no longer disabled.
+
 ## 0.5.0
 * Added new diff button to show next to the every modified file.
 * Little bit of UX tuning.
