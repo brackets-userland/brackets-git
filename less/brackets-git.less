@@ -103,6 +103,7 @@ pre
     .dialogCommonMixin;
     .modal-body {
         .commit-diff {
+            .user-select(text);
             background-color: @almostWhite;
             border: 1px solid @darkGrey;
             border-radius: 3px;
@@ -135,10 +136,24 @@ pre
     }
 }
 
-// brackets mixins
+/*
+    these mixins were copied out from the Brackets,
+    because there's no way to import them right now
+*/
 
+// https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing
 .sane-box-model {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/CSS/user-select
+.user-select(@type: none) {
+    -webkit-user-select: @type;
+    -khtml-user-select: @type;
+    -moz-user-select: @type;
+    -ms-user-select: @type;
+    -o-user-select: @type;
+    user-select: @type;
 }
