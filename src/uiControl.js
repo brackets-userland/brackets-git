@@ -129,6 +129,9 @@ define(function (require, exports) {
                 }
 
                 $tableContainer.off()
+                    .on("click", ".check-one", function (e) {
+                        e.stopPropagation();
+                    })
                     .on("click", "tr", function (e) {
                         var fullPath = currentProjectRoot + $(e.currentTarget).data("file");
                         CommandManager.execute(Commands.FILE_OPEN, {fullPath: fullPath});
@@ -137,6 +140,7 @@ define(function (require, exports) {
                         var fullPath = currentProjectRoot + $(e.currentTarget).data("file");
                         FileViewController.addToWorkingSetAndSelect(fullPath);
                     });
+
             }).fail(logError);
         }
 
@@ -302,9 +306,6 @@ define(function (require, exports) {
 
             gitPanel.$panel
                 .on("click", ".close", toggleGitPanel)
-                .on("click", ".check-one", function (e) {
-                    e.stopPropagation();
-                })
                 .on("click", ".check-all", function () {
                     var isChecked = $(this).is(":checked");
                     gitPanel.$panel.find(".check-one").prop("checked", isChecked);
