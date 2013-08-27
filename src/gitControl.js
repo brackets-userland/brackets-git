@@ -160,6 +160,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " diff -U0 \"" + file + "\"");
         },
 
+        gitDiffSingle: function (file) {
+            return this.executeCommand(this._git + " diff \"" + file + "\"");
+        },
+
         gitDiffStaged: function () {
             return this.executeCommand(this._git + " diff --staged");
         }

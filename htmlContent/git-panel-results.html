@@ -5,6 +5,12 @@
             <td class="checkbox-column"><input type="checkbox" class="check-one" /></td>
             <td class="status-column">{{status}}</td>
             <td>{{file}}</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-mini btn-git-diff">{{Strings.DIFF}}</button>
+                    <button class="btn btn-mini btn-git-undo disabled">{{Strings.UNDO_CHANGES}}</button>
+                </div>
+            </td>
         </tr>
         {{/files}}
     </tbody>

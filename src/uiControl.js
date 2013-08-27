@@ -21,7 +21,8 @@ define(function (require, exports) {
 
         var gitPanelTemplate        = require("text!htmlContent/git-panel.html"),
             gitPanelResultsTemplate = require("text!htmlContent/git-panel-results.html"),
-            gitCommitDialogTemplate = require("text!htmlContent/git-commit-dialog.html");
+            gitCommitDialogTemplate = require("text!htmlContent/git-commit-dialog.html"),
+            gitDiffDialogTemplate   = require("text!htmlContent/git-diff-dialog.html");
 
         var extensionName           = "[brackets-git] ",
             $gitStatusBar           = $(null),
@@ -124,13 +125,17 @@ define(function (require, exports) {
                 if (files.length === 0) {
                     $tableContainer.append($("<p class='nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
                 } else {
-                    $tableContainer.append(Mustache.render(gitPanelResultsTemplate, { files: files }));
+                    $tableContainer.append(Mustache.render(gitPanelResultsTemplate, { files: files, Strings: Strings }));
                     $checkAll.prop("checked", false);
                 }
 
                 $tableContainer.off()
                     .on("click", ".check-one", function (e) {
                         e.stopPropagation();
+                    })
+                    .on("click", ".btn-git-diff", function (e) {
+                        e.stopPropagation();
+                        handleGitDiff($(e.target).closest("tr").data("file"));
                     })
                     .on("click", "tr", function (e) {
                         var fullPath = currentProjectRoot + $(e.currentTarget).data("file");
@@ -150,12 +155,7 @@ define(function (require, exports) {
             }).fail(logError);
         }
 
-        function _showCommitDialog(stagedDiff) {
-            // Open the dialog
-            var compiledTemplate = Mustache.render(gitCommitDialogTemplate, { Strings: Strings }),
-                dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-                $dialog          = dialog.getElement();
-
+        function _makeDialogBig($dialog) {
             // We need bigger commit dialog
             var minWidth = 500,
                 minHeight = 300,
@@ -175,13 +175,14 @@ define(function (require, exports) {
                 .end()
                 .find(".modal-body")
                     .width(desiredWidth)
-                    .css("max-height", desiredHeight)
-                    .find(".commit-diff")
-                        .css("max-height", desiredHeight - 70);
+                    .css("max-height", desiredHeight);
 
-            // Show nicely colored commit diff
-            var $diff = $dialog.find(".commit-diff");
-            stagedDiff.split("\n").forEach(function (line) {
+            return { width: desiredWidth, height: desiredHeight };
+        }
+
+        function _formatDiff(diff) {
+            var rv = [];
+            diff.split("\n").forEach(function (line) {
                 if (line === " ") { line = ""; }
 
                 var lineClass;
@@ -199,9 +200,34 @@ define(function (require, exports) {
                 line = line.replace(/(&nbsp;)+$/g, function (trailingWhitespace) {
                     return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
                 });
-                var $line = $("<pre/>").html(line).appendTo($diff);
+                var $line = $("<pre/>").html(line);
                 if (lineClass) { $line.addClass(lineClass); }
+                rv.push($line);
             });
+            return rv;
+        }
+
+        function _showDiffDialog(file, diff) {
+            var compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file: file, Strings: Strings }),
+                dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+                $dialog          = dialog.getElement();
+
+            _makeDialogBig($dialog);
+            $dialog.find(".commit-diff").append(_formatDiff(diff));
+        }
+
+        function _showCommitDialog(stagedDiff) {
+            // Open the dialog
+            var compiledTemplate = Mustache.render(gitCommitDialogTemplate, { Strings: Strings }),
+                dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+                $dialog          = dialog.getElement();
+
+            // We need bigger commit dialog
+            var dimensions = _makeDialogBig($dialog);
+            $dialog.find(".commit-diff").css("max-height", dimensions.height - 70);
+
+            // Show nicely colored commit diff
+            $dialog.find(".commit-diff").append(_formatDiff(stagedDiff));
 
             $dialog.find("button.primary").on("click", function (e) {
                 var $commitMessage = $dialog.find("input[name='commit-message']");
@@ -226,6 +252,12 @@ define(function (require, exports) {
                     handleGitReset();
                 }
             });
+        }
+
+        function handleGitDiff(file) {
+            gitControl.gitDiffSingle(file).then(function (diff) {
+                return _showDiffDialog(file, diff);
+            }).fail(logError);
         }
 
         function handleGitCommit() {
@@ -258,7 +290,7 @@ define(function (require, exports) {
                         _showCommitDialog(diff);
                     });
                 });
-            });
+            }).fail(logError);
         }
 
         function enableGitPanel() {

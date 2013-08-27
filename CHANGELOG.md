@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+* Added new diff button to show next to the every modified file.
+* Little bit of UX tuning.
+
 ## 0.4.6
 * Panel now properly disables when switching between projects with and without git repository.
 
