@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.6
+* Panel now properly disables when switching between projects with and without git repository.
+
 ## 0.4.5
 * Click in the git panel now opens the file, doubleclick adds file to the working tree.
 

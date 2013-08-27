@@ -27,6 +27,7 @@ define(function (require, exports) {
             $gitStatusBar           = $(null),
             $gitBranchName          = $(null),
             gitPanel                = null,
+            gitPanelDisabled        = null,
             $busyIndicator          = null,
             busyIndicatorIndex      = 0,
             busyIndicatorInProgress = [],
@@ -97,13 +98,16 @@ define(function (require, exports) {
                 if (root === currentProjectRoot) {
                     gitControl.getBranchName().then(function (branchName) {
                         $gitBranchName.text("[ " + branchName + " ]");
+                        enableGitPanel();
                     }).fail(logError);
                 } else {
                     $gitBranchName.text("[ not a git root ]");
+                    disableGitPanel();
                 }
             }).fail(function () {
                 // Current working folder is not a git repository
                 $gitBranchName.text("[ not a git repo ]");
+                disableGitPanel();
             });
         }
 
@@ -253,12 +257,33 @@ define(function (require, exports) {
             });
         }
 
-        function toggleGitPanel() {
-            var enabled = !gitPanel.isVisible();
-            preferences.setValue("panelEnabled", enabled);
-            $icon.toggleClass("on", enabled);
-            gitPanel.setVisible(enabled);
-            if (enabled) {
+        function enableGitPanel() {
+            if (gitPanelDisabled === true) {
+                $icon.removeClass("warning");
+                gitPanelDisabled = false;
+                // has to be after gitPanelDisabled = false;
+                toggleGitPanel(null, true);
+            }
+        }
+
+        function disableGitPanel() {
+            $icon.addClass("warning");
+            // has to be before gitPanelDisabled = true;
+            toggleGitPanel(null, false);
+            gitPanelDisabled = true;
+        }
+
+        function toggleGitPanel(event, bool) {
+            if (gitPanelDisabled === true) {
+                return;
+            }
+            if (typeof bool === "undefined") {
+                bool = !gitPanel.isVisible();
+            }
+            preferences.setValue("panelEnabled", bool);
+            $icon.toggleClass("on", bool);
+            gitPanel.setVisible(bool);
+            if (bool) {
                 refreshGitPanel();
             }
         }
