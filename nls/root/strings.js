@@ -14,7 +14,7 @@ define({
     CHANGELOG:                          "Changelog",
     CHECK_GIT_SETTINGS:                 "Check Git settings",
     COMMIT_MESSAGE_PLACEHOLDER:         "Enter commit message here\u2026",
-    EXTENSION_WAS_UPDATED:              "extension was updated\u2026",
+    EXTENSION_WAS_UPDATED:              "extension was updated to",
     FOR_WINDOWS_USERS:                  "For Windows users",
     GIT_COMMIT:                         "Git commit\u2026",
     GIT_IS_IN_PATH:                     "Git can be called from anywhere (is in system path, might not work on Mac)",

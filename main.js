@@ -49,11 +49,11 @@ define(function (require, exports, module) {
             currentVersion = JSON.parse(content).version;
 
         if (lastVersion === null) {
-            openSettingsPanel();
             preferences.setValue("lastVersion", "firstStart");
+            openSettingsPanel();
         } else if (lastVersion !== currentVersion) {
-            ChangelogDialog.show(preferences);
             preferences.setValue("lastVersion", currentVersion);
+            ChangelogDialog.show(preferences);
         }
     });
 
