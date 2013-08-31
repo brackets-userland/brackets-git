@@ -93,7 +93,7 @@ define(function (require, exports, module) {
         },
 
         getGitStatus: function () {
-            return this.executeCommand(this._git + " status --porcelain").then(function (stdout) {
+            return this.executeCommand(this._git + " status -u --porcelain").then(function (stdout) {
                 if (stdout.length === 0) { return []; }
 
                 var results = [],
