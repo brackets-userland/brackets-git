@@ -6,6 +6,24 @@ define(function (require, exports, module) {
 
     var q = require("../thirdparty/q");
 
+    var FILE_STATUS = {
+        STAGED: "FILE_STAGED",
+        NEWFILE: "FILE_NEWFILE",
+        MODIFIED: "FILE_MODIFIED",
+        DELETED: "FILE_DELETED",
+        UNTRACKED: "FILE_UNTRACKED"
+    };
+
+    function uniqSorted(arr) {
+        var rv = [];
+        arr.forEach(function (i) {
+            if (rv.indexOf(i) === -1) {
+                rv.push(i);
+            }
+        });
+        return rv.sort();
+    }
+
     function GitControl(options) {
         this._isHandlerRunning = false;
         this._queue = [];
@@ -18,28 +36,30 @@ define(function (require, exports, module) {
         }
     }
 
+    GitControl.FILE_STATUS = FILE_STATUS;
+
     GitControl.prototype = {
 
         _processQueue: function () {
             var self = this;
-            if (self._isHandlerRunning || self._queue.length === 0) { return; }
+            if (self._isHandlerRunning || self._queue.length === 0) {
+                return;
+            }
             self._isHandlerRunning = true;
 
             var queueItem = self._queue.shift(),
                 promise = queueItem[0],
                 cmd = queueItem[1];
 
-            self.options.executeHandler(cmd)
-                .then(function (result) {
-                    promise.resolve(result);
-                    self._isHandlerRunning = false;
-                    self._processQueue();
-                })
-                .fail(function (ex) {
-                    promise.reject(ex);
-                    self._isHandlerRunning = false;
-                    self._processQueue();
-                });
+            self.options.executeHandler(cmd).then(function (result) {
+                promise.resolve(result);
+                self._isHandlerRunning = false;
+                self._processQueue();
+            }).fail(function (ex) {
+                promise.reject(ex);
+                self._isHandlerRunning = false;
+                self._processQueue();
+            });
         },
 
         executeCommand: function (cmd) {
@@ -94,48 +114,62 @@ define(function (require, exports, module) {
 
         getGitStatus: function () {
             return this.executeCommand(this._git + " status -u --porcelain").then(function (stdout) {
-                if (stdout.length === 0) { return []; }
+                if (stdout.length === 0) {
+                    return [];
+                }
 
                 var results = [],
                     lines = stdout.split("\n");
                 lines.forEach(function (line) {
-                    var status = line.substring(0, 2),
+                    var statusStaged = line.substring(0, 1),
+                        statusUnstaged = line.substring(1, 2),
+                        status = [],
                         file = line.substring(3);
 
-                    switch (status) {
-                    case "A ":
-                        status = "STAGED;NEWFILE";
+                    switch (statusStaged) {
+                    case " ":
                         break;
-                    case "AM":
-                        status = "STAGED;NEWFILE;MODIFIED";
+                    case "?":
+                        status.push(FILE_STATUS.UNTRACKED);
                         break;
-                    case " D":
-                        status = "DELETED";
+                    case "A":
+                        status.push(FILE_STATUS.STAGED, FILE_STATUS.NEWFILE);
                         break;
-                    case "M ":
-                        status = "STAGED";
+                    case "M":
+                        status.push(FILE_STATUS.STAGED, FILE_STATUS.MODIFIED);
                         break;
-                    case " M":
-                        status = "MODIFIED";
+                    default:
+                        throw new Error("Unexpected status: " + status);
+                    }
+
+                    switch (statusUnstaged) {
+                    case " ":
                         break;
-                    case "MM":
-                        status = "STAGED;MODIFIED";
+                    case "?":
+                        status.push(FILE_STATUS.UNTRACKED);
                         break;
-                    case "??":
-                        status = "UNTRACKED";
+                    case "M":
+                        status.push(FILE_STATUS.MODIFIED);
+                        break;
+                    case "D":
+                        status.push(FILE_STATUS.DELETED);
                         break;
                     default:
                         throw new Error("Unexpected status: " + status);
                     }
 
                     results.push({
-                        status: status,
+                        status: uniqSorted(status),
                         file: file
                     });
                 });
                 return results.sort(function (a, b) {
-                    if (a.file < b.file) { return -1; }
-                    if (a.file > b.file) { return 1; }
+                    if (a.file < b.file) {
+                        return -1;
+                    }
+                    if (a.file > b.file) {
+                        return 1;
+                    }
                     return 0;
                 });
             });
@@ -143,7 +177,9 @@ define(function (require, exports, module) {
 
         gitAdd: function (file, updateIndex) {
             var cmd = this._git + " add ";
-            if (updateIndex) { cmd += "-u "; }
+            if (updateIndex) {
+                cmd += "-u ";
+            }
             cmd += "\"" + file + "\"";
             return this.executeCommand(cmd);
         },

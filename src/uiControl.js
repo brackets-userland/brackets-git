@@ -1,5 +1,5 @@
 /*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, console, define, Mustache, window */
+/*global $, brackets, console, define, Mustache, window, refreshGitPanel */
 
 define(function (require, exports) {
     "use strict";
@@ -14,6 +14,7 @@ define(function (require, exports) {
             DocumentManager     = brackets.getModule("document/DocumentManager"),
             FileUtils           = brackets.getModule("file/FileUtils"),
             FileViewController  = brackets.getModule("project/FileViewController"),
+            NativeFileSystem    = brackets.getModule("file/NativeFileSystem").NativeFileSystem,
             PanelManager        = brackets.getModule("view/PanelManager"),
             ProjectManager      = brackets.getModule("project/ProjectManager"),
             GitControl          = require("./gitControl"),
@@ -93,74 +94,7 @@ define(function (require, exports) {
                 throw err;
             });
         }
-
-        // Displays branch name next to the current working folder name
-        function refreshGitBranchName() {
-            $gitBranchName.text("[ \u2026 ]").show();
-            gitControl.getRepositoryRoot().then(function (root) {
-                if (root === currentProjectRoot) {
-                    gitControl.getBranchName().then(function (branchName) {
-                        $gitBranchName.text("[ " + branchName + " ]");
-                        enableGitPanel();
-                    }).fail(logError);
-                } else {
-                    $gitBranchName.text("[ not a git root ]");
-                    disableGitPanel();
-                }
-            }).fail(function () {
-                // Current working folder is not a git repository
-                $gitBranchName.text("[ not a git repo ]");
-                disableGitPanel();
-            });
-        }
-
-        function refreshGitPanel() {
-            if (!gitPanel.isVisible()) {
-                // no point, will be refreshed when it's displayed
-                return;
-            }
-
-            gitControl.getGitStatus().then(function (files) {
-                var $checkAll = gitPanel.$panel.find(".check-all"),
-                    $tableContainer = gitPanel.$panel.find(".table-container").empty();
-
-                if (files.length === 0) {
-                    $tableContainer.append($("<p class='nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
-                } else {
-                    $tableContainer.append(Mustache.render(gitPanelResultsTemplate, { files: files, Strings: Strings }));
-                    $checkAll.prop("checked", false);
-                }
-
-                $tableContainer.off()
-                    .on("click", ".check-one", function (e) {
-                        e.stopPropagation();
-                    })
-                    .on("click", ".btn-git-diff", function (e) {
-                        e.stopPropagation();
-                        handleGitDiff($(e.target).closest("tr").data("file"));
-                    })
-                    .on("click", ".btn-git-undo", function (e) {
-                        e.stopPropagation();
-                        handleGitUndo($(e.target).closest("tr").data("file"));
-                    })
-                    .on("click", "tr", function (e) {
-                        var fullPath = currentProjectRoot + $(e.currentTarget).data("file");
-                        CommandManager.execute(Commands.FILE_OPEN, {fullPath: fullPath});
-                    })
-                    .on("dblclick", "tr", function (e) {
-                        var fullPath = currentProjectRoot + $(e.currentTarget).data("file");
-                        FileViewController.addToWorkingSetAndSelect(fullPath);
-                    });
-
-            }).fail(logError);
-        }
-
-        function handleGitReset() {
-            gitControl.gitReset().then(function () {
-                refreshGitPanel();
-            }).fail(logError);
-        }
-
+        
         function _makeDialogBig($dialog) {
             // We need bigger commit dialog
             var minWidth = 500,
@@ -185,7 +119,7 @@ define(function (require, exports) {
 
             return { width: desiredWidth, height: desiredHeight };
         }
-
+        
         function _formatDiff(diff) {
             var rv = [];
             diff.split("\n").forEach(function (line) {
@@ -212,7 +146,7 @@ define(function (require, exports) {
             });
             return rv;
         }
-
+        
         function _showDiffDialog(file, diff) {
             var compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file: file, Strings: Strings }),
                 dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
@@ -220,6 +154,176 @@ define(function (require, exports) {
 
             _makeDialogBig($dialog);
             $dialog.find(".commit-diff").append(_formatDiff(diff));
+        }
+        
+        function handleGitDiff(file) {
+            gitControl.gitDiffSingle(file).then(function (diff) {
+                _showDiffDialog(file, diff);
+            }).fail(logError);
+        }
+
+        /**
+         * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
+         *
+         * @param {!Document} doc
+         * @return {$.Promise} Resolved after editor has been refreshed; rejected if unable to load the
+         *      file's new content. Errors are logged but no UI is shown.
+         */
+        function _reloadDoc(doc) {
+            var promise = FileUtils.readAsText(doc.file);
+            promise.done(function (text, readTimestamp) {
+                doc.refreshText(text, readTimestamp);
+            });
+            promise.fail(function (error) {
+                console.log("Error reloading contents of " + doc.file.fullPath, error.name);
+            });
+            return promise;
+        }
+        
+        function handleGitUndo(file) {
+            var compiledTemplate = Mustache.render(questionDialogTemplate, {
+                title: Strings.UNDO_CHANGES,
+                question: Strings.Q_UNDO_CHANGES + file + Strings.Q_UNDO_CHANGES_POST,
+                Strings: Strings
+            });
+            Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
+                if (buttonId === "ok") {
+                    gitControl.gitUndoFile(file).then(function () {
+                        DocumentManager.getAllOpenDocuments().forEach(function (doc) {
+                            if (doc.file.fullPath === currentProjectRoot + file) {
+                                _reloadDoc(doc);
+                            }
+                        });
+                        refreshGitPanel();
+                    }).fail(logError);
+                }
+            });
+        }
+        
+        function handleGitDelete(file) {
+            var compiledTemplate = Mustache.render(questionDialogTemplate, {
+                title: Strings.DELETE_FILE,
+                question: Strings.Q_DELETE_FILE + file + Strings.Q_DELETE_FILE_POST,
+                Strings: Strings
+            });
+            Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
+                if (buttonId === "ok") {
+                    NativeFileSystem.resolveNativeFileSystemPath(currentProjectRoot + file, function (fileEntry) {
+                        ProjectManager.deleteItem(fileEntry);
+                    }, function (err) {
+                        console.error(err);
+                    });
+                }
+            });
+        }
+        
+        function refreshGitPanel() {
+            if (!gitPanel.isVisible()) {
+                // no point, will be refreshed when it's displayed
+                return;
+            }
+
+            gitControl.getGitStatus().then(function (files) {
+                var $checkAll       = gitPanel.$panel.find(".check-all"),
+                    $tableContainer = gitPanel.$panel.find(".table-container").empty();
+
+                if (files.length === 0) {
+                    $tableContainer.append($("<p class='nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
+                } else {
+                    files.forEach(function (file) {
+                        file.statusText = file.status.map(function (status) {
+                            return Strings[status];
+                        }).join(", ");
+                        file.allowDelete = file.status.indexOf(GitControl.FILE_STATUS.UNTRACKED) !== -1;
+                        file.allowUndo = !file.allowDelete;
+                    });
+                    $tableContainer.append(Mustache.render(gitPanelResultsTemplate, { files: files, Strings: Strings }));
+                    $checkAll.prop("checked", false);
+                }
+
+                $tableContainer.off()
+                    .on("click", ".check-one", function (e) {
+                        e.stopPropagation();
+                    })
+                    .on("click", ".btn-git-diff", function (e) {
+                        e.stopPropagation();
+                        handleGitDiff($(e.target).closest("tr").data("file"));
+                    })
+                    .on("click", ".btn-git-undo", function (e) {
+                        e.stopPropagation();
+                        handleGitUndo($(e.target).closest("tr").data("file"));
+                    })
+                    .on("click", ".btn-git-delete", function (e) {
+                        e.stopPropagation();
+                        handleGitDelete($(e.target).closest("tr").data("file"));
+                    })
+                    .on("click", "tr", function (e) {
+                        var fullPath = currentProjectRoot + $(e.currentTarget).data("file");
+                        CommandManager.execute(Commands.FILE_OPEN, {fullPath: fullPath});
+                    })
+                    .on("dblclick", "tr", function (e) {
+                        var fullPath = currentProjectRoot + $(e.currentTarget).data("file");
+                        FileViewController.addToWorkingSetAndSelect(fullPath);
+                    });
+
+            }).fail(logError);
+        }
+
+        function toggleGitPanel(event, bool) {
+            if (gitPanelDisabled === true) {
+                return;
+            }
+            if (typeof bool === "undefined") {
+                bool = !gitPanel.isVisible();
+            }
+            preferences.setValue("panelEnabled", bool);
+            $icon.toggleClass("on", bool);
+            gitPanel.setVisible(bool);
+            if (bool) {
+                refreshGitPanel();
+            }
+        }
+        
+        function enableGitPanel() {
+            if (gitPanelDisabled === true) {
+                $icon.removeClass("warning");
+                gitPanelDisabled = false;
+                // has to be after gitPanelDisabled = false;
+                toggleGitPanel(null, true);
+            }
+        }
+        
+        function disableGitPanel() {
+            $icon.addClass("warning");
+            // has to be before gitPanelDisabled = true;
+            toggleGitPanel(null, false);
+            gitPanelDisabled = true;
+        }
+
+        // Displays branch name next to the current working folder name
+        function refreshGitBranchName() {
+            $gitBranchName.text("[ \u2026 ]").show();
+            gitControl.getRepositoryRoot().then(function (root) {
+                if (root === currentProjectRoot) {
+                    gitControl.getBranchName().then(function (branchName) {
+                        $gitBranchName.text("[ " + branchName + " ]");
+                        enableGitPanel();
+                    }).fail(logError);
+                } else {
+                    $gitBranchName.text("[ not a git root ]");
+                    disableGitPanel();
+                }
+            }).fail(function () {
+                // Current working folder is not a git repository
+                $gitBranchName.text("[ not a git repo ]");
+                disableGitPanel();
+            });
+        }
+
+        function handleGitReset() {
+            gitControl.gitReset().then(function () {
+                refreshGitPanel();
+            }).fail(logError);
         }
 
         function _showCommitDialog(stagedDiff) {
@@ -260,50 +364,6 @@ define(function (require, exports) {
             });
         }
 
-        function handleGitDiff(file) {
-            gitControl.gitDiffSingle(file).then(function (diff) {
-                _showDiffDialog(file, diff);
-            }).fail(logError);
-        }
-
-        /**
-         * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
-         *
-         * @param {!Document} doc
-         * @return {$.Promise} Resolved after editor has been refreshed; rejected if unable to load the
-         *      file's new content. Errors are logged but no UI is shown.
-         */
-        function _reloadDoc(doc) {
-            var promise = FileUtils.readAsText(doc.file);
-            promise.done(function (text, readTimestamp) {
-                doc.refreshText(text, readTimestamp);
-            });
-            promise.fail(function (error) {
-                console.log("Error reloading contents of " + doc.file.fullPath, error.name);
-            });
-            return promise;
-        }
-
-        function handleGitUndo(file) {
-            var compiledTemplate = Mustache.render(questionDialogTemplate, {
-                title: Strings.UNDO_CHANGES,
-                question: Strings.Q_UNDO_CHANGES + file + Strings.Q_UNDO_CHANGES_POST,
-                Strings: Strings
-            });
-            Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
-                if (buttonId === "ok") {
-                    gitControl.gitUndoFile(file).then(function () {
-                        DocumentManager.getAllOpenDocuments().forEach(function(doc) {
-                            if (doc.file.fullPath === currentProjectRoot + file) {
-                                _reloadDoc(doc);
-                            }
-                        });
-                        refreshGitPanel();
-                    }).fail(logError);
-                }
-            });
-        }
-
         function handleGitCommit() {
             // Get checked files
             var $checked = gitPanel.$panel.find(".check-one:checked");
@@ -335,37 +395,6 @@ define(function (require, exports) {
                     });
                 });
             }).fail(logError);
-        }
-
-        function enableGitPanel() {
-            if (gitPanelDisabled === true) {
-                $icon.removeClass("warning");
-                gitPanelDisabled = false;
-                // has to be after gitPanelDisabled = false;
-                toggleGitPanel(null, true);
-            }
-        }
-
-        function disableGitPanel() {
-            $icon.addClass("warning");
-            // has to be before gitPanelDisabled = true;
-            toggleGitPanel(null, false);
-            gitPanelDisabled = true;
-        }
-
-        function toggleGitPanel(event, bool) {
-            if (gitPanelDisabled === true) {
-                return;
-            }
-            if (typeof bool === "undefined") {
-                bool = !gitPanel.isVisible();
-            }
-            preferences.setValue("panelEnabled", bool);
-            $icon.toggleClass("on", bool);
-            gitPanel.setVisible(bool);
-            if (bool) {
-                refreshGitPanel();
-            }
         }
 
         // This only launches when Git is available

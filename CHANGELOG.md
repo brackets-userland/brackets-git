@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.2
+* Added delete button for untracked files
+* Untracked files are now shown (instead of untracked directory)
+
 ## 0.5.1
 * Undo changes now works and is no longer disabled.
 
