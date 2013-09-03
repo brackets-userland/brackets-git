@@ -1,5 +1,8 @@
 # Changelog
 
+## ?.?.?
+* Added focus to input when commit dialog is shown.
+
 ## 0.5.2
 * Added delete button for untracked files
 * Untracked files are now shown (instead of untracked directory)

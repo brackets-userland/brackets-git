@@ -349,6 +349,9 @@ define(function (require, exports) {
                 }
             });
 
+            // Add focus to commit message input
+            $dialog.find("input[name='commit-message']").focus();
+
             dialog.done(function (buttonId) {
                 if (buttonId === "ok") {
                     // this event won't launch when commit-message is empty so its safe to assume that it is not
