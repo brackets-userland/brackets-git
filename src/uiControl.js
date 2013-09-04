@@ -286,12 +286,12 @@ define(function (require, exports) {
         }
 
         function enableGitPanel() {
-            $icon.removeClass("warning");
+            $icon.removeClass("warning").removeAttr("title");
             gitPanelDisabled = false;
         }
 
-        function disableGitPanel() {
-            $icon.addClass("warning");
+        function disableGitPanel(cause) {
+            $icon.addClass("warning").attr("title", cause);
             // toggleGitPanel has to be before gitPanelDisabled = true;
             toggleGitPanel(null, false);
             gitPanelDisabled = true;
@@ -308,12 +308,14 @@ define(function (require, exports) {
                     }).fail(logError);
                 } else {
                     $gitBranchName.text("[ not a git root ]");
-                    disableGitPanel();
+                    // TODO: meaningful text
+                    disableGitPanel("[ not a git root ]");
                 }
             }).fail(function () {
                 // Current working folder is not a git repository
                 $gitBranchName.text("[ not a git repo ]");
-                disableGitPanel();
+                // TODO: meaningful text
+                disableGitPanel("[ not a git repo ]");
             });
         }
 
