@@ -284,19 +284,15 @@ define(function (require, exports) {
                 refreshGitPanel();
             }
         }
-        
+
         function enableGitPanel() {
-            if (gitPanelDisabled === true) {
-                $icon.removeClass("warning");
-                gitPanelDisabled = false;
-                // has to be after gitPanelDisabled = false;
-                toggleGitPanel(null, true);
-            }
+            $icon.removeClass("warning");
+            gitPanelDisabled = false;
         }
-        
+
         function disableGitPanel() {
             $icon.addClass("warning");
-            // has to be before gitPanelDisabled = true;
+            // toggleGitPanel has to be before gitPanelDisabled = true;
             toggleGitPanel(null, false);
             gitPanelDisabled = true;
         }

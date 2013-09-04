@@ -1,6 +1,7 @@
 # Changelog
 
-## ?.?.?
+## 0.5.3
+* Fixed issue [#5](https://github.com/zaggino/brackets-git/issues/5)
 * Added focus to input when commit dialog is shown.
 
 ## 0.5.2
