@@ -10,6 +10,7 @@ define(function (require, exports) {
             AppInit             = brackets.getModule("utils/AppInit"),
             CommandManager      = brackets.getModule("command/CommandManager"),
             Commands            = brackets.getModule("command/Commands"),
+            DefaultDialogs      = brackets.getModule("widgets/DefaultDialogs"),
             Dialogs             = brackets.getModule("widgets/Dialogs"),
             DocumentManager     = brackets.getModule("document/DocumentManager"),
             FileUtils           = brackets.getModule("file/FileUtils"),
@@ -400,6 +401,16 @@ define(function (require, exports) {
             }).fail(logError);
         }
 
+        function handleGitPush() {
+            gitControl.gitPush().then(function (result) {
+                Dialogs.showModalDialog(
+                    DefaultDialogs.DIALOG_ID_INFO,
+                    Strings.GIT_PUSH_RESPONSE, // title
+                    result // message
+                );
+            });
+        }
+
         // This only launches when Git is available
         function initUi() {
             // Add branch name to project tree
@@ -419,7 +430,8 @@ define(function (require, exports) {
                     gitPanel.$panel.find(".check-one").prop("checked", isChecked);
                 })
                 .on("click", ".git-reset", handleGitReset)
-                .on("click", ".git-commit", handleGitCommit);
+                .on("click", ".git-commit", handleGitCommit)
+                .on("click", ".git-push", handleGitPush);
 
             // Show gitPanel when appropriate
             if (preferences.getValue("panelEnabled")) {

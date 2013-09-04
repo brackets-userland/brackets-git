@@ -206,6 +206,11 @@ define(function (require, exports, module) {
 
         gitDiffStaged: function () {
             return this.executeCommand(this._git + " diff --staged");
+        },
+
+        gitPush: function () {
+            // TODO: remove --dry-run
+            return this.executeCommand(this._git + " push --porcelain --dry-run");
         }
 
     };
