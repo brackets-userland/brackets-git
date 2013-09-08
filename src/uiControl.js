@@ -427,7 +427,7 @@ define(function (require, exports) {
                     }
                     promises.push(gitControl.gitAdd(fileObj.filename, updateIndex));
                     // do a code inspection for the file
-                    promises.push(lintFile(fileObj.filename).then(function(result) {
+                    promises.push(lintFile(fileObj.filename).then(function (result) {
                         if (result) {
                             lintResults.push({
                                 filename: fileObj.filename,
