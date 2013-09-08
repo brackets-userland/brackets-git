@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+* Using new CodeInspection API from Brackets to check files for errors before commiting.
+* Current document is now selected in the git panel for easier navigation.
+
 ## 0.5.3
 * Fixed issue [#5](https://github.com/zaggino/brackets-git/issues/5)
 * Added focus to input when commit dialog is shown.

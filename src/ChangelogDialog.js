@@ -8,7 +8,7 @@ define(function (require, exports) {
         FileEntry                  = brackets.getModule("file/NativeFileSystem").NativeFileSystem.FileEntry,
         FileUtils                  = brackets.getModule("file/FileUtils"),
         Strings                    = require("../strings"),
-        changelogDialogTemplate    = require("text!htmlContent/changelog-dialog.html");
+        changelogDialogTemplate    = require("text!htmlContent/git-changelog-dialog.html");
 
     var dialog,
         preferences;

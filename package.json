@@ -5,7 +5,7 @@
     "description": "Integration of Git into Brackets UI",
     "keywords": ["git", "brackets", "extension"],
     "categories": ["general", "external"],
-    "version": "0.5.3",
+    "version": "0.6.0",
 
     "license": "MIT",
     "homepage": "https://github.com/zaggino/brackets-git",
@@ -24,7 +24,7 @@
     },
 
     "engines": {
-        "brackets": ">=0.29.0"
+        "brackets": ">=0.31.0"
     },
     "dependencies": {
         

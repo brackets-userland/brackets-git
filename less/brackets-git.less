@@ -8,28 +8,6 @@
 @orange:      #DB8D03;
 @lightRed:    #FF7CAD;
 
-hr
-{
-    margin: 18px 0;
-    border: 0;
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #eee;
-}
-
-code,
-pre
-{
-    background: none;
-    border: none;
-    padding: 0 3px 2px;
-    font-family: 'SourceCodePro', monospace;
-}
-
-.nothing-to-commit
-{
-    padding: 15px;
-}
-
 #git-status.error
 {
     color: red;
@@ -48,12 +26,8 @@ pre
 
 #git-panel
 {
-    .check-all {
-        margin-left: 6px;
-        margin-right: 18px;
-    }
-    button {
-        margin-right: 10px;
+    tr.selected {
+        font-weight: bold;   
     }
     td.checkbox-column {
         text-align: center;
@@ -61,36 +35,46 @@ pre
     }
     td.status-column {
         width: 100px;
+    }    
+    .check-all {
+        margin-left: 6px;
+        margin-right: 18px;
     }
+    button {
+        margin-right: 10px;
+    }    
     .btn-mini {
         padding: 1px 5px;
         font-size: 12px;
         line-height: 1em;
         border-radius: 3px;
     }
+    .nothing-to-commit {
+        padding: 15px;
+    }
 }
 
 #git-toolbar-icon {
     background: url("git-icon.svg") no-repeat 0 0;
+    &.on {
+        background: url("git-icon.svg") no-repeat 0 -24px;   
+    }
+    &.ok {
+        background: url("git-icon.svg") no-repeat 0 -48px;
+    }
+    &.warning {
+        background: url("git-icon.svg") no-repeat 0 -72px;
+    }
+    &.error {
+        background: url("git-icon.svg") no-repeat 0 -96px;
+    }
 }
 
-#git-toolbar-icon.on {
-    background: url("git-icon.svg") no-repeat 0 -24px;
-}
-
-#git-toolbar-icon.ok {
-    background: url("git-icon.svg") no-repeat 0 -48px;
-}
-
-#git-toolbar-icon.warning {
-    background: url("git-icon.svg") no-repeat 0 -72px;
-}
-
-#git-toolbar-icon.error {
-    background: url("git-icon.svg") no-repeat 0 -96px;
-}
-
-.dialogCommonMixin {
+#git-settings-dialog,
+#git-changelog-dialog,
+#git-question-dialog,
+#git-commit-dialog,
+#git-diff-dialog {
     .invalid {
         border-color: @red;
     }
@@ -102,42 +86,74 @@ pre
 }
 
 #git-settings-dialog {
-    .dialogCommonMixin;
+    hr {
+        margin: 18px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #eee;
+    }   
 }
 
 #git-commit-dialog, #git-diff-dialog {
-    .dialogCommonMixin;
     .modal-body {
+        .flex-box(column);
         .commit-diff {
-            .user-select(text);
-            background-color: @almostWhite;
-            border: 1px solid @darkGrey;
-            border-radius: 3px;
-            margin-bottom: 1em;
-            overflow: auto;
-            padding: 7px 10px;
-            pre {
-                border: none;
-                border-radius: 0px;
-                margin: 0px;
-                padding: 0px;
-                white-space: nowrap;
-                &.added {
-                    color: @green;
-                }
-                &.removed {
-                    color: @red;
-                }
-                &.diffCmd {
-                    color: @darkBlue;
-                }
-                &.position {
-                    color: @orange;
-                }
-                .trailingWhitespace {
-                    background-color: @lightRed;
-                }
-            }
+            // shrink up to min-width
+            .flex-item(0, 1);
+            min-height: 1px;
+        }
+    }
+}
+
+#git-commit-dialog {
+    .modal-body {        
+        .lint-errors {
+            padding-bottom: 1em;
+            // no grow, no shrink
+            .flex-item(0, 0);            
+        }        
+        .commit-message-box {
+            // no grow, no shrink
+            .flex-item(0, 0);
+        }
+    }
+}
+
+// nice, formatted and colored diff
+.commit-diff {
+    .user-select(text);
+    code, pre {
+        background: none;
+        border: none;
+        padding: 0 3px 2px;
+        font-family: 'SourceCodePro', monospace;
+    }
+    background-color: @almostWhite;
+    border: 1px solid @darkGrey;
+    border-radius: 3px;
+    margin-bottom: 1em;
+    overflow: auto;
+    padding: 7px 10px;
+    pre {
+        border: none;
+        border-radius: 0px;
+        margin: 0px;
+        padding: 0px;
+        white-space: nowrap;
+        &.added {
+            color: @green;
+        }
+        &.removed {
+            color: @red;
+        }
+        &.diffCmd {
+            color: @darkBlue;
+        }
+        &.position {
+            color: @orange;
+        }
+        .trailingWhitespace {
+            background-color: @lightRed;
         }
     }
 }
@@ -162,4 +178,18 @@ pre
     -ms-user-select: @type;
     -o-user-select: @type;
     user-select: @type;
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+.flex-box(@direction: row) {
+    display: -webkit-flex;
+    -webkit-flex-direction: @direction;
+    display: flex;
+    flex-direction: @direction;
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/CSS/flex
+.flex-item(@grow: 0, @shrink: 1, @basis: auto) {
+    -webkit-flex: @grow @shrink @basis;
+    flex: @grow @shrink @basis;
 }

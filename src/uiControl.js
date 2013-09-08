@@ -8,6 +8,7 @@ define(function (require, exports) {
 
         var q                   = require("../thirdparty/q"),
             AppInit             = brackets.getModule("utils/AppInit"),
+            CodeInspection      = brackets.getModule("language/CodeInspection"),
             CommandManager      = brackets.getModule("command/CommandManager"),
             Commands            = brackets.getModule("command/Commands"),
             DefaultDialogs      = brackets.getModule("widgets/DefaultDialogs"),
@@ -26,7 +27,7 @@ define(function (require, exports) {
             gitPanelResultsTemplate = require("text!htmlContent/git-panel-results.html"),
             gitCommitDialogTemplate = require("text!htmlContent/git-commit-dialog.html"),
             gitDiffDialogTemplate   = require("text!htmlContent/git-diff-dialog.html"),
-            questionDialogTemplate  = require("text!htmlContent/question-dialog.html");
+            questionDialogTemplate  = require("text!htmlContent/git-question-dialog.html");
 
         var extensionName           = "[brackets-git] ",
             $gitStatusBar           = $(null),
@@ -218,6 +219,14 @@ define(function (require, exports) {
             });
         }
         
+        function markCurrentFileInPanel() {
+            gitPanel.$panel.find("tr").each(function () {
+                var currentFullPath = DocumentManager.getCurrentDocument().file.fullPath,
+                    thisFile = $(this).data("file");
+                $(this).toggleClass("selected", currentProjectRoot + thisFile === currentFullPath);
+            });
+        }
+        
         function refreshGitPanel() {
             if (!gitPanel.isVisible()) {
                 // no point, will be refreshed when it's displayed
@@ -240,6 +249,7 @@ define(function (require, exports) {
                     });
                     $tableContainer.append(Mustache.render(gitPanelResultsTemplate, { files: files, Strings: Strings }));
                     $checkAll.prop("checked", false);
+                    markCurrentFileInPanel();
                 }
 
                 $tableContainer.off()
@@ -325,15 +335,22 @@ define(function (require, exports) {
             }).fail(logError);
         }
 
-        function _showCommitDialog(stagedDiff) {
+        function _showCommitDialog(stagedDiff, lintResults) {
+            lintResults.forEach(function (obj) {
+                obj.errorCount = obj.result.errors.length;
+            });
+            
             // Open the dialog
-            var compiledTemplate = Mustache.render(gitCommitDialogTemplate, { Strings: Strings }),
+            var compiledTemplate = Mustache.render(gitCommitDialogTemplate, {
+                    Strings: Strings,
+                    hasLintProblems: lintResults.length > 0,
+                    lintResults: lintResults
+                }),
                 dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
                 $dialog          = dialog.getElement();
 
             // We need bigger commit dialog
             var dimensions = _makeDialogBig($dialog);
-            $dialog.find(".commit-diff").css("max-height", dimensions.height - 70);
 
             // Show nicely colored commit diff
             $dialog.find(".commit-diff").append(_formatDiff(stagedDiff));
@@ -365,6 +382,25 @@ define(function (require, exports) {
                 }
             });
         }
+        
+        function lintFile(filename) {
+            var rv = q.defer(),
+                fileEntry = new NativeFileSystem.FileEntry(currentProjectRoot + filename),
+                codeInspector = CodeInspection.getProviderForFile(fileEntry);
+            if (codeInspector) {
+                var fileTextPromise = FileUtils.readAsText(fileEntry);
+                fileTextPromise.done(function (fileText) {
+                    rv.resolve(codeInspector.scanFile(fileText, fileEntry.fullPath));
+                });
+                fileTextPromise.fail(function (error) {
+                    logError("Error reading contents of " + fileEntry.fullPath + " (" + error + ")");
+                    rv.reject();
+                });
+            } else {
+                rv.resolve(null);
+            }
+            return rv.promise;
+        }
 
         function handleGitCommit() {
             // Get checked files
@@ -382,18 +418,28 @@ define(function (require, exports) {
 
             // First reset staged files, then add selected files to the index.
             gitControl.gitReset().then(function () {
-                var promises = [];
+                var lintResults = [],
+                    promises = [];
                 files.forEach(function (fileObj) {
                     var updateIndex = false;
                     if (fileObj.status.indexOf("DELETED") !== -1) {
                         updateIndex = true;
                     }
                     promises.push(gitControl.gitAdd(fileObj.filename, updateIndex));
+                    // do a code inspection for the file
+                    promises.push(lintFile(fileObj.filename).then(function(result) {
+                        if (result) {
+                            lintResults.push({
+                                filename: fileObj.filename,
+                                result: result
+                            });
+                        }
+                    }));
                 });
                 return q.all(promises).then(function () {
                     // All files are in the index now, get the diff and show dialog.
                     gitControl.gitDiffStaged().then(function (diff) {
-                        _showCommitDialog(diff);
+                        _showCommitDialog(diff, lintResults);
                     });
                 });
             }).fail(logError);
@@ -467,6 +513,9 @@ define(function (require, exports) {
             });
             $(DocumentManager).on("documentSaved", function () {
                 refreshGitPanel();
+            });
+            $(DocumentManager).on("currentDocumentChange", function () {
+                markCurrentFileInPanel();
             });
         }
 

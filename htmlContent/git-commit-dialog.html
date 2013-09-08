@@ -3,8 +3,22 @@
         <h1 class="dialog-title">{{Strings.GIT_COMMIT}}</h1>
     </div>
     <div class="modal-body no-padding table-striped tab-content">
+        {{#hasLintProblems}}
+        <div class="lint-errors">
+            <b>Code inspection problems:</b>
+            <ul>
+                {{#lintResults}}
+                <li>
+                    {{filename}}: {{errorCount}}
+                </li>
+                {{/lintResults}}
+            </ul>
+        </div>
+        {{/hasLintProblems}}
         <div class="commit-diff"></div>
-        <input name="commit-message" type="text" placeholder="{{Strings.COMMIT_MESSAGE_PLACEHOLDER}}" />
+        <div class="commit-message-box">
+            <input name="commit-message" type="text" placeholder="{{Strings.COMMIT_MESSAGE_PLACEHOLDER}}" />
+        </div>
     </div>
     <div class="modal-footer">
         <button data-button-id="ok"     class="dialog-button btn primary left"  >{{Strings.BUTTON_OK}}</button>

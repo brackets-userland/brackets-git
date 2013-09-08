@@ -9,7 +9,7 @@ define(function (require, exports) {
         DefaultPreferences         = require("../DefaultPreferences"),
         ChangelogDialog            = require("../src/ChangelogDialog"),
         Strings                    = require("../strings"),
-        settingsDialogTemplate     = require("text!htmlContent/settings-dialog.html");
+        settingsDialogTemplate     = require("text!htmlContent/git-settings-dialog.html");
 
     var dialog,
         preferences;
@@ -48,7 +48,7 @@ define(function (require, exports) {
     }
 
     function showRestartDialog() {
-        var questionDialogTemplate = require("text!htmlContent/question-dialog.html");
+        var questionDialogTemplate = require("text!htmlContent/git-question-dialog.html");
         var compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: Strings.RESTART,
             question: Strings.Q_RESTART_BRACKETS,
