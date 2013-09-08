@@ -309,23 +309,23 @@ define(function (require, exports) {
 
         // Displays branch name next to the current working folder name
         function refreshGitBranchName() {
-            $gitBranchName.text("[ \u2026 ]").show();
+            $gitBranchName.text("\u2026").show();
             gitControl.getRepositoryRoot().then(function (root) {
                 if (root === currentProjectRoot) {
                     gitControl.getBranchName().then(function (branchName) {
-                        $gitBranchName.text("[ " + branchName + " ]");
+                        $gitBranchName.text(branchName);
                         enableGitPanel();
                     }).fail(logError);
                 } else {
-                    $gitBranchName.text("[ not a git root ]");
+                    $gitBranchName.text("not a git root");
                     // TODO: meaningful text
-                    disableGitPanel("[ not a git root ]");
+                    disableGitPanel("not a git root");
                 }
             }).fail(function () {
                 // Current working folder is not a git repository
-                $gitBranchName.text("[ not a git repo ]");
+                $gitBranchName.text("not a git repo");
                 // TODO: meaningful text
-                disableGitPanel("[ not a git repo ]");
+                disableGitPanel("not a git repo");
             });
         }
 
@@ -458,7 +458,13 @@ define(function (require, exports) {
         // This only launches when Git is available
         function initUi() {
             // Add branch name to project tree
-            $gitBranchName = $("<div id='git-branch'></div>").appendTo("#project-files-header");
+            $gitBranchName = $("<span id='git-branch'></span>");
+            $("<div id='git-branch-dropdown-toggle'></div>")
+                .append("[ ")
+                .append($gitBranchName)
+                //.append("<span class='dropdown-arrow'></span>") // TODO: add branches switching
+                .append(" ]")
+                .appendTo("#project-files-header");
 
             // Add panel
             var panelHtml = Mustache.render(gitPanelTemplate, Strings);
