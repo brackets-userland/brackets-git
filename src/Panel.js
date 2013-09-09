@@ -109,7 +109,11 @@ define(function (require, exports) {
     
     function _showCommitDialog(stagedDiff, lintResults) {
         lintResults.forEach(function (obj) {
-            obj.errorCount = obj.result.errors.length;
+            obj.hasErrors = obj.result.errors.length > 0;
+            obj.errors = obj.result.errors.map(function (e) {
+                // TODO: handle e.type
+                return (e.pos.line + 1) + ": " + e.message;
+            });
         });
         
         // Open the dialog

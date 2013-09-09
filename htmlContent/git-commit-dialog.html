@@ -9,7 +9,14 @@
             <ul>
                 {{#lintResults}}
                 <li>
-                    {{filename}}: {{errorCount}}
+                    {{filename}}
+                    {{#hasErrors}}
+                    <ul>
+                        {{#errors}}
+                        <li>{{.}}</li>
+                        {{/errors}}
+                    </ul>
+                    {{/hasErrors}}
                 </li>
                 {{/lintResults}}
             </ul>

@@ -101,7 +101,7 @@
         .commit-diff {
             // shrink up to min-width
             .flex-item(0, 1);
-            min-height: 1px;
+            min-height: 100px;
         }
     }
 }
@@ -109,12 +109,17 @@
 #git-commit-dialog {
     .modal-body {        
         .lint-errors {
-            padding-bottom: 1em;
+            background-color: @almostWhite;
+            border: 1px solid @darkGrey;
+            border-radius: 3px;
+            margin-bottom: 1em;            
+            // no grow, no shrink
+            .flex-item(0, 0); 
+            max-height: 150px;
+            overflow: auto;            
             b {
                 color: @red;   
             }
-            // no grow, no shrink
-            .flex-item(0, 0);            
         }        
         .commit-message-box {
             // no grow, no shrink
