@@ -12,7 +12,8 @@ define(function (require, exports, module) {
     "use strict";
 
     // Get module dependencies.
-    var AppInit                    = brackets.getModule("utils/AppInit"),
+    var q                          = require("./thirdparty/q"),
+        AppInit                    = brackets.getModule("utils/AppInit"),
         CommandManager             = brackets.getModule("command/CommandManager"),
         Commands                   = brackets.getModule("command/Commands"),
         ExtensionUtils             = brackets.getModule("utils/ExtensionUtils"),
@@ -22,15 +23,18 @@ define(function (require, exports, module) {
         NodeConnection             = brackets.getModule("utils/NodeConnection"),
         PreferencesManager         = brackets.getModule("preferences/PreferencesManager"),
         DefaultPreferences         = require("DefaultPreferences"),
-        UiControl                  = require("src/uiControl"),
+        ExtensionMain              = require("src/Main"),
         Strings                    = require("strings"),
         ChangelogDialog            = require("src/ChangelogDialog"),
         SettingsDialog             = require("src/SettingsDialog"),
         SETTINGS_COMMAND_ID        = "brackets-git.settings",
         moduleDirectory            = ExtensionUtils.getModulePath(module),
-        domainModulePath           = moduleDirectory + "src/domain",
+        domainModulePath           = moduleDirectory + "domain",
         nodeConnection             = new NodeConnection();
 
+    // Seems just too buggy right now
+    q.stopUnhandledRejectionTracking();
+    
     // Load CSS
     ExtensionUtils.loadStyleSheet(module, "less/brackets-git.less");
 
@@ -73,7 +77,7 @@ define(function (require, exports, module) {
                 console.error(err);
             });
         }).then(function () {
-            UiControl.init(nodeConnection, preferences);
+            ExtensionMain.init(nodeConnection, preferences);
         }).done();
     });
 

@@ -23,6 +23,7 @@ define({
     FILE_NEWFILE:                       "New file",
     FILE_STAGED:                        "Staged",
     FILE_UNTRACKED:                     "Untracked",
+    FILE_RENAMED:                       "Renamed",
     FOR_WINDOWS_USERS:                  "For Windows users",
     GIT_COMMIT:                         "Git commit\u2026",
     GIT_DIFF:                           "Git diff &mdash;",

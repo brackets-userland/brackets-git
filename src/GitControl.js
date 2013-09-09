@@ -11,6 +11,7 @@ define(function (require, exports, module) {
         NEWFILE: "FILE_NEWFILE",
         MODIFIED: "FILE_MODIFIED",
         DELETED: "FILE_DELETED",
+        RENAMED: "FILE_RENAMED",
         UNTRACKED: "FILE_UNTRACKED"
     };
 
@@ -135,11 +136,17 @@ define(function (require, exports, module) {
                     case "A":
                         status.push(FILE_STATUS.STAGED, FILE_STATUS.NEWFILE);
                         break;
+                    case "D":
+                        status.push(FILE_STATUS.STAGED, FILE_STATUS.DELETED);
+                        break;
                     case "M":
                         status.push(FILE_STATUS.STAGED, FILE_STATUS.MODIFIED);
                         break;
+                    case "R":
+                        status.push(FILE_STATUS.STAGED, FILE_STATUS.RENAMED);
+                        break;
                     default:
-                        throw new Error("Unexpected status: " + status);
+                        throw new Error("Unexpected status: " + statusStaged);
                     }
 
                     switch (statusUnstaged) {
@@ -148,14 +155,14 @@ define(function (require, exports, module) {
                     case "?":
                         status.push(FILE_STATUS.UNTRACKED);
                         break;
-                    case "M":
-                        status.push(FILE_STATUS.MODIFIED);
-                        break;
                     case "D":
                         status.push(FILE_STATUS.DELETED);
                         break;
+                    case "M":
+                        status.push(FILE_STATUS.MODIFIED);
+                        break;
                     default:
-                        throw new Error("Unexpected status: " + status);
+                        throw new Error("Unexpected status: " + statusStaged);
                     }
 
                     results.push({

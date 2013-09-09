@@ -7,7 +7,7 @@
             <td>{{file}}</td>
             <td>
                 <div class="btn-group">
-                    <button class="btn btn-mini btn-git-diff">{{Strings.DIFF}}</button>
+                    {{#allowDiff}}   <button class="btn btn-mini btn-git-diff">{{Strings.DIFF}}</button>          {{/allowDiff}}
                     {{#allowUndo}}   <button class="btn btn-mini btn-git-undo">{{Strings.UNDO_CHANGES}}</button>  {{/allowUndo}}
                     {{#allowDelete}} <button class="btn btn-mini btn-git-delete">{{Strings.DELETE_FILE}}</button> {{/allowDelete}}
                 </div>
