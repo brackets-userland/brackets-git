@@ -206,29 +206,26 @@ define(function (require, exports) {
     /**
      *  strips trailing whitespace from all the diffs and adds \n to the end
      */
-    function stripWhitespaceFromFile(filename) {
+    function stripWhitespaceFromFile(filename, clearWholeFile) {
         var rv = q.defer(),
             fullPath = Main.getProjectRoot() + filename;
 
-        Main.gitControl.gitDiff(filename).then(function (diff) {
-            var modified = [],
-                changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
-            // collect line numbers to clean
-            changesets.forEach(function (line) {
-                var i,
-                    m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/),
-                    s = m[2].split(","),
-                    from = parseInt(s[0], 10),
-                    to = from - 1 + (parseInt(s[1], 10) || 1);
-                for (i = from; i <= to; i++) { modified.push(i - 1); }
-            });
+        var _cleanLines = function (lineNumbers) {
             // clean the file
             var fileEntry = new NativeFileSystem.FileEntry(fullPath);
             return FileUtils.readAsText(fileEntry).then(function (text) {
                 var lines = text.split("\n");
-                modified.forEach(function (lineNumber) {
-                    lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
-                });
+
+                if (lineNumbers) {
+                    lineNumbers.forEach(function (lineNumber) {
+                        lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                    });
+                } else {
+                    lines.forEach(function (ln, lineNumber) {
+                        lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                    });
+                }
+
                 // add empty line to the end, i've heard that git likes that for some reason
                 var lastLineNumber = lines.length - 1;
                 if (lines[lastLineNumber].length > 0) {
@@ -250,10 +247,29 @@ define(function (require, exports) {
                     rv.resolve();
                 });
             });
-        }).fail(function (ex) {
-            Main.logError(ex);
-            rv.reject(ex);
-        });
+        };
+
+        if (clearWholeFile) {
+            _cleanLines(null);
+        } else {
+            Main.gitControl.gitDiff(filename).then(function (diff) {
+                var modified = [],
+                    changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
+                // collect line numbers to clean
+                changesets.forEach(function (line) {
+                    var i,
+                        m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/),
+                        s = m[2].split(","),
+                        from = parseInt(s[0], 10),
+                        to = from - 1 + (parseInt(s[1], 10) || 1);
+                    for (i = from; i <= to; i++) { modified.push(i - 1); }
+                });
+                _cleanLines(modified);
+            }).fail(function (ex) {
+                Main.logError(ex);
+                rv.reject(ex);
+            });
+        }
 
         return rv.promise;
     }
@@ -288,7 +304,8 @@ define(function (require, exports) {
                 // strip whitespace if configured to do so and file was not deleted
                 if (stripWhitespace && updateIndex === false) {
                     queue = queue.then(function () {
-                        return stripWhitespaceFromFile(fileObj.filename);
+                        var clearWholeFile = fileObj.status.indexOf(GitControl.FILE_STATUS.UNTRACKED) !== -1;
+                        return stripWhitespaceFromFile(fileObj.filename, clearWholeFile);
                     });
                 }
 
