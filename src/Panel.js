@@ -332,7 +332,9 @@ define(function (require, exports) {
             return q.all(promises).then(function () {
                 // All files are in the index now, get the diff and show dialog.
                 Main.gitControl.gitDiffStaged().then(function (diff) {
-                    _showCommitDialog(diff, lintResults);
+                    if (diff) {
+                        _showCommitDialog(diff, lintResults);
+                    }
                 });
             });
         }).fail(Main.logError);
