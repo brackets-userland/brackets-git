@@ -259,8 +259,7 @@ define(function (require, exports) {
     }
 
     function handleGitCommit() {
-        // TODO: get from settings
-        var stripWhitespace = true;
+        var stripWhitespace = Main.preferences.getValue("stripWhitespaceFromCommits");
         // Get checked files
         var $checked = gitPanel.$panel.find(".check-one:checked");
         // TODO: probably some user friendly message that no files are checked for commit.

@@ -3,6 +3,14 @@
         <h1 class="dialog-title">{{GIT_SETTINGS}}</h1>
     </div>
     <div class="modal-body no-padding table-striped tab-content">
+        <h4>{{FEATURE_SETTINGS}}</h4>
+        <label for="git-settings-stripWhitespaceFromCommits">
+            <input id="git-settings-stripWhitespaceFromCommits" type="checkbox" />
+            {{STRIP_WHITESPACE_FROM_COMMITS}}
+        </label>
+        <br/>
+        <hr/>
+        <h4>{{GIT_SETTINGS}}</h4>
         <label for="git-settings-gitIsInSystemPath">
             <input id="git-settings-gitIsInSystemPath" type="checkbox" />
             {{GIT_IS_IN_PATH}}

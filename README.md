@@ -16,13 +16,8 @@ Extension can be configured in "File > Git Settings..." (this window will show t
 
 ## Features
 
-- Displays current Git version in status bar (will be an red error when something is wrong).
-- Displays current branch name in the file tree if working folder is a git repository.
-- Displays panel with information about modified and uncommited files (can be toggled with icon on the right side of Brackets).
-- Commit files selected in the panel, displays diff of what you are actually going to commit.
-- Handy shortcut to bash console for windows-msysgit users.
-
-More features will come later, feel free to __open issues with your ideas__.
+Try out and see, too many to keep this up-to-date. You can see the ```CHANGELOG.md``` for more info on this.
+If you won't find the feature you were looking for, feel free to __open issues with your ideas__.
 
 ## Pull requests
 

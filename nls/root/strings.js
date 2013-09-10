@@ -18,6 +18,7 @@ define({
     DELETE_FILE:                        "Delete file",
     DIFF:                               "Diff",
     EXTENSION_WAS_UPDATED:              "extension was updated to",
+    FEATURE_SETTINGS:                   "Feature settings",
     FILE_DELETED:                       "Deleted",
     FILE_MODIFIED:                      "Modified",
     FILE_NEWFILE:                       "New file",
@@ -39,6 +40,7 @@ define({
     Q_UNDO_CHANGES:                     "Reset changes to file ",
     Q_UNDO_CHANGES_POST:                " ?",
     RESTART:                            "Restart",
+    STRIP_WHITESPACE_FROM_COMMITS:      "Strip trailing whitespace from commits",
     UNDO_CHANGES:                       "Undo changes",
     USING_GIT_VERSION:                  "Git version"
 });

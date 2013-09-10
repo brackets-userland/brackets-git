@@ -5,12 +5,13 @@ define(function (require, exports, module) {
     
     // Default preferences are different for platforms
     var defaultPreferences = {
-        "lastVersion":        null,
-        "panelEnabled":       true,
+        "lastVersion":                      null,
+        "panelEnabled":                     true,
+        "stripWhitespaceFromCommits":       true,
         // these are set by platform
-        "gitIsInSystemPath":  null,
-        "gitPath":            null,
-        "msysgitPath":        null
+        "gitIsInSystemPath":                null,
+        "gitPath":                          null,
+        "msysgitPath":                      null
     };
     if (brackets.platform === "win") {
         defaultPreferences.gitIsInSystemPath = false;

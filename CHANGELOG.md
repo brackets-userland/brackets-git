@@ -3,6 +3,7 @@
 ## 0.6.0
 * Using new CodeInspection API from Brackets to check files for errors before commiting.
 * Current document is now selected in the git panel for easier navigation.
+* Added feature (see Git Settings) to cleanup whitespace when commiting.
 
 ## 0.5.3
 * Fixed issue [#5](https://github.com/zaggino/brackets-git/issues/5)

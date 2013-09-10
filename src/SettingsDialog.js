@@ -15,6 +15,7 @@ define(function (require, exports) {
         preferences;
 
     function setValues(values) {
+        $("#git-settings-stripWhitespaceFromCommits").prop("checked", values.stripWhitespaceFromCommits);
         $("#git-settings-gitIsInSystemPath").prop("checked", values.gitIsInSystemPath);
         $("#git-settings-gitPath")
             .val(values.gitPath)
@@ -72,6 +73,7 @@ define(function (require, exports) {
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
                 var $dialog = dialog.getElement();
+                preferences.setValue("stripWhitespaceFromCommits", $("#git-settings-stripWhitespaceFromCommits", $dialog).prop("checked"));
                 preferences.setValue("gitIsInSystemPath", $("#git-settings-gitIsInSystemPath", $dialog).prop("checked"));
                 preferences.setValue("gitPath", $("#git-settings-gitPath", $dialog).val());
                 // We need trailing slash for folders.
