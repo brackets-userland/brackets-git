@@ -203,7 +203,64 @@ define(function (require, exports) {
         });
     }
     
+    /**
+     *  strips trailing whitespace from all the diffs and adds \n to the end
+     */
+    function stripWhitespaceFromFile(filename) {
+        var rv = q.defer(),
+            fullPath = Main.getProjectRoot() + filename;
+
+        Main.gitControl.gitDiff(filename).then(function (diff) {
+            var modified = [],
+                changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
+            // collect line numbers to clean
+            changesets.forEach(function (line) {
+                var i,
+                    m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/),
+                    s = m[2].split(","),
+                    from = parseInt(s[0], 10),
+                    to = from - 1 + (parseInt(s[1], 10) || 1);
+                for (i = from; i <= to; i++) { modified.push(i - 1); }
+            });
+            // clean the file
+            var fileEntry = new NativeFileSystem.FileEntry(fullPath);
+            return FileUtils.readAsText(fileEntry).then(function (text) {
+                var lines = text.split("\n");
+                modified.forEach(function (lineNumber) {
+                    lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                });
+                // add empty line to the end, i've heard that git likes that for some reason
+                var lastLineNumber = lines.length - 1;
+                if (lines[lastLineNumber].length > 0) {
+                    lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
+                }
+                if (lines[lastLineNumber].length > 0) {
+                    lines.push("");
+                }
+                //-
+                text = lines.join("\n");
+                return FileUtils.writeText(fileEntry, text).then(function () {
+                    // refresh the file if it's open in the background
+                    DocumentManager.getAllOpenDocuments().forEach(function (doc) {
+                        if (doc.file.fullPath === fullPath) {
+                            _reloadDoc(doc);
+                        }
+                    });
+                    // diffs were cleaned in this file
+                    rv.resolve();
+                });
+            });
+        }).fail(function (ex) {
+            Main.logError(ex);
+            rv.reject(ex);
+        });
+
+        return rv.promise;
+    }
+
     function handleGitCommit() {
+        // TODO: get from settings
+        var stripWhitespace = true;
         // Get checked files
         var $checked = gitPanel.$panel.find(".check-one:checked");
         // TODO: probably some user friendly message that no files are checked for commit.
@@ -222,22 +279,39 @@ define(function (require, exports) {
             var lintResults = [],
                 promises = [];
             files.forEach(function (fileObj) {
+                var queue = q();
+
                 var updateIndex = false;
                 if (fileObj.status.indexOf(GitControl.FILE_STATUS.DELETED) !== -1) {
                     updateIndex = true;
                 }
-                promises.push(Main.gitControl.gitAdd(fileObj.filename, updateIndex));
-                // do a code inspection for the file, if it was not deleted
-                if (fileObj.status.indexOf(GitControl.FILE_STATUS.DELETED) === -1) {
-                    promises.push(lintFile(fileObj.filename).then(function (result) {
-                        if (result) {
-                            lintResults.push({
-                                filename: fileObj.filename,
-                                result: result
-                            });
-                        }
-                    }));
+
+                // strip whitespace if configured to do so and file was not deleted
+                if (stripWhitespace && updateIndex === false) {
+                    queue = queue.then(function () {
+                        return stripWhitespaceFromFile(fileObj.filename);
+                    });
                 }
+
+                queue = queue.then(function () {
+                    return Main.gitControl.gitAdd(fileObj.filename, updateIndex);
+                });
+
+                // do a code inspection for the file, if it was not deleted
+                if (updateIndex === false) {
+                    queue = queue.then(function () {
+                        return lintFile(fileObj.filename).then(function (result) {
+                            if (result) {
+                                lintResults.push({
+                                    filename: fileObj.filename,
+                                    result: result
+                                });
+                            }
+                        });
+                    });
+                }
+
+                promises.push(queue);
             });
             return q.all(promises).then(function () {
                 // All files are in the index now, get the diff and show dialog.
