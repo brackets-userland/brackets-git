@@ -196,7 +196,8 @@ define(function (require, exports, module) {
         },
 
         gitCommit: function (message) {
-            return this.executeCommand(this._git + " commit -m \"" + message.replace(/\"/g, "\\\"") + "\"");
+            message = message.trim().replace(/"/g, "\\\"") + " ";
+            return this.executeCommand(this._git + " commit -m \"" + message + "\"");
         },
 
         gitReset: function () {
