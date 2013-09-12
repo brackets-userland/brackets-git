@@ -28,7 +28,7 @@
 #git-panel
 {
     tr.selected {
-        font-weight: bold;   
+        font-weight: bold;
     }
     td.checkbox-column {
         text-align: center;
@@ -36,16 +36,16 @@
     }
     td.status-column {
         width: 100px;
-    }    
+    }
     .check-all {
-        margin-left: 6px;
-        margin-right: 18px;
+        margin-left: 1px;
+        margin-right: 10px;
     }
     button {
         margin-right: 10px;
-    }    
+    }
     .btn-mini {
-        padding: 1px 5px;
+        padding: 2px 5px;
         font-size: 12px;
         line-height: 1em;
         border-radius: 3px;
@@ -58,7 +58,7 @@
 #git-toolbar-icon {
     background: url("git-icon.svg") no-repeat 0 0;
     &.on {
-        background: url("git-icon.svg") no-repeat 0 -24px;   
+        background: url("git-icon.svg") no-repeat 0 -24px;
     }
     &.ok {
         background: url("git-icon.svg") no-repeat 0 -48px;
@@ -92,7 +92,7 @@
         border: 0;
         border-top: 1px solid #ccc;
         border-bottom: 1px solid #eee;
-    }   
+    }
 }
 
 #git-commit-dialog, #git-diff-dialog {
@@ -107,20 +107,20 @@
 }
 
 #git-commit-dialog {
-    .modal-body {        
+    .modal-body {
         .lint-errors {
             background-color: @almostWhite;
             border: 1px solid @darkGrey;
             border-radius: 3px;
-            margin-bottom: 1em;            
+            margin-bottom: 1em;
             // no grow, no shrink
-            .flex-item(0, 0); 
+            .flex-item(0, 0);
             max-height: 150px;
-            overflow: auto;            
+            overflow: auto;
             b {
-                color: @red;   
+                color: @red;
             }
-        }        
+        }
         .commit-message-box {
             // no grow, no shrink
             .flex-item(0, 0);
