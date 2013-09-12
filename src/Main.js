@@ -13,7 +13,8 @@ define(function (require, exports) {
         Panel           = require("./Panel"),
         Branch          = require("./Branch");
     
-    var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").appendTo($("#main-toolbar .buttons")),
+    var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
+                                    .addClass("loading").appendTo($("#main-toolbar .buttons")),
         gitControl              = null,
         preferences             = null,
         // shows detected git version in the status bar
@@ -131,6 +132,7 @@ define(function (require, exports) {
         });
         // Initialize items dependent on HTML DOM
         AppInit.htmlReady(function () {
+            $icon.removeClass("loading").removeAttr("title");
             $gitStatusBar  = $("<div id='git-status'></div>").appendTo($("#status-indicators"));
             $busyIndicator = $("<div class='spinner'></div>").appendTo($gitStatusBar);
             initGitStatusBar().then(function () {

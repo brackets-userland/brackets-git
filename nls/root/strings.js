@@ -31,6 +31,7 @@ define({
     GIT_IS_IN_PATH:                     "Git can be called from anywhere (is in system path, might not work on Mac)",
     GIT_PUSH_RESPONSE:                  "Git Push response",
     GIT_SETTINGS:                       "Git Settings\u2026",
+    LOADING:                            "Loading\u2026",
     NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
     PATH_TO_GIT_EXECUTABLE:             "Path to Git executable",
     PATH_TO_GIT_MSYSGIT:                "Path to msysgit folder",
