@@ -49,6 +49,8 @@ define(function (require, exports) {
     }
     
     function lintFile(filename) {
+        return CodeInspection.inspectFile(new NativeFileSystem.FileEntry(Main.getProjectRoot() + filename));
+        /*
         var rv = q.defer(),
             fileEntry = new NativeFileSystem.FileEntry(Main.getProjectRoot() + filename),
             codeInspector = CodeInspection.getProviderForFile(fileEntry);
@@ -65,6 +67,7 @@ define(function (require, exports) {
             rv.resolve(null);
         }
         return rv.promise;
+        */
     }
     
     function _makeDialogBig($dialog) {
