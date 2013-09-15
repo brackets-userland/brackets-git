@@ -5,7 +5,6 @@ define(function (require, exports) {
     "use strict";
     
     var q                  = require("../thirdparty/q"),
-        CodeInspection     = brackets.getModule("language/CodeInspection"),
         CommandManager     = brackets.getModule("command/CommandManager"),
         Commands           = brackets.getModule("command/Commands"),
         DefaultDialogs     = brackets.getModule("widgets/DefaultDialogs"),
@@ -21,7 +20,19 @@ define(function (require, exports) {
         Strings            = require("../strings"),
         Utils              = require("./Utils");
     
-    var gitPanelTemplate = require("text!htmlContent/git-panel.html"),
+    //+ Temp
+    var CodeInspection;
+    try {
+        CodeInspection = brackets.getModule("language/CodeInspection");
+    } catch (e) { }
+    if (!CodeInspection || !CodeInspection.inspectFile) {
+        CodeInspection = {
+            inspectFile: function () { var d = $.Deferred(); d.resolve(null); return d.promise(); }
+        };
+    }
+    //- Temp
+
+    var gitPanelTemplate        = require("text!htmlContent/git-panel.html"),
         gitPanelResultsTemplate = require("text!htmlContent/git-panel-results.html"),
         gitCommitDialogTemplate = require("text!htmlContent/git-commit-dialog.html"),
         gitDiffDialogTemplate   = require("text!htmlContent/git-diff-dialog.html"),
@@ -50,7 +61,7 @@ define(function (require, exports) {
     
     function lintFile(filename) {
         return CodeInspection.inspectFile(new NativeFileSystem.FileEntry(Main.getProjectRoot() + filename));
-        /*
+        /* TODO: remove commented code
         var rv = q.defer(),
             fileEntry = new NativeFileSystem.FileEntry(Main.getProjectRoot() + filename),
             codeInspector = CodeInspection.getProviderForFile(fileEntry);
