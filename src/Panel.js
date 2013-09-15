@@ -385,7 +385,8 @@ define(function (require, exports) {
                         return Strings[status];
                     }).join(", ");
                     file.allowDiff = file.status.indexOf(GitControl.FILE_STATUS.UNTRACKED) === -1 &&
-                                     file.status.indexOf(GitControl.FILE_STATUS.RENAMED) === -1;
+                                     file.status.indexOf(GitControl.FILE_STATUS.RENAMED) === -1 &&
+                                     file.status.indexOf(GitControl.FILE_STATUS.DELETED) === -1;
                     file.allowDelete = file.status.indexOf(GitControl.FILE_STATUS.UNTRACKED) !== -1;
                     file.allowUndo = !file.allowDelete;
                 });
