@@ -4,6 +4,7 @@
 * Using new CodeInspection API from Brackets to check files for errors before commiting. (Sprint >= 31)
 * Current document is now selected in the git panel for easier navigation.
 * Added feature (see Git Settings) to cleanup whitespace when commiting.
+* Added hover titles to the Git icon when there's a problem.
 
 ## 0.5.3
 * Fixed issue [#5](https://github.com/zaggino/brackets-git/issues/5)
@@ -54,7 +55,7 @@
 * Fixed styling in commit dialog.
 
 ## 0.2.0
-* Added shortcut to bash console for msysgit users. 
+* Added shortcut to bash console for msysgit users.
 * Added configuration file that is created on the first extension run (thx for idea to [@karuturi](https://github.com/karuturi))
 
 ## 0.1.0
