@@ -22,11 +22,11 @@ define(function (require, exports, module) {
         Menus                      = brackets.getModule("command/Menus"),
         NodeConnection             = brackets.getModule("utils/NodeConnection"),
         PreferencesManager         = brackets.getModule("preferences/PreferencesManager"),
-        DefaultPreferences         = require("DefaultPreferences"),
-        ExtensionMain              = require("src/Main"),
-        Strings                    = require("strings"),
-        ChangelogDialog            = require("src/ChangelogDialog"),
-        SettingsDialog             = require("src/SettingsDialog"),
+        DefaultPreferences         = require("./DefaultPreferences"),
+        ExtensionMain              = require("./src/Main"),
+        Strings                    = require("./strings"),
+        ChangelogDialog            = require("./src/ChangelogDialog"),
+        SettingsDialog             = require("./src/SettingsDialog"),
         SETTINGS_COMMAND_ID        = "brackets-git.settings",
         moduleDirectory            = ExtensionUtils.getModulePath(module),
         domainModulePath           = moduleDirectory + "domain",
@@ -34,7 +34,7 @@ define(function (require, exports, module) {
 
     // Seems just too buggy right now
     q.stopUnhandledRejectionTracking();
-    
+
     // Load CSS
     ExtensionUtils.loadStyleSheet(module, "less/brackets-git.less");
 
