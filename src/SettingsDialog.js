@@ -46,6 +46,10 @@ define(function (require, exports) {
     function init() {
         setValues(preferences.getAllValues());
         assignActions();
+
+        if (brackets.platform !== "win") {
+            $(".windows_only").hide();
+        }
     }
 
     function showRestartDialog() {
