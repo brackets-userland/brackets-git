@@ -3,7 +3,7 @@
 
     "title": "Brackets Git",
     "description": "Integration of Git into Brackets UI",
-    "keywords": ["git", "brackets", "extension"],
+    "keywords": ["git"],
     "categories": ["general", "external"],
     "version": "0.6.0",
 
