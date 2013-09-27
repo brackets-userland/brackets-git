@@ -12,6 +12,7 @@ define(function (require, exports) {
         DocumentManager    = brackets.getModule("document/DocumentManager"),
         FileUtils          = brackets.getModule("file/FileUtils"),
         FileViewController = brackets.getModule("project/FileViewController"),
+        LanguageManager    = brackets.getModule("language/LanguageManager"),
         NativeFileSystem   = brackets.getModule("file/NativeFileSystem").NativeFileSystem,
         PanelManager       = brackets.getModule("view/PanelManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
@@ -317,10 +318,13 @@ define(function (require, exports) {
 
                 // strip whitespace if configured to do so and file was not deleted
                 if (stripWhitespace && updateIndex === false) {
-                    queue = queue.then(function () {
-                        var clearWholeFile = fileObj.status.indexOf(GitControl.FILE_STATUS.UNTRACKED) !== -1;
-                        return stripWhitespaceFromFile(fileObj.filename, clearWholeFile);
-                    });
+                    // strip whitespace only for recognized languages so binary files won't get corrupted
+                    if (LanguageManager.getLanguageForPath(fileObj.filename).getId() !== "unknown") {
+                        queue = queue.then(function () {
+                            var clearWholeFile = fileObj.status.indexOf(GitControl.FILE_STATUS.UNTRACKED) !== -1;
+                            return stripWhitespaceFromFile(fileObj.filename, clearWholeFile);
+                        });
+                    }
                 }
 
                 queue = queue.then(function () {

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+* Fix bug where whitespace cleanup function corrupts binary files.
+* Code checking features delayed for Sprint 32 ([adobe/brackets#5125](https://github.com/adobe/brackets/pull/5125))
+
 ## 0.6.0
 * Using new CodeInspection API from Brackets to check files for errors before commiting. (Sprint >= 31)
 * Current document is now selected in the git panel for easier navigation.
