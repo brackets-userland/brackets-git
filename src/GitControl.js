@@ -205,15 +205,15 @@ define(function (require, exports, module) {
         },
 
         gitDiff: function (file) {
-            return this.executeCommand(this._git + " diff -U0 \"" + file + "\"");
+            return this.executeCommand(this._git + " diff --no-color -U0 \"" + file + "\"");
         },
 
         gitDiffSingle: function (file) {
-            return this.executeCommand(this._git + " diff \"" + file + "\"");
+            return this.executeCommand(this._git + " diff --no-color \"" + file + "\"");
         },
 
         gitDiffStaged: function () {
-            return this.executeCommand(this._git + " diff --staged");
+            return this.executeCommand(this._git + " diff --no-color --staged");
         },
 
         gitPush: function () {

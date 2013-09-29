@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.2
+* Fix diff output to use --no-color do avoid having color codes in output on some machines.
+
 ## 0.6.1
 * Fix bug where whitespace cleanup function corrupts binary files.
 * Code checking features delayed for Sprint 32 ([adobe/brackets#5125](https://github.com/adobe/brackets/pull/5125))
