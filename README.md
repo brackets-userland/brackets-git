@@ -19,6 +19,14 @@ Extension can be configured in "File > Git Settings..." (this window will show t
 Try out and see, too many to keep this up-to-date. You can see the ```CHANGELOG.md``` for more info on this.
 If you won't find the feature you were looking for, feel free to __open issues with your ideas__.
 
+### Some screenshots:
+
+![main](https://raw.github.com/zaggino/brackets-git/master/screenshots/main.png)
+
+![commit dialog](https://raw.github.com/zaggino/brackets-git/master/screenshots/commitDialog.png)
+
+![settings dialog](https://raw.github.com/zaggino/brackets-git/master/screenshots/settingsDialog.png)
+
 ## Pull requests
 
 This extension is developed in Brackets and pull requests always need to avoid any JSLint errors, feel free to modify ```/*jslint``` settings in the particular file if needed.
