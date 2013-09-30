@@ -2,11 +2,11 @@
 
 Git extension for [Brackets](http://brackets.io/).
 
-Developed on Windows with [msysgit](https://code.google.com/p/msysgit/) installed.
+Should work on all Brackets platforms (Win, Mac, Linux).
 
-Also working on Mac with [Git for OS X](https://code.google.com/p/git-osx-installer/) installed.
+Windows users need to have [msysgit](https://code.google.com/p/msysgit/) installed.
 
-Currently not working on Linux due to Brackets issues, this will hopefully change in the future.
+Mac users need to have [Git for OS X](https://code.google.com/p/git-osx-installer/) installed.
 
 ## Installation
 
@@ -16,7 +16,7 @@ Extension can be configured in "File > Git Settings..." (this window will show t
 
 ## Features
 
-Try out and see, too many to keep this up-to-date. You can see the ```CHANGELOG.md``` for more info on this.
+Try out and see, this README might not be 100% up-to-date. You can see the ```CHANGELOG.md``` for more info on this.
 If you won't find the feature you were looking for, feel free to __open issues with your ideas__.
 
 ### Some screenshots:
@@ -29,8 +29,6 @@ If you won't find the feature you were looking for, feel free to __open issues w
 
 ## Pull requests
 
-This extension is developed in Brackets and pull requests always need to avoid any JSLint errors, feel free to modify ```/*jslint``` settings in the particular file if needed.
-There is another [extension](https://github.com/MiguelCastillo/Brackets-Interactive-Linter) used for following JSHint rules specified in ```.jshintrc```.
+This extension is developed in Brackets and pull requests always need to avoid any JSLint errors,
+feel free to modify ```/*jslint``` settings in the particular file if needed.
 Please check for errors before opening any pull requests.
-
-Another very handy extension to use is [brackets-todo](https://github.com/mikaeljorhult/brackets-todo) which helps you add bookmarks for things to be resolved later.
