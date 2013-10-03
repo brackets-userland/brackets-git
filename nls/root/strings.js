@@ -6,6 +6,7 @@ define({
     BUTTON_CANCEL:                      "Cancel",
     BUTTON_CHANGELOG:                   "Show changelog",
     BUTTON_CLOSE:                       "Close",
+    BUTTON_CLOSE_NOT_MODIFIED:          "Close not modified",
     BUTTON_COMMIT:                      "Commit",
     BUTTON_DEFAULTS:                    "Restore defaults",
     BUTTON_OK:                          "OK",

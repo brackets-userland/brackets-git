@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.3
+* Added button to remove unmodified files from working tree.
+
 ## 0.6.2
 * Fix diff output to use --no-color do avoid having color codes in output on some machines.
 

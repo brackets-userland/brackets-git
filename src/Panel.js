@@ -10,6 +10,7 @@ define(function (require, exports) {
         DefaultDialogs     = brackets.getModule("widgets/DefaultDialogs"),
         Dialogs            = brackets.getModule("widgets/Dialogs"),
         DocumentManager    = brackets.getModule("document/DocumentManager"),
+        EditorManager      = brackets.getModule("editor/EditorManager"),
         FileUtils          = brackets.getModule("file/FileUtils"),
         FileViewController = brackets.getModule("project/FileViewController"),
         LanguageManager    = brackets.getModule("language/LanguageManager"),
@@ -459,6 +460,23 @@ define(function (require, exports) {
         }
     }
 
+    function handleCloseNotModified() {
+        Main.gitControl.getGitStatus().then(function (modifiedFiles) {
+            var openFiles = DocumentManager.getWorkingSet(),
+                projectRoot = Main.getProjectRoot();
+            openFiles.forEach(function (openFile) {
+                var removeOpenFile = true;
+                modifiedFiles.forEach(function (modifiedFile) {
+                    if (projectRoot + modifiedFile.file === openFile.fullPath) { removeOpenFile = false; }
+                });
+                if (removeOpenFile) {
+                    DocumentManager.closeFullEditor(openFile);
+                }
+            });
+            EditorManager.focus();
+        });
+    }
+
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
@@ -472,6 +490,7 @@ define(function (require, exports) {
             })
             .on("click", ".git-reset", handleGitReset)
             .on("click", ".git-commit", handleGitCommit)
+            .on("click", ".git-close-notmodified", handleCloseNotModified)
             .on("click", ".git-push", handleGitPush);
     }
 
