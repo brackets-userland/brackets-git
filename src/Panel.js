@@ -360,12 +360,14 @@ define(function (require, exports) {
     }
 
     function handleGitPush() {
+        var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true);
         Main.gitControl.gitPush().then(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GIT_PUSH_RESPONSE, // title
                 result // message
             );
+            $btn.prop("disabled", false);
         });
     }
     

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.4
+* Enabled experimental push button. Pushes only to default remote.
+
 ## 0.6.3
 * Added button to remove unmodified files from working tree.
 

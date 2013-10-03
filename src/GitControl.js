@@ -217,8 +217,7 @@ define(function (require, exports, module) {
         },
 
         gitPush: function () {
-            // TODO: remove --dry-run
-            return this.executeCommand(this._git + " push --porcelain --dry-run");
+            return this.executeCommand(this._git + " push --porcelain");
         }
 
     };
