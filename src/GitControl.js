@@ -109,6 +109,16 @@ define(function (require, exports, module) {
             });
         },
 
+        getCommitsAhead: function () {
+            return this.executeCommand(this._git + " rev-list HEAD --not --remotes").then(function (output) {
+                if (output.trim().length === 0) {
+                    return [];
+                } else {
+                    return output.split("\n");
+                }
+            });
+        },
+
         getBranchName: function () {
             return this.executeCommand(this._git + " rev-parse --abbrev-ref HEAD");
         },

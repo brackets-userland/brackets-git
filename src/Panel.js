@@ -368,6 +368,7 @@ define(function (require, exports) {
                 result // message
             );
             $btn.prop("disabled", false);
+            refresh();
         });
     }
     
@@ -445,6 +446,15 @@ define(function (require, exports) {
                 });
 
         }).fail(Main.logError);
+
+        //- push button
+        Main.gitControl.getCommitsAhead().then(function (commits) {
+            var $btn = gitPanel.$panel.find(".git-push");
+            $btn.children("span").remove();
+            if (commits.length > 0) {
+                $btn.append($("<span/>").text(" (" + commits.length + ")"));
+            }
+        });
     }
     
     function toggle(bool) {

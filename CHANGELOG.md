@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.5
+* Push button will now show if there are any unpushed commits.
+
 ## 0.6.4
 * Enabled experimental push button. Pushes only to default remote.
 
