@@ -6,7 +6,7 @@
  */
 
 /*jslint plusplus: true, vars: true, nomen: true */
-/*global define, brackets, console */
+/*global define, brackets, console, setTimeout */
 
 define(function (require, exports, module) {
     "use strict";
@@ -47,19 +47,21 @@ define(function (require, exports, module) {
         SettingsDialog.show(preferences);
     }
 
-    // Load package.json
-    FileUtils.readAsText(new FileEntry(moduleDirectory + "package.json")).done(function (content) {
-        var lastVersion    = preferences.getValue("lastVersion"),
-            currentVersion = JSON.parse(content).version;
+    // Load package.json - delay this so perf utils doesn't conflict with brackets loading the same file
+    setTimeout(function () {
+        FileUtils.readAsText(new FileEntry(moduleDirectory + "package.json")).done(function (content) {
+            var lastVersion    = preferences.getValue("lastVersion"),
+                currentVersion = JSON.parse(content).version;
 
-        if (lastVersion === null) {
-            preferences.setValue("lastVersion", "firstStart");
-            openSettingsPanel();
-        } else if (lastVersion !== currentVersion) {
-            preferences.setValue("lastVersion", currentVersion);
-            ChangelogDialog.show(preferences);
-        }
-    });
+            if (lastVersion === null) {
+                preferences.setValue("lastVersion", "firstStart");
+                openSettingsPanel();
+            } else if (lastVersion !== currentVersion) {
+                preferences.setValue("lastVersion", currentVersion);
+                ChangelogDialog.show(preferences);
+            }
+        });
+    }, 1000);
 
     // Register command and add it to the menu.
 	CommandManager.register(Strings.GIT_SETTINGS, SETTINGS_COMMAND_ID, openSettingsPanel);
