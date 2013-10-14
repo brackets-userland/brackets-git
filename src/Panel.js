@@ -5,6 +5,7 @@ define(function (require, exports) {
     "use strict";
     
     var q                  = require("../thirdparty/q"),
+        CodeInspection     = brackets.getModule("language/CodeInspection"),
         CommandManager     = brackets.getModule("command/CommandManager"),
         Commands           = brackets.getModule("command/Commands"),
         DefaultDialogs     = brackets.getModule("widgets/DefaultDialogs"),
@@ -21,18 +22,6 @@ define(function (require, exports) {
         GitControl         = require("./gitControl"),
         Strings            = require("../strings"),
         Utils              = require("./Utils");
-    
-    //+ Temp
-    var CodeInspection;
-    try {
-        CodeInspection = brackets.getModule("language/CodeInspection");
-    } catch (e) { }
-    if (!CodeInspection || !CodeInspection.inspectFile) {
-        CodeInspection = {
-            inspectFile: function () { var d = $.Deferred(); d.resolve(null); return d.promise(); }
-        };
-    }
-    //- Temp
 
     var gitPanelTemplate        = require("text!htmlContent/git-panel.html"),
         gitPanelResultsTemplate = require("text!htmlContent/git-panel-results.html"),
@@ -63,32 +52,17 @@ define(function (require, exports) {
     
     function lintFile(filename) {
         return CodeInspection.inspectFile(new NativeFileSystem.FileEntry(Main.getProjectRoot() + filename));
-        /* TODO: remove commented code
-        var rv = q.defer(),
-            fileEntry = new NativeFileSystem.FileEntry(Main.getProjectRoot() + filename),
-            codeInspector = CodeInspection.getProviderForFile(fileEntry);
-        if (codeInspector) {
-            var fileTextPromise = FileUtils.readAsText(fileEntry);
-            fileTextPromise.done(function (fileText) {
-                rv.resolve(codeInspector.scanFile(fileText, fileEntry.fullPath));
-            });
-            fileTextPromise.fail(function (error) {
-                Main.logError("Error reading contents of " + fileEntry.fullPath + " (" + error + ")");
-                rv.reject();
-            });
-        } else {
-            rv.resolve(null);
-        }
-        return rv.promise;
-        */
     }
     
     function _makeDialogBig($dialog) {
+        var $wrapper = $dialog.parents(".modal-wrapper").first();
+        if ($wrapper.length === 0) { return; }
+
         // We need bigger commit dialog
         var minWidth = 500,
             minHeight = 300,
-            maxWidth = $(window).width(),
-            maxHeight = $(window).height(),
+            maxWidth = $wrapper.width(),
+            maxHeight = $wrapper.height(),
             desiredWidth = maxWidth / 2,
             desiredHeight = maxHeight / 2;
 
@@ -96,14 +70,17 @@ define(function (require, exports) {
         if (desiredHeight < minHeight) { desiredHeight = minHeight; }
 
         $dialog
-            .css("margin-left", "-" + (desiredWidth / 2) + "px")
-            .css("margin-top", "-" + (desiredHeight / 1.6) + "px")
-            .find(".modal-header")
+            .css("margin-left", (desiredWidth / 2) + "px")
+            .children(".modal-header")
                 .width(desiredWidth)
             .end()
-            .find(".modal-body")
+            .children(".modal-body")
                 .width(desiredWidth)
-                .css("max-height", desiredHeight);
+                .css("max-height", desiredHeight)
+            .end()
+            .children(".modal-footer")
+                .width(desiredWidth)
+            .end();
 
         return { width: desiredWidth, height: desiredHeight };
     }

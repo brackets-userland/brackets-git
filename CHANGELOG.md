@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.6
+* Removed polyfills for older Brackets, sprint 32 required from now.
+
 ## 0.6.5
 * Push button will now show if there are any unpushed commits.
 
