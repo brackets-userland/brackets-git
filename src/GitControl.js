@@ -102,7 +102,16 @@ define(function (require, exports, module) {
         getRepositoryRoot: function () {
             return this.executeCommand(this._git + " rev-parse --show-toplevel").then(function (output) {
                 // Git returns directory name without trailing slash
-                return output.trim() + "/";
+                output = output.trim() + "/";
+                // Check if it's a cygwin installation.
+                if (brackets.platform === "win" && output.match(/^\/cygdrive/)) {
+                    // cygwin environment.
+                    output = output.substr(10).replace(/^(\w)/,function(o,m) { return m.toUpperCase()+":"; });
+                    return output;
+                } else {
+                    // normal git.
+                    return output;
+                }
             }).fail(function (error) {
                 // Not a git repository (or any of the parent directories): .git
                 throw error;
