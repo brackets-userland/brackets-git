@@ -107,11 +107,8 @@ define(function (require, exports, module) {
                 if (brackets.platform === "win" && output.match(/^\/cygdrive/)) {
                     // cygwin environment.
                     output = output.substr(10).replace(/^(\w)/,function(o,m) { return m.toUpperCase()+":"; });
-                    return output;
-                } else {
-                    // normal git.
-                    return output;
-                }
+                } 
+                return output;
             }).fail(function (error) {
                 // Not a git repository (or any of the parent directories): .git
                 throw error;
