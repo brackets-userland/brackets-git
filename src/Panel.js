@@ -19,7 +19,7 @@ define(function (require, exports) {
         PanelManager       = brackets.getModule("view/PanelManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         Main               = require("./Main"),
-        GitControl         = require("./gitControl"),
+        GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
         Utils              = require("./Utils");
 
