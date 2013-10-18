@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.8
+* Fix bug where extension breaks on Linux by [Fabio Massaioli](https://github.com/fbbdev)
+
 ## 0.6.7
 * Add support for cygwin git by [Zhi](https://github.com/yfwz100)
 
