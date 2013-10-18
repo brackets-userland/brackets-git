@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.7
+* Add support for cygwin git by [Zhi](https://github.com/yfwz100)
+
 ## 0.6.6
 * Removed polyfills for older Brackets, sprint 32 required from now.
 
