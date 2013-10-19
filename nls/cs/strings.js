@@ -1,5 +1,3 @@
-// Czech strings
-
 /*global define */
 
 define({

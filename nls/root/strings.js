@@ -1,5 +1,3 @@
-// English (root) strings
-
 /*global define */
 
 define({
