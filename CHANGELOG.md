@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.9
+* German translation by [Marcel Gerber](https://github.com/SAPlayer)
+
 ## 0.6.8
 * Fix bug where extension breaks on Linux by [Fabio Massaioli](https://github.com/fbbdev)
 
@@ -53,7 +56,7 @@
 * Click in the git panel now opens the file, doubleclick adds file to the working tree.
 
 ## 0.4.4
-* Great new icon and UI tweaks by [@larz0](https://github.com/larz0)
+* Great new icon and UI tweaks by [Larz](https://github.com/larz0)
 * Commit dialog should be now a bit bigger depending on the screen size.
 
 ## 0.4.3
@@ -81,7 +84,7 @@
 
 ## 0.2.0
 * Added shortcut to bash console for msysgit users.
-* Added configuration file that is created on the first extension run (thx for idea to [@karuturi](https://github.com/karuturi))
+* Added configuration file that is created on the first extension run (thx for idea to [Rajani Karuturi](https://github.com/karuturi))
 
 ## 0.1.0
 * First real functionality, basic commit from brackets is now available.
