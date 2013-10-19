@@ -18,6 +18,7 @@ define(function (require, exports) {
         NativeFileSystem   = brackets.getModule("file/NativeFileSystem").NativeFileSystem,
         PanelManager       = brackets.getModule("view/PanelManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
+        StringUtils        = brackets.getModule("utils/StringUtils"),
         Main               = require("./Main"),
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
@@ -161,7 +162,7 @@ define(function (require, exports) {
     function handleGitUndo(file) {
         var compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: Strings.UNDO_CHANGES,
-            question: Strings.Q_UNDO_CHANGES + file + Strings.Q_UNDO_CHANGES_POST,
+            question: StringUtils.format(Strings.Q_UNDO_CHANGES, file),
             Strings: Strings
         });
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
@@ -182,7 +183,7 @@ define(function (require, exports) {
     function handleGitDelete(file) {
         var compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: Strings.DELETE_FILE,
-            question: Strings.Q_DELETE_FILE + file + Strings.Q_DELETE_FILE_POST,
+            question: StringUtils.format(String.Q_DELETE_FILE, file),
             Strings: Strings
         });
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
