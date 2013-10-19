@@ -7,6 +7,7 @@ define(function (require, exports) {
     var Dialogs                    = brackets.getModule("widgets/Dialogs"),
         FileEntry                  = brackets.getModule("file/NativeFileSystem").NativeFileSystem.FileEntry,
         FileUtils                  = brackets.getModule("file/FileUtils"),
+        StringUtils                = brackets.getModule("utils/StringUtils"),
         Strings                    = require("../strings"),
         changelogDialogTemplate    = require("text!htmlContent/git-changelog-dialog.html");
 
@@ -19,7 +20,8 @@ define(function (require, exports) {
         }
 
         Strings.EXTENSION_VERSION = prefs.getValue("lastVersion");
-        var compiledTemplate = Mustache.render(changelogDialogTemplate, Strings);
+        var title = StringUtils.format(Strings.EXTENSION_WAS_UPDATED_TITLE, String.EXTENSION_VERSION);
+        var compiledTemplate = Mustache.render(changelogDialogTemplate, {Strings: Strings, TITLE: title});
         dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
         FileUtils.readAsText(new FileEntry(preferences.getValue("extensionDirectory") + "CHANGELOG.md")).done(function (content) {
