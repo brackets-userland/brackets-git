@@ -20,7 +20,7 @@ define(function (require, exports) {
         }
 
         Strings.EXTENSION_VERSION = prefs.getValue("lastVersion");
-        var title = StringUtils.format(Strings.EXTENSION_WAS_UPDATED_TITLE, String.EXTENSION_VERSION);
+        var title = StringUtils.format(Strings.EXTENSION_WAS_UPDATED_TITLE, Strings.EXTENSION_VERSION);
         var compiledTemplate = Mustache.render(changelogDialogTemplate, {Strings: Strings, TITLE: title});
         dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
