@@ -3,11 +3,12 @@
 
 define(function (require, exports) {
     "use strict";
-    
-    var StringUtils = brackets.getModule("utils/StringUtils");
-    
+
+    var _ = brackets.getModule("lodash");
+
     function formatDiff(diff) {
         var rv = [];
+
         diff.split("\n").forEach(function (line) {
             if (line === " ") { line = ""; }
 
@@ -22,7 +23,7 @@ define(function (require, exports) {
                 lineClass = "diffCmd";
             }
 
-            line = StringUtils.htmlEscape(line).replace(/\s/g, "&nbsp;");
+            line = _.escape(line).replace(/\s/g, "&nbsp;");
             line = line.replace(/(&nbsp;)+$/g, function (trailingWhitespace) {
                 return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
             });
@@ -32,6 +33,6 @@ define(function (require, exports) {
         });
         return rv;
     }
-    
+
     exports.formatDiff = formatDiff;
 });
