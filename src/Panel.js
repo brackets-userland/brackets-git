@@ -1,5 +1,5 @@
 /*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, console, define, Mustache, refresh, window */
+/*global $, brackets, console, define, Mustache, refresh */
 
 define(function (require, exports) {
     "use strict";
@@ -256,7 +256,7 @@ define(function (require, exports) {
                         s = m[2].split(","),
                         from = parseInt(s[0], 10),
                         to = from - 1 + (parseInt(s[1], 10) || 1);
-                    for (i = from; i <= to; i++) { modified.push(i - 1); }
+                    for (i = from; i <= to; i++) { modified.push(i > 0 ? i - 1 : 0); }
                 });
                 _cleanLines(modified);
             }).fail(function (ex) {

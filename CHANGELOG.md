@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.10
+* Fix a bug when commit/diff dialogs fail to display when first line of file is modified.
+* Fix a bug in diff formatting.
+
 ## 0.6.9
 * German translation by [Marcel Gerber](https://github.com/SAPlayer)
 
