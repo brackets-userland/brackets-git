@@ -183,7 +183,7 @@ define(function (require, exports) {
     function handleGitDelete(file) {
         var compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: Strings.DELETE_FILE,
-            question: StringUtils.format(String.Q_DELETE_FILE, file),
+            question: StringUtils.format(Strings.Q_DELETE_FILE, file),
             Strings: Strings
         });
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {

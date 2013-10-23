@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.11
+* Fix a bug when deleting uncommited files from Git panel.
+
 ## 0.6.10
 * Fix a bug when commit/diff dialogs fail to display when first line of file is modified.
 * Fix a bug in diff formatting.
