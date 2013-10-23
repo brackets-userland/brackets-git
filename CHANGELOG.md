@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.12
+* Fix [Extension failed to load](https://github.com/zaggino/brackets-git/issues/19)
+
 ## 0.6.11
 * Fix a bug when deleting uncommited files from Git panel.
 
