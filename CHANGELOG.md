@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.13
+* Some improvements in error handling and logging.
+* Fixed a bug when file contained spaces [#21](https://github.com/zaggino/brackets-git/issues/21)
+
 ## 0.6.12
 * Fix [Extension failed to load](https://github.com/zaggino/brackets-git/issues/19)
 

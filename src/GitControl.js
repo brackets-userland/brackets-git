@@ -124,6 +124,13 @@ define(function (require, exports, module) {
         },
 
         getGitStatus: function () {
+            function unquote(str) {
+                if (str[0] === "\"" && str[str.length - 1] === "\"") {
+                    str = str.substring(1, str.length - 1);
+                }
+                return str;
+            }
+
             return this.executeCommand(this._git + " status -u --porcelain").then(function (stdout) {
                 if (stdout.length === 0) {
                     return [];
@@ -135,7 +142,7 @@ define(function (require, exports, module) {
                     var statusStaged = line.substring(0, 1),
                         statusUnstaged = line.substring(1, 2),
                         status = [],
-                        file = line.substring(3);
+                        file = unquote(line.substring(3));
 
                     switch (statusStaged) {
                     case " ":
