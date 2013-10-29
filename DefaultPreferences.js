@@ -8,6 +8,7 @@ define(function (require, exports, module) {
         "lastVersion":                      null,
         "panelEnabled":                     true,
         "stripWhitespaceFromCommits":       true,
+        "TIMEOUT_VALUE":                    30000,
         // these are set by platform
         "gitIsInSystemPath":                null,
         "gitPath":                          null,

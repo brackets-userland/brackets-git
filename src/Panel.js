@@ -345,6 +345,9 @@ define(function (require, exports) {
                 Strings.GIT_PUSH_RESPONSE, // title
                 result // message
             );
+        }).fail(function () {
+            console.warn("Pushing to remote repositories with username / password is not supported! See github page/issues for details.");
+        }).fin(function () {
             $btn.prop("disabled", false);
             refresh();
         });

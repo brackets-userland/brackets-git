@@ -93,9 +93,6 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " --version").then(function (output) {
                 var io = output.indexOf("git version");
                 return output.substring(io !== -1 ? io + "git version".length : 0).trim();
-            }).fail(function (error) {
-                // 'git' is not recognized as an internal or external command
-                throw error;
             });
         },
 
@@ -106,12 +103,9 @@ define(function (require, exports, module) {
                 // Check if it's a cygwin installation.
                 if (brackets.platform === "win" && output.match(/^\/cygdrive/)) {
                     // cygwin environment.
-                    output = output.substr(10).replace(/^(\w)/,function(o,m) { return m.toUpperCase()+":"; });
-                } 
+                    output = output.substr(10).replace(/^(\w)/, function (o, m) { return m.toUpperCase() + ":"; });
+                }
                 return output;
-            }).fail(function (error) {
-                // Not a git repository (or any of the parent directories): .git
-                throw error;
             });
         },
 

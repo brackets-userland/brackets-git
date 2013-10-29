@@ -1,5 +1,5 @@
 /*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, console, define */
+/*global $, brackets, console, define, setTimeout */
 
 define(function (require, exports) {
     "use strict";
@@ -111,22 +111,43 @@ define(function (require, exports) {
     
     function init(nodeConnection, _preferences) {
         preferences = exports.preferences = _preferences;
+        var TIMEOUT_VALUE = preferences.getValue("TIMEOUT_VALUE");
         // Creates an GitControl Instance
         gitControl = exports.gitControl = new GitControl({
             preferences: preferences,
             executeHandler: function (cmdString) {
                 var rv = q.defer(),
-                    i = showBusyIndicator();
+                    i = showBusyIndicator(),
+                    resolved = false;
+
+                // nodeConnection returns jQuery deffered, not Q
                 nodeConnection.domains["brackets-git"].executeCommand(getProjectRoot(), cmdString)
                     .then(function (out) {
-                        hideBusyIndicator(i);
-                        rv.resolve(out);
+                        if (!resolved) {
+                            rv.resolve(out);
+                        }
                     })
                     .fail(function (err) {
+                        if (!resolved) {
+                            rv.reject(err);
+                        }
+                    })
+                    .always(function () {
                         hideBusyIndicator(i);
-                        rv.reject(err);
+                        resolved = true;
                     })
                     .done();
+
+                setTimeout(function () {
+                    if (!resolved) {
+                        var err = new Error("Timeout: " + cmdString);
+                        logError(err);
+                        rv.reject(err);
+                        hideBusyIndicator(i);
+                        resolved = true;
+                    }
+                }, TIMEOUT_VALUE);
+
                 return rv.promise;
             }
         });
