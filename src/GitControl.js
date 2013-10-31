@@ -97,13 +97,16 @@ define(function (require, exports, module) {
         },
 
         getRepositoryRoot: function () {
+            var self = this;
             return this.executeCommand(this._git + " rev-parse --show-toplevel").then(function (output) {
                 // Git returns directory name without trailing slash
                 output = output.trim() + "/";
                 // Check if it's a cygwin installation.
-                if (brackets.platform === "win" && output.match(/^\/cygdrive/)) {
-                    // cygwin environment.
-                    output = output.substr(10).replace(/^(\w)/, function (o, m) { return m.toUpperCase() + ":"; });
+                if (brackets.platform === "win" && output[0] == '/') {
+                    // Convert to Windows path with cygpath.
+                    return self.executeCommand("\"" + self.options.preferences.getValue("msysgitPath") + "\\bin\\cygpath" + "\" -m \"" + output + "\"").then(function (output) {
+                        return output;
+                    });
                 }
                 return output;
             });
