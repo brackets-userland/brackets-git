@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.14
+* Added pull button with fast-forward only mode. (No functionality to resolve merge conflicts)
+
 ## 0.6.13
 * Some improvements in error handling and logging.
 * Fixed a bug when file contained spaces [#21](https://github.com/zaggino/brackets-git/issues/21)

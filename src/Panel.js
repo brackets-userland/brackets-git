@@ -353,6 +353,20 @@ define(function (require, exports) {
         });
     }
     
+    function handleGitPull() {
+        var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true);
+        Main.gitControl.gitPull().then(function (result) {
+            Dialogs.showModalDialog(
+                DefaultDialogs.DIALOG_ID_INFO,
+                Strings.GIT_PULL_RESPONSE, // title
+                result // message
+            );
+        }).fin(function () {
+            $btn.prop("disabled", false);
+            refresh();
+        });
+    }
+
     function refreshCurrentFile() {
         var currentProjectRoot = Main.getProjectRoot();
         var currentDoc = DocumentManager.getCurrentDocument();
@@ -484,7 +498,8 @@ define(function (require, exports) {
             .on("click", ".git-reset", handleGitReset)
             .on("click", ".git-commit", handleGitCommit)
             .on("click", ".git-close-notmodified", handleCloseNotModified)
-            .on("click", ".git-push", handleGitPush);
+            .on("click", ".git-push", handleGitPush)
+            .on("click", ".git-pull", handleGitPull);
     }
 
     function enable() {

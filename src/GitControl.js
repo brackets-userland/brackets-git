@@ -235,6 +235,10 @@ define(function (require, exports, module) {
 
         gitPush: function () {
             return this.executeCommand(this._git + " push --porcelain");
+        },
+
+        gitPull: function () {
+            return this.executeCommand(this._git + " pull --ff-only");
         }
 
     };
