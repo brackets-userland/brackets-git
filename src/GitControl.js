@@ -102,9 +102,10 @@ define(function (require, exports, module) {
                 // Git returns directory name without trailing slash
                 output = output.trim() + "/";
                 // Check if it's a cygwin installation.
-                if (brackets.platform === "win" && output[0] == '/') {
+                if (brackets.platform === "win" && output[0] === "/") {
                     // Convert to Windows path with cygpath.
-                    return self.executeCommand("\"" + self.options.preferences.getValue("msysgitPath") + "\\bin\\cygpath" + "\" -m \"" + output + "\"").then(function (output) {
+                    return self.executeCommand("\"" + self.options.preferences.getValue("msysgitPath") +
+                                               "\\bin\\cygpath" + "\" -m \"" + output + "\"").then(function (output) {
                         return output;
                     });
                 }

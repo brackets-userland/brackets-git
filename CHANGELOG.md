@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.15
+* Fix the cygwin path conversion using a more reliable method by [Zhi](https://github.com/yfwz100)
+
 ## 0.6.14
 * Added pull button with fast-forward only mode. (No functionality to resolve merge conflicts)
 
