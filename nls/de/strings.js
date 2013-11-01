@@ -31,7 +31,7 @@ define({
     GIT_IS_IN_PATH:                     "Git kann von überall aus abgerufen werden (ist im Systempfad, funktioniert evtl. nicht mit einem Mac)",
     GIT_PULL_RESPONSE:                  "Git Pull: Antwort",
     GIT_PUSH_RESPONSE:                  "Git Push: Antwort",
-    GIT_SETTINGS:                       "Git Einstellungen\u2026",
+    GIT_SETTINGS:                       "Git-Einstellungen\u2026",
     LOADING:                            "Lädt\u2026",
     NOTHING_TO_COMMIT:                  "Nichts zum commiten, das Arbeitsverzeichnis ist sauber.",
     PATH_TO_GIT_EXECUTABLE:             "Pfad zur Git-Anwendung",
