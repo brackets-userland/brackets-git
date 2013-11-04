@@ -125,8 +125,25 @@
             }
         }
         .commit-message-box {
+            position: relative;
             // no grow, no shrink
             .flex-item(0, 0);
+            input[name="commit-message"] {
+                padding-right: 60px;
+            }
+            input[name="commit-message-count"] {
+                position: absolute;
+                right: 0;
+                width: 50px;
+                top: 0;
+                border-top-left-radius:0;
+                border-bottom-left-radius:0;
+                text-align: center;
+                color: @darkGrey;
+                &.over50 {
+                    color: @red;
+                }
+            }
         }
     }
 }

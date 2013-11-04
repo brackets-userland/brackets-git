@@ -135,8 +135,24 @@ define(function (require, exports) {
             }
         });
 
+        var $commitMessage = $dialog.find("input[name='commit-message']");
+        var $commitMessageCount = $dialog.find("input[name='commit-message-count']");
+
         // Add focus to commit message input
-        $dialog.find("input[name='commit-message']").focus();
+        $commitMessage.focus();
+
+        // Add event to count characters in commit message
+        var recalculateMessageLength = function () {
+            var length = $commitMessage.val().length;
+            $commitMessageCount
+                .val(length)
+                .toggleClass("over50", length > 50);
+        };
+
+        $commitMessage
+            .on("keyup", recalculateMessageLength)
+            .on("change", recalculateMessageLength);
+        recalculateMessageLength();
 
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
