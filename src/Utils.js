@@ -7,7 +7,7 @@ define(function (require, exports) {
     // fill for Brackets <= 32
     var _;
     try {
-        _ = brackets.getModule("lodash");
+        _ = brackets.getModule("thirdparty/lodash");
     } catch (e) {
         var StringUtils = brackets.getModule("utils/StringUtils");
         _ = {

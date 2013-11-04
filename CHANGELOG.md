@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.16
+* Add box to show commit message length.
+
 ## 0.6.15
 * Fix the cygwin path conversion using a more reliable method by [Zhi](https://github.com/yfwz100)
 
