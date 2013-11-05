@@ -146,7 +146,8 @@ define(function (require, exports) {
             var length = $commitMessage.val().length;
             $commitMessageCount
                 .val(length)
-                .toggleClass("over50", length > 50);
+                .toggleClass("over50", length > 50 && length <= 100)
+                .toggleClass("over100", length > 100);
         };
 
         $commitMessage
