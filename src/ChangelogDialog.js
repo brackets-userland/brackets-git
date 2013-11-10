@@ -5,7 +5,7 @@ define(function (require, exports) {
     "use strict";
 
     var Dialogs                    = brackets.getModule("widgets/Dialogs"),
-        FileEntry                  = brackets.getModule("file/NativeFileSystem").NativeFileSystem.FileEntry,
+        FileSystem                 = brackets.getModule("filesystem/FileSystem"),
         FileUtils                  = brackets.getModule("file/FileUtils"),
         StringUtils                = brackets.getModule("utils/StringUtils"),
         Strings                    = require("../strings"),
@@ -24,7 +24,7 @@ define(function (require, exports) {
         var compiledTemplate = Mustache.render(changelogDialogTemplate, {Strings: Strings, TITLE: title});
         dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
-        FileUtils.readAsText(new FileEntry(preferences.getValue("extensionDirectory") + "CHANGELOG.md")).done(function (content) {
+        FileUtils.readAsText(FileSystem.getFileForPath(preferences.getValue("extensionDirectory") + "CHANGELOG.md")).done(function (content) {
             $("#git-changelog", dialog.getElement()).text(content);
         });
     };

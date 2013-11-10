@@ -15,7 +15,7 @@ define(function (require, exports) {
         FileUtils          = brackets.getModule("file/FileUtils"),
         FileViewController = brackets.getModule("project/FileViewController"),
         LanguageManager    = brackets.getModule("language/LanguageManager"),
-        NativeFileSystem   = brackets.getModule("file/NativeFileSystem").NativeFileSystem,
+        FileSystem         = brackets.getModule("filesystem/FileSystem"),
         PanelManager       = brackets.getModule("view/PanelManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         StringUtils        = brackets.getModule("utils/StringUtils"),
@@ -46,13 +46,13 @@ define(function (require, exports) {
             doc.refreshText(text, readTimestamp);
         });
         promise.fail(function (error) {
-            console.log("Error reloading contents of " + doc.file.fullPath, error.name);
+            console.log("Error reloading contents of " + doc.file.fullPath, error);
         });
         return promise;
     }
     
     function lintFile(filename) {
-        return CodeInspection.inspectFile(new NativeFileSystem.FileEntry(Main.getProjectRoot() + filename));
+        return CodeInspection.inspectFile(FileSystem.getFileForPath(Main.getProjectRoot() + filename));
     }
     
     function _makeDialogBig($dialog) {
@@ -205,7 +205,7 @@ define(function (require, exports) {
         });
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
             if (buttonId === "ok") {
-                NativeFileSystem.resolveNativeFileSystemPath(Main.getProjectRoot() + file, function (fileEntry) {
+                FileSystem.resolve(Main.getProjectRoot() + file, function (fileEntry) {
                     ProjectManager.deleteItem(fileEntry);
                 }, function (err) {
                     console.error(err);
@@ -223,7 +223,7 @@ define(function (require, exports) {
 
         var _cleanLines = function (lineNumbers) {
             // clean the file
-            var fileEntry = new NativeFileSystem.FileEntry(fullPath);
+            var fileEntry = FileSystem.getFileForPath(fullPath);
             return FileUtils.readAsText(fileEntry).then(function (text) {
                 var lines = text.split("\n");
 

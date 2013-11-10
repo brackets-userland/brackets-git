@@ -17,7 +17,7 @@ define(function (require, exports, module) {
         CommandManager             = brackets.getModule("command/CommandManager"),
         Commands                   = brackets.getModule("command/Commands"),
         ExtensionUtils             = brackets.getModule("utils/ExtensionUtils"),
-        FileEntry                  = brackets.getModule("file/NativeFileSystem").NativeFileSystem.FileEntry,
+        FileSystem                 = brackets.getModule("filesystem/FileSystem"),
         FileUtils                  = brackets.getModule("file/FileUtils"),
         Menus                      = brackets.getModule("command/Menus"),
         NodeConnection             = brackets.getModule("utils/NodeConnection"),
@@ -49,7 +49,7 @@ define(function (require, exports, module) {
 
     // Load package.json - delay this so perf utils doesn't conflict with brackets loading the same file
     setTimeout(function () {
-        FileUtils.readAsText(new FileEntry(moduleDirectory + "package.json")).done(function (content) {
+        FileUtils.readAsText(FileSystem.getFileForPath(moduleDirectory + "package.json")).done(function (content) {
             var lastVersion    = preferences.getValue("lastVersion"),
                 currentVersion = JSON.parse(content).version;
 

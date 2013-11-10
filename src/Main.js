@@ -7,6 +7,7 @@ define(function (require, exports) {
     var q               = require("../thirdparty/q"),
         AppInit         = brackets.getModule("utils/AppInit"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
+        FileSystem      = brackets.getModule("filesystem/FileSystem"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
         Strings         = require("../strings"),
         GitControl      = require("./GitControl"),
@@ -97,7 +98,11 @@ define(function (require, exports) {
             Branch.refresh();
             Panel.refresh();
         });
-        $(ProjectManager).on("projectFilesChange", function () {
+        $(FileSystem).on("change", function () {
+            Branch.refresh();
+            Panel.refresh();
+        });
+        $(FileSystem).on("rename", function () {
             Branch.refresh();
             Panel.refresh();
         });

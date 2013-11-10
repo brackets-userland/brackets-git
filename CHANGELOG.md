@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.17
+* Changes to move on from deprecated APIs to new ones - requires Brackets 34.
+
 ## 0.6.16
 * Add box to show commit message length.
 
