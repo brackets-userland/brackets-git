@@ -90,19 +90,11 @@ define(function (require, exports) {
     
     // Call this only when Git is available
     function attachEventsToBrackets() {
-        $(ProjectManager).on("projectOpen", function () {
+        $(ProjectManager).on("projectOpen projectRefresh", function () {
             Branch.refresh();
             Panel.refresh();
         });
-        $(ProjectManager).on("projectRefresh", function () {
-            Branch.refresh();
-            Panel.refresh();
-        });
-        $(FileSystem).on("change", function () {
-            Branch.refresh();
-            Panel.refresh();
-        });
-        $(FileSystem).on("rename", function () {
+        $(FileSystem).on("change rename", function () {
             Branch.refresh();
             Panel.refresh();
         });
