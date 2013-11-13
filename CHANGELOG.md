@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.18
+* Added Git panel to the menu (View > Git) with keyboard shortcut Ctrl+Alt+G.
+
 ## 0.6.17
 * Changes to move on from deprecated APIs to new ones - requires Brackets 34.
 

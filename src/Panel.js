@@ -16,13 +16,15 @@ define(function (require, exports) {
         FileViewController = brackets.getModule("project/FileViewController"),
         LanguageManager    = brackets.getModule("language/LanguageManager"),
         FileSystem         = brackets.getModule("filesystem/FileSystem"),
+        Menus              = brackets.getModule("command/Menus"),
         PanelManager       = brackets.getModule("view/PanelManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         StringUtils        = brackets.getModule("utils/StringUtils"),
         Main               = require("./Main"),
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
-        Utils              = require("./Utils");
+        Utils              = require("./Utils"),
+        PANEL_COMMAND_ID   = "brackets-git.panel";
 
     var gitPanelTemplate        = require("text!htmlContent/git-panel.html"),
         gitPanelResultsTemplate = require("text!htmlContent/git-panel-results.html"),
@@ -479,6 +481,10 @@ define(function (require, exports) {
         Main.preferences.setValue("panelEnabled", bool);
         Main.$icon.toggleClass("on", bool);
         gitPanel.setVisible(bool);
+
+        // Mark menu item as enabled/disabled.
+        CommandManager.get(PANEL_COMMAND_ID).setChecked(bool);
+
         if (bool) {
             refresh();
         }
@@ -517,6 +523,14 @@ define(function (require, exports) {
             .on("click", ".git-close-notmodified", handleCloseNotModified)
             .on("click", ".git-push", handleGitPush)
             .on("click", ".git-pull", handleGitPull);
+
+        // Register command for opening bottom panel.
+        CommandManager.register(Strings.PANEL_COMMAND, PANEL_COMMAND_ID, toggle);
+
+        // Add command to menu.
+        var menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
+        menu.addMenuDivider();
+        menu.addMenuItem(PANEL_COMMAND_ID, "Ctrl-Alt-G");
     }
 
     function enable() {
