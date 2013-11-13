@@ -531,6 +531,9 @@ define(function (require, exports) {
         var menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
         menu.addMenuDivider();
         menu.addMenuItem(PANEL_COMMAND_ID, "Ctrl-Alt-G");
+
+        // Make Git in status bar clickable
+        $("#git-status").addClass("clickable").on("click", toggle);
     }
 
     function enable() {
