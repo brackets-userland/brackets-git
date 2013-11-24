@@ -207,10 +207,16 @@ define(function (require, exports) {
         });
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
             if (buttonId === "ok") {
-                FileSystem.resolve(Main.getProjectRoot() + file, function (fileEntry) {
-                    ProjectManager.deleteItem(fileEntry);
-                }, function (err) {
-                    console.error(err);
+                FileSystem.resolve(Main.getProjectRoot() + file, function (err, fileEntry) {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+                    ProjectManager.deleteItem(fileEntry).done(function () {
+                        refresh();
+                    }).fail(function (err) {
+                        console.error(err);
+                    });
                 });
             }
         });

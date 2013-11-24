@@ -2,6 +2,7 @@
 
 ## 0.6.19
 * Fixed issue with corrupting image files [#31](https://github.com/zaggino/brackets-git/issues/31)
+* Fixed issue with delete button not working.
 
 ## 0.6.18
 * Added Git panel to the menu (View > Git) with keyboard shortcut Ctrl+Alt+G.
