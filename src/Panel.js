@@ -317,7 +317,8 @@ define(function (require, exports) {
                 // strip whitespace if configured to do so and file was not deleted
                 if (stripWhitespace && updateIndex === false) {
                     // strip whitespace only for recognized languages so binary files won't get corrupted
-                    if (LanguageManager.getLanguageForPath(fileObj.filename).getId() !== "unknown") {
+                    var langId = LanguageManager.getLanguageForPath(fileObj.filename).getId();
+                    if (["unknown", "binary", "image"].indexOf(langId) === -1) {
                         queue = queue.then(function () {
                             var clearWholeFile = fileObj.status.indexOf(GitControl.FILE_STATUS.UNTRACKED) !== -1;
                             return stripWhitespaceFromFile(fileObj.filename, clearWholeFile);
