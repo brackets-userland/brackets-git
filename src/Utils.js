@@ -4,16 +4,7 @@
 define(function (require, exports) {
     "use strict";
 
-    // fill for Brackets <= 32
-    var _;
-    try {
-        _ = brackets.getModule("thirdparty/lodash");
-    } catch (e) {
-        var StringUtils = brackets.getModule("utils/StringUtils");
-        _ = {
-            escape: StringUtils.htmlEscape
-        };
-    }
+    var _ = brackets.getModule("thirdparty/lodash");
 
     function formatDiff(diff) {
         var rv = [];

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.1
+* Added bug reporting button to the git panel which prefills some Brackets info.
+
 ## 0.7.0
 * Improvements towards error handling and reporting.
 

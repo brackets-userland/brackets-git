@@ -1,13 +1,15 @@
-[Please write your comment here]
+[Please describe your problem here]
 
 --------------------------------
 
 *{{brackets}} & {{bracketsGit}}*
 
-**{{title}}**
+{{#title}}**{{title}}**{{/title}}
 
-```
+{{#errorBody}}```
 {{{errorBody}}}
-```
+```{{/errorBody}}
 
+{{#errorStack}}```
 {{{errorStack}}}
+```{{/errorStack}}
