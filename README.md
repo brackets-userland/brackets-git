@@ -1,4 +1,4 @@
-# brackets-git
+# Brackets-Git
 
 Git extension for [Brackets](http://brackets.io/).
 
@@ -29,8 +29,6 @@ If you won't find the feature you were looking for, feel free to __open issues w
 
 ![settings dialog](https://raw.github.com/zaggino/brackets-git/master/screenshots/settingsDialog.png)
 
-## Pull requests
+## Contributing
 
-This extension is developed in Brackets and pull requests always need to avoid any JSLint errors,
-feel free to modify ```/*jslint``` settings in the particular file if needed.
-Please check for errors before opening any pull requests.
+Please see [CONTRIBUTING.md](https://github.com/zaggino/brackets-git/blob/master/CONTRIBUTING.md)
