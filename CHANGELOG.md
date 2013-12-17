@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.0
+* Improvements towards error handling and reporting.
+
 ## 0.6.19
 * Fixed issue with corrupting image files [#31](https://github.com/zaggino/brackets-git/issues/31)
 * Fixed issue with delete button not working.

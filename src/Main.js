@@ -1,5 +1,5 @@
 /*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, console, define, setTimeout */
+/*global $, brackets, define, setTimeout */
 
 define(function (require, exports) {
     "use strict";
@@ -10,6 +10,7 @@ define(function (require, exports) {
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
         Strings         = require("../strings"),
+        ErrorHandler    = require("./ErrorHandler"),
         GitControl      = require("./GitControl"),
         Panel           = require("./Panel"),
         Branch          = require("./Branch");
@@ -41,12 +42,7 @@ define(function (require, exports) {
             $busyIndicator.removeClass("spin");
         }
     }
-    
-    function logError(ex) {
-        console.error("[brackets-git] " + ex);
-        if (ex && ex.stack) { console.error(ex.stack); }
-    }
-    
+
     function getProjectRoot() {
         return ProjectManager.getProjectRoot().fullPath;
     }
@@ -138,7 +134,7 @@ define(function (require, exports) {
                 setTimeout(function () {
                     if (!resolved) {
                         var err = new Error("Timeout: " + cmdString);
-                        logError(err);
+                        ErrorHandler.logError(err);
                         rv.reject(err);
                         hideBusyIndicator(i);
                         resolved = true;
@@ -165,7 +161,6 @@ define(function (require, exports) {
     
     // API
     exports.$icon = $icon;
-    exports.logError = logError;
     exports.getProjectRoot = getProjectRoot;
     exports.init = init;
 });

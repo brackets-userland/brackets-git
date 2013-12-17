@@ -1,6 +1,7 @@
 /*global define */
 
 define({
+    BRACKETS_GIT_ERROR:                 "Brackets Git encountered an error\u2026",
     BUTTON_CANCEL:                      "Cancel",
     BUTTON_CHANGELOG:                   "Show changelog",
     BUTTON_CLOSE:                       "Close",
@@ -10,6 +11,7 @@ define({
     BUTTON_OK:                          "OK",
     BUTTON_PULL:                        "Git Pull",
     BUTTON_PUSH:                        "Git Push",
+    BUTTON_REPORT:                      "Report",
     BUTTON_RESET:                       "Reset index",
     BUTTON_SAVE:                        "Save",
     CHANGELOG:                          "Changelog",

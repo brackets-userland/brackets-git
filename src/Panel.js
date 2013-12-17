@@ -20,6 +20,7 @@ define(function (require, exports) {
         PanelManager       = brackets.getModule("view/PanelManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         StringUtils        = brackets.getModule("utils/StringUtils"),
+        ErrorHandler       = require("./ErrorHandler"),
         Main               = require("./Main"),
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
@@ -100,7 +101,10 @@ define(function (require, exports) {
     function handleGitReset() {
         Main.gitControl.gitReset().then(function () {
             refresh();
-        }).fail(Main.logError);
+        }).fail(function (err) {
+            // reset is executed too often so just log this error, but do not display a dialog
+            ErrorHandler.logError(err);
+        });
     }
     
     function _showCommitDialog(stagedDiff, lintResults) {
@@ -164,7 +168,9 @@ define(function (require, exports) {
 
                 Main.gitControl.gitCommit(commitMessage).then(function () {
                     return refresh();
-                }).fail(Main.logError);
+                }).fail(function (err) {
+                    ErrorHandler.showError(err, "Git Commit failed");
+                });
 
             } else {
                 handleGitReset();
@@ -175,7 +181,9 @@ define(function (require, exports) {
     function handleGitDiff(file) {
         Main.gitControl.gitDiffSingle(file).then(function (diff) {
             _showDiffDialog(file, diff);
-        }).fail(Main.logError);
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Git Diff failed");
+        });
     }
     
     function handleGitUndo(file) {
@@ -194,7 +202,9 @@ define(function (require, exports) {
                         }
                     });
                     refresh();
-                }).fail(Main.logError);
+                }).fail(function (err) {
+                    ErrorHandler.showError(err, "Git Checkout failed");
+                });
             }
         });
     }
@@ -209,13 +219,13 @@ define(function (require, exports) {
             if (buttonId === "ok") {
                 FileSystem.resolve(Main.getProjectRoot() + file, function (err, fileEntry) {
                     if (err) {
-                        console.error(err);
+                        ErrorHandler.showError(err, "Could not resolve file");
                         return;
                     }
                     ProjectManager.deleteItem(fileEntry).done(function () {
                         refresh();
                     }).fail(function (err) {
-                        console.error(err);
+                        ErrorHandler.showError(err, "File deletion failed");
                     });
                 });
             }
@@ -285,7 +295,8 @@ define(function (require, exports) {
                 });
                 _cleanLines(modified);
             }).fail(function (ex) {
-                Main.logError(ex);
+                // This error will bubble up to preparing commit dialog so just log here
+                ErrorHandler.logError(ex);
                 rv.reject(ex);
             });
         }
@@ -354,13 +365,15 @@ define(function (require, exports) {
             });
             return q.all(promises).then(function () {
                 // All files are in the index now, get the diff and show dialog.
-                Main.gitControl.gitDiffStaged().then(function (diff) {
+                return Main.gitControl.gitDiffStaged().then(function (diff) {
                     if (diff) {
                         _showCommitDialog(diff, lintResults);
                     }
                 });
             });
-        }).fail(Main.logError);
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Preparing commit dialog failed");
+        });
     }
 
     function handleGitPush() {
@@ -466,7 +479,10 @@ define(function (require, exports) {
                     FileViewController.addToWorkingSetAndSelect(fullPath);
                 });
 
-        }).fail(Main.logError);
+        }).fail(function (err) {
+            // Status is executed very often, so just log this error
+            ErrorHandler.logError(err);
+        });
 
         //- push button
         Main.gitControl.getCommitsAhead().then(function (commits) {

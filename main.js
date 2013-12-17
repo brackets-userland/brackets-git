@@ -6,7 +6,7 @@
  */
 
 /*jslint plusplus: true, vars: true, nomen: true */
-/*global define, brackets, console, setTimeout */
+/*global define, brackets */
 
 define(function (require, exports, module) {
     "use strict";
@@ -17,18 +17,22 @@ define(function (require, exports, module) {
         CommandManager             = brackets.getModule("command/CommandManager"),
         Commands                   = brackets.getModule("command/Commands"),
         ExtensionUtils             = brackets.getModule("utils/ExtensionUtils"),
-        FileSystem                 = brackets.getModule("filesystem/FileSystem"),
-        FileUtils                  = brackets.getModule("file/FileUtils"),
         Menus                      = brackets.getModule("command/Menus"),
         NodeConnection             = brackets.getModule("utils/NodeConnection"),
         PreferencesManager         = brackets.getModule("preferences/PreferencesManager"),
-        DefaultPreferences         = require("./DefaultPreferences"),
+        moduleDirectory            = ExtensionUtils.getModulePath(module),
+        ExtInfo                    = require("./ExtInfo");
+
+    // This should be set before loading any more files that may depend on this
+    ExtInfo.init(moduleDirectory);
+
+    var DefaultPreferences         = require("./DefaultPreferences"),
         ExtensionMain              = require("./src/Main"),
         Strings                    = require("./strings"),
         ChangelogDialog            = require("./src/ChangelogDialog"),
+        ErrorHandler                = require("./src/ErrorHandler"),
         SettingsDialog             = require("./src/SettingsDialog"),
         SETTINGS_COMMAND_ID        = "brackets-git.settings",
-        moduleDirectory            = ExtensionUtils.getModulePath(module),
         domainModulePath           = moduleDirectory + "domain",
         nodeConnection             = new NodeConnection();
 
@@ -47,21 +51,19 @@ define(function (require, exports, module) {
         SettingsDialog.show(preferences);
     }
 
-    // Load package.json - delay this so perf utils doesn't conflict with brackets loading the same file
-    setTimeout(function () {
-        FileUtils.readAsText(FileSystem.getFileForPath(moduleDirectory + "package.json")).done(function (content) {
-            var lastVersion    = preferences.getValue("lastVersion"),
-                currentVersion = JSON.parse(content).version;
+    // Display settings panel on first start / changelog dialog on version change
+    ExtInfo.get(function (packageJson) {
+        var lastVersion    = preferences.getValue("lastVersion"),
+            currentVersion = packageJson.version;
 
-            if (lastVersion === null) {
-                preferences.setValue("lastVersion", "firstStart");
-                openSettingsPanel();
-            } else if (lastVersion !== currentVersion) {
-                preferences.setValue("lastVersion", currentVersion);
-                ChangelogDialog.show(preferences);
-            }
-        });
-    }, 1000);
+        if (lastVersion === null) {
+            preferences.setValue("lastVersion", "firstStart");
+            openSettingsPanel();
+        } else if (lastVersion !== currentVersion) {
+            preferences.setValue("lastVersion", currentVersion);
+            ChangelogDialog.show(preferences);
+        }
+    });
 
     // Register command and add it to the menu.
 	CommandManager.register(Strings.GIT_SETTINGS, SETTINGS_COMMAND_ID, openSettingsPanel);
@@ -70,13 +72,11 @@ define(function (require, exports, module) {
     AppInit.appReady(function () {
         // Connects to Node
         nodeConnection.connect(true).fail(function (err) {
-            console.error("[brackets-git] failed to connect to node");
-            console.error(err);
+            ErrorHandler.showError(err, "Failed to connect to node");
         }).then(function () {
             // Register the domain.
             return nodeConnection.loadDomains([domainModulePath], true).fail(function (err) {
-                console.error("[brackets-git] failed to register domain");
-                console.error(err);
+                ErrorHandler.showError(err, "Failed to register node domain");
             });
         }).then(function () {
             ExtensionMain.init(nodeConnection, preferences);

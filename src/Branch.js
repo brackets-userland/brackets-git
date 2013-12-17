@@ -4,8 +4,9 @@
 define(function (require, exports) {
     "use strict";
     
-    var Main = require("./Main"),
-        Panel = require("./Panel");
+    var ErrorHandler = require("./ErrorHandler"),
+        Main         = require("./Main"),
+        Panel        = require("./Panel");
     
     var $gitBranchName = $(null);
     
@@ -16,7 +17,9 @@ define(function (require, exports) {
                 Main.gitControl.getBranchName().then(function (branchName) {
                     $gitBranchName.text(branchName);
                     Panel.enable();
-                }).fail(Main.logError);
+                }).fail(function (ex) {
+                    ErrorHandler.showError(ex, "Could not read branch name");
+                });
             } else {
                 // Current working folder is not a git root
                 $gitBranchName.text("not a git root");
