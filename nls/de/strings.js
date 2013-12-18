@@ -1,6 +1,8 @@
 /*global define */
 
 define({
+    BRACKETS_GIT_ERROR:                 "Es ist ein Fehler in Brackets Git aufgetreten\u2026",
+    BRACKETS_BUG_REPORT:                "Bug melden",
     BUTTON_CANCEL:                      "Abbrechen",
     BUTTON_CHANGELOG:                   "Changelog zeigen",
     BUTTON_CLOSE:                       "Schließen",
@@ -10,6 +12,7 @@ define({
     BUTTON_OK:                          "Okay",
     BUTTON_PULL:                        "Git Pull",
     BUTTON_PUSH:                        "Git Push",
+    BUTTON_REPORT:                      "Melden",
     BUTTON_RESET:                       "Index leeren",
     BUTTON_SAVE:                        "Speichern",
     CHANGELOG:                          "Changelog",
@@ -36,6 +39,7 @@ define({
     NOTHING_TO_COMMIT:                  "Nichts zum commiten, das Arbeitsverzeichnis ist sauber.",
     PATH_TO_GIT_EXECUTABLE:             "Pfad zur Git-Anwendung",
     PATH_TO_GIT_MSYSGIT:                "Pfad zum msysgit-Ordner",
+    PANEL_COMMAND:                      "Git",
     Q_DELETE_FILE:                      "Sind Sie sich sicher, dass Sie die Datei {0} löschen möchten?",
     Q_RESTART_BRACKETS:                 "Do you wish to restart Brackets to apply new settings ?",
     Q_UNDO_CHANGES:                     "Änderungen an der Datei {0} wirklich verwerfen?",
