@@ -100,7 +100,7 @@ define(function (require, exports, module) {
             var self = this;
             return this.executeCommand(this._git + " rev-parse --show-toplevel").then(function (output) {
                 // Git returns directory name without trailing slash
-                output = output.trim() + "/";
+                if (output.length > 0) { output = output.trim() + "/"; }
                 // Check if it's a cygwin installation.
                 if (brackets.platform === "win" && output[0] === "/") {
                     // Convert to Windows path with cygpath.
