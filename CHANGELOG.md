@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.2
+* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+
 ## 0.7.1
 * Added bug reporting button to the git panel which prefills some Brackets info.
 
