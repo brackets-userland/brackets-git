@@ -4,6 +4,8 @@ Git extension for [Brackets](http://brackets.io/).
 
 Should work on all Brackets platforms (Win, Mac, Linux).
 
+You need to have [Node.js](http://nodejs.org/) installed.
+
 Windows users need to have [msysgit](https://code.google.com/p/msysgit/) installed.
 
 Mac users need to have [Git for OS X](https://code.google.com/p/git-osx-installer/) installed.
