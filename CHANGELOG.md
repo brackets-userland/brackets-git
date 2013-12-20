@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.3
+* Git Init now experimentally works in projects that are not a git repository.
+
 ## 0.7.2
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
 
