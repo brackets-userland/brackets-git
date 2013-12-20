@@ -542,7 +542,13 @@ define(function (require, exports) {
 
     function handleGitInit() {
         Main.gitControl.gitInit().then(function () {
-            $(ProjectManager).triggerHandler("projectRefresh");
+            return q.when(FileUtils.writeText(FileSystem.getFileForPath(Main.getProjectRoot() + ".gitignore"), ""));
+        }).then(function () {
+            return Main.gitControl.gitAdd(".gitignore");
+        }).then(function () {
+            return Main.gitControl.gitCommit("Initial commit");
+        }).then(function () {
+            return $(ProjectManager).triggerHandler("projectRefresh");
         }).fail(function (err) {
             ErrorHandler.showError(err, "Initializing new repository failed");
         });
