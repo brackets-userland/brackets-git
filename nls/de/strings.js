@@ -2,7 +2,7 @@
 
 define({
     BRACKETS_GIT_ERROR:                 "Es ist ein Fehler in Brackets Git aufgetreten\u2026",
-    BRACKETS_BUG_REPORT:                "Bug melden",
+    BUTTON_BUG_REPORT:                  "Bug melden",
     BUTTON_CANCEL:                      "Abbrechen",
     BUTTON_CHANGELOG:                   "Changelog zeigen",
     BUTTON_CLOSE:                       "Schließen",
