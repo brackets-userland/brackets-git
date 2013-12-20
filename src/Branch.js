@@ -18,7 +18,12 @@ define(function (require, exports) {
                     $gitBranchName.text(branchName);
                     Panel.enable();
                 }).fail(function (ex) {
-                    ErrorHandler.showError(ex, "Could not read branch name");
+                    if (ex.match(/unknown revision/)) {
+                        $gitBranchName.text("no branch");
+                        Panel.enable();
+                    } else {
+                        ErrorHandler.showError(ex, "Could not read branch name");
+                    }
                 });
             } else {
                 // Current working folder is not a git root

@@ -243,6 +243,10 @@ define(function (require, exports, module) {
 
         gitPull: function () {
             return this.executeCommand(this._git + " pull --ff-only");
+        },
+
+        gitInit: function () {
+            return this.executeCommand(this._git + " init");
         }
 
     };

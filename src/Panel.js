@@ -493,12 +493,14 @@ define(function (require, exports) {
         });
 
         //- push button
+        var $pushBtn = gitPanel.$panel.find(".git-push");
         Main.gitControl.getCommitsAhead().then(function (commits) {
-            var $btn = gitPanel.$panel.find(".git-push");
-            $btn.children("span").remove();
+            $pushBtn.children("span").remove();
             if (commits.length > 0) {
-                $btn.append($("<span/>").text(" (" + commits.length + ")"));
+                $pushBtn.append($("<span/>").text(" (" + commits.length + ")"));
             }
+        }).fail(function () {
+            $pushBtn.children("span").remove();
         });
     }
     
@@ -538,6 +540,14 @@ define(function (require, exports) {
         });
     }
 
+    function handleGitInit() {
+        Main.gitControl.gitInit().then(function () {
+            $(ProjectManager).triggerHandler("projectRefresh");
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Initializing new repository failed");
+        });
+    }
+
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
@@ -554,7 +564,8 @@ define(function (require, exports) {
             .on("click", ".git-close-notmodified", handleCloseNotModified)
             .on("click", ".git-push", handleGitPush)
             .on("click", ".git-pull", handleGitPull)
-            .on("click", ".git-bug", ErrorHandler.reportBug);
+            .on("click", ".git-bug", ErrorHandler.reportBug)
+            .on("click", ".git-init", handleGitInit);
 
         // Register command for opening bottom panel.
         CommandManager.register(Strings.PANEL_COMMAND, PANEL_COMMAND_ID, toggle);
@@ -571,7 +582,9 @@ define(function (require, exports) {
     function enable() {
         gitPanelMode = null;
         //
-        gitPanel.$panel.find(".toolbar").show();
+        gitPanel.$panel.find(".mainToolbar").show();
+        gitPanel.$panel.find(".noRepoToolbar").hide();
+        //
         Main.$icon.removeClass("warning").removeAttr("title");
         gitPanelDisabled = false;
         // after all is enabled
@@ -582,7 +595,8 @@ define(function (require, exports) {
         gitPanelMode = cause;
         // causes: not-repo, not-root
         if (gitPanelMode === "not-repo") {
-            gitPanel.$panel.find(".toolbar").hide();
+            gitPanel.$panel.find(".mainToolbar").hide();
+            gitPanel.$panel.find(".noRepoToolbar").show();
         } else {
             Main.$icon.addClass("warning").attr("title", cause);
             toggle(false);
