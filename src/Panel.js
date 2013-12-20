@@ -34,7 +34,8 @@ define(function (require, exports) {
         questionDialogTemplate  = require("text!htmlContent/git-question-dialog.html");
     
     var gitPanel = null,
-        gitPanelDisabled = null;
+        gitPanelDisabled = null,
+        gitPanelMode = null;
     
     /**
      * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
@@ -426,9 +427,16 @@ define(function (require, exports) {
             return;
         }
 
+        var $tableContainer = gitPanel.$panel.find(".table-container");
+
+        if (gitPanelMode === "not-repo") {
+            $tableContainer.empty();
+            return;
+        }
+
         Main.gitControl.getGitStatus().then(function (files) {
-            var $checkAll = gitPanel.$panel.find(".check-all"),
-                $tableContainer = gitPanel.$panel.find(".table-container").empty();
+            var $checkAll = gitPanel.$panel.find(".check-all");
+            $tableContainer.empty();
 
             if (files.length === 0) {
                 $tableContainer.append($("<p class='nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
@@ -561,14 +569,26 @@ define(function (require, exports) {
     }
 
     function enable() {
+        gitPanelMode = null;
+        //
+        gitPanel.$panel.find(".toolbar").show();
         Main.$icon.removeClass("warning").removeAttr("title");
         gitPanelDisabled = false;
+        // after all is enabled
+        refresh();
     }
     
     function disable(cause) {
-        Main.$icon.addClass("warning").attr("title", cause);
-        toggle(false);
-        gitPanelDisabled = true;
+        gitPanelMode = cause;
+        // causes: not-repo, not-root
+        if (gitPanelMode === "not-repo") {
+            gitPanel.$panel.find(".toolbar").hide();
+        } else {
+            Main.$icon.addClass("warning").attr("title", cause);
+            toggle(false);
+            gitPanelDisabled = true;
+        }
+        refresh();
     }
     
     exports.init = init;

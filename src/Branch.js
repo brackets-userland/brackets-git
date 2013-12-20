@@ -23,12 +23,12 @@ define(function (require, exports) {
             } else {
                 // Current working folder is not a git root
                 $gitBranchName.text("not a git root");
-                Panel.disable("not a git root");
+                Panel.disable("not-root");
             }
         }).fail(function () {
             // Current working folder is not a git repository
             $gitBranchName.text("not a git repo");
-            Panel.disable("not a git repo");
+            Panel.disable("not-repo");
         });
     }
     
