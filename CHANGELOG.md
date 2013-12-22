@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.4
+* Experimental support for multi-line commit messages.
+
 ## 0.7.3
 * Git Init now experimentally works in projects that are not a git repository.
 

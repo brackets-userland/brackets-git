@@ -12,7 +12,7 @@ define(function (require, exports, module) {
     "use strict";
 
     window.bracketsGit = {
-        debug: true
+        debug: false
     };
 
     // Get module dependencies.
