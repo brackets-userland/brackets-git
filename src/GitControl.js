@@ -217,8 +217,13 @@ define(function (require, exports, module) {
         },
 
         gitCommit: function (message) {
-            message = message.trim().replace(/"/g, "\\\"") + " ";
-            return this.executeCommand(this._git + " commit -m \"" + message + "\"");
+            var cmd = " commit",
+                lines = message.split("\n");
+            lines.forEach(function (line) {
+                line = line.trim().replace(/"/g, "\\\"") + " ";
+                cmd += " -m \"" + line + "\"";
+            });
+            return this.executeCommand(this._git + cmd);
         },
 
         gitReset: function () {

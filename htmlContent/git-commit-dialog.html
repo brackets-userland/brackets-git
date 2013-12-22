@@ -1,5 +1,6 @@
 <div id="git-commit-dialog" class="modal">
     <div class="modal-header">
+        <button class="extendedCommit btn pull-right">EXTENDED</button>
         <h1 class="dialog-title">{{Strings.GIT_COMMIT}}</h1>
     </div>
     <div class="modal-body no-padding table-striped tab-content">
@@ -25,6 +26,7 @@
         <div class="commit-diff"></div>
         <div class="commit-message-box">
             <input name="commit-message" type="text" placeholder="{{Strings.COMMIT_MESSAGE_PLACEHOLDER}}" />
+            <textarea name="commit-message" type="text" placeholder="{{Strings.COMMIT_MESSAGE_PLACEHOLDER}}" style="display: none;"></textarea>
             <input name="commit-message-count" readonly="readonly" type="text" />
         </div>
     </div>

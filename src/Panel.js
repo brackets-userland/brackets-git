@@ -132,8 +132,27 @@ define(function (require, exports) {
         // Show nicely colored commit diff
         $dialog.find(".commit-diff").append(Utils.formatDiff(stagedDiff));
 
+        // commit message handling
+        function switchCommitMessageElement() {
+            $dialog.find("[name='commit-message']").toggle();
+            recalculateMessageLength();
+        }
+
+        function getCommitMessageElement() {
+            var r = $dialog.find("[name='commit-message']:visible");
+            if (r.length !== 1) {
+                r = $dialog.find("[name='commit-message']");
+                for (var i = 0; i < r.length; i++) {
+                    if ($(r[i]).css("display") !== "none") {
+                        return $(r[i]);
+                    }
+                }
+            }
+            return r;
+        }
+
         $dialog.find("button.primary").on("click", function (e) {
-            var $commitMessage = $dialog.find("input[name='commit-message']");
+            var $commitMessage = getCommitMessageElement();
             if ($commitMessage.val().trim().length === 0) {
                 e.stopPropagation();
                 $commitMessage.addClass("invalid");
@@ -142,22 +161,23 @@ define(function (require, exports) {
             }
         });
 
-        var $commitMessage = $dialog.find("input[name='commit-message']");
+        $dialog.find("button.extendedCommit").on("click", switchCommitMessageElement);
+
         var $commitMessageCount = $dialog.find("input[name='commit-message-count']");
 
         // Add focus to commit message input
-        $commitMessage.focus();
+        getCommitMessageElement().focus();
 
         // Add event to count characters in commit message
         var recalculateMessageLength = function () {
-            var length = $commitMessage.val().length;
+            var length = getCommitMessageElement().val().replace("\n", "").trim().length;
             $commitMessageCount
                 .val(length)
                 .toggleClass("over50", length > 50 && length <= 100)
                 .toggleClass("over100", length > 100);
         };
 
-        $commitMessage
+        $dialog.find("[name='commit-message']")
             .on("keyup", recalculateMessageLength)
             .on("change", recalculateMessageLength);
         recalculateMessageLength();
@@ -165,7 +185,7 @@ define(function (require, exports) {
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
                 // this event won't launch when commit-message is empty so its safe to assume that it is not
-                var commitMessage = $dialog.find("input[name='commit-message']").val();
+                var commitMessage = getCommitMessageElement().val();
 
                 Main.gitControl.gitCommit(commitMessage).then(function () {
                     return refresh();
@@ -385,8 +405,9 @@ define(function (require, exports) {
                 Strings.GIT_PUSH_RESPONSE, // title
                 result // message
             );
-        }).fail(function () {
+        }).fail(function (err) {
             console.warn("Pushing to remote repositories with username / password is not supported! See github page/issues for details.");
+            ErrorHandler.showError(err, "Pushing to remote repository failed");
         }).fin(function () {
             $btn.prop("disabled", false);
             refresh();
