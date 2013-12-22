@@ -11,6 +11,10 @@
 define(function (require, exports, module) {
     "use strict";
 
+    window.bracketsGit = {
+        debug: true
+    };
+
     // Get module dependencies.
     var q                          = require("./thirdparty/q"),
         AppInit                    = brackets.getModule("utils/AppInit"),

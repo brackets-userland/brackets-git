@@ -113,15 +113,25 @@ define(function (require, exports) {
                     i = showBusyIndicator(),
                     resolved = false;
 
+                if (window.bracketsGit.debug) {
+                    console.log("git-spawn: " + cmdString);
+                }
+
                 // nodeConnection returns jQuery deffered, not Q
                 nodeConnection.domains["brackets-git"].executeCommand(getProjectRoot(), cmdString)
                     .then(function (out) {
                         if (!resolved) {
+                            if (window.bracketsGit.debug) {
+                                console.log("git-spawn-out: " + out);
+                            }
                             rv.resolve(out);
                         }
                     })
                     .fail(function (err) {
                         if (!resolved) {
+                            if (window.bracketsGit.debug) {
+                                console.log("git-spawn-fail: " + err);
+                            }
                             rv.reject(err);
                         }
                     })
