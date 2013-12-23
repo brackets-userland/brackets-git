@@ -9,6 +9,8 @@ define({
     BUTTON_CLOSE_NOT_MODIFIED:          "Close not modified",
     BUTTON_COMMIT:                      "Commit",
     BUTTON_DEFAULTS:                    "Restore defaults",
+    BUTTON_HIDE_UNTRACKED:              "Hide untracked",
+    BUTTON_SHOW_UNTRACKED:              "Show untracked",
     BUTTON_INIT:                        "Init",
     BUTTON_OK:                          "OK",
     BUTTON_PULL:                        "Git Pull",

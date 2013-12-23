@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.5
+* Button to hide untracked files from panel.
+
 ## 0.7.4
 * Experimental support for multi-line commit messages.
 

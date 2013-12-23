@@ -35,7 +35,8 @@ define(function (require, exports) {
     
     var gitPanel = null,
         gitPanelDisabled = null,
-        gitPanelMode = null;
+        gitPanelMode = null,
+        showingUntracked = true;
     
     /**
      * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
@@ -462,6 +463,15 @@ define(function (require, exports) {
             if (files.length === 0) {
                 $tableContainer.append($("<p class='nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
             } else {
+                // if desired, remove untracked files from the results
+                if (showingUntracked === false) {
+                    for (var i = files.length - 1; i >= 0; i--) {
+                        if (files[i].status.indexOf(GitControl.FILE_STATUS.UNTRACKED) !== -1) {
+                            files.splice(i, 1);
+                        }
+                    }
+                }
+                // -
                 files.forEach(function (file) {
                     file.statusText = file.status.map(function (status) {
                         return Strings[status];
@@ -561,6 +571,12 @@ define(function (require, exports) {
         });
     }
 
+    function handleToggleUntracked() {
+        showingUntracked = !showingUntracked;
+        gitPanel.$panel.find(".git-toggle-untracked").text(showingUntracked ? Strings.BUTTON_HIDE_UNTRACKED : Strings.BUTTON_SHOW_UNTRACKED);
+        refresh();
+    }
+
     function handleGitInit() {
         Main.gitControl.gitInit().then(function () {
             return q.when(FileUtils.writeText(FileSystem.getFileForPath(Main.getProjectRoot() + ".gitignore"), ""));
@@ -589,6 +605,7 @@ define(function (require, exports) {
             .on("click", ".git-reset", handleGitReset)
             .on("click", ".git-commit", handleGitCommit)
             .on("click", ".git-close-notmodified", handleCloseNotModified)
+            .on("click", ".git-toggle-untracked", handleToggleUntracked)
             .on("click", ".git-push", handleGitPush)
             .on("click", ".git-pull", handleGitPull)
             .on("click", ".git-bug", ErrorHandler.reportBug)
