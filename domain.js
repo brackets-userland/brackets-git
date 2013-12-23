@@ -59,7 +59,6 @@
         child.stdin.end();
     }
 
-    /*
     // old handler, <= 0.7.3
     function executeCommand(directory, command, callback) {
         // http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
@@ -73,7 +72,6 @@
             callback(err ? stderr : undefined, err ? undefined : stdout);
         });
     }
-    */
 
     /**
      * Initializes the domain.
@@ -90,9 +88,9 @@
         DomainManager.registerCommand(
             domainName,
             "executeCommand", // command name
-            gitExec, // command handler function
+            executeCommand, // command handler function
             true, // this command is async
-            "Returns Git version",
+            "Executes any command in command line",
             [
                 {
                     name: "directory",
@@ -101,6 +99,28 @@
                 {
                     name: "command",
                     type: "string"
+                }
+            ],
+            [{
+                name: "stdout",
+                type: "string"
+            }]
+        );
+
+        DomainManager.registerCommand(
+            domainName,
+            "gitExec", // command name
+            gitExec, // command handler function
+            true, // this command is async
+            "Executes Git CLI",
+            [
+                {
+                    name: "directory",
+                    type: "string"
+                },
+                {
+                    name: "args",
+                    type: "array"
                 }
             ],
             [{

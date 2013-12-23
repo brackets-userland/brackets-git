@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.6
+* Fixes buggy releases 0.7.5 & 0.7.4
+
 ## 0.7.5
 * Button to hide untracked files from panel.
 
