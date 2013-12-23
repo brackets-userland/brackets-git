@@ -1,7 +1,4 @@
 /*global require, exports */
-/*jshint -W101*/
-
-// some parts of this file credited to https://github.com/creationix/node-git/
 
 (function () {
     "use strict";
@@ -9,10 +6,25 @@
     var ChildProcess = require("child_process"),
         domainName = "brackets-git";
 
-    var gitENOENT = /fatal: (Path '([^']+)' does not exist in '([0-9a-f]{40})'|ambiguous argument '([^']+)': unknown revision or path not in the working tree.)/,
-        gitCommands = []; // can be filled with --git-dir and --work-tree
+    function fixEOL(str) {
+        if (str[str.length - 1] === "\n") {
+            str = str.slice(0, -1);
+        }
+        return str;
+    }
 
-    function join(arr, encoding) {
+    // handler with ChildProcess.exec
+    function execute(directory, command, args, callback) {
+        // http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
+        ChildProcess.exec(command + " " + args.join(" "), {
+            cwd: directory
+        }, function (err, stdout, stderr) {
+            callback(err ? fixEOL(stderr) : undefined, err ? undefined : fixEOL(stdout));
+        });
+    }
+
+    // handler with ChildProcess.spawn
+    function join(arr) {
         var result, index = 0, length;
         length = arr.reduce(function (l, b) {
             return l + b.length;
@@ -22,55 +34,29 @@
             b.copy(result, index);
             index += b.length;
         });
-        if (encoding) {
-            return result.toString(encoding);
-        }
-        return result;
+        return fixEOL(result.toString("utf8"));
     }
 
-    // Internal helper to talk to the git subprocess
-    function gitExec(directory, commands, callback) {
-        commands = gitCommands.concat(commands);
-        var child = ChildProcess.spawn("git", commands, {
+    function spawn(directory, command, args, callback) {
+        // https://github.com/creationix/node-git
+        var child = ChildProcess.spawn(command, args, {
             cwd: directory
         });
-        var stdout = [], stderr = [];
+        var exitCode, stdout = [], stderr = [];
         child.stdout.addListener("data", function (text) {
             stdout[stdout.length] = text;
         });
         child.stderr.addListener("data", function (text) {
             stderr[stderr.length] = text;
         });
-        var exitCode;
         child.addListener("exit", function (code) {
             exitCode = code;
         });
         child.addListener("close", function () {
-            if (exitCode > 0) {
-                var err = new Error("git " + commands.join(" ") + "\n" + join(stderr, "utf8"));
-                if (gitENOENT.test(err.message)) {
-                    err.errno = process.ENOENT;
-                }
-                callback(err);
-                return;
-            }
-            callback(undefined, join(stdout, "utf8"));
+            callback(exitCode > 0 ? join(stderr) : undefined,
+                     exitCode > 0 ? undefined : join(stdout));
         });
         child.stdin.end();
-    }
-
-    // old handler, <= 0.7.3
-    function executeCommand(directory, command, callback) {
-        // http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
-        ChildProcess.exec(command, {
-            cwd: directory
-        }, function (err, stdout, stderr) {
-            // remove last EOL
-            if (stdout[stdout.length - 1] === "\n") {
-                stdout = stdout.slice(0, -1);
-            }
-            callback(err ? stderr : undefined, err ? undefined : stdout);
-        });
     }
 
     /**
@@ -87,10 +73,10 @@
         
         DomainManager.registerCommand(
             domainName,
-            "executeCommand", // command name
-            executeCommand, // command handler function
+            "execute", // command name
+            execute, // command handler function
             true, // this command is async
-            "Executes any command in command line",
+            "Runs a command in a shell and buffers the output.",
             [
                 {
                     name: "directory",
@@ -99,6 +85,10 @@
                 {
                     name: "command",
                     type: "string"
+                },
+                {
+                    name: "args",
+                    type: "array"
                 }
             ],
             [{
@@ -109,13 +99,17 @@
 
         DomainManager.registerCommand(
             domainName,
-            "gitExec", // command name
-            gitExec, // command handler function
+            "spawn", // command name
+            spawn, // command handler function
             true, // this command is async
-            "Executes Git CLI",
+            "Launches a new process with the given command.",
             [
                 {
                     name: "directory",
+                    type: "string"
+                },
+                {
+                    name: "command",
                     type: "string"
                 },
                 {

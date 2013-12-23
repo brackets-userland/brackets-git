@@ -108,30 +108,30 @@ define(function (require, exports) {
         // Creates an GitControl Instance
         gitControl = exports.gitControl = new GitControl({
             preferences: preferences,
-            executeHandler: function (cmdString) {
+            handler: function (method, cmd, args, opts) {
                 var rv = q.defer(),
                     i = showBusyIndicator(),
                     resolved = false;
 
+                opts = opts || {};
+                if (opts.cwd) { opts.customCwd = true; }
+                else { opts.cwd = getProjectRoot(); }
+
                 if (window.bracketsGit.debug) {
-                    console.log("git-spawn: " + cmdString);
+                    console.log("cmd-" + method + ": " + (opts.customCwd ? opts.cwd + "\\" : "") + cmd + " " + args.join(" "));
                 }
 
                 // nodeConnection returns jQuery deffered, not Q
-                nodeConnection.domains["brackets-git"].executeCommand(getProjectRoot(), cmdString)
+                nodeConnection.domains["brackets-git"][method](opts.cwd, cmd, args)
                     .then(function (out) {
                         if (!resolved) {
-                            if (window.bracketsGit.debug) {
-                                console.log("git-spawn-out: " + out);
-                            }
+                            if (window.bracketsGit.debug) { console.log("cmd-" + method + "-out: " + out); }
                             rv.resolve(out);
                         }
                     })
                     .fail(function (err) {
                         if (!resolved) {
-                            if (window.bracketsGit.debug) {
-                                console.log("git-spawn-fail: " + err);
-                            }
+                            if (window.bracketsGit.debug) { console.log("cmd-" + method + "-fail: " + err); }
                             rv.reject(err);
                         }
                     })
@@ -143,13 +143,13 @@ define(function (require, exports) {
 
                 setTimeout(function () {
                     if (!resolved) {
-                        var err = new Error("Timeout: " + cmdString);
+                        var err = new Error("cmd-" + method + "-timeout: " + cmd + " " + args.join(" "));
                         ErrorHandler.logError(err);
                         rv.reject(err);
                         hideBusyIndicator(i);
                         resolved = true;
                     }
-                }, TIMEOUT_VALUE);
+                }, opts.timeout || TIMEOUT_VALUE);
 
                 return rv.promise;
             }

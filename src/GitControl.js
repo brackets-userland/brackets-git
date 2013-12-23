@@ -49,10 +49,13 @@ define(function (require, exports, module) {
             self._isHandlerRunning = true;
 
             var queueItem = self._queue.shift(),
-                promise = queueItem[0],
-                cmd = queueItem[1];
+                method = queueItem[0],
+                promise = queueItem[1],
+                cmd = queueItem[2],
+                args = queueItem[3],
+                opts = queueItem[4];
 
-            self.options.executeHandler(cmd).then(function (result) {
+            self.options.handler(method, cmd, args, opts).then(function (result) {
                 promise.resolve(result);
                 self._isHandlerRunning = false;
                 self._processQueue();
@@ -63,11 +66,23 @@ define(function (require, exports, module) {
             });
         },
 
-        executeCommand: function (cmd) {
+        _pushToQueue: function (method, cmd, args, opts) {
+            if (!args) { args = []; }
+            if (!opts) { opts = {}; }
+            if (typeof args === "string") { args = [args]; }
+
             var rv = q.defer();
-            this._queue.push([rv, cmd]);
+            this._queue.push([method, rv, cmd, args, opts]);
             this._processQueue();
             return rv.promise;
+        },
+
+        executeCommand: function (cmd, args, opts) {
+            return this._pushToQueue("execute", cmd, args, opts);
+        },
+
+        spawnCommand: function (cmd, args, opts) {
+            return this._pushToQueue("spawn", cmd, args, opts);
         },
 
         bashVersion: function () {
@@ -90,7 +105,7 @@ define(function (require, exports, module) {
         },
 
         getVersion: function () {
-            return this.executeCommand(this._git + " --version").then(function (output) {
+            return this.executeCommand(this._git, "--version").then(function (output) {
                 var io = output.indexOf("git version");
                 return output.substring(io !== -1 ? io + "git version".length : 0).trim();
             });
