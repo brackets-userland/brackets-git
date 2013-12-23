@@ -24,7 +24,7 @@
     },
 
     "engines": {
-        "brackets": ">=0.34.0"
+        "brackets": ">=0.35.0"
     },
     "dependencies": {
         
