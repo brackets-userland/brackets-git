@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.7
+* Added Simplified Chinese translation by [Zhi](https://github.com/yfwz100)
+
 ## 0.7.6
 * Fixes buggy releases 0.7.5 & 0.7.4
 
