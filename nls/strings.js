@@ -18,6 +18,7 @@ define(function (require, exports, module) {
     module.exports = {
         root: true,
         "cs": true,
-        "de": true
+        "de": true,
+        "zh-cn": true
     };
 });
