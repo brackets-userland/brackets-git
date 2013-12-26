@@ -2,6 +2,7 @@
 
 ## 0.7.9
 * Test if project folder is writable before doing Git Init.
+* Extended commit now works without extra line breaks.
 
 ## 0.7.8
 * Do not display files in panel that are hidden by Brackets by default.

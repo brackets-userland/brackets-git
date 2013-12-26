@@ -4,7 +4,10 @@
 define(function (require, exports, module) {
     "use strict";
 
-    var q = require("../thirdparty/q");
+    var q               = require("../thirdparty/q"),
+        FileSystem      = brackets.getModule("filesystem/FileSystem"),
+        FileUtils       = brackets.getModule("file/FileUtils"),
+        ProjectManager  = brackets.getModule("project/ProjectManager");
 
     var FILE_STATUS = {
         STAGED: "FILE_STAGED",
@@ -233,13 +236,30 @@ define(function (require, exports, module) {
         },
 
         gitCommit: function (message) {
-            var cmd = " commit",
+            var self = this,
                 lines = message.split("\n");
-            lines.forEach(function (line) {
-                line = line.trim().replace(/"/g, "\\\"") + " ";
-                cmd += " -m \"" + line + "\"";
-            });
-            return this.executeCommand(this._git + cmd);
+
+            if (lines.length === 1) {
+                return self.executeCommand(self._git + " commit -m \"" + message + "\"");
+            } else {
+                var result = q.defer(),
+                    fileEntry = FileSystem.getFileForPath(ProjectManager.getProjectRoot().fullPath + ".bracketsGitTemp");
+
+                FileUtils.writeText(fileEntry, message).done(function () {
+                    return self.executeCommand(self._git + " commit -F .bracketsGitTemp");
+                }).then(function (res) {
+                    setTimeout(function () {
+                        fileEntry.moveToTrash(function () {
+                            result.resolve(res);
+                        });
+                    }, 300);
+                }).fail(function (err) {
+                    fileEntry.moveToTrash(function () {
+                        result.reject(err);
+                    });
+                });
+                return result.promise;
+            }
         },
 
         gitReset: function () {
