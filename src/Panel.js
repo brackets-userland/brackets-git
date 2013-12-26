@@ -591,7 +591,12 @@ define(function (require, exports) {
     }
 
     function handleGitInit() {
-        Main.gitControl.gitInit().then(function () {
+        Main.isProjectRootWritable().then(function (writable) {
+            if (!writable) {
+                throw new Error("Your current project folder is not writable!");
+            }
+            return Main.gitControl.gitInit();
+        }).then(function () {
             return q.when(FileUtils.writeText(FileSystem.getFileForPath(Main.getProjectRoot() + ".gitignore"), ""));
         }).then(function () {
             return Main.gitControl.gitAdd(".gitignore");

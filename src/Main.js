@@ -8,6 +8,7 @@ define(function (require, exports) {
         AppInit         = brackets.getModule("utils/AppInit"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
+        FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
         Strings         = require("../strings"),
         ErrorHandler    = require("./ErrorHandler"),
@@ -47,6 +48,32 @@ define(function (require, exports) {
         return ProjectManager.getProjectRoot().fullPath;
     }
     
+    var writeTestResults = {};
+    function isProjectRootWritable() {
+        var folder = getProjectRoot();
+
+        if (writeTestResults[folder]) {
+            return q(writeTestResults[folder]);
+        }
+
+        var result = q.defer(),
+            fileEntry = FileSystem.getFileForPath(folder + ".bracketsGitTemp");
+
+        function finish(bool) {
+            fileEntry.moveToTrash(function () {
+                result.resolve(writeTestResults[folder] = bool);
+            });
+        }
+
+        FileUtils.writeText(fileEntry, "").done(function () {
+            finish(true);
+        }).fail(function () {
+            finish(false);
+        });
+
+        return result.promise;
+    }
+
     // Shows currently installed version or error when Git is not available
     function initGitStatusBar() {
         return gitControl.getVersion().then(function (version) {
@@ -172,5 +199,6 @@ define(function (require, exports) {
     // API
     exports.$icon = $icon;
     exports.getProjectRoot = getProjectRoot;
+    exports.isProjectRootWritable = isProjectRootWritable;
     exports.init = init;
 });
