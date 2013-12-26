@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.8
+* Do not display files in panel that are hidden by Brackets by default.
+
 ## 0.7.7
 * Added Simplified Chinese translation by [Zhi](https://github.com/yfwz100)
 

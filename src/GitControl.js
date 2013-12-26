@@ -203,7 +203,8 @@ define(function (require, exports, module) {
 
                     results.push({
                         status: uniqSorted(status),
-                        file: file
+                        file: file,
+                        name: file.substring(file.lastIndexOf("/") + 1)
                     });
                 });
                 return results.sort(function (a, b) {

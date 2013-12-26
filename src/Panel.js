@@ -33,6 +33,8 @@ define(function (require, exports) {
         gitDiffDialogTemplate   = require("text!htmlContent/git-diff-dialog.html"),
         questionDialogTemplate  = require("text!htmlContent/git-question-dialog.html");
     
+    var showFileWhiteList = /^.gitignore$/;
+
     var gitPanel = null,
         gitPanelDisabled = null,
         gitPanelMode = null,
@@ -443,6 +445,13 @@ define(function (require, exports) {
         }
     }
     
+    function shouldShow(fileObj) {
+        if (showFileWhiteList.test(fileObj.name)) {
+            return true;
+        }
+        return ProjectManager.shouldShow(fileObj);
+    }
+
     function refresh() {
         if (!gitPanel.isVisible()) {
             // no point, will be refreshed when it's displayed
@@ -457,15 +466,23 @@ define(function (require, exports) {
         }
 
         Main.gitControl.getGitStatus().then(function (files) {
-            var $checkAll = gitPanel.$panel.find(".check-all");
+            var i,
+                $checkAll = gitPanel.$panel.find(".check-all");
             $tableContainer.empty();
+
+            // remove files that we should not show
+            for (i = files.length - 1; i >= 0; i--) {
+                if (!shouldShow(files[i])) {
+                    files.splice(i, 1);
+                }
+            }
 
             if (files.length === 0) {
                 $tableContainer.append($("<p class='nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
             } else {
                 // if desired, remove untracked files from the results
                 if (showingUntracked === false) {
-                    for (var i = files.length - 1; i >= 0; i--) {
+                    for (i = files.length - 1; i >= 0; i--) {
                         if (files[i].status.indexOf(GitControl.FILE_STATUS.UNTRACKED) !== -1) {
                             files.splice(i, 1);
                         }
