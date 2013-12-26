@@ -5,6 +5,7 @@ define(function (require, exports) {
     "use strict";
     
     var q                  = require("../thirdparty/q"),
+        _                  = brackets.getModule("thirdparty/lodash"),
         CodeInspection     = brackets.getModule("language/CodeInspection"),
         CommandManager     = brackets.getModule("command/CommandManager"),
         Commands           = brackets.getModule("command/Commands"),
@@ -466,27 +467,22 @@ define(function (require, exports) {
         }
 
         Main.gitControl.getGitStatus().then(function (files) {
-            var i,
-                $checkAll = gitPanel.$panel.find(".check-all");
+            var $checkAll = gitPanel.$panel.find(".check-all");
             $tableContainer.empty();
 
             // remove files that we should not show
-            for (i = files.length - 1; i >= 0; i--) {
-                if (!shouldShow(files[i])) {
-                    files.splice(i, 1);
-                }
-            }
+            files = _.filter(files, function (file) {
+                return shouldShow(file);
+            });
 
             if (files.length === 0) {
                 $tableContainer.append($("<p class='nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
             } else {
                 // if desired, remove untracked files from the results
                 if (showingUntracked === false) {
-                    for (i = files.length - 1; i >= 0; i--) {
-                        if (files[i].status.indexOf(GitControl.FILE_STATUS.UNTRACKED) !== -1) {
-                            files.splice(i, 1);
-                        }
-                    }
+                    files = _.filter(files, function (file) {
+                        return file.status.indexOf(GitControl.FILE_STATUS.UNTRACKED) === -1;
+                    });
                 }
                 // -
                 files.forEach(function (file) {
