@@ -242,19 +242,17 @@ define(function (require, exports, module) {
             if (lines.length === 1) {
                 return self.executeCommand(self._git + " commit -m \"" + message + "\"");
             } else {
+                // TODO: maybe use git commit --file=-
                 var result = q.defer(),
                     fileEntry = FileSystem.getFileForPath(ProjectManager.getProjectRoot().fullPath + ".bracketsGitTemp");
-
-                FileUtils.writeText(fileEntry, message).done(function () {
+                q.when(FileUtils.writeText(fileEntry, message)).then(function () {
                     return self.executeCommand(self._git + " commit -F .bracketsGitTemp");
                 }).then(function (res) {
-                    setTimeout(function () {
-                        fileEntry.moveToTrash(function () {
-                            result.resolve(res);
-                        });
-                    }, 300);
+                    fileEntry.unlink(function () {
+                        result.resolve(res);
+                    });
                 }).fail(function (err) {
-                    fileEntry.moveToTrash(function () {
+                    fileEntry.unlink(function () {
                         result.reject(err);
                     });
                 });

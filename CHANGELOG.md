@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.10
+* Fixes of previous release.
+
 ## 0.7.9
 * Test if project folder is writable before doing Git Init.
 * Extended commit now works without extra line breaks.

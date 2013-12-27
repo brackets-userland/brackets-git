@@ -60,7 +60,7 @@ define(function (require, exports) {
             fileEntry = FileSystem.getFileForPath(folder + ".bracketsGitTemp");
 
         function finish(bool) {
-            fileEntry.moveToTrash(function () {
+            fileEntry.unlink(function () {
                 result.resolve(writeTestResults[folder] = bool);
             });
         }
