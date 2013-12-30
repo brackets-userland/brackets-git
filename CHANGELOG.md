@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.11
+* Fixes bug when commiting files moved with git mv command.
+
 ## 0.7.10
 * Fixes of previous release.
 

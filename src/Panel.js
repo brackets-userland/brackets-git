@@ -344,6 +344,23 @@ define(function (require, exports) {
             };
         }).toArray();
 
+        // Handle moved files, issue https://github.com/zaggino/brackets-git/issues/56
+        for (var i = 0; i < files.length; i++) {
+            var split = files[i].filename.split("->");
+            if (split.length > 1) {
+                var o1 = {
+                    filename: split[0].trim(),
+                    status: [GitControl.FILE_STATUS.DELETED]
+                };
+                var o2 = {
+                    filename: split[1].trim(),
+                    status: [GitControl.FILE_STATUS.NEWFILE]
+                };
+                files.splice(i, 1, o1, o2);
+                i += 1;
+            }
+        }
+
         // First reset staged files, then add selected files to the index.
         Main.gitControl.gitReset().then(function () {
             var lintResults = [],
