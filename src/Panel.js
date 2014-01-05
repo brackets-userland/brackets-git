@@ -428,7 +428,7 @@ define(function (require, exports) {
             );
         }).fail(function (err) {
             console.warn("Pushing to remote repositories with username / password is not supported! See github page/issues for details.");
-            ErrorHandler.showError(err, "Pushing to remote repository failed");
+            ErrorHandler.showError(err, "Pushing to remote repository failed, password protected repositories are not supported.");
         }).fin(function () {
             $btn.prop("disabled", false);
             refresh();
