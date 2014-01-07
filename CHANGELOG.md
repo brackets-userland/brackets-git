@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.12
+* Minor fix in produced error messages for github bug reports.
+
 ## 0.7.11
 * Fixes bug when commiting files moved with git mv command.
 

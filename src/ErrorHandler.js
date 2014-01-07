@@ -46,9 +46,11 @@ define(function (require, exports) {
 
         if (typeof err === "string") {
             errorBody = err;
-        } else {
+        } else if (err instanceof Error) {
             errorBody = err.toString();
             errorStack = err.stack || "";
+        } else {
+            errorBody = JSON.stringify(err, null, 4);
         }
 
         var compiledTemplate = Mustache.render(errorDialogTemplate, {
