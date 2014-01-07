@@ -22,6 +22,7 @@ define(function (require, exports) {
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         StringUtils        = brackets.getModule("utils/StringUtils"),
         ErrorHandler       = require("./ErrorHandler"),
+        ExpectedError      = require("./ExpectedError"),
         Main               = require("./Main"),
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
@@ -610,7 +611,7 @@ define(function (require, exports) {
     function handleGitInit() {
         Main.isProjectRootWritable().then(function (writable) {
             if (!writable) {
-                throw new Error("Your current project folder is not writable!");
+                throw new ExpectedError("Folder " + Main.getProjectRoot() + " is not writable!");
             }
             return Main.gitControl.gitInit();
         }).then(function () {

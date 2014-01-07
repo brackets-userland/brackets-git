@@ -7,6 +7,7 @@ define(function (require, exports) {
     var _                          = brackets.getModule("thirdparty/lodash"),
         Dialogs                    = brackets.getModule("widgets/Dialogs"),
         NativeApp                  = brackets.getModule("utils/NativeApp"),
+        ExpectedError              = require("./ExpectedError"),
         ExtInfo                    = require("../ExtInfo"),
         Strings                    = require("../strings"),
         markdownReportTemplate     = require("text!htmlContent/error-report.md"),
@@ -44,6 +45,11 @@ define(function (require, exports) {
             errorBody,
             errorStack;
 
+        var showReportButton = true;
+        if (err instanceof ExpectedError) {
+            showReportButton = false;
+        }
+
         if (typeof err === "string") {
             errorBody = err;
         } else if (err instanceof Error) {
@@ -56,6 +62,7 @@ define(function (require, exports) {
         var compiledTemplate = Mustache.render(errorDialogTemplate, {
             title: title,
             body: errorBody,
+            showReportButton: showReportButton,
             Strings: Strings
         });
 
