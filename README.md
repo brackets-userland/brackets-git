@@ -18,6 +18,12 @@ You can use Brackets built-in [extension registry](https://brackets-registry.abo
 
 Extension can be configured in "File > Git Settings..." (this window will show the first time after you install the extension).
 
+### Pushing to username/password protected remote repositories
+
+Currently possible only if credentials helper like [Windows Credential Store for Git](http://gitcredentialstore.codeplex.com/) is installed.
+
+You'll need to push manually for the first time to setup your username/password into credentials helper.
+
 ## Features
 
 Try out and see, this README might not be 100% up-to-date. You can see the ```CHANGELOG.md``` for more info on this.
