@@ -6,6 +6,8 @@ define(function (require, exports) {
     
     var q               = require("../thirdparty/q"),
         AppInit         = brackets.getModule("utils/AppInit"),
+        CommandManager  = brackets.getModule("command/CommandManager"),
+        Menus           = brackets.getModule("command/Menus"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
@@ -129,6 +131,33 @@ define(function (require, exports) {
         });
     }
     
+    function addItemToGitingore() {
+        var projectRoot = getProjectRoot(),
+            selectedEntry = ProjectManager.getSelectedItem(),
+            entryPath = "/" + selectedEntry.fullPath.substring(projectRoot.length),
+            gitignoreEntry = FileSystem.getFileForPath(projectRoot + ".gitignore");
+
+        gitignoreEntry.read(function (err, content) {
+            if (err) {
+                console.warn(err);
+                content = "";
+            }
+
+            var lines = content.trim().split("\n");
+            while (lines.length > 0 && !lines[0]) { lines.shift(); }
+            while (lines.length > 0 && !lines[lines.length - 1]) { lines.pop(); }
+            lines.push(entryPath);
+            content = lines.join("\n");
+
+            gitignoreEntry.write(content, function (err) {
+                if (err) {
+                    return ErrorHandler.showError(err, "Failed adding to .gitignore");
+                }
+                Panel.refresh();
+            });
+        });
+    }
+
     function init(nodeConnection, _preferences) {
         preferences = exports.preferences = _preferences;
         var TIMEOUT_VALUE = preferences.getValue("TIMEOUT_VALUE");
@@ -193,6 +222,12 @@ define(function (require, exports) {
             gitControl.bashVersion().then(function () {
                 initBashIcon();
             });
+            // add command to project menu
+            var cmdName = "git.addToIgnore";
+            CommandManager.register(Strings.ADD_TO_GITIGNORE, cmdName, addItemToGitingore);
+            var projectCmenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
+            projectCmenu.addMenuDivider();
+            projectCmenu.addMenuItem(cmdName);
         });
     }
     
