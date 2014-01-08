@@ -182,6 +182,7 @@ define(function (require, exports) {
             if (err) { return; }
 
             var ignoreEntries = _.map(_.compact(content.split("\n")), function (line) {
+                line = line.trim();
                 if (line.indexOf("/") === 0) { line = line.substring(1); }
                 return projectRoot + line;
             });
