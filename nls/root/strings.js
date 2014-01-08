@@ -2,6 +2,7 @@
 
 define({
     ADD_TO_GITIGNORE:                   "Add to .gitignore",
+    REMOVE_FROM_GITIGNORE:              "Remove from .gitignore",
     BRACKETS_GIT_ERROR:                 "Brackets Git encountered an error\u2026",
     BUTTON_BUG_REPORT:                  "Report bug",
     BUTTON_CANCEL:                      "Cancel",

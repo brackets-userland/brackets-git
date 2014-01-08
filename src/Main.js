@@ -5,6 +5,7 @@ define(function (require, exports) {
     "use strict";
     
     var q               = require("../thirdparty/q"),
+        _               = brackets.getModule("thirdparty/lodash"),
         AppInit         = brackets.getModule("utils/AppInit"),
         CommandManager  = brackets.getModule("command/CommandManager"),
         Menus           = brackets.getModule("command/Menus"),
@@ -131,7 +132,7 @@ define(function (require, exports) {
         });
     }
     
-    function addItemToGitingore() {
+    function _addRemoveItemInGitignore(method) {
         var projectRoot = getProjectRoot(),
             selectedEntry = ProjectManager.getSelectedItem(),
             entryPath = "/" + selectedEntry.fullPath.substring(projectRoot.length),
@@ -144,18 +145,32 @@ define(function (require, exports) {
             }
 
             var lines = content.trim().split("\n");
+            // clean start and end empty lines
             while (lines.length > 0 && !lines[0]) { lines.shift(); }
             while (lines.length > 0 && !lines[lines.length - 1]) { lines.pop(); }
-            lines.push(entryPath);
-            content = lines.join("\n");
 
-            gitignoreEntry.write(content, function (err) {
+            if (method === "add") {
+                // add only when not already present
+                if (lines.indexOf(entryPath) === -1) { lines.push(entryPath); }
+            } else if (method === "remove") {
+                lines = _.without(lines, entryPath);
+            }
+
+            gitignoreEntry.write(lines.join("\n"), function (err) {
                 if (err) {
-                    return ErrorHandler.showError(err, "Failed adding to .gitignore");
+                    return ErrorHandler.showError(err, "Failed modifying .gitignore");
                 }
                 Panel.refresh();
             });
         });
+    }
+
+    function addItemToGitingore() {
+        return _addRemoveItemInGitignore("add");
+    }
+
+    function removeItemFromGitingore() {
+        return _addRemoveItemInGitignore("remove");
     }
 
     function init(nodeConnection, _preferences) {
@@ -223,10 +238,15 @@ define(function (require, exports) {
                 initBashIcon();
             });
             // add command to project menu
-            var cmdName = "git.addToIgnore";
-            CommandManager.register(Strings.ADD_TO_GITIGNORE, cmdName, addItemToGitingore);
             var projectCmenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
             projectCmenu.addMenuDivider();
+
+            var cmdName = "git.addToIgnore";
+            CommandManager.register(Strings.ADD_TO_GITIGNORE, cmdName, addItemToGitingore);
+            projectCmenu.addMenuItem(cmdName);
+
+            cmdName = "git.removeFromIgnore";
+            CommandManager.register(Strings.REMOVE_FROM_GITIGNORE, cmdName, removeItemFromGitingore);
             projectCmenu.addMenuItem(cmdName);
         });
     }
