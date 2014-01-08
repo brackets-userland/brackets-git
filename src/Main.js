@@ -119,6 +119,7 @@ define(function (require, exports) {
         $(ProjectManager).on("projectOpen projectRefresh", function () {
             Branch.refresh();
             Panel.refresh();
+            highlightGitignore();
         });
         $(FileSystem).on("change rename", function () {
             Branch.refresh();
@@ -130,6 +131,7 @@ define(function (require, exports) {
         $(DocumentManager).on("currentDocumentChange", function () {
             Panel.refreshCurrentFile();
         });
+        highlightGitignore();
     }
     
     function _addRemoveItemInGitignore(method) {
@@ -161,6 +163,7 @@ define(function (require, exports) {
                     return ErrorHandler.showError(err, "Failed modifying .gitignore");
                 }
                 Panel.refresh();
+                highlightGitignore();
             });
         });
     }
@@ -171,6 +174,24 @@ define(function (require, exports) {
 
     function removeItemFromGitingore() {
         return _addRemoveItemInGitignore("remove");
+    }
+
+    function highlightGitignore() {
+        var projectRoot = getProjectRoot();
+        FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
+            if (err) { return; }
+
+            var ignoreEntries = _.map(_.compact(content.split("\n")), function (line) {
+                if (line.indexOf("/") === 0) { line = line.substring(1); }
+                return projectRoot + line;
+            });
+
+            $("#project-files-container").find("li").each(function () {
+                var $li = $(this),
+                    isIgnored = ignoreEntries.indexOf($li.data("entry").fullPath) !== -1;
+                $li.toggleClass("git-ignored", isIgnored);
+            });
+        });
     }
 
     function init(nodeConnection, _preferences) {
