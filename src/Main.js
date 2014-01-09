@@ -134,9 +134,8 @@ define(function (require, exports) {
         highlightGitignore();
     }
     
-    function _addRemoveItemInGitignore(method) {
+    function _addRemoveItemInGitignore(selectedEntry, method) {
         var projectRoot = getProjectRoot(),
-            selectedEntry = ProjectManager.getSelectedItem(),
             entryPath = "/" + selectedEntry.fullPath.substring(projectRoot.length),
             gitignoreEntry = FileSystem.getFileForPath(projectRoot + ".gitignore");
 
@@ -169,11 +168,23 @@ define(function (require, exports) {
     }
 
     function addItemToGitingore() {
-        return _addRemoveItemInGitignore("add");
+        return _addRemoveItemInGitignore(ProjectManager.getSelectedItem(), "add");
     }
 
     function removeItemFromGitingore() {
-        return _addRemoveItemInGitignore("remove");
+        return _addRemoveItemInGitignore(ProjectManager.getSelectedItem(), "remove");
+    }
+
+    function addItemToGitingoreFromPanel() {
+        var filePath = Panel.getPanel().find("tr.selected").data("file"),
+            fileEntry = FileSystem.getFileForPath(getProjectRoot() + filePath);
+        return _addRemoveItemInGitignore(fileEntry, "add");
+    }
+
+    function removeItemFromGitingoreFromPanel() {
+        var filePath = Panel.getPanel().find("tr.selected").data("file"),
+            fileEntry = FileSystem.getFileForPath(getProjectRoot() + filePath);
+        return _addRemoveItemInGitignore(fileEntry, "remove");
     }
 
     function highlightGitignore() {
@@ -261,15 +272,24 @@ define(function (require, exports) {
             });
             // add command to project menu
             var projectCmenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
+            var workingCmenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_MENU);
+            var panelCmenu = Menus.registerContextMenu("git-panel-context-menu");
             projectCmenu.addMenuDivider();
+            workingCmenu.addMenuDivider();
 
             var cmdName = "git.addToIgnore";
             CommandManager.register(Strings.ADD_TO_GITIGNORE, cmdName, addItemToGitingore);
             projectCmenu.addMenuItem(cmdName);
+            workingCmenu.addMenuItem(cmdName);
+            CommandManager.register(Strings.ADD_TO_GITIGNORE, cmdName + "2", addItemToGitingoreFromPanel);
+            panelCmenu.addMenuItem(cmdName + "2");
 
             cmdName = "git.removeFromIgnore";
             CommandManager.register(Strings.REMOVE_FROM_GITIGNORE, cmdName, removeItemFromGitingore);
             projectCmenu.addMenuItem(cmdName);
+            workingCmenu.addMenuItem(cmdName);
+            CommandManager.register(Strings.REMOVE_FROM_GITIGNORE, cmdName + "2", removeItemFromGitingoreFromPanel);
+            panelCmenu.addMenuItem(cmdName + "2");
         });
     }
     

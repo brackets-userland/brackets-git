@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.0
+* You can now add files and directory entries to .gitignore file by right clicking.
+
 ## 0.7.12
 * Minor fix in produced error messages for github bug reports.
 

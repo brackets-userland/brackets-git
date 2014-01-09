@@ -645,7 +645,13 @@ define(function (require, exports) {
             .on("click", ".git-push", handleGitPush)
             .on("click", ".git-pull", handleGitPull)
             .on("click", ".git-bug", ErrorHandler.reportBug)
-            .on("click", ".git-init", handleGitInit);
+            .on("click", ".git-init", handleGitInit)
+            .on("contextmenu", "tr", function (e) {
+                $(this).click();
+                setTimeout(function () {
+                    Menus.getContextMenu("git-panel-context-menu").open(e);
+                }, 1);
+            });
 
         // Register command for opening bottom panel.
         CommandManager.register(Strings.PANEL_COMMAND, PANEL_COMMAND_ID, toggle);
@@ -685,10 +691,15 @@ define(function (require, exports) {
         refresh();
     }
     
+    function getPanel() {
+        return gitPanel.$panel;
+    }
+
     exports.init = init;
     exports.refresh = refresh;
     exports.toggle = toggle;
     exports.enable = enable;
     exports.disable = disable;
     exports.refreshCurrentFile = refreshCurrentFile;
+    exports.getPanel = getPanel;
 });
