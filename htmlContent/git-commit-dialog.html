@@ -9,16 +9,16 @@
             <b>Code inspection problems:</b>
             <ul>
                 {{#lintResults}}
+                {{#hasErrors}}
                 <li>
                     {{filename}}
-                    {{#hasErrors}}
                     <ul>
                         {{#errors}}
                         <li>{{.}}</li>
                         {{/errors}}
                     </ul>
-                    {{/hasErrors}}
                 </li>
+                {{/hasErrors}}
                 {{/lintResults}}
             </ul>
         </div>

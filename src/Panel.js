@@ -114,12 +114,23 @@ define(function (require, exports) {
     }
     
     function _showCommitDialog(stagedDiff, lintResults) {
-        lintResults.forEach(function (obj) {
-            obj.hasErrors = obj.result.errors.length > 0;
-            obj.errors = obj.result.errors.map(function (e) {
-                // TODO: handle e.type
-                return (e.pos.line + 1) + ": " + e.message;
+        // Flatten the error structure from various providers
+        lintResults.forEach(function (lintResult) {
+            lintResult.errors = [];
+            lintResult.result.forEach(function (resultSet) {
+                if (!resultSet.result || !resultSet.result.errors) { return; }
+
+                var providerName = resultSet.provider.name;
+                resultSet.result.errors.forEach(function (e) {
+                    lintResult.errors.push((e.pos.line + 1) + ": " + e.message + " (" + providerName + ")");
+                });
             });
+            lintResult.hasErrors = lintResult.errors.length > 0;
+        });
+
+        // Filter out only results with errors to show
+        lintResults = _.filter(lintResults, function (lintResult) {
+            return lintResult.hasErrors;
         });
         
         // Open the dialog

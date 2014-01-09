@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.1
+* Fixes for new Brackets' CodeInspection API (requires Sprint 36).
+
 ## 0.8.0
 * You can now add files and directory entries to .gitignore file by right clicking.
 
