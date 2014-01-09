@@ -1,6 +1,8 @@
 /*global define */
 
 define({
+    ADD_TO_GITIGNORE:                   "Zu .gitignore hinzufügen",
+    REMOVE_FROM_GITIGNORE:              "Von .gitignore entfernen",
     BRACKETS_GIT_ERROR:                 "Es ist ein Fehler in Brackets Git aufgetreten\u2026",
     BUTTON_BUG_REPORT:                  "Bug melden",
     BUTTON_CANCEL:                      "Abbrechen",
