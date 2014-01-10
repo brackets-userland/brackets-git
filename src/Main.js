@@ -145,7 +145,8 @@ define(function (require, exports) {
                 content = "";
             }
 
-            var lines = content.trim().split("\n");
+            // use trimmed lines only
+            var lines = content.split("\n").map(function (l) { return l.trim(); });
             // clean start and end empty lines
             while (lines.length > 0 && !lines[0]) { lines.shift(); }
             while (lines.length > 0 && !lines[lines.length - 1]) { lines.pop(); }
@@ -156,6 +157,9 @@ define(function (require, exports) {
             } else if (method === "remove") {
                 lines = _.without(lines, entryPath);
             }
+
+            // always have an empty line at the end of the file
+            if (lines[lines.length - 1]) { lines.push(""); }
 
             gitignoreEntry.write(lines.join("\n"), function (err) {
                 if (err) {
