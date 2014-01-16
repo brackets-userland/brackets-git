@@ -125,8 +125,9 @@ define(function (require, exports) {
             Branch.refresh();
             Panel.refresh();
         });
-        $(DocumentManager).on("documentSaved", function () {
+        $(DocumentManager).on("documentSaved", function (e) {
             Panel.refresh();
+            refreshGitGutters(e);
         });
         $(DocumentManager).on("currentDocumentChange", function () {
             Panel.refreshCurrentFile();
@@ -206,6 +207,48 @@ define(function (require, exports) {
                 var $li = $(this),
                     isIgnored = ignoreEntries.indexOf($li.data("entry").fullPath) !== -1;
                 $li.toggleClass("git-ignored", isIgnored);
+            });
+        });
+    }
+
+    function refreshGitGutters(event) {
+        var currentDoc = event.target.getCurrentDocument();
+        if (!currentDoc) { return; }
+
+        var filename = currentDoc.file.fullPath.substring(getProjectRoot().length);
+        gitControl.gitDiff(filename).then(function (diff) {
+            var added = [],
+                removed = [],
+                modified = [],
+                changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
+
+            function parseChangeset(str, arr) {
+                var i,
+                    s = str.split(","),
+                    fromLine = parseInt(s[0], 10),
+                    howMany = parseInt(s[1], 10);
+
+                if (isNaN(howMany)) { howMany = 1; }
+                var toLine = fromLine + howMany;
+
+                for (i = fromLine; i < toLine; i++) {
+                    arr.push(i > 0 ? i - 1 : 0);
+                }
+            }
+
+            changesets.forEach(function (line) {
+                var m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
+                parseChangeset(m[1], removed);
+                parseChangeset(m[2], added);
+            });
+
+            added.forEach(function (num, i) {
+                var io = removed.indexOf(num);
+                if (io !== -1) {
+                    added.splice(i, 1);
+                    removed.splice(io, 1);
+                    modified.push(num);
+                }
             });
         });
     }
