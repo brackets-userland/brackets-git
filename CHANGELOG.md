@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.2
+* Basic Git gutter support - you can turn on/off this feature in settings.
+
 ## 0.8.1
 * Fixes for new Brackets' CodeInspection API (requires Sprint 36).
 

@@ -6,6 +6,7 @@ define(function (require, exports, module) {
     // Default preferences are different for platforms
     var defaultPreferences = {
         "lastVersion":                      null,
+        "useGitGutter":                     true,
         "panelEnabled":                     true,
         "stripWhitespaceFromCommits":       true,
         "TIMEOUT_VALUE":                    30000,

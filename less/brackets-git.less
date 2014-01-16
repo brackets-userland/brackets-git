@@ -9,6 +9,25 @@
 @orange:      #DB8D03;
 @lightRed:    #FF7CAD;
 
+@gutterWidth: 10px;
+
+.CodeMirror .brackets-git-gutter {
+    width: @gutterWidth;
+    margin-left: 2px;
+}
+
+.CodeMirror .brackets-git-gutter-added {
+    background-size: @gutterWidth @gutterWidth;
+    background-color: @green;
+    background-repeat: no-repeat;
+}
+
+.CodeMirror .brackets-git-gutter-modified {
+    background-size: @gutterWidth @gutterWidth;
+    background-color: @orange;
+    background-repeat: no-repeat;
+}
+
 #git-status.error
 {
     color: red;

@@ -51,5 +51,6 @@ define({
     RESTART:                            "Restart",
     STRIP_WHITESPACE_FROM_COMMITS:      "Strip trailing whitespace from commits",
     UNDO_CHANGES:                       "Undo changes",
+    USE_GIT_GUTTER:                     "Use Git gutter marks",
     USING_GIT_VERSION:                  "Git version"
 });

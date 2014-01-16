@@ -10,12 +10,14 @@ define(function (require, exports) {
         CommandManager  = brackets.getModule("command/CommandManager"),
         Menus           = brackets.getModule("command/Menus"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
+        EditorManager   = brackets.getModule("editor/EditorManager"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
         Strings         = require("../strings"),
         ErrorHandler    = require("./ErrorHandler"),
         GitControl      = require("./GitControl"),
+        GutterManager   = require("./GutterManager"),
         Panel           = require("./Panel"),
         Branch          = require("./Branch");
     
@@ -125,14 +127,16 @@ define(function (require, exports) {
             Branch.refresh();
             Panel.refresh();
         });
-        $(DocumentManager).on("documentSaved", function (e) {
+        $(DocumentManager).on("documentSaved", function () {
             Panel.refresh();
-            refreshGitGutters(e);
+            refreshGitGutters();
         });
         $(DocumentManager).on("currentDocumentChange", function () {
             Panel.refreshCurrentFile();
+            refreshGitGutters();
         });
         highlightGitignore();
+        refreshGitGutters();
     }
     
     function _addRemoveItemInGitignore(selectedEntry, method) {
@@ -211,9 +215,19 @@ define(function (require, exports) {
         });
     }
 
-    function refreshGitGutters(event) {
-        var currentDoc = event.target.getCurrentDocument();
+    function refreshGitGutters() {
+        if (!preferences.getValue("useGitGutter")) {
+            return;
+        }
+
+        var currentDoc = DocumentManager.getCurrentDocument();
         if (!currentDoc) { return; }
+
+        var editor = EditorManager.getActiveEditor();
+        if (!editor || !editor._codeMirror) {
+            return;
+        }
+        GutterManager.prepareGutter(editor._codeMirror);
 
         var filename = currentDoc.file.fullPath.substring(getProjectRoot().length);
         gitControl.gitDiff(filename).then(function (diff) {
@@ -249,6 +263,12 @@ define(function (require, exports) {
                     removed.splice(io, 1);
                     modified.push(num);
                 }
+            });
+
+            GutterManager.showGutters(editor._codeMirror, {
+                added: added,
+                modified: modified,
+                removed: removed
             });
         });
     }
