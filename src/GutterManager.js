@@ -1,11 +1,15 @@
 /*jslint plusplus: true, vars: true, nomen: true */
-/*global define */
+/*global brackets, define */
 
 define(function (require, exports) {
     "use strict";
 
+    var _ = brackets.getModule("thirdparty/lodash");
+
     var cm = null,
-        gutterName = "brackets-git-gutter";
+        results = null,
+        gutterName = "brackets-git-gutter",
+        openWidgets = [];
 
     function clearOld() {
         var gutters = cm.getOption("gutters").slice(0),
@@ -16,6 +20,12 @@ define(function (require, exports) {
             cm.setOption("gutters", gutters);
             cm.off("gutterClick", gutterClick);
         }
+        openWidgets.forEach(function (w) {
+            if (w.visible) {
+                w.visible = false;
+                w.widget.clear();
+            }
+        });
     }
 
     function prepareGutter(_cm) {
@@ -39,28 +49,46 @@ define(function (require, exports) {
         }
     }
 
-    function showGutters(_cm, results) {
+    function showGutters(_cm, _results) {
         prepareGutter(_cm);
-
+        results = _results;
+        //-
         cm.clearGutter(gutterName);
-        results.added.forEach(function (obj) {
-            cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-added' title='Added'>&nbsp;</div>")[0]);
-        });
-        results.modified.forEach(function (obj) {
-            cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-modified' title='Modified'>&nbsp;</div>")[0]);
-        });
-        results.removed.forEach(function (obj) {
-            cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-removed' title='Removed'>&nbsp;</div>")[0]);
+        results.forEach(function (obj) {
+            cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-" + obj.type + "'>&nbsp;</div>")[0]);
         });
     }
 
-    function gutterClick(cm, lineIndex, gutterId, event) {
+    function gutterClick(cm, lineIndex, gutterId) {
         if (gutterId !== gutterName) {
             return;
         }
-        console.log("click on " + gutterId);
-        // var mark = this.marks[lineIndex];
-        // linterReporter.showLineDetails(cm, lineIndex, gutterId, event);
+
+        var mark = _.find(results, function (o) { return o.line === lineIndex; });
+        if (!mark) { return; }
+        if (mark.parentMark) { mark = mark.parentMark; }
+
+        if (!mark.lineWidget) {
+            mark.lineWidget = {
+                visible: false,
+                element: $("<div class='" + gutterName + "-deleted-lines'></div>")
+            };
+            $("<pre/>").text(mark.content).appendTo(mark.lineWidget.element);
+        }
+
+        if (mark.lineWidget.visible !== true) {
+            mark.lineWidget.visible = true;
+            mark.lineWidget.widget = cm.addLineWidget(mark.line, mark.lineWidget.element[0], {
+                coverGutter: false,
+                noHScroll: false,
+                above: true,
+                showIfHidden: false
+            });
+            openWidgets.push(mark.lineWidget);
+        } else {
+            mark.lineWidget.visible = false;
+            mark.lineWidget.widget.clear();
+        }
     }
 
     // API

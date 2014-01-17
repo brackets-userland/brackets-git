@@ -252,8 +252,12 @@ define(function (require, exports) {
                 if (lineCount > 0) {
                     lineRemovedFrom = lineFrom > 0 ? lineFrom - 1 : 0;
                     removed.push({
+                        type: "removed",
                         line: lineRemovedFrom,
-                        content: str.split("\n").filter(function (l) { return l.indexOf("-") === 0; }).join("\n")
+                        content: str.split("\n")
+                                    .filter(function (l) { return l.indexOf("-") === 0; })
+                                    .map(function (l) { return l.substring(1); })
+                                    .join("\n")
                     });
                 }
 
@@ -261,25 +265,27 @@ define(function (require, exports) {
                 lineFrom = parseInt(s2[0], 10);
                 lineCount = parseInt(s2[1], 10);
                 if (isNaN(lineCount)) { lineCount = 1; }
+                var isModified = false;
                 for (var i = lineFrom, lineTo = lineFrom + lineCount; i < lineTo; i++) {
                     var lineNo = i > 0 ? i - 1 : 0;
                     if (lineNo === lineRemovedFrom) {
                         // modified
-                        modified.push(removed.pop());
+                        var o = removed.pop();
+                        o.type = "modified";
+                        modified.push(o);
+                        isModified = o;
                     } else {
                         // added new
                         added.push({
-                            line: lineNo
+                            type: isModified ? "modified" : "added",
+                            line: lineNo,
+                            parentMark: isModified || null
                         });
                     }
                 }
             });
 
-            GutterManager.showGutters(editor._codeMirror, {
-                added: added,
-                modified: modified,
-                removed: removed
-            });
+            GutterManager.showGutters(editor._codeMirror, [].concat(added, removed, modified));
         });
     }
 

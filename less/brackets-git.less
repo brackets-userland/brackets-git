@@ -8,6 +8,7 @@
 @darkBlue:    #1976DD;
 @orange:      #DB8D03;
 @lightRed:    #FF7CAD;
+@lighterRed:  #FFAFCF;
 
 @gutterWidth: 8px;
 
@@ -32,6 +33,10 @@
     background-size: @gutterWidth @gutterWidth;
     background-color: @red;
     background-repeat: no-repeat;
+}
+
+.brackets-git-gutter-deleted-lines {
+    background-color: @lighterRed;
 }
 
 #git-status.error

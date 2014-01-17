@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.3
+* Git gutters are now clickable.
+
 ## 0.8.2
 * Basic Git gutter support - you can turn on/off this feature in settings.
 
