@@ -51,5 +51,6 @@ define({
     RESTART:                            "Neu starten",
     STRIP_WHITESPACE_FROM_COMMITS:      "Anhängenden Whitespace von Commits entfernen",
     UNDO_CHANGES:                       "Änderungen verwerfen",
+    USE_GIT_GUTTER:                     "Git-Markierungen am Rand anzeigen",
     USING_GIT_VERSION:                  "Git Version"
 });
