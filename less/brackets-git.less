@@ -9,7 +9,7 @@
 @orange:      #DB8D03;
 @lightRed:    #FF7CAD;
 
-@gutterWidth: 10px;
+@gutterWidth: 8px;
 
 .CodeMirror .brackets-git-gutter {
     width: @gutterWidth;
@@ -25,6 +25,12 @@
 .CodeMirror .brackets-git-gutter-modified {
     background-size: @gutterWidth @gutterWidth;
     background-color: @orange;
+    background-repeat: no-repeat;
+}
+
+.CodeMirror .brackets-git-gutter-removed {
+    background-size: @gutterWidth @gutterWidth;
+    background-color: @red;
     background-repeat: no-repeat;
 }
 

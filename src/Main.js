@@ -234,34 +234,44 @@ define(function (require, exports) {
             var added = [],
                 removed = [],
                 modified = [],
-                changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
+                changesets = diff.split(/\n@@/).map(function (str) { return "@@" + str; });
 
-            function parseChangeset(str, arr) {
-                var i,
-                    s = str.split(","),
-                    fromLine = parseInt(s[0], 10),
-                    howMany = parseInt(s[1], 10);
+            // remove part before first
+            changesets.shift();
 
-                if (isNaN(howMany)) { howMany = 1; }
-                var toLine = fromLine + howMany;
+            changesets.forEach(function (str) {
+                var m = str.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
+                var s1 = m[1].split(",");
+                var s2 = m[2].split(",");
 
-                for (i = fromLine; i < toLine; i++) {
-                    arr.push(i > 0 ? i - 1 : 0);
+                // removed stuff
+                var lineRemovedFrom;
+                var lineFrom = parseInt(s2[0], 10);
+                var lineCount = parseInt(s1[1], 10);
+                if (isNaN(lineCount)) { lineCount = 1; }
+                if (lineCount > 0) {
+                    lineRemovedFrom = lineFrom > 0 ? lineFrom - 1 : 0;
+                    removed.push({
+                        line: lineRemovedFrom,
+                        content: str.split("\n").filter(function (l) { return l.indexOf("-") === 0; }).join("\n")
+                    });
                 }
-            }
 
-            changesets.forEach(function (line) {
-                var m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
-                parseChangeset(m[1], removed);
-                parseChangeset(m[2], added);
-            });
-
-            added.forEach(function (num, i) {
-                var io = removed.indexOf(num);
-                if (io !== -1) {
-                    added.splice(i, 1);
-                    removed.splice(io, 1);
-                    modified.push(num);
+                // added stuff
+                lineFrom = parseInt(s2[0], 10);
+                lineCount = parseInt(s2[1], 10);
+                if (isNaN(lineCount)) { lineCount = 1; }
+                for (var i = lineFrom, lineTo = lineFrom + lineCount; i < lineTo; i++) {
+                    var lineNo = i > 0 ? i - 1 : 0;
+                    if (lineNo === lineRemovedFrom) {
+                        // modified
+                        modified.push(removed.pop());
+                    } else {
+                        // added new
+                        added.push({
+                            line: lineNo
+                        });
+                    }
                 }
             });
 

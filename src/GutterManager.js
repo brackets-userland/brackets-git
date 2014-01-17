@@ -14,6 +14,7 @@ define(function (require, exports) {
             gutters.splice(io, 1);
             cm.clearGutter(gutterName);
             cm.setOption("gutters", gutters);
+            cm.off("gutterClick", gutterClick);
         }
     }
 
@@ -34,6 +35,7 @@ define(function (require, exports) {
         if (gutters.indexOf(gutterName) === -1) {
             gutters.splice(gutters.length - 1, 0, gutterName);
             cm.setOption("gutters", gutters);
+            cm.on("gutterClick", gutterClick);
         }
     }
 
@@ -41,12 +43,24 @@ define(function (require, exports) {
         prepareGutter(_cm);
 
         cm.clearGutter(gutterName);
-        results.added.forEach(function (lineNum) {
-            cm.setGutterMarker(lineNum, gutterName, $("<div class='" + gutterName + "-added' title='Added'>&nbsp;</div>")[0]);
+        results.added.forEach(function (obj) {
+            cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-added' title='Added'>&nbsp;</div>")[0]);
         });
-        results.modified.forEach(function (lineNum) {
-            cm.setGutterMarker(lineNum, gutterName, $("<div class='" + gutterName + "-modified' title='Modified'>&nbsp;</div>")[0]);
+        results.modified.forEach(function (obj) {
+            cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-modified' title='Modified'>&nbsp;</div>")[0]);
         });
+        results.removed.forEach(function (obj) {
+            cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-removed' title='Removed'>&nbsp;</div>")[0]);
+        });
+    }
+
+    function gutterClick(cm, lineIndex, gutterId, event) {
+        if (gutterId !== gutterName) {
+            return;
+        }
+        console.log("click on " + gutterId);
+        // var mark = this.marks[lineIndex];
+        // linterReporter.showLineDetails(cm, lineIndex, gutterId, event);
     }
 
     // API
