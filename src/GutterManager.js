@@ -1,6 +1,9 @@
 /*jslint plusplus: true, vars: true, nomen: true */
 /*global brackets, define */
 
+// this file was composed with a big help from @MiguelCastillo extension Brackets-InteractiveLinter
+// @see https://github.com/MiguelCastillo/Brackets-InteractiveLinter
+
 define(function (require, exports) {
     "use strict";
 
