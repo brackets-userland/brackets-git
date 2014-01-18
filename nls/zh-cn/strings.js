@@ -1,6 +1,8 @@
 /*global define */
 
 define({
+    ADD_TO_GITIGNORE:                   "添加到 .gitignore",
+    REMOVE_FROM_GITIGNORE:              "从 .gitignore 中删除",
     BRACKETS_GIT_ERROR:                 "Brackets Git 遇到了一个错误\u2026",
     BUTTON_BUG_REPORT:                  "报告问题\u2026",
     BUTTON_CANCEL:                      "取消",
@@ -49,5 +51,6 @@ define({
     RESTART:                            "重新启动",
     STRIP_WHITESPACE_FROM_COMMITS:      "去除提交信息后的空白字符",
     UNDO_CHANGES:                       "撤销更改",
+    USE_GIT_GUTTER:                     "使用 Git gutter 标记修改记录",
     USING_GIT_VERSION:                  "Git 版本"
 });
