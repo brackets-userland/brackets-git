@@ -35,6 +35,11 @@ define(function (require, exports) {
         $("#git-settings-gitIsInSystemPath").on("click", function () {
             $("#git-settings-gitPath").prop("disabled", $(this).is(":checked"));
         });
+        $("#git-settings-stripWhitespaceFromCommits").on("change", function () {
+            var on = $(this).is(":checked");
+            $("#git-settings-addEndlineToTheEndOfFile").prop("checked", on);
+            $("#git-settings-addEndlineToTheEndOfFile").prop("disabled", !on);
+        });
         $("button[data-button-id='defaults']").on("click", function (e) {
             e.stopPropagation();
             restorePlatformDefaults();
