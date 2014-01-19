@@ -1,6 +1,7 @@
 /*global define */
 
 define({
+    ADD_ENDLINE_TO_THE_END_OF_FILE:     "Add endline at the end of file",
     ADD_TO_GITIGNORE:                   "Add to .gitignore",
     REMOVE_FROM_GITIGNORE:              "Remove from .gitignore",
     BRACKETS_GIT_ERROR:                 "Brackets Git encountered an error\u2026",

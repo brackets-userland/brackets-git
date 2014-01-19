@@ -9,6 +9,7 @@ define(function (require, exports, module) {
         "useGitGutter":                     true,
         "panelEnabled":                     true,
         "stripWhitespaceFromCommits":       true,
+        "addEndlineToTheEndOfFile":         true,
         "TIMEOUT_VALUE":                    30000,
         // these are set by platform
         "gitIsInSystemPath":                null,

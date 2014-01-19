@@ -293,12 +293,14 @@ define(function (require, exports) {
                 }
 
                 // add empty line to the end, i've heard that git likes that for some reason
-                var lastLineNumber = lines.length - 1;
-                if (lines[lastLineNumber].length > 0) {
-                    lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
-                }
-                if (lines[lastLineNumber].length > 0) {
-                    lines.push("");
+                if (Main.preferences.getValue("addEndlineToTheEndOfFile")) {
+                    var lastLineNumber = lines.length - 1;
+                    if (lines[lastLineNumber].length > 0) {
+                        lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
+                    }
+                    if (lines[lastLineNumber].length > 0) {
+                        lines.push("");
+                    }
                 }
                 //-
                 text = lines.join("\n");

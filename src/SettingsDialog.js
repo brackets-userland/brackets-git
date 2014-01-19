@@ -16,6 +16,7 @@ define(function (require, exports) {
 
     function setValues(values) {
         $("#git-settings-stripWhitespaceFromCommits").prop("checked", values.stripWhitespaceFromCommits);
+        $("#git-settings-addEndlineToTheEndOfFile").prop("checked", values.addEndlineToTheEndOfFile);
         $("#git-settings-useGitGutter").prop("checked", values.useGitGutter);
         $("#git-settings-gitIsInSystemPath").prop("checked", values.gitIsInSystemPath);
         $("#git-settings-gitPath")
@@ -79,6 +80,7 @@ define(function (require, exports) {
             if (buttonId === "ok") {
                 var $dialog = dialog.getElement();
                 preferences.setValue("stripWhitespaceFromCommits", $("#git-settings-stripWhitespaceFromCommits", $dialog).prop("checked"));
+                preferences.setValue("addEndlineToTheEndOfFile", $("#git-settings-addEndlineToTheEndOfFile", $dialog).prop("checked"));
                 preferences.setValue("useGitGutter", $("#git-settings-useGitGutter", $dialog).prop("checked"));
                 preferences.setValue("gitIsInSystemPath", $("#git-settings-gitIsInSystemPath", $dialog).prop("checked"));
                 preferences.setValue("gitPath", $("#git-settings-gitPath", $dialog).val());
