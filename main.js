@@ -34,7 +34,8 @@ define(function (require, exports, module) {
         ExtensionMain              = require("./src/Main"),
         Strings                    = require("./strings"),
         ChangelogDialog            = require("./src/ChangelogDialog"),
-        ErrorHandler                = require("./src/ErrorHandler"),
+        ErrorHandler               = require("./src/ErrorHandler"),
+        ExpectedError              = require("./src/ExpectedError"),
         SettingsDialog             = require("./src/SettingsDialog"),
         SETTINGS_COMMAND_ID        = "brackets-git.settings",
         domainModulePath           = moduleDirectory + "domain",
@@ -76,11 +77,11 @@ define(function (require, exports, module) {
     AppInit.appReady(function () {
         // Connects to Node
         nodeConnection.connect(true).fail(function (err) {
-            ErrorHandler.showError(err, "Failed to connect to Node.js, extension requires Node.js installed");
+            ErrorHandler.showError(new ExpectedError(err), "Failed to connect to Node.js, extension requires Node.js installed");
         }).then(function () {
             // Register the domain.
             return nodeConnection.loadDomains([domainModulePath], true).fail(function (err) {
-                ErrorHandler.showError(err, "Failed to register Node.js domain, extension requires Node.js installed");
+                ErrorHandler.showError(new ExpectedError(err), "Failed to register Node.js domain, extension requires Node.js installed");
             });
         }).then(function () {
             ExtensionMain.init(nodeConnection, preferences);
