@@ -36,6 +36,7 @@ define(function (require, exports) {
         console.error("[brackets-git] " + err);
         if (err && err.stack) { console.error(err.stack); }
         errorQueue.push(err);
+        return err;
     };
 
     exports.showError = function (err, title) {
@@ -81,6 +82,8 @@ define(function (require, exports) {
                                                   encodeURIComponent(mdReport));
             }
         });
+
+        return err;
     };
 
 });

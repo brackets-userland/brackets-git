@@ -8,6 +8,7 @@ define(function (require, exports) {
         EditorManager           = brackets.getModule("editor/EditorManager"),
         Menus                   = brackets.getModule("command/Menus"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
+        ProjectManager          = brackets.getModule("project/ProjectManager"),
         SidebarView             = brackets.getModule("project/SidebarView");
     
     var ErrorHandler            = require("./ErrorHandler"),
@@ -37,7 +38,13 @@ define(function (require, exports) {
 
     function handleEvents() {
         $dropdown.on("click", "a", function () {
-            console.log("click on branch " + $(this).text());
+            var branchName = $(this).data("branch");
+            Main.gitControl.checkoutBranch(branchName).fail(function (err) {
+                ErrorHandler.showError(err, "Switching branches failed");
+            }).then(function () {
+                $(ProjectManager).triggerHandler("projectOpen");
+                closeDropdown();
+            });
         }).on("mouseenter", "a", function () {
             $(this).addClass("selected");
         }).on("mouseleave", "a", function () {
