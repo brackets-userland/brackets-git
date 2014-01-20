@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.5
+* Basic branches switching implemented.
+
 ## 0.8.4
 * Adds an option to disable adding newline at the end of the file.
 * Updated Simplified Chinese translation by [Zhi](https://github.com/yfwz100)
