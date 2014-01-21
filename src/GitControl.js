@@ -296,6 +296,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " push --porcelain");
         },
 
+        gitPushUpstream: function (upstream, branch) {
+            return this.executeCommand(this._git + " push --porcelain --set-upstream " + upstream + " " + branch);
+        },
+
         gitPull: function () {
             return this.executeCommand(this._git + " pull --ff-only");
         },

@@ -434,7 +434,11 @@ define(function (require, exports) {
 
     function handleGitPush() {
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true);
-        Main.gitControl.gitPush().then(function (result) {
+        Main.gitControl.gitPush().fail(function (err) {
+            var m = err.match(/git push --set-upstream ([-0-9a-zA-Z]+) ([-0-9a-zA-Z]+)/);
+            if (!m) { throw err; }
+            return Main.gitControl.gitPushUpstream(m[1], m[2]);
+        }).then(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GIT_PUSH_RESPONSE, // title
