@@ -157,6 +157,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " checkout " + branchName);
         },
 
+        createBranch: function (branchName) {
+            return this.executeCommand(this._git + " checkout -b " + branchName);
+        },
+
         getGitStatus: function () {
             function unquote(str) {
                 if (str[0] === "\"" && str[str.length - 1] === "\"") {

@@ -5,17 +5,19 @@ define(function (require, exports) {
     "use strict";
     
     var _                       = brackets.getModule("thirdparty/lodash"),
+        CommandManager          = brackets.getModule("command/CommandManager"),
+        Dialogs                 = brackets.getModule("widgets/Dialogs"),
         EditorManager           = brackets.getModule("editor/EditorManager"),
         Menus                   = brackets.getModule("command/Menus"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
-        ProjectManager          = brackets.getModule("project/ProjectManager"),
         SidebarView             = brackets.getModule("project/SidebarView");
     
     var ErrorHandler            = require("./ErrorHandler"),
         Main                    = require("./Main"),
         Panel                   = require("./Panel"),
         Strings                 = require("../strings"),
-        BranchesMenuTemplate    = require("text!htmlContent/git-branches-menu.html");
+        branchesMenuTemplate    = require("text!htmlContent/git-branches-menu.html"),
+        questionDialogTemplate  = require("text!htmlContent/git-question-dialog.html");
 
     var $gitBranchName          = $(null),
         $dropdown;
@@ -26,7 +28,7 @@ define(function (require, exports) {
                 branchList : _.without(branches, currentBranch),
                 Strings     : Strings
             };
-        return Mustache.render(BranchesMenuTemplate, templateVars);
+        return Mustache.render(branchesMenuTemplate, templateVars);
     }
 
     function closeDropdown() {
@@ -37,13 +39,35 @@ define(function (require, exports) {
     }
 
     function handleEvents() {
-        $dropdown.on("click", "a", function () {
+        $dropdown.on("click", "a.git-branch-new", function () {
+
+            var compiledTemplate = Mustache.render(questionDialogTemplate, {
+                title: Strings.CREATE_NEW_BRANCH,
+                question: Strings.BRANCH_NAME,
+                stringInput: true,
+                Strings: Strings
+            });
+            var dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+            dialog.done(function (buttonId) {
+                if (buttonId === "ok") {
+                    var branchName = dialog.getElement().find("input").val().trim();
+                    Main.gitControl.createBranch(branchName).fail(function (err) {
+                        ErrorHandler.showError(err, "Creating new branch failed");
+                    }).then(function () {
+                        closeDropdown();
+                        CommandManager.execute("file.refresh");
+                    });
+                }
+            });
+
+
+        }).on("click", "a.git-branch-link", function () {
             var branchName = $(this).data("branch");
             Main.gitControl.checkoutBranch(branchName).fail(function (err) {
                 ErrorHandler.showError(err, "Switching branches failed");
             }).then(function () {
-                $(ProjectManager).triggerHandler("projectOpen");
                 closeDropdown();
+                CommandManager.execute("file.refresh");
             });
         }).on("mouseenter", "a", function () {
             $(this).addClass("selected");
@@ -107,6 +131,7 @@ define(function (require, exports) {
             if (root === Main.getProjectRoot()) {
                 Main.gitControl.getBranchName().then(function (branchName) {
                     $gitBranchName.text(branchName)
+                        .off("click")
                         .on("click", toggleDropdown)
                         .append($("<span class='dropdown-arrow' />"));
                     Panel.enable();

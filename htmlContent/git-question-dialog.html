@@ -4,6 +4,9 @@
     </div>
     <div class="modal-body table-striped tab-content">
         {{question}}
+        {{#stringInput}}
+        <input class="stringInput" type="text" />
+        {{/stringInput}}
     </div>
     <div class="modal-footer">
         <button data-button-id="ok"     class="dialog-button btn primary left">{{Strings.BUTTON_OK}}</button>
