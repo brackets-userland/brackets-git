@@ -39,7 +39,8 @@ define(function (require, exports) {
     }
 
     function handleEvents() {
-        $dropdown.on("click", "a.git-branch-new", function () {
+        $dropdown.on("click", "a.git-branch-new", function (e) {
+            e.stopPropagation();
 
             var compiledTemplate = Mustache.render(questionDialogTemplate, {
                 title: Strings.CREATE_NEW_BRANCH,
@@ -47,7 +48,8 @@ define(function (require, exports) {
                 stringInput: true,
                 Strings: Strings
             });
-            var dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+            var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+            dialog.getElement().find("input").focus();
             dialog.done(function (buttonId) {
                 if (buttonId === "ok") {
                     var branchName = dialog.getElement().find("input").val().trim();
@@ -60,8 +62,8 @@ define(function (require, exports) {
                 }
             });
 
-
-        }).on("click", "a.git-branch-link", function () {
+        }).on("click", "a.git-branch-link", function (e) {
+            e.stopPropagation();
             var branchName = $(this).data("branch");
             Main.gitControl.checkoutBranch(branchName).fail(function (err) {
                 ErrorHandler.showError(err, "Switching branches failed");
