@@ -285,6 +285,11 @@ define(function (require, exports) {
                 }
             });
 
+            // fix displaying of removed lines
+            removed.forEach(function (o) {
+                o.line = o.line + 1;
+            });
+
             GutterManager.showGutters(editor._codeMirror, [].concat(added, removed, modified));
         });
     }
