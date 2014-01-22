@@ -52,8 +52,10 @@ define({
     Q_RESTART_BRACKETS:                 "Do you wish to restart Brackets to apply new settings?",
     Q_UNDO_CHANGES:                     "Reset changes to file {0}?",
     RESTART:                            "Restart",
+    SET_ORIGIN_URL:                     "Set origin URL",
     STRIP_WHITESPACE_FROM_COMMITS:      "Strip trailing whitespace from commits",
     UNDO_CHANGES:                       "Undo changes",
+    URL:                                "URL",
     USE_GIT_GUTTER:                     "Use Git gutter marks",
     USING_GIT_VERSION:                  "Git version"
 });

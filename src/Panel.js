@@ -435,9 +435,41 @@ define(function (require, exports) {
     function handleGitPush() {
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true);
         Main.gitControl.gitPush().fail(function (err) {
+
+            var m = err.match(/git remote add <name> <url>/);
+            if (!m) { throw err; }
+
+            // this will ask user to enter an origin url for pushing
+            // it's pretty dumb because if he enters invalid url, he has to go to console again
+            // but our users are very wise so that definitely won't happen :)))
+            var defer = q.defer();
+            var compiledTemplate = Mustache.render(questionDialogTemplate, {
+                title: Strings.SET_ORIGIN_URL,
+                question: Strings.URL,
+                stringInput: true,
+                Strings: Strings
+            });
+            var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+            dialog.getElement().find("input").focus();
+            dialog.done(function (buttonId) {
+                if (buttonId === "ok") {
+                    var url = dialog.getElement().find("input").val().trim();
+                    Main.gitControl.remoteAdd("origin", url)
+                        .then(function () {
+                            return Main.gitControl.gitPush("origin");
+                        })
+                        .then(defer.resolve)
+                        .fail(defer.reject);
+                }
+            });
+            return defer.promise;
+
+        }).fail(function (err) {
+
             var m = err.match(/git push --set-upstream ([-0-9a-zA-Z]+) ([-0-9a-zA-Z]+)/);
             if (!m) { throw err; }
             return Main.gitControl.gitPushUpstream(m[1], m[2]);
+
         }).then(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,

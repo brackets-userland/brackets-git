@@ -292,8 +292,9 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " diff --no-color --staged");
         },
 
-        gitPush: function () {
-            return this.executeCommand(this._git + " push --porcelain");
+        gitPush: function (remote) {
+            remote = remote || "";
+            return this.executeCommand(this._git + " push " + remote + " --porcelain");
         },
 
         gitPushUpstream: function (upstream, branch) {
@@ -306,6 +307,10 @@ define(function (require, exports, module) {
 
         gitInit: function () {
             return this.executeCommand(this._git + " init");
+        },
+
+        remoteAdd: function (remote, url) {
+            return this.executeCommand(this._git + " remote add " + remote + " " + url);
         }
 
     };

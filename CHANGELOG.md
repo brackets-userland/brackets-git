@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.6
+* Push now asks for origin url when no origin is defined.
+
 ## 0.8.5
 * Basic branches switching implemented.
 
