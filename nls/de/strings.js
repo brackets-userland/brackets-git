@@ -1,9 +1,11 @@
 /*global define */
 
 define({
+    ADD_ENDLINE_TO_THE_END_OF_FILE:     "Neue Zeile am Dateiende hinzufügen",
     ADD_TO_GITIGNORE:                   "Zu .gitignore hinzufügen",
     REMOVE_FROM_GITIGNORE:              "Von .gitignore entfernen",
     BRACKETS_GIT_ERROR:                 "Es ist ein Fehler in Brackets Git aufgetreten\u2026",
+    BRANCH_NAME:                        "Branch-Name",
     BUTTON_BUG_REPORT:                  "Bug melden",
     BUTTON_CANCEL:                      "Abbrechen",
     BUTTON_CHANGELOG:                   "Changelog zeigen",
@@ -23,6 +25,7 @@ define({
     CHANGELOG:                          "Changelog",
     CHECK_GIT_SETTINGS:                 "Überprüfe die Git-Einstellungen",
     COMMIT_MESSAGE_PLACEHOLDER:         "Gib die Commit-Nachricht hier ein\u2026",
+    CREATE_NEW_BRANCH:                  "Neue Branch erstellen\u2026",
     DELETE_FILE:                        "Datei löschen",
     DIFF:                               "Diff",
     EXTENSION_WAS_UPDATED_TITLE:        "Die Erweiterung wurde auf Version {0} aktualisiert",
@@ -49,8 +52,10 @@ define({
     Q_RESTART_BRACKETS:                 "Do you wish to restart Brackets to apply new settings ?",
     Q_UNDO_CHANGES:                     "Änderungen an der Datei {0} wirklich verwerfen?",
     RESTART:                            "Neu starten",
+    SET_ORIGIN_URL:                     "origin-URL setzen",
     STRIP_WHITESPACE_FROM_COMMITS:      "Anhängenden Whitespace von Commits entfernen",
     UNDO_CHANGES:                       "Änderungen verwerfen",
+    URL:                                "URL",
     USE_GIT_GUTTER:                     "Git-Markierungen am Rand anzeigen",
     USING_GIT_VERSION:                  "Git Version"
 });
