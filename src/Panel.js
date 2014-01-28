@@ -117,14 +117,18 @@ define(function (require, exports) {
         // Flatten the error structure from various providers
         lintResults.forEach(function (lintResult) {
             lintResult.errors = [];
-            lintResult.result.forEach(function (resultSet) {
-                if (!resultSet.result || !resultSet.result.errors) { return; }
+            if (Array.isArray(lintResult.result)) {
+                lintResult.result.forEach(function (resultSet) {
+                    if (!resultSet.result || !resultSet.result.errors) { return; }
 
-                var providerName = resultSet.provider.name;
-                resultSet.result.errors.forEach(function (e) {
-                    lintResult.errors.push((e.pos.line + 1) + ": " + e.message + " (" + providerName + ")");
+                    var providerName = resultSet.provider.name;
+                    resultSet.result.errors.forEach(function (e) {
+                        lintResult.errors.push((e.pos.line + 1) + ": " + e.message + " (" + providerName + ")");
+                    });
                 });
-            });
+            } else {
+                console.warn("[brackets-git] lintResults contain object in unexpected format: " + JSON.stringify(lintResult));
+            }
             lintResult.hasErrors = lintResult.errors.length > 0;
         });
 
