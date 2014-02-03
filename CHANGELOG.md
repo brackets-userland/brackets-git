@@ -2,6 +2,7 @@
 
 ## 0.8.7
 * Added Brazilian Portuguese translation by [Rodrigo Tavares](https://github.com/rodrigost23)
+* Fixed dialog size bug.
 
 ## 0.8.6
 * Push now asks for origin url when no origin is defined.

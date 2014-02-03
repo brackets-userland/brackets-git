@@ -80,16 +80,9 @@ define(function (require, exports) {
         if (desiredHeight < minHeight) { desiredHeight = minHeight; }
 
         $dialog
-            .css("margin-left", (desiredWidth / 2) + "px")
-            .children(".modal-header")
-                .width(desiredWidth)
-            .end()
+            .width(desiredWidth)
             .children(".modal-body")
-                .width(desiredWidth)
                 .css("max-height", desiredHeight)
-            .end()
-            .children(".modal-footer")
-                .width(desiredWidth)
             .end();
 
         return { width: desiredWidth, height: desiredHeight };
