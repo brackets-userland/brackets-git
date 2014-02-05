@@ -421,6 +421,8 @@ define(function (require, exports) {
                 return Main.gitControl.gitDiffStaged().then(function (diff) {
                     if (diff) {
                         _showCommitDialog(diff, lintResults);
+                    } else {
+                        handleGitReset();
                     }
                 });
             });
