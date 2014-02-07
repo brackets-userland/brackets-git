@@ -48,6 +48,7 @@ define({
     PATH_TO_GIT_EXECUTABLE:             "Path to Git executable",
     PATH_TO_GIT_MSYSGIT:                "Path to msysgit folder",
     PANEL_COMMAND:                      "Git",
+    PANEL_SHORTCUT:                     "Toggle panel keyboard shortcut",
     Q_DELETE_FILE:                      "Are you sure you wish to delete the file {0}?",
     Q_RESTART_BRACKETS:                 "Do you wish to restart Brackets to apply new settings?",
     Q_UNDO_CHANGES:                     "Reset changes to file {0}?",

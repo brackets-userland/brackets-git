@@ -18,6 +18,7 @@ define(function (require, exports) {
         $("#git-settings-stripWhitespaceFromCommits").prop("checked", values.stripWhitespaceFromCommits);
         $("#git-settings-addEndlineToTheEndOfFile").prop("checked", values.addEndlineToTheEndOfFile);
         $("#git-settings-useGitGutter").prop("checked", values.useGitGutter);
+        $("#git-settings-panelShortcut").val(values.panelShortcut);
         $("#git-settings-gitIsInSystemPath").prop("checked", values.gitIsInSystemPath);
         $("#git-settings-gitPath")
             .val(values.gitPath)
@@ -87,6 +88,7 @@ define(function (require, exports) {
                 preferences.setValue("stripWhitespaceFromCommits", $("#git-settings-stripWhitespaceFromCommits", $dialog).prop("checked"));
                 preferences.setValue("addEndlineToTheEndOfFile", $("#git-settings-addEndlineToTheEndOfFile", $dialog).prop("checked"));
                 preferences.setValue("useGitGutter", $("#git-settings-useGitGutter", $dialog).prop("checked"));
+                preferences.setValue("panelShortcut", $("#git-settings-panelShortcut", $dialog).val().trim());
                 preferences.setValue("gitIsInSystemPath", $("#git-settings-gitIsInSystemPath", $dialog).prop("checked"));
                 preferences.setValue("gitPath", $("#git-settings-gitPath", $dialog).val());
                 // We need trailing slash for folders.

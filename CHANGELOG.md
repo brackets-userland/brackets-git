@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.8
+* Add toggle panel keyboard shortcut in settings dialog.
+
 ## 0.8.7
 * Added Brazilian Portuguese translation by [Rodrigo Tavares](https://github.com/rodrigost23)
 * Fixed dialog size bug.

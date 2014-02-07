@@ -707,7 +707,7 @@ define(function (require, exports) {
         // Add command to menu.
         var menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
         menu.addMenuDivider();
-        menu.addMenuItem(PANEL_COMMAND_ID, "Ctrl-Alt-G");
+        menu.addMenuItem(PANEL_COMMAND_ID, Main.preferences.getValue("panelShortcut"));
 
         // Make Git in status bar clickable
         $("#git-status").addClass("clickable").on("click", toggle);
