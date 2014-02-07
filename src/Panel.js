@@ -145,6 +145,29 @@ define(function (require, exports) {
         // Show nicely colored commit diff
         $dialog.find(".commit-diff").append(Utils.formatDiff(stagedDiff));
 
+        // Enable / Disable amend checkbox
+        var toggleAmendCheckbox = function (bool) {
+            $dialog.find(".amend-commit")
+                .prop("disabled", !bool)
+                .parent()
+                .attr("title", !bool ? Strings.AMEND_COMMIT_FORBIDDEN : null);
+        };
+        toggleAmendCheckbox(false);
+        Main.gitControl.getCommitsAhead().then(function (commits) {
+            toggleAmendCheckbox(commits.length > 0);
+        });
+
+        // Assign action to amend checkbox
+        $dialog.find(".amend-commit").on("click", function () {
+            if ($(this).prop("checked") === false) {
+                $dialog.find("[name='commit-message']").val("");
+            } else {
+                Main.gitControl.getLastCommitMessage().then(function (msg) {
+                    $dialog.find("[name='commit-message']").val(msg);
+                });
+            }
+        });
+
         // commit message handling
         function switchCommitMessageElement() {
             $dialog.find("[name='commit-message']").toggle();
@@ -198,9 +221,10 @@ define(function (require, exports) {
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
                 // this event won't launch when commit-message is empty so its safe to assume that it is not
-                var commitMessage = getCommitMessageElement().val();
+                var commitMessage = getCommitMessageElement().val(),
+                    amendCommit = $dialog.find(".amend-commit").prop("checked");
 
-                Main.gitControl.gitCommit(commitMessage).then(function () {
+                Main.gitControl.gitCommit(commitMessage, amendCommit).then(function () {
                     return refresh();
                 }).fail(function (err) {
                     ErrorHandler.showError(err, "Git Commit failed");

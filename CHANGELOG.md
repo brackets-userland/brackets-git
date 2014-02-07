@@ -2,6 +2,7 @@
 
 ## 0.8.8
 * Add toggle panel keyboard shortcut in settings dialog.
+* Add amend checkbox to the commit dialog.
 
 ## 0.8.7
 * Added Brazilian Portuguese translation by [Rodrigo Tavares](https://github.com/rodrigost23)

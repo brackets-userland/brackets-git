@@ -141,6 +141,12 @@ define(function (require, exports, module) {
             });
         },
 
+        getLastCommitMessage: function () {
+            return this.executeCommand(this._git + " log -1 --pretty=%B").then(function (output) {
+                return output.trim();
+            });
+        },
+
         getBranchName: function () {
             return this.executeCommand(this._git + " rev-parse --abbrev-ref HEAD");
         },
@@ -251,18 +257,21 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " checkout \"" + file + "\"");
         },
 
-        gitCommit: function (message) {
+        gitCommit: function (message, amend) {
             var self = this,
                 lines = message.split("\n");
 
+            var cmd = self._git + " commit";
+            if (amend) { cmd += " --amend"; }
+
             if (lines.length === 1) {
-                return self.executeCommand(self._git + " commit -m \"" + message + "\"");
+                return self.executeCommand(cmd + " -m \"" + message + "\"");
             } else {
                 // TODO: maybe use git commit --file=-
                 var result = q.defer(),
                     fileEntry = FileSystem.getFileForPath(ProjectManager.getProjectRoot().fullPath + ".bracketsGitTemp");
                 q.when(FileUtils.writeText(fileEntry, message)).then(function () {
-                    return self.executeCommand(self._git + " commit -F .bracketsGitTemp");
+                    return self.executeCommand(cmd + " -F .bracketsGitTemp");
                 }).then(function (res) {
                     fileEntry.unlink(function () {
                         result.resolve(res);
