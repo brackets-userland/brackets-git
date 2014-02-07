@@ -262,7 +262,7 @@ define(function (require, exports, module) {
                 lines = message.split("\n");
 
             var cmd = self._git + " commit";
-            if (amend) { cmd += " --amend"; }
+            if (amend) { cmd += " --amend --reset-author"; }
 
             if (lines.length === 1) {
                 return self.executeCommand(cmd + " -m \"" + message + "\"");
