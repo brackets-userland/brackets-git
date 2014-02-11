@@ -57,6 +57,7 @@ define(function (require, exports) {
                         ErrorHandler.showError(err, "Creating new branch failed");
                     }).then(function () {
                         closeDropdown();
+                        // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
                         CommandManager.execute("file.refresh");
                     });
                 }
@@ -69,6 +70,7 @@ define(function (require, exports) {
                 ErrorHandler.showError(err, "Switching branches failed");
             }).then(function () {
                 closeDropdown();
+                // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
                 CommandManager.execute("file.refresh");
             });
         }).on("mouseenter", "a", function () {
