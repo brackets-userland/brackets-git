@@ -1,16 +1,19 @@
 <div id="git-panel" class="bottom-panel vert-resizable top-resizer no-focus">
     <div class="toolbar simple-toolbar-layout mainToolbar">
         <input type="checkbox" class="check-all" />
-        <button class="btn small git-commit">{{BUTTON_COMMIT}}</button>
-        <button class="btn small git-reset">{{BUTTON_RESET}}</button>
-        <button class="btn small git-close-notmodified">{{BUTTON_CLOSE_NOT_MODIFIED}}</button>
-        <button class="btn small git-toggle-untracked">{{BUTTON_HIDE_UNTRACKED}}</button>
-        <div class="title">{{USING_GIT_VERSION}}: {{GIT_VERSION}}</div>
+        <div class="btn-group">
+            <button class="btn small git-commit">{{BUTTON_COMMIT}}</button>
+            <button class="btn small git-reset">{{BUTTON_RESET}}</button>
+            <button class="btn small git-close-notmodified">{{BUTTON_CLOSE_NOT_MODIFIED}}</button>
+            <button class="btn small git-toggle-untracked">{{BUTTON_HIDE_UNTRACKED}}</button>
+        </div>
         <!-- on right -->
         <div style="position:absolute; right: 50px;">
-            <button class="btn small git-pull" style="">{{BUTTON_PULL}}</button>
-            <button class="btn small git-push" style="">{{BUTTON_PUSH}}</button>
-            <button class="btn small git-bug" style=""> {{BUTTON_BUG_REPORT}}</button>
+            <div class="btn-group">
+                <button class="btn small git-pull">{{BUTTON_PULL}}</button>
+                <button class="btn small git-push">{{BUTTON_PUSH}}</button>
+            </div>
+            <button class="btn small git-bug"><i></i></button>
         </div>
         <a href="#" class="close">&times;</a>
     </div>
