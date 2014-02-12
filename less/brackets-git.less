@@ -108,7 +108,14 @@
 
 .git-bug
 {
-    margin-left: 30px;
+    margin-left: 15px;
+    cursor: pointer;
+    i {	
+    	display: block;
+	width: 15px;
+	height: 15px;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA9UlEQVR4nLXTvy5EQRTH8Y8luaJEqeQNyD6BUHgEDyC5EYlNNCqJSiHZEhVeQaORaCQa1SYiaCk0oqAQWcWdYTLZtTfCL/ll/p3zvefM5PIPGsY2HvGALTQGJY0m8w10M7eS8xEUcRHJZ5gP8zncZ26Gs3Fcoh0BQ2Fcxg4W8NanygLHeMcSnvKA0x6l577AWJqUXs5tBlwNTnWF136AX6mBg1BeWSO+9N1OGQEtzATQIO2H2GnsUb3pS3CnBqCDu3QjvYPzGoCTfCMCCuzi+YfkLjazj34tDjGh6m0F1/gIvsEaZrGIo170dUzWaGFK9a/8nT4B6ko4IzdP03UAAAAASUVORK5CYII=');
+    }
 }
 
 li.git-ignored > a {
@@ -135,11 +142,11 @@ li.git-ignored > a {
         margin-left: 7px;
         margin-right: 10px;
     }
-    button {
-        margin-right: 7px;
-    }
     .btn-group {
         line-height: 1;
+		>.btn {
+			cursor: pointer;
+		}
     }
     .btn-mini {
         padding: 2px 5px;
@@ -150,6 +157,7 @@ li.git-ignored > a {
     .nothing-to-commit {
         padding: 15px;
     }
+
 }
 
 #git-toolbar-icon {
