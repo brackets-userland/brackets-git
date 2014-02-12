@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.9
+* Do not display 'not a git repo' anymore [#111](https://github.com/zaggino/brackets-git/issues/111)
+
 ## 0.8.8
 * Add toggle panel keyboard shortcut in settings dialog.
 * Add amend checkbox to the commit dialog.

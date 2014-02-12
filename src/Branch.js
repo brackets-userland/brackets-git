@@ -130,7 +130,12 @@ define(function (require, exports) {
     }
     
     function refresh() {
-        $gitBranchName.text("\u2026").show();
+        // show info that branch is refreshing currently
+        $gitBranchName
+            .text("\u2026")
+            .parent()
+                .show();
+
         Main.gitControl.getRepositoryRoot().then(function (root) {
             if (root === Main.getProjectRoot()) {
                 Main.gitControl.getBranchName().then(function (branchName) {
@@ -153,8 +158,13 @@ define(function (require, exports) {
                 Panel.disable("not-root");
             }
         }).fail(function () {
-            // Current working folder is not a git repository
-            $gitBranchName.text("not a git repo").off("click");
+            // current working folder is not a git repository, hide branch info
+            $gitBranchName
+                .text("not a git repo")
+                .off("click")
+                .parent()
+                    .hide();
+
             Panel.disable("not-repo");
         });
     }
@@ -165,7 +175,6 @@ define(function (require, exports) {
         $("<div id='git-branch-dropdown-toggle'></div>")
             .append("[ ")
             .append($gitBranchName)
-            //.append("<span class='dropdown-arrow'></span>") // TODO: add branches switching
             .append(" ]")
             .appendTo("#project-files-header");
         refresh();
