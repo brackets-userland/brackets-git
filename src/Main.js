@@ -24,30 +24,7 @@ define(function (require, exports) {
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
                                     .addClass("loading").appendTo($("#main-toolbar .buttons")),
         gitControl              = null,
-        preferences             = null,
-        // shows detected git version in the status bar
-        $gitStatusBar           = $(null),
-        // show busy icon in status bar when git operation is running
-        $busyIndicator          = $(null),
-        busyIndicatorIndex      = 0,
-        busyIndicatorInProgress = [];
-    
-    function showBusyIndicator() {
-        var i = busyIndicatorIndex++;
-        busyIndicatorInProgress.push(i);
-        $busyIndicator.addClass("spin");
-        return i;
-    }
-
-    function hideBusyIndicator(i) {
-        var pos = busyIndicatorInProgress.indexOf(i);
-        if (pos !== -1) {
-            busyIndicatorInProgress.splice(pos, 1);
-        }
-        if (busyIndicatorInProgress.length === 0) {
-            $busyIndicator.removeClass("spin");
-        }
-    }
+        preferences             = null;
 
     function getProjectRoot() {
         return ProjectManager.getProjectRoot().fullPath;
@@ -79,19 +56,6 @@ define(function (require, exports) {
         return result.promise;
     }
 
-    // Shows currently installed version or error when Git is not available
-    function initGitStatusBar() {
-        return gitControl.getVersion().then(function (version) {
-            Strings.GIT_VERSION = version;
-            $gitStatusBar.text("Git " + version);
-        }).fail(function (err) {
-            var errText = Strings.CHECK_GIT_SETTINGS + ": " + err.toString();
-            $gitStatusBar.addClass("error").text(errText);
-            $icon.addClass("error").attr("title", errText);
-            throw err;
-        });
-    }
-    
     // This only launches, when bash is available
     function initBashIcon() {
         $("<a id='git-bash'>[ bash ]</a>")
@@ -302,7 +266,6 @@ define(function (require, exports) {
             preferences: preferences,
             handler: function (method, cmd, args, opts) {
                 var rv = q.defer(),
-                    i = showBusyIndicator(),
                     resolved = false;
 
                 opts = opts || {};
@@ -328,7 +291,6 @@ define(function (require, exports) {
                         }
                     })
                     .always(function () {
-                        hideBusyIndicator(i);
                         resolved = true;
                     })
                     .done();
@@ -338,7 +300,6 @@ define(function (require, exports) {
                         var err = new Error("cmd-" + method + "-timeout: " + cmd + " " + args.join(" "));
                         ErrorHandler.logError(err);
                         rv.reject(err);
-                        hideBusyIndicator(i);
                         resolved = true;
                     }
                 }, opts.timeout || TIMEOUT_VALUE);
@@ -349,15 +310,23 @@ define(function (require, exports) {
         // Initialize items dependent on HTML DOM
         AppInit.htmlReady(function () {
             $icon.removeClass("loading").removeAttr("title");
-            $gitStatusBar  = $("<div id='git-status'></div>").appendTo($("#status-indicators"));
-            $busyIndicator = $("<div class='spinner'></div>").appendTo($gitStatusBar);
-            initGitStatusBar().then(function () {
+
+            // Try to get Git version, if succeeds then Git works
+            gitControl.getVersion().then(function (version) {
+                Strings.GIT_VERSION = version;
                 initUi();
                 attachEventsToBrackets();
-            });
+            }).fail(function (err) {
+                var errText = Strings.CHECK_GIT_SETTINGS + ": " + err.toString();
+                $icon.addClass("error").attr("title", errText);
+                throw err;
+            }).done();
+
+            // Try to get Bash version, if succeeds then Bash is available
             gitControl.bashVersion().then(function () {
                 initBashIcon();
             });
+
             // add command to project menu
             var projectCmenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
             var workingCmenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_MENU);
