@@ -58,12 +58,9 @@ define(function (require, exports) {
 
     // This only launches, when bash is available
     function initBashIcon() {
-        $("<a id='git-bash'>[ bash ]</a>")
-            .appendTo("#project-files-header")
-            .on("click", function (e) {
-                e.stopPropagation();
-                gitControl.bashOpen(getProjectRoot());
-            });
+        $(document).on("click", ".git-bash", function() {
+            gitControl.bashOpen(getProjectRoot());
+        });
     }
     
     // This only launches when Git is available
