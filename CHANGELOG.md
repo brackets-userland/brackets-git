@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.10
+* Restyle of the interface by [Fez Vrasta](https://github.com/FezVrasta)
+
 ## 0.8.9
 * Do not display 'not a git repo' anymore [#111](https://github.com/zaggino/brackets-git/issues/111)
 * Removed obsolete status bar [#110](https://github.com/zaggino/brackets-git/issues/110)
