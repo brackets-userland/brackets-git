@@ -58,7 +58,7 @@ define(function (require, exports) {
 
     // This only launches, when bash is available
     function initBashIcon() {
-        $(document).on("click", ".git-bash", function() {
+        $(document).on("click", ".git-bash", function () {
             gitControl.bashOpen(getProjectRoot());
         });
     }
