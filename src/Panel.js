@@ -725,6 +725,16 @@ define(function (require, exports) {
                 }, 1);
             });
 
+        // Try to get Bash version, if succeeds then Bash is available, hide otherwise
+        Main.gitControl.bashVersion().fail(function (e) {
+            gitPanel.$panel.find(".git-bash").prop("disabled", true).attr("title", Strings.BASH_NOT_AVAILABLE);
+            throw e;
+        }).then(function () {
+            gitPanel.$panel.find(".git-bash").on("click", function () {
+                Main.gitControl.bashOpen(Main.getProjectRoot());
+            });
+        });
+
         // Register command for opening bottom panel.
         CommandManager.register(Strings.PANEL_COMMAND, PANEL_COMMAND_ID, toggle);
 

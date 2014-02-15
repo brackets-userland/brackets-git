@@ -56,13 +56,6 @@ define(function (require, exports) {
         return result.promise;
     }
 
-    // This only launches, when bash is available
-    function initBashIcon() {
-        $(document).on("click", ".git-bash", function () {
-            gitControl.bashOpen(getProjectRoot());
-        });
-    }
-    
     // This only launches when Git is available
     function initUi() {
         Panel.init(gitControl, preferences);
@@ -318,11 +311,6 @@ define(function (require, exports) {
                 $icon.addClass("error").attr("title", errText);
                 throw err;
             }).done();
-
-            // Try to get Bash version, if succeeds then Bash is available
-            gitControl.bashVersion().then(function () {
-                initBashIcon();
-            });
 
             // add command to project menu
             var projectCmenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
