@@ -24,6 +24,7 @@ define(function (require, exports) {
         ErrorHandler       = require("./ErrorHandler"),
         ExpectedError      = require("./ExpectedError"),
         Main               = require("./Main"),
+        Branch             = require("./Branch"),
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
         Utils              = require("./Utils"),
@@ -100,6 +101,7 @@ define(function (require, exports) {
     function handleGitReset() {
         Main.gitControl.gitReset().then(function () {
             refresh();
+            Branch.refresh();
         }).fail(function (err) {
             // reset is executed too often so just log this error, but do not display a dialog
             ErrorHandler.logError(err);
