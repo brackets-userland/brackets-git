@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.0
+* Panel icons and other visual tweaks by [Fez Vrasta](https://github.com/FezVrasta)
+
 ## 0.8.10
 * Restyle of the interface by [Fez Vrasta](https://github.com/FezVrasta)
 

@@ -23,7 +23,7 @@ define({
     TOOLTIP_PUSH:                       "Git Push",
     TOOLTIP_OPEN_BASH:                  "Open Bash console",
     BUTTON_REPORT:                      "Report",
-    BUTTON_RESET:                       "Reset index",
+    BUTTON_REFRESH_PANEL:               "Refresh panel",
     BUTTON_SAVE:                        "Save",
     CHANGELOG:                          "Changelog",
     CHECK_GIT_SETTINGS:                 "Check Git settings",
