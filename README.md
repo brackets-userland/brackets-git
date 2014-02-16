@@ -10,6 +10,8 @@ Windows users need to have [msysgit](https://code.google.com/p/msysgit/) install
 
 Mac users need to have [Git for OS X](https://code.google.com/p/git-osx-installer/) installed.
 
+Linux users simply ```sudo apt-get install git```.
+
 ## Installation
 
 You can use Brackets built-in [extension registry](https://brackets-registry.aboutweb.com/).
