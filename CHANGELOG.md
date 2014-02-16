@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.9.0
+* Bash icon now launches terminal window in other OS than Windows.
 * Panel icons and other visual tweaks by [Fez Vrasta](https://github.com/FezVrasta)
 * Refresh button on panel now refreshes current branch too in case it has been switched from outside of Brackets.
 
