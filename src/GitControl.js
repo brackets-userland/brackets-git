@@ -107,6 +107,11 @@ define(function (require, exports, module) {
             }
         },
 
+        terminalOpen: function (folder) {
+            var cmd = this.options.preferences.getValue("extensionDirectory") + "terminal.sh";
+            return this.executeCommand(cmd + " " + folder);
+        },
+
         getVersion: function () {
             return this.executeCommand(this._git, "--version").then(function (output) {
                 var io = output.indexOf("git version");
