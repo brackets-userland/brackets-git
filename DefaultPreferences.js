@@ -21,8 +21,11 @@ define(function (require, exports, module) {
         defaultPreferences.gitIsInSystemPath = false;
         defaultPreferences.gitPath           = "C:\\Program Files (x86)\\Git\\bin\\git.exe";
         defaultPreferences.msysgitPath       = "C:\\Program Files (x86)\\Git\\";
-    } else {
-        // Mac (Linux?)
+    } else if (brackets.platform === "linux") {
+        defaultPreferences.gitIsInSystemPath = false;
+        defaultPreferences.gitPath           = "/usr/bin/git";
+        defaultPreferences.msysgitPath       = "";
+    } else { // mac
         defaultPreferences.gitIsInSystemPath = false;
         defaultPreferences.gitPath           = "/usr/local/git/bin/git";
         defaultPreferences.msysgitPath       = "";
