@@ -31,11 +31,11 @@ If you won't find the feature you were looking for, feel free to __open issues w
 
 ### Some screenshots:
 
-![main](https://raw.github.com/zaggino/brackets-git/master/screenshots/main.png)
+![main](https://raw.github.com/zaggino/brackets-git/master/screenshots/main.jpg)
 
-![commit dialog](https://raw.github.com/zaggino/brackets-git/master/screenshots/commitDialog.png)
+![commit dialog](https://raw.github.com/zaggino/brackets-git/master/screenshots/commitDialog.jpg)
 
-![settings dialog](https://raw.github.com/zaggino/brackets-git/master/screenshots/settingsDialog.png)
+![settings dialog](https://raw.github.com/zaggino/brackets-git/master/screenshots/settingsDialog.jpg)
 
 ## Contributing
 
