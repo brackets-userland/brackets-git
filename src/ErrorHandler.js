@@ -18,7 +18,8 @@ define(function (require, exports) {
     function getMdReport(params) {
         return Mustache.render(markdownReportTemplate, _.defaults(params || {}, {
             brackets: [brackets.metadata.name, brackets.metadata.version, "(" + brackets.platform + ")"].join(" "),
-            bracketsGit: "Brackets-Git " + ExtInfo.getSync().version
+            bracketsGit: "Brackets-Git " + ExtInfo.getSync().version,
+            git: Strings.GIT_VERSION
         })).trim();
     }
 

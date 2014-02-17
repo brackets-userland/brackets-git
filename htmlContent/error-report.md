@@ -2,7 +2,7 @@
 
 --------------------------------
 
-*{{brackets}} & {{bracketsGit}}*
+*{{brackets}}{{#git}}, Git {{git}}{{/git}} & {{bracketsGit}}*
 
 {{#title}}**{{title}}**{{/title}}
 
