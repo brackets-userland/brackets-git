@@ -51,12 +51,19 @@
         <label for="git-settings-gitPath">{{PATH_TO_GIT_EXECUTABLE}}:</label>
         <input id="git-settings-gitPath" type="text" />
         <br/>
-        <span class="windows_only">
+        <span class="windows-only">
         <hr/>
         <h4>{{FOR_WINDOWS_USERS}}</h4>
         <br/>
         <label for="git-settings-msysgitPath">{{PATH_TO_GIT_MSYSGIT}}:</label>
         <input id="git-settings-msysgitPath" type="text" />
+        </span>
+        <span class="non-windows-only">
+        <hr/>
+        <h4>{{FOR_MAC_LINUX_USERS}}</h4>
+        <br/>
+        <label for="git-settings-terminalCommand">{{CUSTOM_TERMINAL_COMMAND}}:</label>
+        <input id="git-settings-terminalCommand" type="text" />
         </span>
     </div>
     <div class="modal-footer">

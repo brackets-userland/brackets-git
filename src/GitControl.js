@@ -123,10 +123,16 @@ define(function (require, exports, module) {
             }
         },
 
-        terminalOpen: function (folder) {
-            var cmd = this.options.preferences.getValue("extensionDirectory") + "shell/" +
-                (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
-            return this.executeCommand(escapeShellArg(cmd) + " " + escapeShellArg(folder));
+        terminalOpen: function (folder, customCmd) {
+            var cmd;
+            if (customCmd) {
+                cmd = customCmd.replace("$1", escapeShellArg(folder));
+            } else {
+                cmd = this.options.preferences.getValue("extensionDirectory") + "shell/" +
+                    (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
+                cmd = escapeShellArg(cmd) + " " + escapeShellArg(folder);
+            }
+            return this.executeCommand(cmd);
         },
 
         getVersion: function () {

@@ -6,14 +6,19 @@ define(function (require, exports, module) {
     // Default preferences are different for platforms
     var defaultPreferences = {
         "lastVersion":                      null,
-        "useGitGutter":                     true,
         "panelEnabled":                     true,
+
+        "stripWhitespaceFromCommits":       true,
+        "addEndlineToTheEndOfFile":         true,
+        "useGitGutter":                     true,
+
         "panelShortcut":                    "Ctrl-Alt-G",
         "commitCurrentShortcut":            null,
         "commitAllShortcut":                null,
-        "stripWhitespaceFromCommits":       true,
-        "addEndlineToTheEndOfFile":         true,
+
         "TIMEOUT_VALUE":                    30000,
+        "terminalCommand":                  null,
+
         // these are set by platform
         "gitIsInSystemPath":                null,
         "gitPath":                          null,

@@ -28,9 +28,14 @@ define(function (require, exports) {
         $("#git-settings-gitPath")
             .val(values.gitPath)
             .prop("disabled", values.gitIsInSystemPath);
+        // windows
         $("#git-settings-msysgitPath")
             .val(values.msysgitPath)
             .prop("disabled", brackets.platform !== "win");
+        // non-windows
+        $("#git-settings-terminalCommand")
+            .val(values.terminalCommand)
+            .prop("disabled", brackets.platform === "win");
     }
 
     function restorePlatformDefaults() {
@@ -59,10 +64,8 @@ define(function (require, exports) {
     function init() {
         setValues(preferences.getAllValues());
         assignActions();
-
-        if (brackets.platform !== "win") {
-            $(".windows_only").hide();
-        }
+        $(".windows-only").toggle(brackets.platform === "win");
+        $(".non-windows-only").toggle(brackets.platform !== "win");
     }
 
     function showRestartDialog() {
@@ -107,6 +110,8 @@ define(function (require, exports) {
                     msysgitPath = msysgitPath + "\\";
                 }
                 preferences.setValue("msysgitPath", msysgitPath);
+                // Linux
+                preferences.setValue("terminalCommand", $("#git-settings-terminalCommand", $dialog).val().trim());
                 // Restart brackets to reload changes.
                 showRestartDialog();
             }

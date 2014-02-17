@@ -773,11 +773,12 @@ define(function (require, exports) {
             });
         } else {
             gitPanel.$panel.find(".git-bash").on("click", function () {
-                Main.gitControl.terminalOpen(Main.getProjectRoot()).fail(function (err) {
+                var customTerminal = Main.preferences.getValue("terminalCommand");
+                Main.gitControl.terminalOpen(Main.getProjectRoot(), customTerminal).fail(function (err) {
                     throw ErrorHandler.showError(err);
                 }).then(function (result) {
-                    if (result !== "ok") {
-                        ErrorHandler.showError(new Error("Terminal was not found for your OS"));
+                    if (!customTerminal && result !== "ok") {
+                        ErrorHandler.showError(new Error(Strings.ERROR_TERMINAL_NOT_FOUND));
                     }
                 });
             });
