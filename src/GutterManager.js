@@ -46,7 +46,7 @@ define(function (require, exports) {
         // add our gutter if its not already available
         var gutters = cm.getOption("gutters").slice(0);
         if (gutters.indexOf(gutterName) === -1) {
-            gutters.splice(gutters.length - 1, 0, gutterName);
+            gutters.unshift(gutterName);
             cm.setOption("gutters", gutters);
             cm.on("gutterClick", gutterClick);
         }
@@ -63,7 +63,7 @@ define(function (require, exports) {
     }
 
     function gutterClick(cm, lineIndex, gutterId) {
-        if (gutterId !== gutterName) {
+        if (gutterId !== gutterName && gutterId !== "CodeMirror-linenumbers") {
             return;
         }
 
