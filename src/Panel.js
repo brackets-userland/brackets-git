@@ -736,7 +736,9 @@ define(function (require, exports) {
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
-        gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $(panelHtml), 100);
+        var $panelHtml = $(panelHtml);
+        $panelHtml.find(".noRepoToolbar").hide();
+        gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
 
         gitPanel.$panel
             .on("click", ".close", toggle)
