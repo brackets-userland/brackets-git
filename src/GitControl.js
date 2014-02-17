@@ -28,6 +28,19 @@ define(function (require, exports, module) {
         return rv.sort();
     }
 
+    function escapeShellArg(arg) {
+        // From: http://phpjs.org/functions
+        // +   original by: Felix Geisendoerfer (http://www.debuggable.com/felix)
+        // +   improved by: Brett Zamir (http://brett-zamir.me)
+        // *     example 1: escapeshellarg("kevin's birthday");
+        // *     returns 1: "'kevin\'s birthday'"
+        var ret = '';
+        ret = arg.replace(/[^\\]'/g, function (m, i, s) {
+            return m.slice(0, 1) + '\\\'';
+        });
+        return "'" + ret + "'";
+    }
+
     function GitControl(options) {
         this._isHandlerRunning = false;
         this._queue = [];
@@ -109,7 +122,7 @@ define(function (require, exports, module) {
 
         terminalOpen: function (folder) {
             var cmd = this.options.preferences.getValue("extensionDirectory") + "terminal.sh";
-            return this.executeCommand(cmd + " " + folder);
+            return this.executeCommand(cmd + " " + escapeShellArg(folder));
         },
 
         getVersion: function () {
@@ -270,7 +283,7 @@ define(function (require, exports, module) {
             if (amend) { cmd += " --amend --reset-author"; }
 
             if (lines.length === 1) {
-                return self.executeCommand(cmd + " -m \"" + message + "\"");
+                return self.executeCommand(cmd + " -m " + escapeShellArg(message));
             } else {
                 // TODO: maybe use git commit --file=-
                 var result = q.defer(),
