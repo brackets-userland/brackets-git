@@ -3,7 +3,7 @@
         <h1 class="dialog-title">{{GIT_SETTINGS}}</h1>
     </div>
     <div class="modal-body table-striped tab-content">
-        <h4>{{FEATURE_SETTINGS}}</h4>
+        <h4>{{FEATURES}}</h4>
         <div class="row-fluid">
             <div class="span6">
                 <label for="git-settings-stripWhitespaceFromCommits">
@@ -26,14 +26,23 @@
                 </label>
             </div>
         </div>
+        <h4>Shortcuts</h4>
         <div class="row-fluid">
-            <div class="span12">
+            <div class="span4">
                 <label for="git-settings-panelShortcut">{{PANEL_SHORTCUT}}:</label>
                 <input id="git-settings-panelShortcut" type="text" />
             </div>
+            <div class="span4">
+                <label for="git-settings-commitCurrent">{{COMMIT_CURRENT_SHORTCUT}}:</label>
+                <input id="git-settings-commitCurrent" type="text" />
+            </div>
+            <div class="span4">
+                <label for="git-settings-commitAll">{{COMMIT_ALL_SHORTCUT}}:</label>
+                <input id="git-settings-commitAll" type="text" />
+            </div>
         </div>
         <hr/>
-        <h4>{{GIT_SETTINGS}}</h4>
+        <h4>{{BASIC_CONFIGURATION}}</h4>
         <label for="git-settings-gitIsInSystemPath">
             <input id="git-settings-gitIsInSystemPath" type="checkbox" />
             {{GIT_IS_IN_PATH}}

@@ -9,6 +9,8 @@ define(function (require, exports, module) {
         "useGitGutter":                     true,
         "panelEnabled":                     true,
         "panelShortcut":                    "Ctrl-Alt-G",
+        "commitCurrentShortcut":            null,
+        "commitAllShortcut":                null,
         "stripWhitespaceFromCommits":       true,
         "addEndlineToTheEndOfFile":         true,
         "TIMEOUT_VALUE":                    30000,

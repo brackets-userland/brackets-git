@@ -28,7 +28,9 @@ define(function (require, exports) {
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
         Utils              = require("./Utils"),
-        PANEL_COMMAND_ID   = "brackets-git.panel";
+        PANEL_COMMAND_ID   = "brackets-git.panel",
+        COMMIT_CURRENT_CMD = "brackets-git.commitCurrent",
+        COMMIT_ALL_CMD     = "brackets-git.commitAll";
 
     var gitPanelTemplate        = require("text!htmlContent/git-panel.html"),
         gitPanelResultsTemplate = require("text!htmlContent/git-panel-results.html"),
@@ -99,9 +101,9 @@ define(function (require, exports) {
     }
     
     function handleGitReset() {
-        Main.gitControl.gitReset().then(function () {
-            refresh();
+        return Main.gitControl.gitReset().then(function () {
             Branch.refresh();
+            return refresh();
         }).fail(function (err) {
             // reset is executed too often so just log this error, but do not display a dialog
             ErrorHandler.logError(err);
@@ -548,17 +550,17 @@ define(function (require, exports) {
     function refresh() {
         if (!gitPanel.isVisible()) {
             // no point, will be refreshed when it's displayed
-            return;
+            return q();
         }
 
         var $tableContainer = gitPanel.$panel.find(".table-container");
 
         if (gitPanelMode === "not-repo") {
             $tableContainer.empty();
-            return;
+            return q();
         }
 
-        Main.gitControl.getGitStatus().then(function (files) {
+        var p1 = Main.gitControl.getGitStatus().then(function (files) {
             var $checkAll = gitPanel.$panel.find(".check-all");
             $tableContainer.empty();
 
@@ -630,7 +632,7 @@ define(function (require, exports) {
 
         //- push button
         var $pushBtn = gitPanel.$panel.find(".git-push");
-        Main.gitControl.getCommitsAhead().then(function (commits) {
+        var p2 = Main.gitControl.getCommitsAhead().then(function (commits) {
             $pushBtn.children("span").remove();
             if (commits.length > 0) {
                 $pushBtn.append($("<span/>").text(" (" + commits.length + ")"));
@@ -638,6 +640,8 @@ define(function (require, exports) {
         }).fail(function () {
             $pushBtn.children("span").remove();
         });
+
+        return q.all([p1, p2]);
     }
     
     function toggle(bool) {
@@ -701,6 +705,32 @@ define(function (require, exports) {
         });
     }
 
+    function commitCurrentFile() {
+        return q.when(CommandManager.execute("file.save")).then(function () {
+            return handleGitReset();
+        }).then(function () {
+            var currentProjectRoot = Main.getProjectRoot();
+            var currentDoc = DocumentManager.getCurrentDocument();
+            if (currentDoc) {
+                gitPanel.$panel.find("tr").each(function () {
+                    var tr = $(this);
+                    tr.find(".check-one")
+                      .prop("checked", currentProjectRoot + tr.data("file") === currentDoc.file.fullPath);
+                });
+                return handleGitCommit();
+            }
+        });
+    }
+
+    function commitAllFiles() {
+        return q.when(CommandManager.execute("file.saveAll")).then(function () {
+            return handleGitReset();
+        }).then(function () {
+            gitPanel.$panel.find("tr .check-one").prop("checked", true);
+            return handleGitCommit();
+        });
+    }
+
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
@@ -756,6 +786,12 @@ define(function (require, exports) {
         var menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
         menu.addMenuDivider();
         menu.addMenuItem(PANEL_COMMAND_ID, Main.preferences.getValue("panelShortcut"));
+
+        // Commit current and all shortcuts
+        CommandManager.register(Strings.COMMIT_CURRENT_SHORTCUT, COMMIT_CURRENT_CMD, commitCurrentFile);
+        menu.addMenuItem(COMMIT_CURRENT_CMD, Main.preferences.getValue("commitCurrentShortcut"));
+        CommandManager.register(Strings.COMMIT_ALL_SHORTCUT, COMMIT_ALL_CMD, commitAllFiles);
+        menu.addMenuItem(COMMIT_ALL_CMD, Main.preferences.getValue("commitAllShortcut"));
     }
 
     function enable() {

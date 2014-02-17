@@ -15,10 +15,15 @@ define(function (require, exports) {
         preferences;
 
     function setValues(values) {
+        // features
         $("#git-settings-stripWhitespaceFromCommits").prop("checked", values.stripWhitespaceFromCommits);
         $("#git-settings-addEndlineToTheEndOfFile").prop("checked", values.addEndlineToTheEndOfFile);
         $("#git-settings-useGitGutter").prop("checked", values.useGitGutter);
+        // shortcuts
         $("#git-settings-panelShortcut").val(values.panelShortcut);
+        $("#git-settings-commitCurrent").val(values.commitCurrentShortcut);
+        $("#git-settings-commitAll").val(values.commitAllShortcut);
+        // basic
         $("#git-settings-gitIsInSystemPath").prop("checked", values.gitIsInSystemPath);
         $("#git-settings-gitPath")
             .val(values.gitPath)
@@ -85,10 +90,15 @@ define(function (require, exports) {
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
                 var $dialog = dialog.getElement();
+                // features
                 preferences.setValue("stripWhitespaceFromCommits", $("#git-settings-stripWhitespaceFromCommits", $dialog).prop("checked"));
                 preferences.setValue("addEndlineToTheEndOfFile", $("#git-settings-addEndlineToTheEndOfFile", $dialog).prop("checked"));
                 preferences.setValue("useGitGutter", $("#git-settings-useGitGutter", $dialog).prop("checked"));
+                // shortcuts
                 preferences.setValue("panelShortcut", $("#git-settings-panelShortcut", $dialog).val().trim());
+                preferences.setValue("commitCurrentShortcut", $("#git-settings-commitCurrent", $dialog).val().trim());
+                preferences.setValue("commitAllShortcut", $("#git-settings-commitAll", $dialog).val().trim());
+                // basic
                 preferences.setValue("gitIsInSystemPath", $("#git-settings-gitIsInSystemPath", $dialog).prop("checked"));
                 preferences.setValue("gitPath", $("#git-settings-gitPath", $dialog).val());
                 // We need trailing slash for folders.
