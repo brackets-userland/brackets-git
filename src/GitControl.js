@@ -124,7 +124,7 @@ define(function (require, exports, module) {
         },
 
         terminalOpen: function (folder) {
-            var cmd = this.options.preferences.getValue("extensionDirectory") +
+            var cmd = this.options.preferences.getValue("extensionDirectory") + "shell/" +
                 (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
             return this.executeCommand(escapeShellArg(cmd) + " " + escapeShellArg(folder));
         },
