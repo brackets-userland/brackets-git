@@ -463,6 +463,7 @@ define(function (require, exports) {
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true);
         Main.gitControl.gitPush().fail(function (err) {
 
+            if (typeof err !== "string") { throw err; }
             var m = err.match(/git remote add <name> <url>/);
             if (!m) { throw err; }
 
@@ -493,6 +494,7 @@ define(function (require, exports) {
 
         }).fail(function (err) {
 
+            if (typeof err !== "string") { throw err; }
             var m = err.match(/git push --set-upstream ([-0-9a-zA-Z]+) ([-0-9a-zA-Z]+)/);
             if (!m) { throw err; }
             return Main.gitControl.gitPushUpstream(m[1], m[2]);
