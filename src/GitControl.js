@@ -34,11 +34,14 @@ define(function (require, exports, module) {
         // +   improved by: Brett Zamir (http://brett-zamir.me)
         // *     example 1: escapeshellarg("kevin's birthday");
         // *     returns 1: "'kevin\'s birthday'"
-        var ret = '';
-        ret = arg.replace(/[^\\]'/g, function (m, i, s) {
-            return m.slice(0, 1) + '\\\'';
-        });
-        return "'" + ret + "'";
+        if (brackets.platform !== "win") {
+            var ret = arg.replace(/[^\\]'/g, function (m) {
+                return m.slice(0, 1) + "\\\'";
+            });
+            return "'" + ret + "'";
+        } else {
+            return "\"" + arg + "\"";
+        }
     }
 
     function GitControl(options) {
