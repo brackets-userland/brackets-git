@@ -737,7 +737,7 @@ define(function (require, exports) {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
         var $panelHtml = $(panelHtml);
-        $panelHtml.find(".noRepoToolbar").hide();
+        $panelHtml.find(".git-available, .git-not-available").hide();
         gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
 
         gitPanel.$panel
@@ -801,8 +801,8 @@ define(function (require, exports) {
     function enable() {
         gitPanelMode = null;
         //
-        gitPanel.$panel.find(".mainToolbar").show();
-        gitPanel.$panel.find(".noRepoToolbar").hide();
+        gitPanel.$panel.find(".git-available").show();
+        gitPanel.$panel.find(".git-not-available").hide();
         //
         Main.$icon.removeClass("warning").removeAttr("title");
         gitPanelDisabled = false;
@@ -814,8 +814,8 @@ define(function (require, exports) {
         gitPanelMode = cause;
         // causes: not-repo, not-root
         if (gitPanelMode === "not-repo") {
-            gitPanel.$panel.find(".mainToolbar").hide();
-            gitPanel.$panel.find(".noRepoToolbar").show();
+            gitPanel.$panel.find(".git-available").hide();
+            gitPanel.$panel.find(".git-not-available").show();
         } else {
             Main.$icon.addClass("warning").attr("title", cause);
             toggle(false);
