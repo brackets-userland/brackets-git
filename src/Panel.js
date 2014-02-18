@@ -43,7 +43,8 @@ define(function (require, exports) {
     var gitPanel = null,
         gitPanelDisabled = null,
         gitPanelMode = null,
-        showingUntracked = true;
+        showingUntracked = true,
+        $tableContainer = null;
     
     /**
      * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
@@ -550,19 +551,20 @@ define(function (require, exports) {
     }
 
     function refresh() {
-        if (!gitPanel.isVisible()) {
-            // no point, will be refreshed when it's displayed
-            return q();
-        }
-
-        var $tableContainer = gitPanel.$panel.find(".table-container");
-
         if (gitPanelMode === "not-repo") {
             $tableContainer.empty();
             return q();
         }
 
         var p1 = Main.gitControl.getGitStatus().then(function (files) {
+            // mark files in the project tree
+            var projectRoot = Main.getProjectRoot();
+            Main.refreshProjectFiles(files.map(function (entry) { return projectRoot + entry.file; }));
+
+            if (!gitPanel.isVisible()) {
+                return;
+            }
+
             var $checkAll = gitPanel.$panel.find(".check-all");
             $tableContainer.empty();
 
@@ -598,35 +600,6 @@ define(function (require, exports) {
                 $checkAll.prop("checked", false);
                 refreshCurrentFile();
             }
-
-            // TODO: move this to .init()
-            $tableContainer.off()
-                .on("click", ".check-one", function (e) {
-                    e.stopPropagation();
-                })
-                .on("click", ".btn-git-diff", function (e) {
-                    e.stopPropagation();
-                    handleGitDiff($(e.target).closest("tr").data("file"));
-                })
-                .on("click", ".btn-git-undo", function (e) {
-                    e.stopPropagation();
-                    handleGitUndo($(e.target).closest("tr").data("file"));
-                })
-                .on("click", ".btn-git-delete", function (e) {
-                    e.stopPropagation();
-                    handleGitDelete($(e.target).closest("tr").data("file"));
-                })
-                .on("click", "tr", function (e) {
-                    var fullPath = Main.getProjectRoot() + $(e.currentTarget).data("file");
-                    CommandManager.execute(Commands.FILE_OPEN, {
-                        fullPath: fullPath
-                    });
-                })
-                .on("dblclick", "tr", function (e) {
-                    var fullPath = Main.getProjectRoot() + $(e.currentTarget).data("file");
-                    FileViewController.addToWorkingSetAndSelect(fullPath);
-                });
-
         }).fail(function (err) {
             // Status is executed very often, so just log this error
             ErrorHandler.logError(err);
@@ -759,6 +732,34 @@ define(function (require, exports) {
                 setTimeout(function () {
                     Menus.getContextMenu("git-panel-context-menu").open(e);
                 }, 1);
+            });
+
+        $tableContainer = gitPanel.$panel.find(".table-container")
+            .off()
+            .on("click", ".check-one", function (e) {
+                e.stopPropagation();
+            })
+            .on("click", ".btn-git-diff", function (e) {
+                e.stopPropagation();
+                handleGitDiff($(e.target).closest("tr").data("file"));
+            })
+            .on("click", ".btn-git-undo", function (e) {
+                e.stopPropagation();
+                handleGitUndo($(e.target).closest("tr").data("file"));
+            })
+            .on("click", ".btn-git-delete", function (e) {
+                e.stopPropagation();
+                handleGitDelete($(e.target).closest("tr").data("file"));
+            })
+            .on("click", "tr", function (e) {
+                var fullPath = Main.getProjectRoot() + $(e.currentTarget).data("file");
+                CommandManager.execute(Commands.FILE_OPEN, {
+                    fullPath: fullPath
+                });
+            })
+            .on("dblclick", "tr", function (e) {
+                var fullPath = Main.getProjectRoot() + $(e.currentTarget).data("file");
+                FileViewController.addToWorkingSetAndSelect(fullPath);
             });
 
         // Try to get Bash version, if succeeds then Bash is available, hide otherwise

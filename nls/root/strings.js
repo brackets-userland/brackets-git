@@ -53,6 +53,7 @@ define({
     GIT_PUSH_RESPONSE:                  "Git Push response",
     GIT_SETTINGS:                       "Git Settings\u2026",
     LOADING:                            "Loading\u2026",
+    MARK_MODIFIED_FILES_IN_TREE:        "Mark modified files in file tree",
     NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
     PATH_TO_GIT_EXECUTABLE:             "Path to Git executable",
     PATH_TO_GIT_MSYSGIT:                "Path to msysgit folder",

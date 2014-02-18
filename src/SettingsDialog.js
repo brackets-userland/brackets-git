@@ -16,9 +16,9 @@ define(function (require, exports) {
 
     function setValues(values) {
         // features
-        $("#git-settings-stripWhitespaceFromCommits").prop("checked", values.stripWhitespaceFromCommits);
-        $("#git-settings-addEndlineToTheEndOfFile").prop("checked", values.addEndlineToTheEndOfFile);
-        $("#git-settings-useGitGutter").prop("checked", values.useGitGutter);
+        ["stripWhitespaceFromCommits", "addEndlineToTheEndOfFile", "useGitGutter", "markModifiedInTree"].forEach(function (name) {
+            $("#git-settings-" + name).prop("checked", values[name]);
+        });
         // shortcuts
         $("#git-settings-panelShortcut").val(values.panelShortcut);
         $("#git-settings-commitCurrent").val(values.commitCurrentShortcut);
@@ -94,9 +94,9 @@ define(function (require, exports) {
             if (buttonId === "ok") {
                 var $dialog = dialog.getElement();
                 // features
-                preferences.setValue("stripWhitespaceFromCommits", $("#git-settings-stripWhitespaceFromCommits", $dialog).prop("checked"));
-                preferences.setValue("addEndlineToTheEndOfFile", $("#git-settings-addEndlineToTheEndOfFile", $dialog).prop("checked"));
-                preferences.setValue("useGitGutter", $("#git-settings-useGitGutter", $dialog).prop("checked"));
+                ["stripWhitespaceFromCommits", "addEndlineToTheEndOfFile", "useGitGutter", "markModifiedInTree"].forEach(function (name) {
+                    preferences.setValue(name, $("#git-settings-" + name, $dialog).prop("checked"));
+                });
                 // shortcuts
                 preferences.setValue("panelShortcut", $("#git-settings-panelShortcut", $dialog).val().trim());
                 preferences.setValue("commitCurrentShortcut", $("#git-settings-commitCurrent", $dialog).val().trim());

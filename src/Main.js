@@ -74,8 +74,7 @@ define(function (require, exports) {
     function attachEventsToBrackets() {
         $(ProjectManager).on("projectOpen projectRefresh", function () {
             Branch.refresh();
-            Panel.refresh();
-            highlightGitignore();
+            refreshIgnoreEntries().then(Panel.refresh);
         });
         $(FileSystem).on("change rename", function () {
             Branch.refresh();
@@ -89,7 +88,7 @@ define(function (require, exports) {
             Panel.refreshCurrentFile();
             refreshGitGutters();
         });
-        highlightGitignore();
+        refreshIgnoreEntries();
         refreshGitGutters();
     }
     
@@ -124,8 +123,7 @@ define(function (require, exports) {
                 if (err) {
                     return ErrorHandler.showError(err, "Failed modifying .gitignore");
                 }
-                Panel.refresh();
-                highlightGitignore();
+                refreshIgnoreEntries().then(Panel.refresh);
             });
         });
     }
@@ -150,23 +148,45 @@ define(function (require, exports) {
         return _addRemoveItemInGitignore(fileEntry, "remove");
     }
 
-    function highlightGitignore() {
-        var projectRoot = getProjectRoot();
-        FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
-            if (err) { return; }
+    var _ignoreEntries = [];
 
-            var ignoreEntries = _.map(_.compact(content.split("\n")), function (line) {
+    function refreshProjectFiles(modifiedEntries) {
+        if (!preferences.getValue("markModifiedInTree")) {
+            return;
+        }
+
+        $("#project-files-container").find("li").each(function () {
+            var $li = $(this),
+                fullPath = $li.data("entry").fullPath,
+                isIgnored = _ignoreEntries.indexOf(fullPath) !== -1,
+                isModified = modifiedEntries.indexOf(fullPath) !== -1;
+            $li.toggleClass("git-ignored", isIgnored)
+               .toggleClass("git-modified", isModified);
+        });
+    }
+
+    function refreshIgnoreEntries() {
+        if (!preferences.getValue("markModifiedInTree")) {
+            return q();
+        }
+
+        var p = q.defer(),
+            projectRoot = getProjectRoot();
+
+        FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
+            if (err) {
+                p.reject(err);
+                return;
+            }
+            _ignoreEntries = _.map(_.compact(content.split("\n")), function (line) {
                 line = line.trim();
                 if (line.indexOf("/") === 0) { line = line.substring(1); }
                 return projectRoot + line;
             });
-
-            $("#project-files-container").find("li").each(function () {
-                var $li = $(this),
-                    isIgnored = ignoreEntries.indexOf($li.data("entry").fullPath) !== -1;
-                $li.toggleClass("git-ignored", isIgnored);
-            });
+            p.resolve();
         });
+
+        return p.promise;
     }
 
     function refreshGitGutters() {
@@ -339,5 +359,6 @@ define(function (require, exports) {
     exports.$icon = $icon;
     exports.getProjectRoot = getProjectRoot;
     exports.isProjectRootWritable = isProjectRootWritable;
+    exports.refreshProjectFiles = refreshProjectFiles;
     exports.init = init;
 });

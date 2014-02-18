@@ -1,3 +1,4 @@
+@gutterWidth: 6px;
 @lightGrey:   #BBBBBB;
 @darkGrey:    #9c9e9e;
 @moreDarkGrey:#868888;
@@ -10,7 +11,20 @@
 @lightRed:    #FF7CAD;
 @lighterRed:  #FFAFCF;
 
-@gutterWidth: 6px;
+.jstree-brackets {
+    li.git-modified > a:before {
+        content: "|";
+        color: @orange;
+        padding-right: 2px;
+    }
+    li.git-ignored > a {
+        color: @moreDarkGrey !important;
+        font-style: italic;
+        > span.extension {
+            color: @moreDarkGrey !important;
+        }
+    }
+}
 
 #git-branch {
     /* vertical align center text */
@@ -131,14 +145,6 @@
 }
 .git-reset i, .git-reset i:hover, .git-reset i:active {
     background-position: 1px -85px;
-}
-
-li.git-ignored > a {
-    color: @moreDarkGrey !important;
-    font-style: italic;
-    > span.extension {
-        color: @moreDarkGrey !important;
-    }
 }
 
 #git-panel

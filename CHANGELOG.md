@@ -2,6 +2,7 @@
 
 ## 0.9.0
 * Bash icon now launches terminal window in other OS than Windows.
+* Modified files are now marked in a project tree too for those who have panel closed.
 * New shorcuts for commiting current file and commiting all files configurable in settings.
 * Panel icons and other visual tweaks by [Fez Vrasta](https://github.com/FezVrasta)
 * Refresh button on panel now refreshes current branch too in case it has been switched from outside of Brackets.

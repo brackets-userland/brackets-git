@@ -11,6 +11,7 @@ define(function (require, exports, module) {
         "stripWhitespaceFromCommits":       true,
         "addEndlineToTheEndOfFile":         true,
         "useGitGutter":                     true,
+        "markModifiedInTree":               true,
 
         "panelShortcut":                    "Ctrl-Alt-G",
         "commitCurrentShortcut":            null,
