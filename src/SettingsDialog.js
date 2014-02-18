@@ -12,50 +12,59 @@ define(function (require, exports) {
         settingsDialogTemplate     = require("text!htmlContent/git-settings-dialog.html");
 
     var dialog,
+        $dialog,
         preferences;
 
     function setValues(values) {
-        // features
-        ["stripWhitespaceFromCommits", "addEndlineToTheEndOfFile", "useGitGutter", "markModifiedInTree"].forEach(function (name) {
-            $("#git-settings-" + name).prop("checked", values[name]);
+        $("*[settingsProperty]", $dialog).each(function () {
+            var $this = $(this),
+                type = $this.attr("type"),
+                property = $this.attr("settingsProperty");
+            if (type === "checkbox") {
+                $this.prop("checked", values[property]);
+            } else {
+                $this.val(values[property]);
+            }
         });
-        // shortcuts
-        $("#git-settings-panelShortcut").val(values.panelShortcut);
-        $("#git-settings-commitCurrent").val(values.commitCurrentShortcut);
-        $("#git-settings-commitAll").val(values.commitAllShortcut);
-        // basic
-        $("#git-settings-gitIsInSystemPath").prop("checked", values.gitIsInSystemPath);
-        $("#git-settings-gitPath")
-            .val(values.gitPath)
-            .prop("disabled", values.gitIsInSystemPath);
-        // windows
-        $("#git-settings-msysgitPath")
-            .val(values.msysgitPath)
-            .prop("disabled", brackets.platform !== "win");
-        // non-windows
-        $("#git-settings-terminalCommand")
-            .val(values.terminalCommand)
-            .prop("disabled", brackets.platform === "win");
+        $("#git-settings-gitPath", $dialog).prop("disabled", values.gitIsInSystemPath);
+        $("#git-settings-msysgitPath", $dialog).prop("disabled", brackets.platform !== "win");
+        $("#git-settings-terminalCommand", $dialog).prop("disabled", brackets.platform === "win");
     }
 
-    function restorePlatformDefaults() {
-        setValues(DefaultPreferences);
+    function collectValues(preferences) {
+        $("*[settingsProperty]", $dialog).each(function () {
+            var $this = $(this),
+                type = $this.attr("type"),
+                property = $this.attr("settingsProperty");
+            if (type === "checkbox") {
+                preferences.setValue(property, $this.prop("checked"));
+            } else {
+                preferences.setValue(property, $this.val().trim() || null);
+            }
+        });
+
+        // We need trailing slash for folders.
+        var msysgitPath = preferences.getValue("msysgitPath");
+        if (msysgitPath[msysgitPath.length - 1] !== "\\") {
+            preferences.setValue("msysgitPath", msysgitPath + "\\");
+        }
     }
 
     function assignActions() {
-        $("#git-settings-gitIsInSystemPath").on("click", function () {
-            $("#git-settings-gitPath").prop("disabled", $(this).is(":checked"));
+        $("#git-settings-gitIsInSystemPath", $dialog).on("click", function () {
+            $("#git-settings-gitPath", $dialog).prop("disabled", $(this).is(":checked"));
         });
-        $("#git-settings-stripWhitespaceFromCommits").on("change", function () {
+        $("#git-settings-stripWhitespaceFromCommits", $dialog).on("change", function () {
             var on = $(this).is(":checked");
-            $("#git-settings-addEndlineToTheEndOfFile").prop("checked", on);
-            $("#git-settings-addEndlineToTheEndOfFile").prop("disabled", !on);
+            $("#git-settings-addEndlineToTheEndOfFile", $dialog)
+                .prop("checked", on)
+                .prop("disabled", !on);
         });
-        $("button[data-button-id='defaults']").on("click", function (e) {
+        $("button[data-button-id='defaults']", $dialog).on("click", function (e) {
             e.stopPropagation();
-            restorePlatformDefaults();
+            setValues(DefaultPreferences);
         });
-        $("button[data-button-id='changelog']").on("click", function (e) {
+        $("button[data-button-id='changelog']", $dialog).on("click", function (e) {
             e.stopPropagation();
             ChangelogDialog.show(preferences);
         });
@@ -64,8 +73,8 @@ define(function (require, exports) {
     function init() {
         setValues(preferences.getAllValues());
         assignActions();
-        $(".windows-only").toggle(brackets.platform === "win");
-        $(".non-windows-only").toggle(brackets.platform !== "win");
+        $(".windows-only", $dialog).toggle(brackets.platform === "win");
+        $(".non-windows-only", $dialog).toggle(brackets.platform !== "win");
     }
 
     function showRestartDialog() {
@@ -86,32 +95,15 @@ define(function (require, exports) {
         var compiledTemplate = Mustache.render(settingsDialogTemplate, Strings);
 
         dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+        $dialog = dialog.getElement();
         preferences = prefs;
 
         init();
 
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
-                var $dialog = dialog.getElement();
-                // features
-                ["stripWhitespaceFromCommits", "addEndlineToTheEndOfFile", "useGitGutter", "markModifiedInTree"].forEach(function (name) {
-                    preferences.setValue(name, $("#git-settings-" + name, $dialog).prop("checked"));
-                });
-                // shortcuts
-                preferences.setValue("panelShortcut", $("#git-settings-panelShortcut", $dialog).val().trim());
-                preferences.setValue("commitCurrentShortcut", $("#git-settings-commitCurrent", $dialog).val().trim());
-                preferences.setValue("commitAllShortcut", $("#git-settings-commitAll", $dialog).val().trim());
-                // basic
-                preferences.setValue("gitIsInSystemPath", $("#git-settings-gitIsInSystemPath", $dialog).prop("checked"));
-                preferences.setValue("gitPath", $("#git-settings-gitPath", $dialog).val());
-                // We need trailing slash for folders.
-                var msysgitPath = $("#git-settings-msysgitPath", $dialog).val();
-                if (msysgitPath[msysgitPath.length - 1] !== "\\") {
-                    msysgitPath = msysgitPath + "\\";
-                }
-                preferences.setValue("msysgitPath", msysgitPath);
-                // Linux
-                preferences.setValue("terminalCommand", $("#git-settings-terminalCommand", $dialog).val().trim());
+                // Save everything to preferences
+                collectValues(preferences);
                 // Restart brackets to reload changes.
                 showRestartDialog();
             }

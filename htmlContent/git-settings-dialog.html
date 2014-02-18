@@ -7,13 +7,13 @@
         <div class="row-fluid">
             <div class="span6">
                 <label for="git-settings-stripWhitespaceFromCommits">
-                    <input id="git-settings-stripWhitespaceFromCommits" type="checkbox" />
+                    <input id="git-settings-stripWhitespaceFromCommits" type="checkbox" settingsProperty="stripWhitespaceFromCommits" />
                     {{STRIP_WHITESPACE_FROM_COMMITS}}
                 </label>
             </div>
             <div class="span6">
                 <label for="git-settings-addEndlineToTheEndOfFile">
-                    <input id="git-settings-addEndlineToTheEndOfFile" type="checkbox" />
+                    <input id="git-settings-addEndlineToTheEndOfFile" type="checkbox" settingsProperty="addEndlineToTheEndOfFile" />
                     {{ADD_ENDLINE_TO_THE_END_OF_FILE}}
                 </label>
             </div>
@@ -21,13 +21,13 @@
         <div class="row-fluid">
             <div class="span6">
                 <label for="git-settings-useGitGutter">
-                    <input id="git-settings-useGitGutter" type="checkbox" />
+                    <input id="git-settings-useGitGutter" type="checkbox" settingsProperty="useGitGutter" />
                     {{USE_GIT_GUTTER}}
                 </label>
             </div>
             <div class="span6">
                 <label for="git-settings-markModifiedInTree">
-                    <input id="git-settings-markModifiedInTree" type="checkbox" />
+                    <input id="git-settings-markModifiedInTree" type="checkbox" settingsProperty="markModifiedInTree" />
                     {{MARK_MODIFIED_FILES_IN_TREE}}
                 </label>
             </div>
@@ -36,40 +36,40 @@
         <div class="row-fluid">
             <div class="span4">
                 <label for="git-settings-panelShortcut">{{PANEL_SHORTCUT}}:</label>
-                <input id="git-settings-panelShortcut" type="text" />
+                <input id="git-settings-panelShortcut" type="text" settingsProperty="panelShortcut" />
             </div>
             <div class="span4">
-                <label for="git-settings-commitCurrent">{{COMMIT_CURRENT_SHORTCUT}}:</label>
-                <input id="git-settings-commitCurrent" type="text" />
+                <label for="git-settings-commitCurrentShortcut">{{COMMIT_CURRENT_SHORTCUT}}:</label>
+                <input id="git-settings-commitCurrentShortcut" type="text" settingsProperty="commitCurrentShortcut" />
             </div>
             <div class="span4">
-                <label for="git-settings-commitAll">{{COMMIT_ALL_SHORTCUT}}:</label>
-                <input id="git-settings-commitAll" type="text" />
+                <label for="git-settings-commitAllShortcut">{{COMMIT_ALL_SHORTCUT}}:</label>
+                <input id="git-settings-commitAllShortcut" type="text" settingsProperty="commitAllShortcut" />
             </div>
         </div>
         <hr/>
         <h4>{{BASIC_CONFIGURATION}}</h4>
         <label for="git-settings-gitIsInSystemPath">
-            <input id="git-settings-gitIsInSystemPath" type="checkbox" />
+            <input id="git-settings-gitIsInSystemPath" type="checkbox" settingsProperty="gitIsInSystemPath" />
             {{GIT_IS_IN_PATH}}
         </label>
         <br/>
         <label for="git-settings-gitPath">{{PATH_TO_GIT_EXECUTABLE}}:</label>
-        <input id="git-settings-gitPath" type="text" />
+        <input id="git-settings-gitPath" type="text" settingsProperty="gitPath" />
         <br/>
         <span class="windows-only">
         <hr/>
         <h4>{{FOR_WINDOWS_USERS}}</h4>
         <br/>
         <label for="git-settings-msysgitPath">{{PATH_TO_GIT_MSYSGIT}}:</label>
-        <input id="git-settings-msysgitPath" type="text" />
+        <input id="git-settings-msysgitPath" type="text" settingsProperty="msysgitPath" />
         </span>
         <span class="non-windows-only">
         <hr/>
         <h4>{{FOR_MAC_LINUX_USERS}}</h4>
         <br/>
         <label for="git-settings-terminalCommand">{{CUSTOM_TERMINAL_COMMAND}}:</label>
-        <input id="git-settings-terminalCommand" type="text" />
+        <input id="git-settings-terminalCommand" type="text" settingsProperty="terminalCommand" />
         </span>
     </div>
     <div class="modal-footer">
