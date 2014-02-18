@@ -460,6 +460,107 @@ define(function (require, exports) {
         });
     }
 
+    function askQuestion(title, question, booleanResponse) {
+        var response = q.defer();
+        var compiledTemplate = Mustache.render(questionDialogTemplate, {
+            title: title,
+            question: question,
+            stringInput: !booleanResponse,
+            Strings: Strings
+        });
+        var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+        if (!booleanResponse) {
+            dialog.getElement().find("input").focus();
+        }
+        dialog.done(function (buttonId) {
+            if (booleanResponse) {
+                response.resolve(buttonId === "ok");
+                return;
+            }
+            if (buttonId === "ok") {
+                response.resolve(dialog.getElement().find("input").val().trim());
+            } else {
+                response.reject("User aborted!");
+            }
+        });
+        return response.promise;
+    }
+
+    function handleGitPushWithPassword(traditionalPushError) {
+        return Main.gitControl.getBranchName().then(function (branchName) {
+            return Main.gitControl.getGitConfig("branch." + branchName + ".remote").then(function (remoteName) {
+                return Main.gitControl.getGitConfig("remote." + remoteName + ".url").then(function (remoteUrl) {
+                    var isHttp = remoteUrl.indexOf("http") === 0;
+                    if (!isHttp) {
+                        console.warn("Asking for username/password aborted because remote is not HTTP(S)");
+                        throw traditionalPushError;
+                    }
+
+                    var username,
+                        password,
+                        hasUsername,
+                        hasPassword,
+                        shouldSave;
+
+                    var m = remoteUrl.match(/https?:\/\/([^@]+)@/);
+                    if (!m) {
+                        hasUsername = false;
+                        hasPassword = false;
+                    } else if (m.split(":").length === 1) {
+                        hasUsername = true;
+                        hasPassword = false;
+                    } else {
+                        hasUsername = true;
+                        hasPassword = true;
+                    }
+
+                    if (hasUsername && hasPassword) {
+                        throw traditionalPushError;
+                    }
+
+                    var p = q();
+                    if (!hasUsername) {
+                        p = p.then(function () {
+                            return askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_USERNAME).then(function (str) {
+                                username = str;
+                            });
+                        });
+                    }
+                    if (!hasUsername) {
+                        p = p.then(function () {
+                            return askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_PASSWORD).then(function (str) {
+                                password = str;
+                            });
+                        });
+                    }
+                    p = p.then(function () {
+                        return askQuestion(Strings.TOOLTIP_PUSH, Strings.SAVE_PASSWORD_QUESTION, true).then(function (bool) {
+                            shouldSave = bool;
+                        });
+                    });
+                    return p.then(function () {
+                        if (!hasUsername) {
+                            remoteUrl = remoteUrl.replace(/(https?:\/\/)/, function (a, protocol) { return protocol + username + "@"; });
+                        }
+                        if (!hasPassword) {
+                            var io = remoteUrl.indexOf("@");
+                            remoteUrl = remoteUrl.substring(0, io) + ":" + password + remoteUrl.substring(io);
+                        }
+                        return Main.gitControl.gitPush(remoteUrl + " " + branchName).then(function (stdout) {
+                            if (shouldSave) {
+                                return Main.gitControl.setGitConfig("remote." + remoteName + ".url", remoteUrl).then(function () {
+                                    return stdout;
+                                });
+                            } else {
+                                return stdout;
+                            }
+                        });
+                    });
+                });
+            });
+        });
+    }
+
     function handleGitPush() {
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true);
         Main.gitControl.gitPush().fail(function (err) {
@@ -500,6 +601,11 @@ define(function (require, exports) {
             if (!m) { throw err; }
             return Main.gitControl.gitPushUpstream(m[1], m[2]);
 
+        }).fail(function (err) {
+
+            console.warn("Traditional push failed: " + err);
+            return handleGitPushWithPassword(err);
+
         }).then(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
@@ -508,7 +614,7 @@ define(function (require, exports) {
             );
         }).fail(function (err) {
             console.warn("Pushing to remote repositories with username / password is not supported! See github page/issues for details.");
-            ErrorHandler.showError(err, "Pushing to remote repository failed, password protected repositories are not supported.");
+            ErrorHandler.showError(err, "Pushing to remote repository failed.");
         }).fin(function () {
             $btn.prop("disabled", false);
             refresh();

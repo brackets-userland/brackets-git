@@ -179,6 +179,14 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " rev-parse --abbrev-ref HEAD");
         },
 
+        getGitConfig: function (str) {
+            return this.executeCommand(this._git + " config " + str.replace(/\s/g, ""));
+        },
+
+        setGitConfig: function (str, val) {
+            return this.executeCommand(this._git + " config " + str.replace(/\s/g, "") + " " + escapeShellArg(val));
+        },
+
         getBranches: function () {
             return this.executeCommand(this._git + " branch").then(function (stdout) {
                 return stdout.split("\n").map(function (l) {

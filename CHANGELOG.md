@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.9.0
+* Pushing to http(s) password protected repositories should work - extension will ask for username & password.
 * Bash icon now launches terminal window in other OS than Windows.
 * Modified files are now marked in a project tree too for those who have panel closed.
 * New shorcuts for commiting current file and commiting all files configurable in settings.
