@@ -2,7 +2,7 @@
 
 ## 0.9.0
 * Pushing to http(s) password protected repositories should work - extension will ask for username & password.
-* Bash icon now launches terminal window in other OS than Windows.
+* Bash icon now launches terminal window in other OS than Windows, thanks to [Azakur4](https://github.com/Azakur4) & [Benjamin Pick](https://github.com/benjaminpick)
 * Modified files are now marked in a project tree too for those who have panel closed.
 * New shorcuts for commiting current file and commiting all files configurable in settings.
 * Panel icons and other visual tweaks by [Fez Vrasta](https://github.com/FezVrasta)
