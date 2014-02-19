@@ -825,7 +825,7 @@ define(function (require, exports) {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
         var $panelHtml = $(panelHtml);
-        $panelHtml.find(".git-available, .git-not-available").hide();
+        $panelHtml.find(".git-available").hide();
         gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
 
         gitPanel.$panel
