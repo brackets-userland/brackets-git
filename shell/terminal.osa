@@ -1,9 +1,26 @@
 #!/usr/bin/osascript
 on run argv
     set dir to quoted form of (first item of argv)
+    set new_cmd to 0
+    tell app "System Events"
+        if "Terminal" is not in name of processes then
+            launch app "Terminal"
+            
+            tell process "Terminal"
+                set frontmost to true
+            end tell
+            
+            set new_cmd to 1
+        end if
+    end tell
+    
     tell app "Terminal"
-        activate
-        set shell to do script "cd " & dir
+        if (new_cmd) is 1 then
+            do script "cd " & dir in window 1
+        else
+            activate
+            do script "cd " & dir
+        end if
     end tell
     do shell script "echo ok"
 end run
