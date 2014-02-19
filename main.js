@@ -46,6 +46,7 @@ define(function (require, exports, module) {
 
     // Load CSS
     ExtensionUtils.loadStyleSheet(module, "less/brackets-git.less");
+    ExtensionUtils.loadStyleSheet(module, "less/fonts/octicon.less");
 
     // Initialize PreferenceStorage.
     var preferences = PreferencesManager.getPreferenceStorage(module, DefaultPreferences);
