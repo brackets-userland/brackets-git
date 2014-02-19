@@ -12,162 +12,165 @@
 @lighterRed:  #FFAFCF;
 
 .jstree-brackets {
-  li.git-modified > a:before {
-    content: "|";
-    color: @orange;
-    padding-right: 2px;
-  }
-  li.git-ignored > a {
-    color: @moreDarkGrey !important;
-    font-style: italic;
-    > span.extension {
-      color: @moreDarkGrey !important;
+    li.git-modified > a:before {
+        content: "|";
+        color: @orange;
+        padding-right: 2px;
     }
-  }
+    li.git-ignored > a {
+        color: @moreDarkGrey !important;
+        font-style: italic;
+        > span.extension {
+            color: @moreDarkGrey !important;
+        }
+    }
 }
 
 #git-branch {
-  /* vertical align center text */
-  height: 21px;
-  line-height: 21px;
+    /* vertical align center text */
+    height: 21px;
+    line-height: 21px;
 }
 #git-branch-dropdown-toggle {
-  border: 1px solid transparent;
-  display: inline-block;
-  /* adjust margins to keep position #git-branch position stable after extension is loaded */
-  margin: -3px 0px -2px -6px;
-  overflow: hidden;
-  padding: 0 5px;
-  white-space: nowrap;
-  &:hover {
-    border-radius: 3px;
-    border: 1px solid #2d2f31;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
-    text-decoration: none;
-  }
+    border: 1px solid transparent;
+    display: inline-block;
+    /* adjust margins to keep position #git-branch position stable after extension is loaded */
+    margin: -3px 0px -2px -6px;
+    overflow: hidden;
+    padding: 0 5px;
+    white-space: nowrap;
+    &:hover {
+        border-radius: 3px;
+        border: 1px solid #2d2f31;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+        text-decoration: none;
+    }
 }
 #git-branch-dropdown {
-  border-radius: 3px;
-  box-shadow: 0 3px 9px rgba(0, 0, 0, .3);
-  border: none;
+    border-radius: 3px;
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .3);
+    border: none;
 }
 #git-branch-dropdown.dropdown-menu {
-  position: absolute;
-  display: block;
-  max-width: none;
-  z-index: 100;
-  &:focus {
-    outline: none;
-  }
-  .git-branch-new, .git-branch-link {
+    position: absolute;
     display: block;
-    padding: 5px 26px 5px 26px;
-    white-space: nowrap;
-    span {
-      color: #454545;
+    max-width: none;
+    z-index: 100;
+    &:focus {
+        outline: none;
     }
-  }
-  a.selected {
-    background: #E0F0FA;
-  }
-  a:not(.selected):hover {
-    background: none;
-  }
-  li a {
-    padding: 5px 15px;
-  }
-  .divider {
-    margin: 5px 1px;
-  }
+    .git-branch-new, .git-branch-link {
+        display: block;
+        padding: 5px 26px 5px 26px;
+        white-space: nowrap;
+        span {
+            color: #454545;
+        }
+    }
+    a.selected {
+        background: #E0F0FA;
+    }
+    a:not(.selected):hover {
+        background: none;
+    }
+    li a {
+        padding: 5px 15px;
+    }
+    .divider {
+        margin: 5px 1px;
+    }
 }
 
 .CodeMirror .brackets-git-gutter {
-  width: @gutterWidth;
-  margin-left: 1px;
+    width: @gutterWidth;
+    margin-left: 1px;
 }
 
 .CodeMirror .brackets-git-gutter-added {
-  background-size: @gutterWidth @gutterWidth;
-  background-color: @green;
-  background-repeat: no-repeat;
+    background-size: @gutterWidth @gutterWidth;
+    background-color: @green;
+    background-repeat: no-repeat;
 }
 
 .CodeMirror .brackets-git-gutter-modified {
-  background-size: @gutterWidth @gutterWidth;
-  background-color: @orange;
-  background-repeat: no-repeat;
+    background-size: @gutterWidth @gutterWidth;
+    background-color: @orange;
+    background-repeat: no-repeat;
 }
 
 .CodeMirror .brackets-git-gutter-removed {
-  background-size: @gutterWidth @gutterWidth;
-  background-color: @red;
-  background-repeat: no-repeat;
+    background-size: @gutterWidth @gutterWidth;
+    background-color: @red;
+    background-repeat: no-repeat;
 }
 
 .brackets-git-gutter-deleted-lines {
-  background-color: @lighterRed;
+    background-color: @lighterRed;
 }
 
 #git-branch-dropdown-toggle {
-  display: inline-block;
-  white-space: nowrap;
+    display: inline-block;
+    white-space: nowrap;
 }
 .git-bug {
-  margin-left: 15px;
+    margin-left: 15px;
 }
 
 
 #git-panel {
-  tr.selected {
-    font-weight: 400;
-  }
-  td.checkbox-column {
-    vertical-align: middle;
-    width: 13px;
-  }
-  td.status-column {
-    width: 100px;
-  }
-  .check-all {
-    margin-left: 7px;
-    margin-right: 10px;
-  }
-  .btn-group {
-    line-height: 1;
-  }
-  .btn-mini {
-    padding: 2px 5px;
-    font-size: 12px;
-    line-height: 1em;
-    border-radius: 3px;
-  }
-  .btn-git-diff {
-    margin-right: 15px;
-  }
-  .nothing-to-commit {
-    padding: 15px;
-  }
-  .git-right-icons {
-    position:absolute;
-    right: 50px;
-    top: 6px;
-  }
+    tr.selected {
+        font-weight: 400;
+    }
+    td.checkbox-column {
+        vertical-align: middle;
+        width: 13px;
+    }
+    td.status-column {
+        width: 100px;
+    }
+    .check-all {
+        margin-left: 7px;
+        margin-right: 10px;
+    }
+    .btn-group {
+        line-height: 1;
+    }
+    .btn-mini {
+        padding: 2px 5px;
+        font-size: 12px;
+        line-height: 1em;
+        border-radius: 3px;
+    }
+    .btn-git-diff {
+        margin-right: 15px;
+    }
+    .nothing-to-commit {
+        padding: 15px;
+    }
+    .git-right-icons {
+        position:absolute;
+        right: 50px;
+        top: 6px;
+    }
+    .octicon {
+        margin-right: 5px;
+    }
 }
 
 #git-toolbar-icon {
-  background: url("git-icon.svg") no-repeat 0 0;
-  &.on {
-    background: url("git-icon.svg") no-repeat 0 -24px;
-  }
-  &.ok {
-    background: url("git-icon.svg") no-repeat 0 -48px;
-  }
-  &.warning, &.loading {
-    background: url("git-icon.svg") no-repeat 0 -72px;
-  }
-  &.error {
-    background: url("git-icon.svg") no-repeat 0 -96px;
-  }
+    background: url("git-icon.svg") no-repeat 0 0;
+    &.on {
+        background: url("git-icon.svg") no-repeat 0 -24px;
+    }
+    &.ok {
+        background: url("git-icon.svg") no-repeat 0 -48px;
+    }
+    &.warning, &.loading {
+        background: url("git-icon.svg") no-repeat 0 -72px;
+    }
+    &.error {
+        background: url("git-icon.svg") no-repeat 0 -96px;
+    }
 }
 
 #git-settings-dialog,
@@ -175,118 +178,118 @@
 #git-question-dialog,
 #git-commit-dialog,
 #git-diff-dialog {
-  .invalid {
-    border-color: @red;
-  }
-  input[type=text], textarea {
-    .sane-box-model;
-    width: 100%;
-    height: 2em;
-  }
+    .invalid {
+        border-color: @red;
+    }
+    input[type=text], textarea {
+        .sane-box-model;
+        width: 100%;
+        height: 2em;
+    }
 }
 
 #git-settings-dialog {
-  hr {
-    margin: 18px 0;
-    border: 0;
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #eee;
-  }
+    hr {
+        margin: 18px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #eee;
+    }
 }
 
 #git-commit-dialog, #git-diff-dialog {
-  .modal-body {
-    .flex-box(column);
-    .commit-diff {
-      // shrink up to min-width
-      .flex-item(0, 1);
-      min-height: 100px;
+    .modal-body {
+        .flex-box(column);
+        .commit-diff {
+            // shrink up to min-width
+            .flex-item(0, 1);
+            min-height: 100px;
+        }
     }
-  }
 }
 
 #git-commit-dialog {
-  .modal-body {
-    .lint-errors {
-      background-color: @almostWhite;
-      border: 1px solid @darkGrey;
-      border-radius: 3px;
-      margin-bottom: 1em;
-      // no grow, no shrink
-      .flex-item(0, 0);
-      max-height: 150px;
-      overflow: auto;
-      b {
-        color: @red;
-      }
-    }
-    .commit-message-box {
-      position: relative;
-      // no grow, no shrink
-      .flex-item(0, 0);
-      textarea[name="commit-message"] {
-        height: 6em;
-      }
-      input[name="commit-message"] {
-        padding-right: 60px;
-      }
-      input[name="commit-message-count"] {
-        position: absolute;
-        right: 0;
-        width: 50px;
-        top: 0;
-        border-top-left-radius:0;
-        border-bottom-left-radius:0;
-        text-align: center;
-        color: @darkGrey;
-        &.over50 {
-          color: @orange;
+    .modal-body {
+        .lint-errors {
+            background-color: @almostWhite;
+            border: 1px solid @darkGrey;
+            border-radius: 3px;
+            margin-bottom: 1em;
+            // no grow, no shrink
+            .flex-item(0, 0);
+            max-height: 150px;
+            overflow: auto;
+            b {
+                color: @red;
+            }
         }
-        &.over100 {
-          color: @red;
+        .commit-message-box {
+            position: relative;
+            // no grow, no shrink
+            .flex-item(0, 0);
+            textarea[name="commit-message"] {
+                height: 6em;
+            }
+            input[name="commit-message"] {
+                padding-right: 60px;
+            }
+            input[name="commit-message-count"] {
+                position: absolute;
+                right: 0;
+                width: 50px;
+                top: 0;
+                border-top-left-radius:0;
+                border-bottom-left-radius:0;
+                text-align: center;
+                color: @darkGrey;
+                &.over50 {
+                    color: @orange;
+                }
+                &.over100 {
+                    color: @red;
+                }
+            }
         }
-      }
     }
-  }
 }
 
 // nice, formatted and colored diff
 .commit-diff {
-  .user-select(text);
-  code, pre {
-    background: none;
-    border: none;
-    padding: 0 3px 2px;
-    font-family: 'SourceCodePro', monospace;
-  }
-  background-color: @almostWhite;
-  border: 1px solid @darkGrey;
-  border-radius: 3px;
-  margin-bottom: 1em;
-  overflow: auto;
-  padding: 7px 10px;
-  pre {
-    border: none;
-    border-radius: 0px;
-    margin: 0px;
-    padding: 0px;
-    white-space: nowrap;
-    &.added {
-      color: @green;
+    .user-select(text);
+    code, pre {
+        background: none;
+        border: none;
+        padding: 0 3px 2px;
+        font-family: 'SourceCodePro', monospace;
     }
-    &.removed {
-      color: @red;
+    background-color: @almostWhite;
+    border: 1px solid @darkGrey;
+    border-radius: 3px;
+    margin-bottom: 1em;
+    overflow: auto;
+    padding: 7px 10px;
+    pre {
+        border: none;
+        border-radius: 0px;
+        margin: 0px;
+        padding: 0px;
+        white-space: nowrap;
+        &.added {
+            color: @green;
+        }
+        &.removed {
+            color: @red;
+        }
+        &.diffCmd {
+            color: @darkBlue;
+        }
+        &.position {
+            color: @orange;
+        }
+        .trailingWhitespace {
+            background-color: @lightRed;
+        }
     }
-    &.diffCmd {
-      color: @darkBlue;
-    }
-    &.position {
-      color: @orange;
-    }
-    .trailingWhitespace {
-      background-color: @lightRed;
-    }
-  }
 }
 
 /*
@@ -296,31 +299,31 @@ because there's no way to import them right now
 
 // https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing
 .sane-box-model {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/CSS/user-select
 .user-select(@type: none) {
-  -webkit-user-select: @type;
-  -khtml-user-select: @type;
-  -moz-user-select: @type;
-  -ms-user-select: @type;
-  -o-user-select: @type;
-  user-select: @type;
+    -webkit-user-select: @type;
+    -khtml-user-select: @type;
+    -moz-user-select: @type;
+    -ms-user-select: @type;
+    -o-user-select: @type;
+    user-select: @type;
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
 .flex-box(@direction: row) {
-  display: -webkit-flex;
-  -webkit-flex-direction: @direction;
-  display: flex;
-  flex-direction: @direction;
+    display: -webkit-flex;
+    -webkit-flex-direction: @direction;
+    display: flex;
+    flex-direction: @direction;
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/CSS/flex
 .flex-item(@grow: 0, @shrink: 1, @basis: auto) {
-  -webkit-flex: @grow @shrink @basis;
-  flex: @grow @shrink @basis;
+    -webkit-flex: @grow @shrink @basis;
+    flex: @grow @shrink @basis;
 }
