@@ -489,7 +489,16 @@ define(function (require, exports) {
     function handleGitPushWithPassword(traditionalPushError) {
         return Main.gitControl.getBranchName().then(function (branchName) {
             return Main.gitControl.getGitConfig("branch." + branchName + ".remote").then(function (remoteName) {
+                if (!remoteName) {
+                    ErrorHandler.logError("git config branch." + branchName + ".remote is empty!");
+                    throw traditionalPushError;
+                }
                 return Main.gitControl.getGitConfig("remote." + remoteName + ".url").then(function (remoteUrl) {
+                    if (!remoteUrl) {
+                        ErrorHandler.logError("git config remote." + remoteName + ".url is empty!");
+                        throw traditionalPushError;
+                    }
+
                     var isHttp = remoteUrl.indexOf("http") === 0;
                     if (!isHttp) {
                         console.warn("Asking for username/password aborted because remote is not HTTP(S)");

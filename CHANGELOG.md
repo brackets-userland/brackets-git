@@ -8,6 +8,7 @@
 * Panel icons and other visual tweaks by [Fez Vrasta](https://github.com/FezVrasta)
 * Refresh button on panel now refreshes current branch too in case it has been switched from outside of Brackets.
 * Gutters now expand when clicking on line numbers too.
+* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
 
 ## 0.8.10
 * Restyle of the interface by [Fez Vrasta](https://github.com/FezVrasta)
