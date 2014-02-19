@@ -773,9 +773,9 @@ define(function (require, exports) {
     function handleToggleUntracked() {
         showingUntracked = !showingUntracked;
         if(showingUntracked) {
-          gitPanel.$panel.find(".git-toggle-untracked").attr("title", Strings.BUTTON_HIDE_UNTRACKED).find("i").removeClass("octicon-eye").addClass("octicon-eye-unwatch");
+          gitPanel.$panel.find(".git-toggle-untracked").attr("title", Strings.TOOLTIP_HIDE_UNTRACKED).find("i").removeClass("octicon-eye").addClass("octicon-eye-unwatch");
         } else {
-          gitPanel.$panel.find(".git-toggle-untracked").attr("title", Strings.BUTTON_SHOW_UNTRACKED).find("i").removeClass("octicon-eye-unwatch").addClass("octicon-eye");
+          gitPanel.$panel.find(".git-toggle-untracked").attr("title", Strings.TOOLTIP_SHOW_UNTRACKED).find("i").removeClass("octicon-eye-unwatch").addClass("octicon-eye");
         }
         refresh();
     }
