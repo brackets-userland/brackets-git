@@ -11,6 +11,7 @@
 @lightRed:    #FF7CAD;
 @lighterRed:  #FFAFCF;
 
+/* Project tree */
 .jstree-brackets {
     li.git-modified > a:before {
         content: "|";
@@ -26,6 +27,7 @@
     }
 }
 
+/* Branch information */
 #git-branch {
     /* vertical align center text */
     height: 21px;
@@ -81,42 +83,33 @@
     }
 }
 
-.CodeMirror .brackets-git-gutter {
-    width: @gutterWidth;
-    margin-left: 1px;
+/* CodeMirror area */
+.CodeMirror {
+    .brackets-git-gutter {
+        width: @gutterWidth;
+        margin-left: 1px;
+    }
+    .brackets-git-gutter-added {
+        background-size: @gutterWidth @gutterWidth;
+        background-color: @green;
+        background-repeat: no-repeat;
+    }
+    .brackets-git-gutter-modified {
+        background-size: @gutterWidth @gutterWidth;
+        background-color: @orange;
+        background-repeat: no-repeat;
+    }
+    .brackets-git-gutter-removed {
+        background-size: @gutterWidth @gutterWidth;
+        background-color: @red;
+        background-repeat: no-repeat;
+    }
+    .brackets-git-gutter-deleted-lines {
+        background-color: @lighterRed;
+    }
 }
 
-.CodeMirror .brackets-git-gutter-added {
-    background-size: @gutterWidth @gutterWidth;
-    background-color: @green;
-    background-repeat: no-repeat;
-}
-
-.CodeMirror .brackets-git-gutter-modified {
-    background-size: @gutterWidth @gutterWidth;
-    background-color: @orange;
-    background-repeat: no-repeat;
-}
-
-.CodeMirror .brackets-git-gutter-removed {
-    background-size: @gutterWidth @gutterWidth;
-    background-color: @red;
-    background-repeat: no-repeat;
-}
-
-.brackets-git-gutter-deleted-lines {
-    background-color: @lighterRed;
-}
-
-#git-branch-dropdown-toggle {
-    display: inline-block;
-    white-space: nowrap;
-}
-.git-bug {
-    margin-left: 15px;
-}
-
-
+/* Extension panel */
 #git-panel {
     tr.selected {
         font-weight: 400;
@@ -155,8 +148,12 @@
     .octicon {
         margin-right: 5px;
     }
+    .git-bash, .git-bug {
+        margin-left: 15px;
+    }
 }
 
+/* Toolbar icon */
 #git-toolbar-icon {
     background: url("git-icon.svg") no-repeat 0 0;
     &.on {
@@ -173,6 +170,7 @@
     }
 }
 
+/* Dialogs */
 #git-settings-dialog,
 #git-changelog-dialog,
 #git-question-dialog,
