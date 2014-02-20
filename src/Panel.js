@@ -3,7 +3,7 @@
 
 define(function (require, exports) {
     "use strict";
-    
+
     var q                  = require("../thirdparty/q"),
         _                  = brackets.getModule("thirdparty/lodash"),
         CodeInspection     = brackets.getModule("language/CodeInspection"),
@@ -37,7 +37,7 @@ define(function (require, exports) {
         gitCommitDialogTemplate = require("text!htmlContent/git-commit-dialog.html"),
         gitDiffDialogTemplate   = require("text!htmlContent/git-diff-dialog.html"),
         questionDialogTemplate  = require("text!htmlContent/git-question-dialog.html");
-    
+
     var showFileWhiteList = /^.gitignore$/;
 
     var gitPanel = null,
@@ -45,7 +45,7 @@ define(function (require, exports) {
         gitPanelMode = null,
         showingUntracked = true,
         $tableContainer = null;
-    
+
     /**
      * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
      *
@@ -63,11 +63,11 @@ define(function (require, exports) {
         });
         return promise;
     }
-    
+
     function lintFile(filename) {
         return CodeInspection.inspectFile(FileSystem.getFileForPath(Main.getProjectRoot() + filename));
     }
-    
+
     function _makeDialogBig($dialog) {
         var $wrapper = $dialog.parents(".modal-wrapper").first();
         if ($wrapper.length === 0) { return; }
@@ -91,7 +91,7 @@ define(function (require, exports) {
 
         return { width: desiredWidth, height: desiredHeight };
     }
-    
+
     function _showDiffDialog(file, diff) {
         var compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file: file, Strings: Strings }),
             dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
@@ -100,7 +100,7 @@ define(function (require, exports) {
         _makeDialogBig($dialog);
         $dialog.find(".commit-diff").append(Utils.formatDiff(diff));
     }
-    
+
     function handleGitReset() {
         return Main.gitControl.gitReset().then(function () {
             Branch.refresh();
@@ -110,7 +110,7 @@ define(function (require, exports) {
             ErrorHandler.logError(err);
         });
     }
-    
+
     function _showCommitDialog(stagedDiff, lintResults) {
         // Flatten the error structure from various providers
         lintResults.forEach(function (lintResult) {
@@ -134,7 +134,7 @@ define(function (require, exports) {
         lintResults = _.filter(lintResults, function (lintResult) {
             return lintResult.hasErrors;
         });
-        
+
         // Open the dialog
         var compiledTemplate = Mustache.render(gitCommitDialogTemplate, {
                 Strings: Strings,
@@ -240,7 +240,7 @@ define(function (require, exports) {
             }
         });
     }
-    
+
     function handleGitDiff(file) {
         Main.gitControl.gitDiffSingle(file).then(function (diff) {
             _showDiffDialog(file, diff);
@@ -248,7 +248,7 @@ define(function (require, exports) {
             ErrorHandler.showError(err, "Git Diff failed");
         });
     }
-    
+
     function handleGitUndo(file) {
         var compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: Strings.UNDO_CHANGES,
@@ -271,7 +271,7 @@ define(function (require, exports) {
             }
         });
     }
-    
+
     function handleGitDelete(file) {
         var compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: Strings.DELETE_FILE,
@@ -294,7 +294,7 @@ define(function (require, exports) {
             }
         });
     }
-    
+
     /**
      *  strips trailing whitespace from all the diffs and adds \n to the end
      */
@@ -629,7 +629,7 @@ define(function (require, exports) {
             refresh();
         });
     }
-    
+
     function handleGitPull() {
         var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true);
         Main.gitControl.gitPull().then(function (result) {
@@ -657,7 +657,7 @@ define(function (require, exports) {
             gitPanel.$panel.find("tr").removeClass("selected");
         }
     }
-    
+
     function shouldShow(fileObj) {
         if (showFileWhiteList.test(fileObj.name)) {
             return true;
@@ -733,7 +733,7 @@ define(function (require, exports) {
 
         return q.all([p1, p2]);
     }
-    
+
     function toggle(bool) {
         if (gitPanelDisabled === true) {
             return;
@@ -772,7 +772,11 @@ define(function (require, exports) {
 
     function handleToggleUntracked() {
         showingUntracked = !showingUntracked;
-        gitPanel.$panel.find(".git-toggle-untracked").text(showingUntracked ? Strings.BUTTON_HIDE_UNTRACKED : Strings.BUTTON_SHOW_UNTRACKED);
+        if(showingUntracked) {
+          gitPanel.$panel.find(".git-toggle-untracked").attr("title", Strings.TOOLTIP_HIDE_UNTRACKED).find("i").removeClass("octicon-eye").addClass("octicon-eye-unwatch");
+        } else {
+          gitPanel.$panel.find(".git-toggle-untracked").attr("title", Strings.TOOLTIP_SHOW_UNTRACKED).find("i").removeClass("octicon-eye-unwatch").addClass("octicon-eye");
+        }
         refresh();
     }
 
@@ -926,7 +930,7 @@ define(function (require, exports) {
         // after all is enabled
         refresh();
     }
-    
+
     function disable(cause) {
         gitPanelMode = cause;
         // causes: not-repo, not-root
@@ -940,7 +944,7 @@ define(function (require, exports) {
         }
         refresh();
     }
-    
+
     function getPanel() {
         return gitPanel.$panel;
     }

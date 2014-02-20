@@ -1,32 +1,27 @@
 <div id="git-panel" class="bottom-panel vert-resizable top-resizer no-focus">
     <div class="toolbar simple-toolbar-layout mainToolbar">
-        <span class="git-available">
-            <input type="checkbox" class="check-all" />
-            <div class="btn-group">
-                <button class="btn small git-commit">{{BUTTON_COMMIT}}</button>
-                <button title="{{BUTTON_REFRESH_PANEL}}" class="btn small git-reset git-icon"><i>&nbsp;</i></button>
-                <button class="btn small git-close-notmodified">{{BUTTON_CLOSE_NOT_MODIFIED}}</button>
-                <button class="btn small git-toggle-untracked">{{BUTTON_HIDE_UNTRACKED}}</button>
+
+        <!-- on left -->
+        <input type="checkbox" class="check-all git-available" />
+        <div class="btn-group git-available">
+            <button title="{{TOOLTIP_COMMIT}}" class="btn small git-commit"><i class="octicon octicon-git-commit"></i>{{BUTTON_COMMIT}}</button>
+            <button title="{{TOOLTIP_REFRESH_PANEL}}" class="btn small git-reset git-icon"><i class="octicon octicon-sync"></i></button>
+            <button title="{{TOOLTIP_CLOSE_NOT_MODIFIED}}"class="btn small git-close-notmodified"><i class="octicon octicon-remove-close"></i></button>
+            <button title="{{TOOLTIP_HIDE_UNTRACKED}}" class="btn small git-toggle-untracked"><i class="octicon octicon-eye-unwatch"></i></button>
+        </div>
+        <button title="{{TOOLTIP_INIT}}" class="btn small git-init git-not-available"><i class="octicon octicon-gist-new"></i>{{BUTTON_INIT}}</button>
+
+        <!-- on right -->
+        <div class="git-right-icons">
+            <div class="btn-group git-available">
+                <button title="{{TOOLTIP_PULL}}" class="btn small git-pull"><i class="octicon octicon-repo-pull"></i></button>
+                <button title="{{TOOLTIP_PUSH}}" class="btn small git-push"><i class="octicon octicon-repo-push"></i></button>
             </div>
-            <!-- on right -->
-            <div class="git-right-icons">
-                <div class="btn-group">
-                    <button title="{{TOOLTIP_PULL}}" class="btn small git-pull git-icon"><i>&nbsp;</i></button>
-                    <button title="{{TOOLTIP_PUSH}}" class="btn small git-push git-icon"><i>&nbsp;</i></button>
-                </div>
-                <button title="{{TOOLTIP_OPEN_BASH}}" class="btn small git-bash git-icon"><i>&nbsp;</i></button>
-                <button title="{{TOOLTIP_BUG}}" class="btn small git-bug git-icon"><i>&nbsp;</i></button>
-            </div>
-            <a href="#" class="close">&times;</a>
-        </span>
-        <span class="git-not-available">
-            <button class="btn small git-init">{{BUTTON_INIT}}</button>
-            <!-- on right -->
-            <div class="git-right-icons">
-                <button title="{{TOOTIP_OPEN_BASH}}" class="btn small git-bash git-icon"><i>&nbsp;</i></button>
-                <button title="{{TOOLTIP_BUG}}" class="btn small git-bug git-icon"><i>&nbsp;</i></button>
-            </div>
-        </span>
+            <button title="{{TOOLTIP_OPEN_BASH}}" class="btn small git-bash"><i class="octicon octicon-terminal"></i></button>
+            <button title="{{TOOLTIP_BUG}}" class="btn small git-bug"><i class="octicon octicon-bug"></i></button>
+        </div>
+        <a href="#" class="close">&times;</a>
+
     </div>
     <div class="table-container resizable-content"></div>
 </div>

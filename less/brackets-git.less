@@ -108,47 +108,16 @@
     background-color: @lighterRed;
 }
 
-#git-branch-dropdown-toggle
-{
+#git-branch-dropdown-toggle {
     display: inline-block;
     white-space: nowrap;
 }
 .git-bug {
-  margin-left: 15px;
-}
-.git-icon {
-    padding: 1px 5px;
-    i {
-        width: 24px;
-        height: 21px;
-        display: inline-block;
-        background-size: 25px 110px;
-        background-repeat: no-repeat;
-        background-image: url("panel-icons.svg");
-    }
-}
-.git-bug i, .git-bug i:hover, .git-bug i:active {
-    background-position: 0px -64px;
-}
-.git-bash i, .git-bash i:hover, .git-bash i:active {
-    background-position: 1px -41px;
-}
-.git-push span {
-    position: relative;
-    top: 3px;
-}
-.git-push i, .git-push i:hover, .git-push i:active {
-    background-position: 1px -21px;
-}
-.git-pull i, .git-pull i:hover, .git-pull i:active {
-    background-position: 1px 1px;
-}
-.git-reset i, .git-reset i:hover, .git-reset i:active {
-    background-position: 1px -85px;
+    margin-left: 15px;
 }
 
-#git-panel
-{
+
+#git-panel {
     tr.selected {
         font-weight: 400;
     }
@@ -173,7 +142,7 @@
         border-radius: 3px;
     }
     .btn-git-diff {
-      margin-right: 15px;
+        margin-right: 15px;
     }
     .nothing-to-commit {
         padding: 15px;
@@ -182,6 +151,9 @@
         position:absolute;
         right: 50px;
         top: 6px;
+    }
+    .octicon {
+        margin-right: 5px;
     }
 }
 
@@ -321,8 +293,8 @@
 }
 
 /*
-    these mixins were copied out from the Brackets,
-    because there's no way to import them right now
+these mixins were copied out from the Brackets,
+because there's no way to import them right now
 */
 
 // https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing
