@@ -10,7 +10,6 @@ define(function (require, exports) {
         CommandManager  = brackets.getModule("command/CommandManager"),
         Menus           = brackets.getModule("command/Menus"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
-        EditorManager   = brackets.getModule("editor/EditorManager"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
@@ -82,14 +81,14 @@ define(function (require, exports) {
         });
         $(DocumentManager).on("documentSaved", function () {
             Panel.refresh();
-            refreshGitGutters();
+            GutterManager.refresh();
         });
         $(DocumentManager).on("currentDocumentChange", function () {
             Panel.refreshCurrentFile();
-            refreshGitGutters();
+            GutterManager.refresh();
         });
         refreshIgnoreEntries();
-        refreshGitGutters();
+        GutterManager.refresh();
     }
     
     function _addRemoveItemInGitignore(selectedEntry, method) {
@@ -187,85 +186,6 @@ define(function (require, exports) {
         });
 
         return p.promise;
-    }
-
-    function refreshGitGutters() {
-        if (!Preferences.get("useGitGutter")) {
-            return;
-        }
-
-        var currentDoc = DocumentManager.getCurrentDocument();
-        if (!currentDoc) { return; }
-
-        var editor = EditorManager.getActiveEditor();
-        if (!editor || !editor._codeMirror) {
-            return;
-        }
-        GutterManager.prepareGutter(editor._codeMirror);
-
-        var filename = currentDoc.file.fullPath.substring(getProjectRoot().length);
-        gitControl.gitDiff(filename).then(function (diff) {
-            var added = [],
-                removed = [],
-                modified = [],
-                changesets = diff.split(/\n@@/).map(function (str) { return "@@" + str; });
-
-            // remove part before first
-            changesets.shift();
-
-            changesets.forEach(function (str) {
-                var m = str.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
-                var s1 = m[1].split(",");
-                var s2 = m[2].split(",");
-
-                // removed stuff
-                var lineRemovedFrom;
-                var lineFrom = parseInt(s2[0], 10);
-                var lineCount = parseInt(s1[1], 10);
-                if (isNaN(lineCount)) { lineCount = 1; }
-                if (lineCount > 0) {
-                    lineRemovedFrom = lineFrom > 0 ? lineFrom - 1 : 0;
-                    removed.push({
-                        type: "removed",
-                        line: lineRemovedFrom,
-                        content: str.split("\n")
-                                    .filter(function (l) { return l.indexOf("-") === 0; })
-                                    .map(function (l) { return l.substring(1); })
-                                    .join("\n")
-                    });
-                }
-
-                // added stuff
-                lineFrom = parseInt(s2[0], 10);
-                lineCount = parseInt(s2[1], 10);
-                if (isNaN(lineCount)) { lineCount = 1; }
-                var isModified = false;
-                for (var i = lineFrom, lineTo = lineFrom + lineCount; i < lineTo; i++) {
-                    var lineNo = i > 0 ? i - 1 : 0;
-                    if (lineNo === lineRemovedFrom) {
-                        // modified
-                        var o = removed.pop();
-                        o.type = "modified";
-                        modified.push(o);
-                        isModified = o;
-                    } else {
-                        // added new
-                        added.push({
-                            type: isModified ? "modified" : "added",
-                            line: lineNo,
-                            parentMark: isModified || null
-                        });
-                    }
-                }
-            });
-
-            // fix displaying of removed lines
-            removed.forEach(function (o) {
-                o.line = o.line + 1;
-            });
-
-            GutterManager.showGutters(editor._codeMirror, [].concat(added, removed, modified));
-        });
     }
 
     function init(nodeConnection) {
