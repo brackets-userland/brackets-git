@@ -44,7 +44,7 @@ define(function (require, exports) {
 
         // We need trailing slash for folders.
         var msysgitPath = Preferences.get("msysgitPath");
-        if (msysgitPath[msysgitPath.length - 1] !== "\\") {
+        if (msysgitPath && msysgitPath[msysgitPath.length - 1] !== "\\") {
             Preferences.set("msysgitPath", msysgitPath + "\\");
         }
 
