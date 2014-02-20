@@ -2,13 +2,14 @@
 
 ## 0.9.0
 * Pushing to http(s) password protected repositories should work - extension will ask for username & password.
-* Bash icon now launches terminal window in other OS than Windows, thanks to [Azakur4](https://github.com/Azakur4) & [Benjamin Pick](https://github.com/benjaminpick)
+* Bash icon now launches terminal window in other OS than Windows, thanks to [Jimmy Brian Anamaria Torres](https://github.com/Azakur4) & [Benjamin Pick](https://github.com/benjaminpick)
 * Modified files are now marked in a project tree too for those who have panel closed.
 * New shorcuts for commiting current file and commiting all files configurable in settings.
 * Panel icons and other visual tweaks by [Fez Vrasta](https://github.com/FezVrasta)
 * Refresh button on panel now refreshes current branch too in case it has been switched from outside of Brackets.
 * Gutters now expand when clicking on line numbers too.
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+* Updated Brazilian Portuguese translation by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
 
 ## 0.8.10
 * Restyle of the interface by [Fez Vrasta](https://github.com/FezVrasta)
