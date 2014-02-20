@@ -516,7 +516,7 @@ define(function (require, exports) {
                     if (!m) {
                         hasUsername = false;
                         hasPassword = false;
-                    } else if (m.split(":").length === 1) {
+                    } else if (m[1].split(":").length === 1) {
                         hasUsername = true;
                         hasPassword = false;
                     } else {

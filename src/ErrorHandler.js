@@ -61,6 +61,13 @@ define(function (require, exports) {
             errorBody = JSON.stringify(err, null, 4);
         }
 
+        // do not show usernames / passwords in the report
+        if (typeof errorBody === "string") {
+            errorBody = errorBody.replace(/https?:\/\/([^@]*)@/g, function (a, b) {
+                return a.substring(0, a.length - b.length - 1) + "***@";
+            });
+        }
+
         var compiledTemplate = Mustache.render(errorDialogTemplate, {
             title: title,
             body: errorBody,
