@@ -18,6 +18,19 @@ define(function (require, exports) {
         gutterName = "brackets-git-gutter",
         openWidgets = [];
 
+    function clearWidgets() {
+        var lines = openWidgets.map(function (mark) {
+            var w = mark.lineWidget;
+            if (w.visible) {
+                w.visible = false;
+                w.widget.clear();
+            }
+            return mark.line;
+        });
+        openWidgets = [];
+        return lines;
+    }
+
     function clearOld() {
         var gutters = cm.getOption("gutters").slice(0),
             io = gutters.indexOf(gutterName);
@@ -27,12 +40,7 @@ define(function (require, exports) {
             cm.setOption("gutters", gutters);
             cm.off("gutterClick", gutterClick);
         }
-        openWidgets.forEach(function (w) {
-            if (w.visible) {
-                w.visible = false;
-                w.widget.clear();
-            }
-        });
+        clearWidgets();
     }
 
     function prepareGutter(_cm) {
@@ -59,10 +67,18 @@ define(function (require, exports) {
     function showGutters(_cm, _results) {
         prepareGutter(_cm);
         results = _results;
-        //-
+
+        // get line numbers of currently opened widgets
+        var openBefore = clearWidgets();
+
         cm.clearGutter(gutterName);
         results.forEach(function (obj) {
             cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-" + obj.type + "'>&nbsp;</div>")[0]);
+        });
+
+        // reopen widgets that were opened before refresh
+        openBefore.forEach(function (lineNumber) {
+            gutterClick(cm, lineNumber, gutterName);
         });
     }
 
@@ -91,10 +107,14 @@ define(function (require, exports) {
                 above: true,
                 showIfHidden: false
             });
-            openWidgets.push(mark.lineWidget);
+            openWidgets.push(mark);
         } else {
             mark.lineWidget.visible = false;
             mark.lineWidget.widget.clear();
+            var io = openWidgets.indexOf(mark);
+            if (io !== -1) {
+                openWidgets.splice(io, 1);
+            }
         }
     }
 
