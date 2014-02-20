@@ -6,14 +6,13 @@ define(function (require, exports) {
 
     var CommandManager             = brackets.getModule("command/CommandManager"),
         Dialogs                    = brackets.getModule("widgets/Dialogs"),
-        DefaultPreferences         = require("../DefaultPreferences"),
+        Preferences                = require("./Preferences"),
         ChangelogDialog            = require("../src/ChangelogDialog"),
         Strings                    = require("../strings"),
         settingsDialogTemplate     = require("text!htmlContent/git-settings-dialog.html");
 
     var dialog,
-        $dialog,
-        preferences;
+        $dialog;
 
     function setValues(values) {
         $("*[settingsProperty]", $dialog).each(function () {
@@ -31,23 +30,25 @@ define(function (require, exports) {
         $("#git-settings-terminalCommand", $dialog).prop("disabled", brackets.platform === "win");
     }
 
-    function collectValues(preferences) {
+    function collectValues() {
         $("*[settingsProperty]", $dialog).each(function () {
             var $this = $(this),
                 type = $this.attr("type"),
                 property = $this.attr("settingsProperty");
             if (type === "checkbox") {
-                preferences.setValue(property, $this.prop("checked"));
+                Preferences.set(property, $this.prop("checked"));
             } else {
-                preferences.setValue(property, $this.val().trim() || null);
+                Preferences.set(property, $this.val().trim() || null);
             }
         });
 
         // We need trailing slash for folders.
-        var msysgitPath = preferences.getValue("msysgitPath");
+        var msysgitPath = Preferences.get("msysgitPath");
         if (msysgitPath[msysgitPath.length - 1] !== "\\") {
-            preferences.setValue("msysgitPath", msysgitPath + "\\");
+            Preferences.set("msysgitPath", msysgitPath + "\\");
         }
+
+        Preferences.save();
     }
 
     function assignActions() {
@@ -62,16 +63,16 @@ define(function (require, exports) {
         });
         $("button[data-button-id='defaults']", $dialog).on("click", function (e) {
             e.stopPropagation();
-            setValues(DefaultPreferences);
+            setValues(Preferences.getDefaults());
         });
         $("button[data-button-id='changelog']", $dialog).on("click", function (e) {
             e.stopPropagation();
-            ChangelogDialog.show(preferences);
+            ChangelogDialog.show();
         });
     }
 
     function init() {
-        setValues(preferences.getAllValues());
+        setValues(Preferences.getAll());
         assignActions();
         $(".windows-only", $dialog).toggle(brackets.platform === "win");
         $(".non-windows-only", $dialog).toggle(brackets.platform !== "win");
@@ -91,19 +92,18 @@ define(function (require, exports) {
         });
     }
 
-    exports.show = function (prefs) {
+    exports.show = function () {
         var compiledTemplate = Mustache.render(settingsDialogTemplate, Strings);
 
         dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
         $dialog = dialog.getElement();
-        preferences = prefs;
 
         init();
 
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
                 // Save everything to preferences
-                collectValues(preferences);
+                collectValues();
                 // Restart brackets to reload changes.
                 showRestartDialog();
             }

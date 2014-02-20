@@ -15,6 +15,7 @@ define(function (require, exports) {
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
         Strings         = require("../strings"),
+        Preferences     = require("./Preferences"),
         ErrorHandler    = require("./ErrorHandler"),
         GitControl      = require("./GitControl"),
         GutterManager   = require("./GutterManager"),
@@ -23,8 +24,7 @@ define(function (require, exports) {
     
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
                                     .addClass("loading").appendTo($("#main-toolbar .buttons")),
-        gitControl              = null,
-        preferences             = null;
+        gitControl              = null;
 
     function getProjectRoot() {
         return ProjectManager.getProjectRoot().fullPath;
@@ -58,14 +58,14 @@ define(function (require, exports) {
 
     // This only launches when Git is available
     function initUi() {
-        Panel.init(gitControl, preferences);
-        Branch.init(gitControl, preferences);
+        Panel.init(gitControl);
+        Branch.init(gitControl);
         
         // Attach events
         $icon.on("click", Panel.toggle);
         
         // Show gitPanel when appropriate
-        if (preferences.getValue("panelEnabled")) {
+        if (Preferences.get("panelEnabled")) {
             Panel.toggle(true);
         }
     }
@@ -151,7 +151,7 @@ define(function (require, exports) {
     var _ignoreEntries = [];
 
     function refreshProjectFiles(modifiedEntries) {
-        if (!preferences.getValue("markModifiedInTree")) {
+        if (!Preferences.get("markModifiedInTree")) {
             return;
         }
 
@@ -166,7 +166,7 @@ define(function (require, exports) {
     }
 
     function refreshIgnoreEntries() {
-        if (!preferences.getValue("markModifiedInTree")) {
+        if (!Preferences.get("markModifiedInTree")) {
             return q();
         }
 
@@ -190,7 +190,7 @@ define(function (require, exports) {
     }
 
     function refreshGitGutters() {
-        if (!preferences.getValue("useGitGutter")) {
+        if (!Preferences.get("useGitGutter")) {
             return;
         }
 
@@ -268,12 +268,10 @@ define(function (require, exports) {
         });
     }
 
-    function init(nodeConnection, _preferences) {
-        preferences = exports.preferences = _preferences;
-        var TIMEOUT_VALUE = preferences.getValue("TIMEOUT_VALUE");
+    function init(nodeConnection) {
+        var TIMEOUT_VALUE = Preferences.get("TIMEOUT_VALUE");
         // Creates an GitControl Instance
         gitControl = exports.gitControl = new GitControl({
-            preferences: preferences,
             handler: function (method, cmd, args, opts) {
                 var rv = q.defer(),
                     resolved = false;

@@ -21,6 +21,7 @@ define(function (require, exports) {
         PanelManager       = brackets.getModule("view/PanelManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         StringUtils        = brackets.getModule("utils/StringUtils"),
+        Preferences        = require("./Preferences"),
         ErrorHandler       = require("./ErrorHandler"),
         ExpectedError      = require("./ExpectedError"),
         Main               = require("./Main"),
@@ -319,7 +320,7 @@ define(function (require, exports) {
                 }
 
                 // add empty line to the end, i've heard that git likes that for some reason
-                if (Main.preferences.getValue("addEndlineToTheEndOfFile")) {
+                if (Preferences.get("addEndlineToTheEndOfFile")) {
                     var lastLineNumber = lines.length - 1;
                     if (lines[lastLineNumber].length > 0) {
                         lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
@@ -370,7 +371,7 @@ define(function (require, exports) {
     }
 
     function handleGitCommit() {
-        var stripWhitespace = Main.preferences.getValue("stripWhitespaceFromCommits");
+        var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
         // Get checked files
         var $checked = gitPanel.$panel.find(".check-one:checked");
         // TODO: probably some user friendly message that no files are checked for commit.
@@ -741,7 +742,7 @@ define(function (require, exports) {
         if (typeof bool !== "boolean") {
             bool = !gitPanel.isVisible();
         }
-        Main.preferences.setValue("panelEnabled", bool);
+        Preferences.persist("panelEnabled", bool);
         Main.$icon.toggleClass("on", bool);
         gitPanel.setVisible(bool);
 
@@ -896,7 +897,7 @@ define(function (require, exports) {
             });
         } else {
             gitPanel.$panel.find(".git-bash").on("click", function () {
-                var customTerminal = Main.preferences.getValue("terminalCommand");
+                var customTerminal = Preferences.get("terminalCommand");
                 Main.gitControl.terminalOpen(Main.getProjectRoot(), customTerminal).fail(function (err) {
                     throw ErrorHandler.showError(err);
                 }).then(function (result) {
@@ -913,13 +914,13 @@ define(function (require, exports) {
         // Add command to menu.
         var menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
         menu.addMenuDivider();
-        menu.addMenuItem(PANEL_COMMAND_ID, Main.preferences.getValue("panelShortcut"));
+        menu.addMenuItem(PANEL_COMMAND_ID, Preferences.get("panelShortcut"));
 
         // Commit current and all shortcuts
         CommandManager.register(Strings.COMMIT_CURRENT_SHORTCUT, COMMIT_CURRENT_CMD, commitCurrentFile);
-        menu.addMenuItem(COMMIT_CURRENT_CMD, Main.preferences.getValue("commitCurrentShortcut"));
+        menu.addMenuItem(COMMIT_CURRENT_CMD, Preferences.get("commitCurrentShortcut"));
         CommandManager.register(Strings.COMMIT_ALL_SHORTCUT, COMMIT_ALL_CMD, commitAllFiles);
-        menu.addMenuItem(COMMIT_ALL_CMD, Main.preferences.getValue("commitAllShortcut"));
+        menu.addMenuItem(COMMIT_ALL_CMD, Preferences.get("commitAllShortcut"));
     }
 
     function enable() {

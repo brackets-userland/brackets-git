@@ -7,7 +7,8 @@ define(function (require, exports, module) {
     var q               = require("../thirdparty/q"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
-        ProjectManager  = brackets.getModule("project/ProjectManager");
+        ProjectManager  = brackets.getModule("project/ProjectManager"),
+        Preferences     = require("./Preferences");
 
     var FILE_STATUS = {
         STAGED: "FILE_STAGED",
@@ -49,10 +50,10 @@ define(function (require, exports, module) {
         this._queue = [];
         this.options = options;
 
-        if (this.options.preferences.getValue("gitIsInSystemPath")) {
+        if (Preferences.get("gitIsInSystemPath")) {
             this._git = "git";
         } else {
-            this._git = "\"" + this.options.preferences.getValue("gitPath") + "\"";
+            this._git = "\"" + Preferences.get("gitPath") + "\"";
         }
     }
 
@@ -106,7 +107,7 @@ define(function (require, exports, module) {
 
         bashVersion: function () {
             if (brackets.platform === "win") {
-                var cmd = "\"" + this.options.preferences.getValue("msysgitPath") + "bin\\sh.exe" + "\"";
+                var cmd = "\"" + Preferences.get("msysgitPath") + "bin\\sh.exe" + "\"";
                 return this.executeCommand(cmd + " --version");
             } else {
                 return q().thenReject();
@@ -115,7 +116,7 @@ define(function (require, exports, module) {
 
         bashOpen: function (folder) {
             if (brackets.platform === "win") {
-                var cmd = "\"" + this.options.preferences.getValue("msysgitPath") + "Git Bash.vbs" + "\"";
+                var cmd = "\"" + Preferences.get("msysgitPath") + "Git Bash.vbs" + "\"";
                 var arg = " \"" + folder + "\"";
                 return this.executeCommand(cmd + arg);
             } else {
@@ -128,7 +129,7 @@ define(function (require, exports, module) {
             if (customCmd) {
                 cmd = customCmd.replace("$1", escapeShellArg(folder));
             } else {
-                cmd = this.options.preferences.getValue("extensionDirectory") + "shell/" +
+                cmd = Preferences.get("extensionDirectory") + "shell/" +
                     (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
                 cmd = escapeShellArg(cmd) + " " + escapeShellArg(folder);
             }
@@ -150,7 +151,7 @@ define(function (require, exports, module) {
                 // Check if it's a cygwin installation.
                 if (brackets.platform === "win" && output[0] === "/") {
                     // Convert to Windows path with cygpath.
-                    return self.executeCommand("\"" + self.options.preferences.getValue("msysgitPath") +
+                    return self.executeCommand("\"" + Preferences.get("msysgitPath") +
                                                "\\bin\\cygpath" + "\" -m \"" + output + "\"").then(function (output) {
                         return output;
                     });

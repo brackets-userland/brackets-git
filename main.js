@@ -23,14 +23,13 @@ define(function (require, exports, module) {
         ExtensionUtils             = brackets.getModule("utils/ExtensionUtils"),
         Menus                      = brackets.getModule("command/Menus"),
         NodeConnection             = brackets.getModule("utils/NodeConnection"),
-        PreferencesManager         = brackets.getModule("preferences/PreferencesManager"),
         moduleDirectory            = ExtensionUtils.getModulePath(module),
         ExtInfo                    = require("./ExtInfo");
 
     // This should be set before loading any more files that may depend on this
     ExtInfo.init(moduleDirectory);
 
-    var DefaultPreferences         = require("./DefaultPreferences"),
+    var Preferences                = require("./src/Preferences"),
         ExtensionMain              = require("./src/Main"),
         Strings                    = require("./strings"),
         ChangelogDialog            = require("./src/ChangelogDialog"),
@@ -49,25 +48,24 @@ define(function (require, exports, module) {
     ExtensionUtils.loadStyleSheet(module, "less/fonts/octicon.less");
 
     // Initialize PreferenceStorage.
-    var preferences = PreferencesManager.getPreferenceStorage(module, DefaultPreferences);
-    preferences.setValue("extensionDirectory", moduleDirectory);
+    Preferences.persist("extensionDirectory", moduleDirectory);
 
     // Handle settings dialog
     function openSettingsPanel() {
-        SettingsDialog.show(preferences);
+        SettingsDialog.show();
     }
 
     // Display settings panel on first start / changelog dialog on version change
     ExtInfo.get(function (packageJson) {
-        var lastVersion    = preferences.getValue("lastVersion"),
+        var lastVersion    = Preferences.get("lastVersion"),
             currentVersion = packageJson.version;
 
         if (lastVersion === null) {
-            preferences.setValue("lastVersion", "firstStart");
+            Preferences.persist("lastVersion", "firstStart");
             openSettingsPanel();
         } else if (lastVersion !== currentVersion) {
-            preferences.setValue("lastVersion", currentVersion);
-            ChangelogDialog.show(preferences);
+            Preferences.persist("lastVersion", currentVersion);
+            ChangelogDialog.show();
         }
     });
 
@@ -85,7 +83,7 @@ define(function (require, exports, module) {
                 ErrorHandler.showError(new ExpectedError(err), "Failed to register Node.js domain, extension requires Node.js installed");
             });
         }).then(function () {
-            ExtensionMain.init(nodeConnection, preferences);
+            ExtensionMain.init(nodeConnection);
         }).done();
     });
 
