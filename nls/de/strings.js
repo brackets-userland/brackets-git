@@ -33,7 +33,8 @@ define({
     DIFF:                               "Diff",
     ENTER_PASSWORD:                     "Passwort eingeben",
     ENTER_USERNAME:                     "Nutzernamen eingeben",
-    ERROR_TERMINAL_NOT_FOUND:           "Die Konsole wurde in ihrem Betriebssystem nicht gefunden, Sie können einen eigenen Konsolenbefehl in den Einstellungen angeben",
+    ERROR_TERMINAL_NOT_FOUND:           "Die Konsole wurde in ihrem Betriebssystem nicht gefunden, " +
+                                        "Sie können einen eigenen Konsolenbefehl in den Einstellungen angeben",
     EXTENSION_WAS_UPDATED_TITLE:        "Die Erweiterung wurde auf Version {0} aktualisiert",
     FEATURES:                           "Funktionen",
     FILE_DELETED:                       "Gelöscht",
