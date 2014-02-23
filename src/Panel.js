@@ -488,23 +488,21 @@ define(function (require, exports) {
         return response.promise;
     }
 
-    function handleGitPushWithPassword(traditionalPushError) {
+    function handleGitPushWithPassword(originalPushError) {
         return Main.gitControl.getBranchName().then(function (branchName) {
             return Main.gitControl.getGitConfig("branch." + branchName + ".remote").then(function (remoteName) {
                 if (!remoteName) {
-                    ErrorHandler.logError("git config branch." + branchName + ".remote is empty!");
-                    throw traditionalPushError;
+                    throw ErrorHandler.rewrapError(originalPushError, new Error("git config branch." + branchName + ".remote is empty!"));
                 }
                 return Main.gitControl.getGitConfig("remote." + remoteName + ".url").then(function (remoteUrl) {
                     if (!remoteUrl) {
-                        ErrorHandler.logError("git config remote." + remoteName + ".url is empty!");
-                        throw traditionalPushError;
+                        throw ErrorHandler.rewrapError(originalPushError, new Error("git config remote." + remoteName + ".url is empty!"));
                     }
 
                     var isHttp = remoteUrl.indexOf("http") === 0;
                     if (!isHttp) {
-                        console.warn("Asking for username/password aborted because remote is not HTTP(S)");
-                        throw traditionalPushError;
+                        throw ErrorHandler.rewrapError(originalPushError,
+                                                       new Error("Asking for username/password aborted because remote is not HTTP(S)"));
                     }
 
                     var username,
@@ -526,7 +524,7 @@ define(function (require, exports) {
                     }
 
                     if (hasUsername && hasPassword) {
-                        throw traditionalPushError;
+                        throw ErrorHandler.rewrapError(originalPushError, new Error("Username/password is already present in the URL"));
                     }
 
                     var p = q();
