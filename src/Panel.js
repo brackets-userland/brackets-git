@@ -878,14 +878,20 @@ define(function (require, exports) {
                 handleGitDelete($(e.target).closest("tr").data("file"));
             })
             .on("click", "tr", function (e) {
-                var fullPath = Main.getProjectRoot() + $(e.currentTarget).data("file");
+                var $this = $(e.currentTarget);
+                if ($this.data("status") === GitControl.FILE_STATUS.DELETED) {
+                    return;
+                }
                 CommandManager.execute(Commands.FILE_OPEN, {
-                    fullPath: fullPath
+                    fullPath: Main.getProjectRoot() + $this.data("file")
                 });
             })
             .on("dblclick", "tr", function (e) {
-                var fullPath = Main.getProjectRoot() + $(e.currentTarget).data("file");
-                FileViewController.addToWorkingSetAndSelect(fullPath);
+                var $this = $(e.currentTarget);
+                if ($this.data("status") === GitControl.FILE_STATUS.DELETED) {
+                    return;
+                }
+                FileViewController.addToWorkingSetAndSelect(Main.getProjectRoot() + $this.data("file"));
             });
 
         // Try to get Bash version, if succeeds then Bash is available, hide otherwise
