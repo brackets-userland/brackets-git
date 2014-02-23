@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.1
+* Added option to disable code inspection in commit dialog.
+
 ## 0.9.0
 * Pushing to http(s) password protected repositories should work - extension will ask for username & password.
 * Bash icon now launches terminal window in other OS than Windows, thanks to [Jimmy Brian Anamaria Torres](https://github.com/Azakur4) & [Benjamin Pick](https://github.com/benjaminpick)

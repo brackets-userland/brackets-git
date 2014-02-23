@@ -73,6 +73,7 @@ define({
     TOOLTIP_REFRESH_PANEL:              "Refresh panel",
     UNDO_CHANGES:                       "Undo changes",
     URL:                                "URL",
+    USE_CODE_INSPECTION:                "Use Code inspection",
     USE_GIT_GUTTER:                     "Use Git gutter marks",
     USING_GIT_VERSION:                  "Git version"
 });

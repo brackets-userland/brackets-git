@@ -371,6 +371,7 @@ define(function (require, exports) {
     }
 
     function handleGitCommit() {
+        var codeInspectionEnabled = Preferences.get("useCodeInspection");
         var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
         // Get checked files
         var $checked = gitPanel.$panel.find(".check-one:checked");
@@ -431,7 +432,7 @@ define(function (require, exports) {
                 });
 
                 // do a code inspection for the file, if it was not deleted
-                if (updateIndex === false) {
+                if (codeInspectionEnabled && updateIndex === false) {
                     queue = queue.then(function () {
                         return lintFile(fileObj.filename).then(function (result) {
                             if (result) {

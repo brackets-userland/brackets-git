@@ -13,6 +13,7 @@ define(function (require, exports, module) {
         "addEndlineToTheEndOfFile": {       "type": "boolean",           "value": true          },
         "useGitGutter": {                   "type": "boolean",           "value": true          },
         "markModifiedInTree": {             "type": "boolean",           "value": true          },
+        "useCodeInspection": {              "type": "boolean",           "value": true          },
         // shortcuts
         "panelShortcut": {                  "type": "string",            "value": "Ctrl-Alt-G"  },
         "commitCurrentShortcut": {          "type": "string",            "value": null          },
