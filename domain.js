@@ -4,7 +4,14 @@
     "use strict";
 
     var ChildProcess = require("child_process"),
-        domainName = "brackets-git";
+        fs           = require("fs"),
+        domainName   = "brackets-git";
+
+    function fixScripts() {
+        ["terminal.osa", "terminal.sh"].forEach(function (filename) {
+            fs.chmodSync(__dirname + "/shell/" + filename, "755");
+        });
+    }
 
     function fixEOL(str) {
         if (str[str.length - 1] === "\n") {
@@ -64,6 +71,8 @@
      * @param {DomainManager} DomainManager for the server
      */
     exports.init = function (DomainManager) {
+        fixScripts();
+
         if (!DomainManager.hasDomain(domainName)) {
             DomainManager.registerDomain(domainName, {
                 major: 0,
