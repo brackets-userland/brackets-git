@@ -511,7 +511,7 @@ define(function (require, exports) {
                         password,
                         hasUsername,
                         hasPassword,
-                        shouldSave;
+                        shouldSave = false;
 
                     var m = remoteUrl.match(/https?:\/\/([^@]+)@/);
                     if (!m) {
@@ -544,11 +544,13 @@ define(function (require, exports) {
                             });
                         });
                     }
-                    p = p.then(function () {
-                        return askQuestion(Strings.TOOLTIP_PUSH, Strings.SAVE_PASSWORD_QUESTION, true).then(function (bool) {
-                            shouldSave = bool;
+                    if (Preferences.get("storePlainTextPasswords")) {
+                        p = p.then(function () {
+                            return askQuestion(Strings.TOOLTIP_PUSH, Strings.SAVE_PASSWORD_QUESTION, true).then(function (bool) {
+                                shouldSave = bool;
+                            });
                         });
-                    });
+                    }
                     return p.then(function () {
                         if (!hasUsername) {
                             remoteUrl = remoteUrl.replace(/(https?:\/\/)/, function (a, protocol) { return protocol + username + "@"; });

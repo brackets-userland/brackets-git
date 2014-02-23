@@ -14,6 +14,7 @@ define(function (require, exports, module) {
         "useGitGutter": {                   "type": "boolean",           "value": true          },
         "markModifiedInTree": {             "type": "boolean",           "value": true          },
         "useCodeInspection": {              "type": "boolean",           "value": true          },
+        "storePlainTextPasswords": {        "type": "boolean",           "value": false         },
         // shortcuts
         "panelShortcut": {                  "type": "string",            "value": "Ctrl-Alt-G"  },
         "commitCurrentShortcut": {          "type": "string",            "value": null          },

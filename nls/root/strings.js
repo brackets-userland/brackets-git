@@ -3,6 +3,7 @@
 define({
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Add endline at the end of file",
     ADD_TO_GITIGNORE:                   "Add to .gitignore",
+    AGREE_TO_STORE_PASSWORDS:           "I agree that password are stored in plain text on my computer",
     AMEND_COMMIT:                       "Amend last commit",
     AMEND_COMMIT_FORBIDDEN:             "Cannot amend commit when there are no unpushed commits",
     BASH_NOT_AVAILABLE:                 "Bash is not available or properly configured",
@@ -51,6 +52,7 @@ define({
     NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
     PANEL_COMMAND:                      "Git",
     PANEL_SHORTCUT:                     "Toggle panel",
+    PASSWORDS:                          "Passwords",
     PATH_TO_GIT_EXECUTABLE:             "Path to Git executable",
     PATH_TO_GIT_MSYSGIT:                "Path to msysgit folder",
     Q_DELETE_FILE:                      "Are you sure you wish to delete the file {0}?",

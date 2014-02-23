@@ -2,6 +2,7 @@
 
 ## 0.9.1
 * Added option to disable code inspection in commit dialog.
+* You must now agree to store passwords in plain text on your computer.
 
 ## 0.9.0
 * Pushing to http(s) password protected repositories should work - extension will ask for username & password.
