@@ -188,6 +188,15 @@ define(function (require, exports) {
         return p.promise;
     }
 
+    function sanitizeOutput(str) {
+        if (typeof str === "string") {
+            str = str.replace(/https?:\/\/([^@]*)@/g, function (a, b) {
+                return a.substring(0, a.length - b.length - 1) + "***@";
+            });
+        }
+        return str;
+    }
+
     function init(nodeConnection) {
         var TIMEOUT_VALUE = Preferences.get("TIMEOUT_VALUE");
         // Creates an GitControl Instance
@@ -209,13 +218,13 @@ define(function (require, exports) {
                     .then(function (out) {
                         if (!resolved) {
                             if (window.bracketsGit.debug) { console.log("cmd-" + method + "-out: " + out); }
-                            rv.resolve(out);
+                            rv.resolve(sanitizeOutput(out));
                         }
                     })
                     .fail(function (err) {
                         if (!resolved) {
                             if (window.bracketsGit.debug) { console.log("cmd-" + method + "-fail: " + err); }
-                            rv.reject(err);
+                            rv.reject(sanitizeOutput(err));
                         }
                     })
                     .always(function () {
