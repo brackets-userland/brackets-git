@@ -112,6 +112,16 @@ define(function (require, exports) {
         });
     }
 
+    // Disable "commit" button if there aren't selected files and vice versa
+    function handleCommitButtonStatus() {
+        console.log("clicked");
+        if(gitPanel.$panel.find(".check-one:checked").length) {
+            $(".git-commit").prop("disabled", false);
+        } else {
+            $(".git-commit").prop("disabled", true);
+        }
+    }
+
     function _showCommitDialog(stagedDiff, lintResults) {
         // Flatten the error structure from various providers
         lintResults.forEach(function (lintResult) {
@@ -843,6 +853,7 @@ define(function (require, exports) {
                 var isChecked = $(this).is(":checked");
                 gitPanel.$panel.find(".check-one").prop("checked", isChecked);
             })
+            .on("click", ".check-one, .check-all", handleCommitButtonStatus)
             .on("click", ".git-reset", handleGitReset)
             .on("click", ".git-commit", handleGitCommit)
             .on("click", ".git-close-notmodified", handleCloseNotModified)
@@ -863,6 +874,7 @@ define(function (require, exports) {
             .on("click", ".check-one", function (e) {
                 e.stopPropagation();
             })
+            .on("click", ".check-one, .check-all", handleCommitButtonStatus)
             .on("click", ".btn-git-diff", function (e) {
                 e.stopPropagation();
                 handleGitDiff($(e.target).closest("tr").data("file"));
