@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.2
+* Fix password hiding regExp from 0.9.1
+
 ## 0.9.1
 * Added option to disable code inspection in commit dialog.
 * You must now agree to store passwords in plain text on your computer.

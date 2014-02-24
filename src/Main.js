@@ -190,8 +190,8 @@ define(function (require, exports) {
 
     function sanitizeOutput(str) {
         if (typeof str === "string") {
-            str = str.replace(/https?:\/\/([^@]*)@/g, function (a, b) {
-                return a.substring(0, a.length - b.length - 1) + "***@";
+            str = str.replace(/(https?:\/\/)([^:@]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
+                return protocol + user + ":***@";
             });
         }
         return str;
