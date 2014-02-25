@@ -682,8 +682,9 @@ define(function (require, exports) {
                 return;
             }
 
-            var $checkAll = gitPanel.$panel.find(".check-all");
             $tableContainer.empty();
+            gitPanel.$panel.find(".check-all").prop("checked", false);
+            toggleCommitButton(false);
 
             // remove files that we should not show
             files = _.filter(files, function (file) {
@@ -714,7 +715,7 @@ define(function (require, exports) {
                     files: files,
                     Strings: Strings
                 }));
-                $checkAll.prop("checked", false);
+
                 refreshCurrentFile();
             }
         }).fail(function (err) {

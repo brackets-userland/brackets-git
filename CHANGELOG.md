@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.3
+* Disable commit button when there are no files to commit selected by [Fez Vrasta](https://github.com/FezVrasta)
+* Fixed an issue when doubleclicking on a checkbox triggered opening a file.
+
 ## 0.9.2
 * Fix password hiding regExp from 0.9.1
 
