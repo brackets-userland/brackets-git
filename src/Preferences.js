@@ -25,15 +25,8 @@ define(function (require, exports, module) {
         "TIMEOUT_VALUE": {                  "type": "number",            "value": 30000         },
         "terminalCommand": {                "type": "string",            "value": null          },
         "extensionDirectory": {             "type": "string",            "value": undefined     },
+        "gitIsInSystemPath": {              "type": "boolean",           "value": false         },
         // platform specific
-        "gitIsInSystemPath": {
-            "type": "boolean",
-            "os": {
-                "win":      { "value": true },
-                "mac":      { "value": false },
-                "linux":    { "value": false }
-            }
-        },
         "gitPath": {
             "type": "string",
             "os": {
