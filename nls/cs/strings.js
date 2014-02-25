@@ -1,3 +1,4 @@
+/*jshint maxlen:false */
 /*global define */
 
 define({
