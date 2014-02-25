@@ -873,6 +873,9 @@ define(function (require, exports) {
                 e.stopPropagation();
                 toggleCommitButton($(this).is(":checked") ? true : undefined);
             })
+            .on("dblclick", ".check-one", function (e) {
+                e.stopPropagation();
+            })
             .on("click", ".btn-git-diff", function (e) {
                 e.stopPropagation();
                 handleGitDiff($(e.target).closest("tr").data("file"));
