@@ -851,7 +851,7 @@ define(function (require, exports) {
             .on("click", ".check-all", function () {
                 var isChecked = $(this).is(":checked");
                 gitPanel.$panel.find(".check-one").prop("checked", isChecked);
-                toggleCommitButton(isChecked);
+                toggleCommitButton();
             })
             .on("click", ".git-reset", handleGitReset)
             .on("click", ".git-commit", handleGitCommit)
