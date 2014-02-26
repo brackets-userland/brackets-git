@@ -573,6 +573,7 @@ define(function (require, exports) {
     }
 
     function handleGitPush() {
+        console.log('debug Azakur4');
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true);
         Main.gitControl.gitPush().fail(function (err) {
 
