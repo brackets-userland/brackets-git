@@ -849,9 +849,10 @@ define(function (require, exports) {
         gitPanel.$panel
             .on("click", ".close", toggle)
             .on("click", ".check-all", function () {
-                var isChecked = $(this).is(":checked");
-                gitPanel.$panel.find(".check-one").prop("checked", isChecked);
-                toggleCommitButton();
+                var isChecked = $(this).is(":checked"),
+                    checkboxes = gitPanel.$panel.find(".check-one").prop("checked", isChecked);
+                // do not toggle if there are no files in the list
+                toggleCommitButton(isChecked && checkboxes.length > 0);
             })
             .on("click", ".git-reset", handleGitReset)
             .on("click", ".git-commit", handleGitCommit)
