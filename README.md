@@ -6,7 +6,7 @@ Should work on all Brackets platforms (Win, Mac, Linux).
 
 You need to have [Node.js](http://nodejs.org/) installed.
 
-Windows users need to have [msysgit](https://code.google.com/p/msysgit/) installed.
+Windows users need to have [msysgit](https://code.google.com/p/msysgit/) installed (recommended is installation with [this setting](https://raw.github.com/zaggino/brackets-git/master/screenshots/gitInstall.png) and turning on the "Git can be called from anywhere" option).
 
 Mac users need to have [Git for OS X](https://code.google.com/p/git-osx-installer/) installed.
 
