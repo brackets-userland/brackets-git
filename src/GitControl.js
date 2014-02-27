@@ -356,7 +356,7 @@ define(function (require, exports, module) {
         },
 
         gitHistory: function (branch) {
-            return this.executeCommand(this._git + ' log ' + branch + ' --format="%h_._%s_._%an_._%ai"').then(function (stdout) {
+            return this.executeCommand(this._git + " log " + branch + " --format=\"%h_._%s_._%an_._%ai\"").then(function (stdout) {
                 if (stdout.length === 0) {
                     return [];
                 }
@@ -376,6 +376,18 @@ define(function (require, exports, module) {
                 });
 
                 return results;
+            });
+        },
+
+        gitCommitDiff: function (hash) {
+            return this.executeCommand(this._git + " diff-tree --no-commit-id --name-only -r " + hash).then(function (stdout) {
+                if (stdout.length === 0) {
+                    return [];
+                }
+
+                var files = stdout.split("\n");
+
+                return files;
             });
         },
 

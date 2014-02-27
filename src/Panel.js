@@ -38,6 +38,7 @@ define(function (require, exports) {
         gitPanelHistoryTemplate = require("text!htmlContent/git-panel-history.html"),
         gitCommitDialogTemplate = require("text!htmlContent/git-commit-dialog.html"),
         gitDiffDialogTemplate   = require("text!htmlContent/git-diff-dialog.html"),
+        gitCommitDiffDialogTemplate = require("text!htmlContent/git-commit-diff-dialog.html"),
         questionDialogTemplate  = require("text!htmlContent/git-question-dialog.html");
 
     var showFileWhiteList = /^.gitignore$/;
@@ -669,8 +670,11 @@ define(function (require, exports) {
     }
 
     function refresh() {
+        // set the history panel to false when refresh
         showingHistory = false;
-        defaultActionsPanel();
+
+        // re attach the table handlers
+        attachDefaultTableHandlers();
 
         if (gitPanelMode === "not-repo") {
             $tableContainer.empty();
@@ -790,6 +794,7 @@ define(function (require, exports) {
         refresh();
     }
 
+    // Added a panel to see the history of commits
     function handleToggleHistory() {
         showingHistory = !showingHistory;
 
@@ -804,14 +809,32 @@ define(function (require, exports) {
 
                     $tableContainer.off().on("click", "tr", function (e) {
                         var $this = $(e.currentTarget);
+                        // if click in a row a dialog will be open to show the modified file list of the commit
+                        handleCommitDiff($this.data("hash"));
                     });
-                }).fail(function (err) {
-                    console.log('teste: ' + err)
                 });
+            }).fail(function (err) {
+                ErrorHandler.logError(err);
             });
         } else {
             refresh();
         }
+    }
+
+    function handleCommitDiff(hash) {
+        Main.gitControl.gitCommitDiff(hash).then(function (files) {
+            _showCommitDiffDialog(files);
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Git Commit Diff failed");
+        });
+    }
+
+    function _showCommitDiffDialog(files) {
+        var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { files: files, Strings: Strings }),
+            dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+            $dialog          = dialog.getElement();
+
+        _makeDialogBig($dialog);
     }
 
     function handleGitInit() {
@@ -867,7 +890,7 @@ define(function (require, exports) {
         $(".git-commit").prop("disabled", !enableButton);
     }
 
-    function defaultActionsPanel() {
+    function attachDefaultTableHandlers() {
         $tableContainer = gitPanel.$panel.find(".table-container")
             .off()
             .on("click", ".check-one", function (e) {
@@ -938,7 +961,8 @@ define(function (require, exports) {
                 }, 1);
             });
 
-        defaultActionsPanel();
+        // Attaching table handlers
+        attachDefaultTableHandlers();
 
         // Try to get Bash version, if succeeds then Bash is available, hide otherwise
         if (brackets.platform === "win") {
