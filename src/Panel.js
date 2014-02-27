@@ -804,7 +804,6 @@ define(function (require, exports) {
 
                     $tableContainer.off().on("click", "tr", function (e) {
                         var $this = $(e.currentTarget);
-
                     });
                 }).fail(function (err) {
                     console.log('teste: ' + err)
