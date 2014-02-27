@@ -805,6 +805,19 @@ define(function (require, exports) {
         });
     }
 
+    function handleGitClone() {
+        // TODO: handle Git errors and convert isProjecRootEmpty in deferred function (need @zaggino because @FezVrasta doesn't know how)
+        if(Main.isProjectRootEmpty()) {
+            askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
+                Main.gitControl.gitClone(remoteGitUrl, ".");
+            });
+        }
+        else {
+            var err = "Project root is not empty, be sure you have deleted hidden files";
+            ErrorHandler.showError(err, "Cloning remote repository failed!");
+        }
+    }
+
     function commitCurrentFile() {
         return q.when(CommandManager.execute("file.save")).then(function () {
             return handleGitReset();
@@ -862,6 +875,7 @@ define(function (require, exports) {
             .on("click", ".git-pull", handleGitPull)
             .on("click", ".git-bug", ErrorHandler.reportBug)
             .on("click", ".git-init", handleGitInit)
+            .on("click", ".git-clone", handleGitClone)
             .on("contextmenu", "tr", function (e) {
                 $(this).click();
                 setTimeout(function () {

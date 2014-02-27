@@ -3,7 +3,7 @@
 
 define(function (require, exports) {
     "use strict";
-    
+
     var q               = require("../thirdparty/q"),
         _               = brackets.getModule("thirdparty/lodash"),
         AppInit         = brackets.getModule("utils/AppInit"),
@@ -20,7 +20,7 @@ define(function (require, exports) {
         GutterManager   = require("./GutterManager"),
         Panel           = require("./Panel"),
         Branch          = require("./Branch");
-    
+
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
                                     .addClass("loading").appendTo($("#main-toolbar .buttons")),
         gitControl              = null;
@@ -28,7 +28,7 @@ define(function (require, exports) {
     function getProjectRoot() {
         return ProjectManager.getProjectRoot().fullPath;
     }
-    
+
     var writeTestResults = {};
     function isProjectRootWritable() {
         var folder = getProjectRoot();
@@ -55,20 +55,27 @@ define(function (require, exports) {
         return result.promise;
     }
 
+    // This checks if the project root is empty (to let Git clone repositories)
+    function isProjectRootEmpty() {
+        var empty = null;
+        ProjectManager.getProjectRoot().getContents(function (errs, entries) { empty = entries.length; } );
+        return empty ? false : true;
+    }
+
     // This only launches when Git is available
     function initUi() {
         Panel.init(gitControl);
         Branch.init(gitControl);
-        
+
         // Attach events
         $icon.on("click", Panel.toggle);
-        
+
         // Show gitPanel when appropriate
         if (Preferences.get("panelEnabled")) {
             Panel.toggle(true);
         }
     }
-    
+
     // Call this only when Git is available
     function attachEventsToBrackets() {
         $(ProjectManager).on("projectOpen projectRefresh", function () {
@@ -90,7 +97,7 @@ define(function (require, exports) {
         refreshIgnoreEntries();
         GutterManager.refresh();
     }
-    
+
     function _addRemoveItemInGitignore(selectedEntry, method) {
         var projectRoot = getProjectRoot(),
             entryPath = "/" + selectedEntry.fullPath.substring(projectRoot.length),
@@ -281,7 +288,7 @@ define(function (require, exports) {
             panelCmenu.addMenuItem(cmdName + "2");
         });
     }
-    
+
     // API
     exports.$icon = $icon;
     exports.getProjectRoot = getProjectRoot;
