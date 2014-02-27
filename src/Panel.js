@@ -806,16 +806,18 @@ define(function (require, exports) {
     }
 
     function handleGitClone() {
-        // TODO: handle Git errors and convert isProjecRootEmpty in deferred function (need @zaggino because @FezVrasta doesn't know how)
-        if(Main.isProjectRootEmpty()) {
-            askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
-                Main.gitControl.gitClone(remoteGitUrl, ".");
-            });
-        }
-        else {
-            var err = "Project root is not empty, be sure you have deleted hidden files";
-            ErrorHandler.showError(err, "Cloning remote repository failed!");
-        }
+        Main.isProjectRootEmpty().then(function (isEmpty) {
+            if (isEmpty) {
+                askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
+                    Main.gitControl.gitClone(remoteGitUrl, ".");
+                });
+            } else {
+                var err = new ExpectedError("Project root is not empty, be sure you have deleted hidden files");
+                ErrorHandler.showError(err, "Cloning remote repository failed!");
+            }
+        }).fail(function (err) {
+            ErrorHandler.showError(err);
+        });
     }
 
     function commitCurrentFile() {
