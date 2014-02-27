@@ -355,6 +355,43 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " init");
         },
 
+        gitHistory: function (branch) {
+            return this.executeCommand(this._git + " log " + branch + " --format=\"%h_._%s_._%an_._%ae_._%ai\"").then(function (stdout) {
+                if (stdout.length === 0) {
+                    return [];
+                }
+
+                var results = [],
+                    lines = stdout.split("\n");
+
+                lines.forEach(function (line) {
+                    var data = line.split("_._");
+
+                    results.push({
+                        hash: data[0].trim(),
+                        message: data[1].trim(),
+                        author: data[2].trim(),
+                        email: data[3].trim(),
+                        date: data[4].trim()
+                    });
+                });
+
+                return results;
+            });
+        },
+
+        gitCommitDiff: function (hash) {
+            return this.executeCommand(this._git + " diff-tree --no-commit-id --name-only -r " + hash).then(function (stdout) {
+                if (stdout.length === 0) {
+                    return [];
+                }
+
+                var files = stdout.split("\n");
+
+                return files;
+            });
+        },
+
         remoteAdd: function (remote, url) {
             return this.executeCommand(this._git + " remote add " + remote + " " + url);
         }

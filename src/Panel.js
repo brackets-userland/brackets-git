@@ -35,8 +35,10 @@ define(function (require, exports) {
 
     var gitPanelTemplate        = require("text!htmlContent/git-panel.html"),
         gitPanelResultsTemplate = require("text!htmlContent/git-panel-results.html"),
+        gitPanelHistoryTemplate = require("text!htmlContent/git-panel-history.html"),
         gitCommitDialogTemplate = require("text!htmlContent/git-commit-dialog.html"),
         gitDiffDialogTemplate   = require("text!htmlContent/git-diff-dialog.html"),
+        gitCommitDiffDialogTemplate = require("text!htmlContent/git-commit-diff-dialog.html"),
         questionDialogTemplate  = require("text!htmlContent/git-question-dialog.html");
 
     var showFileWhiteList = /^.gitignore$/;
@@ -45,6 +47,7 @@ define(function (require, exports) {
         gitPanelDisabled = null,
         gitPanelMode = null,
         showingUntracked = true,
+        showingHistory = false,
         $tableContainer = null;
 
     /**
@@ -575,7 +578,6 @@ define(function (require, exports) {
     function handleGitPush() {
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true);
         Main.gitControl.gitPush().fail(function (err) {
-
             if (typeof err !== "string") { throw err; }
             var m = err.match(/git remote add <name> <url>/);
             if (!m) { throw err; }
@@ -668,6 +670,13 @@ define(function (require, exports) {
     }
 
     function refresh() {
+        // set the history panel to false and remove the class that show the button history active when refresh
+        showingHistory = false;
+        $(".git-history").removeClass("btn-active");
+
+        // re-attach the table handlers
+        attachDefaultTableHandlers();
+
         if (gitPanelMode === "not-repo") {
             $tableContainer.empty();
             return q();
@@ -683,7 +692,7 @@ define(function (require, exports) {
             }
 
             $tableContainer.empty();
-            gitPanel.$panel.find(".check-all").prop("checked", false);
+            gitPanel.$panel.find(".check-all").prop("checked", false).prop("disabled", false);
             toggleCommitButton(false);
 
             // remove files that we should not show
@@ -786,6 +795,62 @@ define(function (require, exports) {
         refresh();
     }
 
+    // History table renderer to show the history commits
+    function handleToggleHistory() {
+        showingHistory = !showingHistory;
+
+        if (showingHistory) {
+            $(".git-history").addClass("btn-active");
+            // Disabling commit button when history table is showed
+            $(".git-commit").prop("disabled", showingHistory);
+
+            // Disabling and uncheck check-all checkbox when history table is showed
+            $(".check-all").prop("checked", !showingHistory).prop("disabled", showingHistory);
+
+            // Clear the table container to show the history data
+            $tableContainer.empty();
+
+            // Get the actual branch
+            return Main.gitControl.getBranchName().then(function (branchName) {
+                // Get the history commit of the actual branch
+                return Main.gitControl.gitHistory(branchName).then(function (commits) {
+                    $tableContainer.append(Mustache.render(gitPanelHistoryTemplate, {
+                        files: commits,
+                        Strings: Strings
+                    }));
+
+                    // Removing the table defaults handlers and add a new one to handle the click in the commits history
+                    $tableContainer.off().on("click", "tr", function (e) {
+                        // if click in a row a dialog will be open to show the modified file list of the commit
+                        handleCommitDiff($(this).data("hash"));
+                    });
+                });
+            }).fail(function (err) {
+                ErrorHandler.showError(err, "Git History Commit failed");
+            });
+        } else {
+            // When u click again in the history button the refresh method will be render the default table to show git status
+            refresh();
+        }
+    }
+
+    // handle click in a commit from the history table to show a dialog with the modified files
+    function handleCommitDiff(hash) {
+        Main.gitControl.gitCommitDiff(hash).then(function (files) {
+            _showCommitDiffDialog(hash, files);
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Git Commit Diff failed");
+        });
+    }
+
+    function _showCommitDiffDialog(hashCommit, files) {
+        var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { hashCommit: hashCommit, files: files, Strings: Strings }),
+            dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+            $dialog          = dialog.getElement();
+
+        _makeDialogBig($dialog);
+    }
+
     function handleGitInit() {
         Main.isProjectRootWritable().then(function (writable) {
             if (!writable) {
@@ -839,36 +904,7 @@ define(function (require, exports) {
         $(".git-commit").prop("disabled", !enableButton);
     }
 
-    function init() {
-        // Add panel
-        var panelHtml = Mustache.render(gitPanelTemplate, Strings);
-        var $panelHtml = $(panelHtml);
-        $panelHtml.find(".git-available").hide();
-        gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
-
-        gitPanel.$panel
-            .on("click", ".close", toggle)
-            .on("click", ".check-all", function () {
-                var isChecked = $(this).is(":checked"),
-                    checkboxes = gitPanel.$panel.find(".check-one").prop("checked", isChecked);
-                // do not toggle if there are no files in the list
-                toggleCommitButton(isChecked && checkboxes.length > 0);
-            })
-            .on("click", ".git-reset", handleGitReset)
-            .on("click", ".git-commit", handleGitCommit)
-            .on("click", ".git-close-notmodified", handleCloseNotModified)
-            .on("click", ".git-toggle-untracked", handleToggleUntracked)
-            .on("click", ".git-push", handleGitPush)
-            .on("click", ".git-pull", handleGitPull)
-            .on("click", ".git-bug", ErrorHandler.reportBug)
-            .on("click", ".git-init", handleGitInit)
-            .on("contextmenu", "tr", function (e) {
-                $(this).click();
-                setTimeout(function () {
-                    Menus.getContextMenu("git-panel-context-menu").open(e);
-                }, 1);
-            });
-
+    function attachDefaultTableHandlers() {
         $tableContainer = gitPanel.$panel.find(".table-container")
             .off()
             .on("click", ".check-one", function (e) {
@@ -906,6 +942,41 @@ define(function (require, exports) {
                 }
                 FileViewController.addToWorkingSetAndSelect(Main.getProjectRoot() + $this.data("file"));
             });
+    }
+
+    function init() {
+        // Add panel
+        var panelHtml = Mustache.render(gitPanelTemplate, Strings);
+        var $panelHtml = $(panelHtml);
+        $panelHtml.find(".git-available").hide();
+        gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
+
+        gitPanel.$panel
+            .on("click", ".close", toggle)
+            .on("click", ".check-all", function () {
+                var isChecked = $(this).is(":checked"),
+                    checkboxes = gitPanel.$panel.find(".check-one").prop("checked", isChecked);
+                // do not toggle if there are no files in the list
+                toggleCommitButton(isChecked && checkboxes.length > 0);
+            })
+            .on("click", ".git-reset", handleGitReset)
+            .on("click", ".git-commit", handleGitCommit)
+            .on("click", ".git-close-notmodified", handleCloseNotModified)
+            .on("click", ".git-toggle-untracked", handleToggleUntracked)
+            .on("click", ".git-history", handleToggleHistory)
+            .on("click", ".git-push", handleGitPush)
+            .on("click", ".git-pull", handleGitPull)
+            .on("click", ".git-bug", ErrorHandler.reportBug)
+            .on("click", ".git-init", handleGitInit)
+            .on("contextmenu", "tr", function (e) {
+                $(this).click();
+                setTimeout(function () {
+                    Menus.getContextMenu("git-panel-context-menu").open(e);
+                }, 1);
+            });
+
+        // Attaching table handlers
+        attachDefaultTableHandlers();
 
         // Try to get Bash version, if succeeds then Bash is available, hide otherwise
         if (brackets.platform === "win") {
