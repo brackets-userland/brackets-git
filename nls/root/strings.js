@@ -63,6 +63,8 @@ define({
     RESTART:                            "Restart",
     SAVE_PASSWORD_QUESTION:             "Save username/password?",
     SET_ORIGIN_URL:                     "Set origin URL",
+    SHOW_BASH_TERMINAL_BUTTON:          "Show Bash/Terminal button in the panel",
+    SHOW_REPORT_BUG_BUTTON:             "Show Report Bug button in the panel",
     STRIP_WHITESPACE_FROM_COMMITS:      "Strip trailing whitespace from commits",
     TOOLTIP_BUG:                        "Report bug",
     TOOLTIP_OPEN_BASH:                  "Open Bash console",
