@@ -4,6 +4,7 @@
 define({
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Adicionar endline no fim do arquivo",
     ADD_TO_GITIGNORE:                   "Adicionar ao .gitignore",
+    AGREE_TO_STORE_PASSWORDS:           "Concordo com que a senha será armazenada como um texto simples no meu computador",
     AMEND_COMMIT:                       "Emendar no último commit",
     AMEND_COMMIT_FORBIDDEN:             "Não é possível emendar o commit quando não tem unpushed commits",
     BASH_NOT_AVAILABLE:                 "O console de comando não está disponível ou propriamente configurado",
@@ -18,6 +19,7 @@ define({
     BUTTON_REPORT:                      "Relatar",
     BUTTON_SAVE:                        "Salvar",
     BUTTON_COMMIT:                      "Fazer Commit",
+    BUTTON_HISTORY:                     "Histórico",
     BUTTON_INIT:                        "Init",
     CHANGELOG:                          "Histórico de alterações",
     CHECK_GIT_SETTINGS:                 "Verificar configurações do Git",
@@ -52,6 +54,7 @@ define({
     NOTHING_TO_COMMIT:                  "Nada para fazer commit, diretório de trabalho limpo.",
     PANEL_COMMAND:                      "Git",
     PANEL_SHORTCUT:                     "Toggle panel",
+    PASSWORDS:                          "Senhas",
     PATH_TO_GIT_EXECUTABLE:             "Caminho para executável do Git",
     PATH_TO_GIT_MSYSGIT:                "Caminho para pasta do msysgit",
     Q_DELETE_FILE:                      "Tem certeza de que deseja excluir o arquivo {0}?",
@@ -74,6 +77,7 @@ define({
     TOOLTIP_REFRESH_PANEL:              "Recarregar painel",
     UNDO_CHANGES:                       "Desfazer alterações",
     URL:                                "URL",
+    USE_CODE_INSPECTION:                "Usar inspetor de código",
     USE_GIT_GUTTER:                     "Usar marcas do Git na margem",
     USING_GIT_VERSION:                  "Versão do Git"
 });

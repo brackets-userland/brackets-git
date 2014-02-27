@@ -19,6 +19,7 @@ define({
     BUTTON_REPORT:                      "Report",
     BUTTON_SAVE:                        "Save",
     BUTTON_COMMIT:                      "Commit",
+    BUTTON_HISTORY:                     "History",
     BUTTON_INIT:                        "Init",
     CHANGELOG:                          "Changelog",
     CHECK_GIT_SETTINGS:                 "Check Git settings",

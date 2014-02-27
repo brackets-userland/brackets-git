@@ -35,6 +35,7 @@ define(function (require, exports) {
 
     var gitPanelTemplate        = require("text!htmlContent/git-panel.html"),
         gitPanelResultsTemplate = require("text!htmlContent/git-panel-results.html"),
+        gitPanelHistoryTemplate = require("text!htmlContent/git-panel-history.html"),
         gitCommitDialogTemplate = require("text!htmlContent/git-commit-dialog.html"),
         gitDiffDialogTemplate   = require("text!htmlContent/git-diff-dialog.html"),
         questionDialogTemplate  = require("text!htmlContent/git-question-dialog.html");
@@ -45,6 +46,7 @@ define(function (require, exports) {
         gitPanelDisabled = null,
         gitPanelMode = null,
         showingUntracked = true,
+        showingHistory = false,
         $tableContainer = null;
 
     /**
@@ -573,10 +575,8 @@ define(function (require, exports) {
     }
 
     function handleGitPush() {
-        console.log('debug Azakur4');
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true);
         Main.gitControl.gitPush().fail(function (err) {
-
             if (typeof err !== "string") { throw err; }
             var m = err.match(/git remote add <name> <url>/);
             if (!m) { throw err; }
@@ -669,6 +669,9 @@ define(function (require, exports) {
     }
 
     function refresh() {
+        showingHistory = false;
+        defaultActionsPanel();
+
         if (gitPanelMode === "not-repo") {
             $tableContainer.empty();
             return q();
@@ -787,6 +790,31 @@ define(function (require, exports) {
         refresh();
     }
 
+    function handleToggleHistory() {
+        showingHistory = !showingHistory;
+
+        if (showingHistory) {
+            $tableContainer.empty();
+            return Main.gitControl.getBranchName().then(function (branchName) {
+                return Main.gitControl.gitHistory(branchName).then(function (commits) {
+                    $tableContainer.append(Mustache.render(gitPanelHistoryTemplate, {
+                        files: commits,
+                        Strings: Strings
+                    }));
+
+                    $tableContainer.off().on("click", "tr", function (e) {
+                        var $this = $(e.currentTarget);
+
+                    });
+                }).fail(function (err) {
+                    console.log('teste: ' + err)
+                });
+            });
+        } else {
+            refresh();
+        }
+    }
+
     function handleGitInit() {
         Main.isProjectRootWritable().then(function (writable) {
             if (!writable) {
@@ -840,36 +868,7 @@ define(function (require, exports) {
         $(".git-commit").prop("disabled", !enableButton);
     }
 
-    function init() {
-        // Add panel
-        var panelHtml = Mustache.render(gitPanelTemplate, Strings);
-        var $panelHtml = $(panelHtml);
-        $panelHtml.find(".git-available").hide();
-        gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
-
-        gitPanel.$panel
-            .on("click", ".close", toggle)
-            .on("click", ".check-all", function () {
-                var isChecked = $(this).is(":checked"),
-                    checkboxes = gitPanel.$panel.find(".check-one").prop("checked", isChecked);
-                // do not toggle if there are no files in the list
-                toggleCommitButton(isChecked && checkboxes.length > 0);
-            })
-            .on("click", ".git-reset", handleGitReset)
-            .on("click", ".git-commit", handleGitCommit)
-            .on("click", ".git-close-notmodified", handleCloseNotModified)
-            .on("click", ".git-toggle-untracked", handleToggleUntracked)
-            .on("click", ".git-push", handleGitPush)
-            .on("click", ".git-pull", handleGitPull)
-            .on("click", ".git-bug", ErrorHandler.reportBug)
-            .on("click", ".git-init", handleGitInit)
-            .on("contextmenu", "tr", function (e) {
-                $(this).click();
-                setTimeout(function () {
-                    Menus.getContextMenu("git-panel-context-menu").open(e);
-                }, 1);
-            });
-
+    function defaultActionsPanel() {
         $tableContainer = gitPanel.$panel.find(".table-container")
             .off()
             .on("click", ".check-one", function (e) {
@@ -907,6 +906,40 @@ define(function (require, exports) {
                 }
                 FileViewController.addToWorkingSetAndSelect(Main.getProjectRoot() + $this.data("file"));
             });
+    }
+
+    function init() {
+        // Add panel
+        var panelHtml = Mustache.render(gitPanelTemplate, Strings);
+        var $panelHtml = $(panelHtml);
+        $panelHtml.find(".git-available").hide();
+        gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
+
+        gitPanel.$panel
+            .on("click", ".close", toggle)
+            .on("click", ".check-all", function () {
+                var isChecked = $(this).is(":checked"),
+                    checkboxes = gitPanel.$panel.find(".check-one").prop("checked", isChecked);
+                // do not toggle if there are no files in the list
+                toggleCommitButton(isChecked && checkboxes.length > 0);
+            })
+            .on("click", ".git-reset", handleGitReset)
+            .on("click", ".git-commit", handleGitCommit)
+            .on("click", ".git-close-notmodified", handleCloseNotModified)
+            .on("click", ".git-toggle-untracked", handleToggleUntracked)
+            .on("click", ".git-history", handleToggleHistory)
+            .on("click", ".git-push", handleGitPush)
+            .on("click", ".git-pull", handleGitPull)
+            .on("click", ".git-bug", ErrorHandler.reportBug)
+            .on("click", ".git-init", handleGitInit)
+            .on("contextmenu", "tr", function (e) {
+                $(this).click();
+                setTimeout(function () {
+                    Menus.getContextMenu("git-panel-context-menu").open(e);
+                }, 1);
+            });
+
+        defaultActionsPanel();
 
         // Try to get Bash version, if succeeds then Bash is available, hide otherwise
         if (brackets.platform === "win") {
