@@ -355,6 +355,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " init");
         },
 
+        gitClone: function(remoteGitUrl, destinationFolder) {
+            return this.executeCommand(this._git + " clone " + remoteGitUrl + " " + destinationFolder);
+        },
+
         remoteAdd: function (remote, url) {
             return this.executeCommand(this._git + " remote add " + remote + " " + url);
         }
