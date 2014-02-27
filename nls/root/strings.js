@@ -26,6 +26,7 @@ define({
     COMMIT_CURRENT_SHORTCUT:            "Commit current file",
     COMMIT_MESSAGE_PLACEHOLDER:         "Enter commit message here\u2026",
     COMMIT_DIFF:                        "Commit diff",
+    COMMIT_HASH:                        "Commit Hash",
     CREATE_NEW_BRANCH:                  "Create new branch\u2026",
     CUSTOM_TERMINAL_COMMAND:            "Custom terminal command (sample: gnome-terminal --window --working-directory=$1)",
     DELETE_FILE:                        "Delete file",

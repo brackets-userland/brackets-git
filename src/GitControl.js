@@ -356,7 +356,7 @@ define(function (require, exports, module) {
         },
 
         gitHistory: function (branch) {
-            return this.executeCommand(this._git + " log " + branch + " --format=\"%h_._%s_._%an_._%ai\"").then(function (stdout) {
+            return this.executeCommand(this._git + " log " + branch + " --format=\"%h_._%s_._%an_._%ae_._%ai\"").then(function (stdout) {
                 if (stdout.length === 0) {
                     return [];
                 }
@@ -371,7 +371,8 @@ define(function (require, exports, module) {
                         hash: data[0].trim(),
                         message: data[1].trim(),
                         author: data[2].trim(),
-                        date: data[3].trim()
+                        email: data[3].trim(),
+                        date: data[4].trim()
                     });
                 });
 

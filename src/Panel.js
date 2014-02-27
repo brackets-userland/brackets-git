@@ -670,10 +670,11 @@ define(function (require, exports) {
     }
 
     function refresh() {
-        // set the history panel to false when refresh
+        // set the history panel to false and remove the class that show the button history active when refresh
         showingHistory = false;
+        $(".git-history").removeClass("btn-active");
 
-        // re attach the table handlers
+        // re-attach the table handlers
         attachDefaultTableHandlers();
 
         if (gitPanelMode === "not-repo") {
@@ -691,7 +692,7 @@ define(function (require, exports) {
             }
 
             $tableContainer.empty();
-            gitPanel.$panel.find(".check-all").prop("checked", false);
+            gitPanel.$panel.find(".check-all").prop("checked", false).prop("disabled", false);
             toggleCommitButton(false);
 
             // remove files that we should not show
@@ -794,43 +795,56 @@ define(function (require, exports) {
         refresh();
     }
 
-    // Added a panel to see the history of commits
+    // History table renderer to show the history commits
     function handleToggleHistory() {
         showingHistory = !showingHistory;
 
         if (showingHistory) {
+            $(".git-history").addClass("btn-active");
+            // Disabling commit button when history table is showed
+            $(".git-commit").prop("disabled", showingHistory);
+
+            // Disabling and uncheck check-all checkbox when history table is showed
+            $(".check-all").prop("checked", !showingHistory).prop("disabled", showingHistory);
+
+            // Clear the table container to show the history data
             $tableContainer.empty();
+
+            // Get the actual branch
             return Main.gitControl.getBranchName().then(function (branchName) {
+                // Get the history commit of the actual branch
                 return Main.gitControl.gitHistory(branchName).then(function (commits) {
                     $tableContainer.append(Mustache.render(gitPanelHistoryTemplate, {
                         files: commits,
                         Strings: Strings
                     }));
 
+                    // Removing the table defaults handlers and add a new one to handle the click in the commits history
                     $tableContainer.off().on("click", "tr", function (e) {
-                        var $this = $(e.currentTarget);
                         // if click in a row a dialog will be open to show the modified file list of the commit
-                        handleCommitDiff($this.data("hash"));
+                        handleCommitDiff($(this).data("hash"));
                     });
                 });
             }).fail(function (err) {
-                ErrorHandler.logError(err);
+                ErrorHandler.showError(err, "Git History Commit failed");
             });
         } else {
+            // When u click again in the history button the refresh method will be render the default table to show git status
             refresh();
         }
     }
 
+    // handle click in a commit from the history table to show a dialog with the modified files
     function handleCommitDiff(hash) {
         Main.gitControl.gitCommitDiff(hash).then(function (files) {
-            _showCommitDiffDialog(files);
+            _showCommitDiffDialog(hash, files);
         }).fail(function (err) {
             ErrorHandler.showError(err, "Git Commit Diff failed");
         });
     }
 
-    function _showCommitDiffDialog(files) {
-        var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { files: files, Strings: Strings }),
+    function _showCommitDiffDialog(hashCommit, files) {
+        var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { hashCommit: hashCommit, files: files, Strings: Strings }),
             dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
             $dialog          = dialog.getElement();
 
