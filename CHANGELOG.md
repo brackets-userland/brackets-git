@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.9.4
+* Feature to browse commit history by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
 * Bash/Terminal button and Report Bug button can be hidden from panel in the settings.
 
 ## 0.9.3
