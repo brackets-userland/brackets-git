@@ -355,6 +355,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " init");
         },
 
+        gitClone: function(remoteGitUrl, destinationFolder) {
+          return this.executeCommand(this._git + " clone " + remoteGitUrl + " " + destinationFolder);
+        },
+
         gitHistory: function (branch) {
             return this.executeCommand(this._git + " log " + branch + " --format=\"%h_._%an_._%ai_._%s\"").then(function (stdout) {
                 return stdout.length === 0 ? [] : stdout.split("\n").map(function (line) {

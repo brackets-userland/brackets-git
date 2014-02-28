@@ -744,6 +744,9 @@ define(function (require, exports) {
             $pushBtn.children("span").remove();
         });
 
+        //- Clone button
+        $(".git-clone").prop("disabled", false);
+
         return q.all([p1, p2]);
     }
 
@@ -872,6 +875,28 @@ define(function (require, exports) {
         });
     }
 
+    function handleGitClone() {
+        Main.isProjectRootEmpty()
+        .then(function (isEmpty) {
+            if (isEmpty) {
+                askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
+                    $(".git-clone").prop("disabled", true);
+                    Main.gitControl.gitClone(remoteGitUrl, ".");
+                });
+            }
+            else {
+                var err = new ExpectedError("Project root is not empty, be sure you have deleted hidden files");
+                ErrorHandler.showError(err, "Cloning remote repository failed!");
+            }
+        })
+        .then(function() {
+            refresh();
+        })
+        .fail(function (err) {
+            ErrorHandler.showError(err);
+        });
+    }
+
     function commitCurrentFile() {
         return q.when(CommandManager.execute("file.save")).then(function () {
             return handleGitReset();
@@ -973,6 +998,7 @@ define(function (require, exports) {
             .on("click", ".git-pull", handleGitPull)
             .on("click", ".git-bug", ErrorHandler.reportBug)
             .on("click", ".git-init", handleGitInit)
+            .on("click", ".git-clone", handleGitClone)
             .on("contextmenu", "tr", function (e) {
                 $(this).click();
                 setTimeout(function () {
