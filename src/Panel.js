@@ -882,9 +882,12 @@ define(function (require, exports) {
         Main.isProjectRootEmpty()
         .then(function (isEmpty) {
             if (isEmpty) {
-                askQuestion(Strings.CLONE_REPOSITORY, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
+                return askQuestion(Strings.CLONE_REPOSITORY, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
                     gitPanel.$panel.find(".git-clone").prop("disabled", true);
-                    Main.gitControl.gitClone(remoteGitUrl, ".");
+                    return Main.gitControl.gitClone(remoteGitUrl, ".")
+                    .then(function () {
+                        refresh();
+                    });
                 });
             }
             else {
@@ -892,9 +895,7 @@ define(function (require, exports) {
                 ErrorHandler.showError(err, "Cloning remote repository failed!");
             }
         })
-        .then(function () {
-            refresh();
-        })
+
         .fail(function (err) {
             ErrorHandler.showError(err);
         });
