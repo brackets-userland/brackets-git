@@ -672,7 +672,7 @@ define(function (require, exports) {
     function refresh() {
         // set the history panel to false and remove the class that show the button history active when refresh
         showingHistory = false;
-        gitPanel.$panel.find(".git-history").removeClass("btn-active");
+        gitPanel.$panel.find(".git-history").removeClass("btn-active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
 
         // re-attach the table handlers
         attachDefaultTableHandlers();
@@ -747,6 +747,7 @@ define(function (require, exports) {
         //- Clone button
         $(".git-clone").prop("disabled", false);
 
+
         return q.all([p1, p2]);
     }
 
@@ -805,7 +806,7 @@ define(function (require, exports) {
 
         if (showingHistory) {
             var $panel = gitPanel.$panel;
-            $panel.find(".git-history").addClass("btn-active");
+            $panel.find(".git-history").addClass("btn-active").attr("title", Strings.TOOLTIP_HIDE_HISTORY);
 
             // Disabling commit button when history table is showed
             $panel.find(".git-commit").prop("disabled", showingHistory);
