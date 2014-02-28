@@ -577,8 +577,8 @@ define(function (require, exports) {
 
     function handleGitPush() {
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true),
-            remote = $(".git-remotes-field").attr("data-url");
-        Main.gitControl.gitPush().fail(function (err) {
+            remote = gitPanel.$panel.find(".git-remotes-field").attr("data-url");
+        Main.gitControl.gitPush(remote).fail(function (err) {
             if (typeof err !== "string") { throw err; }
             var m = err.match(/git remote add <name> <url>/);
             if (!m) { throw err; }
@@ -600,7 +600,7 @@ define(function (require, exports) {
                     var url = dialog.getElement().find("input").val().trim();
                     Main.gitControl.remoteAdd("origin", url)
                         .then(function () {
-                            return Main.gitControl.gitPush(remote);
+                            return Main.gitControl.gitPush("origin");
                         })
                         .then(defer.resolve)
                         .fail(defer.reject);
@@ -637,8 +637,8 @@ define(function (require, exports) {
 
     function handleGitPull() {
         var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true),
-            remote = $(".git-remotes-field").attr("data-url");
-        Main.gitControl.gitPullUpstream(remote).then(function (result) {
+            remote = gitPanel.$panel.find(".git-remotes-field").attr("data-url");
+        Main.gitControl.gitPull(remote).then(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GIT_PULL_RESPONSE, // title
@@ -747,7 +747,7 @@ define(function (require, exports) {
         });
 
         //- Clone button
-        $(".git-clone").prop("disabled", false);
+        gitPanel.$panel.find(".git-clone").prop("disabled", false);
 
 
         return q.all([p1, p2]);
@@ -883,7 +883,7 @@ define(function (require, exports) {
         .then(function (isEmpty) {
             if (isEmpty) {
                 askQuestion(Strings.CLONE_REPOSITORY, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
-                    $(".git-clone").prop("disabled", true);
+                    gitPanel.$panel.find(".git-clone").prop("disabled", true);
                     Main.gitControl.gitClone(remoteGitUrl, ".");
                 });
             }
@@ -898,10 +898,6 @@ define(function (require, exports) {
         .fail(function (err) {
             ErrorHandler.showError(err);
         });
-    }
-
-    function handleGitRemotes(selected) {
-        $(".git-remotes-field").text(selected.text()).attr("data-url", selected.attr("data-url"));
     }
 
     function commitCurrentFile() {
@@ -935,7 +931,7 @@ define(function (require, exports) {
         if (typeof enableButton !== "boolean") {
             enableButton = gitPanel.$panel.find(".check-one:checked").length > 0;
         }
-        $(".git-commit").prop("disabled", !enableButton);
+        gitPanel.$panel.find(".git-commit").prop("disabled", !enableButton);
     }
 
     function attachDefaultTableHandlers() {
@@ -983,12 +979,13 @@ define(function (require, exports) {
         Main.gitControl.getRemotes()
         .then(function (remotes) {
             for (var index = 0; index < remotes.length; ++index) {
-                $(".git-remotes-dropdown").append("<li><a href=\"#\" data-url=\"" + remotes[index][1] + "\">" + remotes[index][0] + "</a></li>");
+                gitPanel.$panel.find(".git-remotes-dropdown")
+                .append("<li><a href=\"#\" data-url=\"" + remotes[index][1] + "\">" + remotes[index][0] + "</a></li>");
             }
-            $(".git-remotes-field").text(remotes[0][0]).attr("data-url", remotes[0][1]);
+            gitPanel.$panel.find(".git-remotes-field").text(remotes[0][0]).attr("data-url", remotes[0][1]);
         })
         .fail(function () {
-            $(".git-remotes-field").text("error");
+            gitPanel.$panel.find(".git-remotes-field").text("error");
         });
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
         var $panelHtml = $(panelHtml);
@@ -1017,7 +1014,8 @@ define(function (require, exports) {
             .on("click", ".git-init", handleGitInit)
             .on("click", ".git-clone", handleGitClone)
             .on("click", ".git-remotes-dropdown a", function () {
-                handleGitRemotes($(this));
+                var selected = $(this);
+                gitPanel.$panel.find(".git-remotes-field").text(selected.text()).attr("data-url", selected.attr("data-url"));
             })
             .on("contextmenu", "tr", function (e) {
                 $(this).click();
