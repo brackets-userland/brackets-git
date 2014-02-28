@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.4
+* Bash/Terminal button and Report Bug button can be hidden from panel in the settings.
+
 ## 0.9.3
 * Disable commit button when there are no files to commit selected by [Fez Vrasta](https://github.com/FezVrasta)
 * Fixed an issue when doubleclicking on a checkbox triggered opening a file.

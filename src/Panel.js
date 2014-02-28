@@ -949,6 +949,9 @@ define(function (require, exports) {
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
         var $panelHtml = $(panelHtml);
         $panelHtml.find(".git-available").hide();
+        $panelHtml.find(".git-bash").toggle(Preferences.get("showBashButton"));
+        $panelHtml.find(".git-bug").toggle(Preferences.get("showReportBugButton"));
+
         gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
 
         gitPanel.$panel
@@ -963,7 +966,6 @@ define(function (require, exports) {
             .on("click", ".git-commit", handleGitCommit)
             .on("click", ".git-close-notmodified", handleCloseNotModified)
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
-            .on("click", ".git-history", handleToggleHistory)
             .on("click", ".git-push", handleGitPush)
             .on("click", ".git-pull", handleGitPull)
             .on("click", ".git-bug", ErrorHandler.reportBug)

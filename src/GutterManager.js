@@ -96,7 +96,9 @@ define(function (require, exports) {
                 visible: false,
                 element: $("<div class='" + gutterName + "-deleted-lines'></div>")
             };
-            $("<pre/>").text(mark.content).appendTo(mark.lineWidget.element);
+            $("<pre/>")
+                .text(mark.content || " ")
+                .appendTo(mark.lineWidget.element);
         }
 
         if (mark.lineWidget.visible !== true) {
