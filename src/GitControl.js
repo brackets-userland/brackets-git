@@ -204,6 +204,14 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " checkout -b " + branchName);
         },
 
+        getRemotes: function () {
+            return this.executeCommand(this._git + " remote -v").then(function (stdout) {
+                return $.unique(stdout.replace(/\((push|fetch)\)/g, "").split("\n")).map(function (l) {
+                    return l.trim().split("\t");
+                });
+            });
+        },
+
         getGitStatus: function () {
             function unquote(str) {
                 if (str[0] === "\"" && str[str.length - 1] === "\"") {

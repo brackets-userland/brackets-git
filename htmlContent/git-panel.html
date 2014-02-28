@@ -21,7 +21,14 @@
 
         <!-- on right -->
         <div class="git-right-icons">
-            <div class="btn-group git-available">
+            <div class="btn-group git-available dropup">
+                <!--// TODO: Add select box to choose remote and create new ones -->
+                <button type="button" class="git-remote btn small dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                    <span class="git-remotes-field">...</span>
+                </button>
+                <ul class="dropdown-menu git-remotes-dropdown">
+                </ul>
                 <button title="{{TOOLTIP_PULL}}" class="btn small git-pull"><i class="octicon octicon-repo-pull"></i></button>
                 <button title="{{TOOLTIP_PUSH}}" class="btn small git-push"><i class="octicon octicon-repo-push"></i></button>
             </div>
