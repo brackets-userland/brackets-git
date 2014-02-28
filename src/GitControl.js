@@ -367,8 +367,8 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " init");
         },
 
-        gitClone: function(remoteGitUrl, destinationFolder) {
-          return this.executeCommand(this._git + " clone " + remoteGitUrl + " " + destinationFolder);
+        gitClone: function (remoteGitUrl, destinationFolder) {
+            return this.executeCommand(this._git + " clone " + remoteGitUrl + " " + destinationFolder);
         },
 
         gitHistory: function (branch) {

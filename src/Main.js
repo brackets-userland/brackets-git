@@ -57,14 +57,14 @@ define(function (require, exports) {
 
     // This checks if the project root is empty (to let Git clone repositories)
     function isProjectRootEmpty() {
-      var defer = q.defer();
-      ProjectManager.getProjectRoot().getContents(function (err, entries) {
-        if (err) {
-          defer.reject(err);
-        }
-        defer.resolve(entries.length === 0);
-      });
-      return defer.promise;
+        var defer = q.defer();
+        ProjectManager.getProjectRoot().getContents(function (err, entries) {
+            if (err) {
+                defer.reject(err);
+            }
+            defer.resolve(entries.length === 0);
+        });
+        return defer.promise;
     }
 
     // This only launches when Git is available
