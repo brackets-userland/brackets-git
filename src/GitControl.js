@@ -29,19 +29,29 @@ define(function (require, exports, module) {
         return rv.sort();
     }
 
-    function escapeShellArg(arg) {
+    function escapeShellArg(str) {
         // From: http://phpjs.org/functions
         // +   original by: Felix Geisendoerfer (http://www.debuggable.com/felix)
         // +   improved by: Brett Zamir (http://brett-zamir.me)
         // *     example 1: escapeshellarg("kevin's birthday");
         // *     returns 1: "'kevin\'s birthday'"
+        if (typeof str !== "string") {
+            throw new Error("escapeShellArg argument is not a string: " + typeof str);
+        }
+        if (str.length === 0) {
+            return str;
+        }
         if (brackets.platform !== "win") {
-            var ret = arg.replace(/[^\\]'/g, function (m) {
+            str = str.replace(/[^\\]'/g, function (m) {
                 return m.slice(0, 1) + "\\\'";
             });
-            return "'" + ret + "'";
+            return "'" + str + "'";
         } else {
-            return "\"" + arg + "\"";
+            // http://stackoverflow.com/questions/7760545/cmd-escape-double-quotes-in-parameter
+            str = str.replace(/"/g, function () {
+                return "\"\"\"";
+            });
+            return "\"" + str + "\"";
         }
     }
 
@@ -340,8 +350,7 @@ define(function (require, exports, module) {
 
         gitPush: function (remote) {
             remote = remote || "";
-			remote = escapeShellArg(remote);
-            return this.executeCommand(this._git + " push " + remote + " --porcelain");
+            return this.executeCommand(this._git + " push " + escapeShellArg(remote) + " --porcelain");
         },
 
         gitPushUpstream: function (upstream, branch) {
@@ -377,8 +386,7 @@ define(function (require, exports, module) {
         },
 
         remoteAdd: function (remote, url) {
-		    remote = escapeShellArg(remote);
-            return this.executeCommand(this._git + " remote add " + remote + " " + url);
+            return this.executeCommand(this._git + " remote add " + escapeShellArg(remote) + " " + escapeShellArg(url));
         }
 
     };
