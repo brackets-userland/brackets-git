@@ -356,7 +356,8 @@ define(function (require, exports, module) {
         },
 
         gitHistory: function (branch) {
-            return this.executeCommand(this._git + " log " + branch + " --format=\"%h_._%s_._%an_._%ae_._%ai\"").then(function (stdout) {
+            return this.executeCommand(this._git + " log " + branch + " --format=\"%h_._%an_._%ai_._%s\"").then(function (stdout) {
+                console.log(stdout);
                 if (stdout.length === 0) {
                     return [];
                 }
@@ -365,14 +366,14 @@ define(function (require, exports, module) {
                     lines = stdout.split("\n");
 
                 lines.forEach(function (line) {
+                    console.log(line);
                     var data = line.split("_._");
 
                     results.push({
                         hash: data[0].trim(),
-                        message: data[1].trim(),
-                        author: data[2].trim(),
-                        email: data[3].trim(),
-                        date: data[4].trim()
+                        author: data[1].trim(),
+                        date: data[2].trim(),
+                        message: data[3].trim()
                     });
                 });
 
