@@ -340,6 +340,7 @@ define(function (require, exports, module) {
 
         gitPush: function (remote) {
             remote = remote || "";
+			remote = escapeShellArg(remote);
             return this.executeCommand(this._git + " push " + remote + " --porcelain");
         },
 
@@ -376,6 +377,7 @@ define(function (require, exports, module) {
         },
 
         remoteAdd: function (remote, url) {
+		    remote = escapeShellArg(remote);
             return this.executeCommand(this._git + " remote add " + remote + " " + url);
         }
 
