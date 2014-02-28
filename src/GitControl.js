@@ -359,6 +359,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " pull --ff-only");
         },
 
+        gitPullUpstream: function (remote) {
+            return this.executeCommand(this._git + " pull --ff-only " + remote);
+        },
+
         gitInit: function () {
             return this.executeCommand(this._git + " init");
         },

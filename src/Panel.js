@@ -636,8 +636,9 @@ define(function (require, exports) {
     }
 
     function handleGitPull() {
-        var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true);
-        Main.gitControl.gitPull().then(function (result) {
+        var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true),
+            remote = $(".git-remotes-field").attr("data-url");
+        Main.gitControl.gitPullUpstream(remote).then(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GIT_PULL_RESPONSE, // title
