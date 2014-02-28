@@ -966,6 +966,7 @@ define(function (require, exports) {
             .on("click", ".git-commit", handleGitCommit)
             .on("click", ".git-close-notmodified", handleCloseNotModified)
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
+            .on("click", ".git-history", handleToggleHistory)
             .on("click", ".git-push", handleGitPush)
             .on("click", ".git-pull", handleGitPull)
             .on("click", ".git-bug", ErrorHandler.reportBug)
