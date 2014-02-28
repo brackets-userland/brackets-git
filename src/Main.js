@@ -57,9 +57,14 @@ define(function (require, exports) {
 
     // This checks if the project root is empty (to let Git clone repositories)
     function isProjectRootEmpty() {
-        var empty = null;
-        ProjectManager.getProjectRoot().getContents(function (errs, entries) { empty = entries.length; } );
-        return empty ? false : true;
+        var defer = q.defer();
+        ProjectManager.getProjectRoot().getContents(function (err, entries) {
+            if (err) {
+                defer.reject(err);
+            }
+            defer.resolve(entries.length === 0);
+        });
+        return defer.promise;
     }
 
     // This only launches when Git is available
@@ -292,6 +297,7 @@ define(function (require, exports) {
     // API
     exports.$icon = $icon;
     exports.getProjectRoot = getProjectRoot;
+    exports.isProjectRootEmpty = isProjectRootEmpty;
     exports.isProjectRootWritable = isProjectRootWritable;
     exports.refreshProjectFiles = refreshProjectFiles;
     exports.init = init;
