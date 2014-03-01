@@ -379,10 +379,14 @@ define(function (require, exports, module) {
             });
         },
 
-        gitCommitDiff: function (hash) {
-            return this.executeCommand(this._git + " diff-tree --no-commit-id --name-only -r " + hash).then(function (stdout) {
+        gitCommitFiles: function (hash) {
+            return this.executeCommand(this._git + " diff --name-only " + hash + "^ " + hash ).then(function (stdout) {
                 return stdout.length === 0 ? [] : stdout.split("\n");
             });
+        },
+
+        gitCommitDiffFile: function (hash, file) {
+            return this.executeCommand(this._git + " diff --no-color " + hash + "^ " + hash + " " + file);
         },
 
         remoteAdd: function (remote, url) {
