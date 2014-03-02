@@ -852,6 +852,10 @@ define(function (require, exports) {
             $dialog          = dialog.getElement();
         _makeDialogBig($dialog);
 
+        Main.gitControl.getDiffOfFileFromCommit(hashCommit, files[0]).then(function (diff) {
+            $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
+        });
+
         $dialog.find(".commit-files ul li").on("click", function () {
             Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).html()).then(function (diff) {
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));

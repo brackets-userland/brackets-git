@@ -1,10 +1,10 @@
-<div id="git-diff-dialog" class="modal" style="width: 752px!important;">
+<div id="git-commit-diff-dialog" class="modal">
     <div class="modal-header">
         <h1 class="dialog-title">{{Strings.COMMIT_DIFF}}</h1>
         <span style="position: absolute; right: 10px; top: 17px;">{{Strings.COMMIT_HASH}} {{hashCommit}}</span>
     </div>
-    <div class="modal-body table-striped tab-content" style="display: block!important; height: 304px;">
-        <div class="commit-files" style="float: left; width: 220px; margin-right: 10px;">
+    <div class="modal-body table-striped tab-content">
+        <div class="commit-files">
             <span><b>{{Strings.LIST_MODIFIED_FILES}}</b></span>
             <div style="height: 10px;"></div>
             <ul>
@@ -13,7 +13,7 @@
             {{/files}}
             </ul>
         </div>
-        <div class="commit-diff" style="float: left; width: 470px; height: 275px;">
+        <div class="commit-diff">
         </div>
         <div style="clear: both;"></div>
     </div>
