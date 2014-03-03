@@ -16,13 +16,23 @@
             <button title="{{TOOLTIP_HIDE_UNTRACKED}}" class="btn small git-toggle-untracked"><i class="octicon octicon-eye-unwatch"></i></button>
         </div>
         <div class="btn-group git-available">
-            <button title="{{TOOLTIP_HISTORY}}" class="btn small git-history"><i class="octicon octicon-history"></i></button>
+            <button title="{{TOOLTIP_SHOW_HISTORY}}" class="btn small git-history"><i class="octicon octicon-history"></i></button>
         </div>
-        <button title="{{TOOLTIP_INIT}}" class="btn small git-init git-not-available"><i class="octicon octicon-gist-new"></i><span>{{BUTTON_INIT}}</span></button>
+        <div class="btn-group git-not-available">
+          <button title="{{TOOLTIP_INIT}}" class="btn small git-init"><i class="octicon octicon-repo-create"></i><span>{{BUTTON_INIT}}</span></button>
+          <button title="{{TOOLTIP_CLONE}}" class="btn small git-clone"><i class="octicon octicon-repo-clone"></i><span>{{BUTTON_CLONE}}</span></button>
+        </div>
 
         <!-- on right -->
         <div class="git-right-icons">
-            <div class="btn-group git-available">
+            <div class="btn-group git-available dropup">
+                <!--// TODO: Add select box to choose remote and create new ones -->
+                <button type="button" class="git-remotes btn small dropdown-toggle" data-toggle="dropdown" title="{{TOOLTIP_PICK_REMOTE}}">
+                    <span class="caret"></span>
+                    <span class="git-remotes-field">...</span>
+                </button>
+                <ul class="dropdown-menu git-remotes-dropdown">
+                </ul>
                 <button title="{{TOOLTIP_PULL}}" class="btn small git-pull"><i class="octicon octicon-repo-pull"></i></button>
                 <button title="{{TOOLTIP_PUSH}}" class="btn small git-push"><i class="octicon octicon-repo-push"></i></button>
             </div>

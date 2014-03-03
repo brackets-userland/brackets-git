@@ -111,6 +111,9 @@
 
 /* Extension panel */
 #git-panel {
+    .toolbar {
+        overflow: visible;
+    }
     tr.selected {
         font-weight: 400;
     }
@@ -150,6 +153,21 @@
     }
     .git-bash, .git-bug {
         margin-left: 15px;
+    }
+    .dropdown-toggle {
+        border-radius: 4px 0 0 4px;
+        border-right: 0;
+        padding-top: 5px;
+        &:focus {
+            border: 1px solid #9c9e9e;
+            border-right: 0;
+            box-shadow: none;
+        }
+    }
+    .git-remotes {
+        .git-remotes-field {
+            padding-left: 5px;
+        }
     }
 }
 

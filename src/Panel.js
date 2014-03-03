@@ -117,6 +117,23 @@ define(function (require, exports) {
         });
     }
 
+    function prepareRemotesPicker() {
+        Main.gitControl.getRemotes()
+        .then(function (remotes) {
+            for (var index = 0; index < remotes.length; ++index) {
+                gitPanel.$panel.find(".git-remotes-dropdown").empty()
+                .append("<li><a href=\"#\" data-url=\"" + remotes[index][1] + "\">" + remotes[index][0] + "</a></li>");
+            }
+            gitPanel.$panel.find(".git-remotes-field").text(remotes[0][0]).attr("data-url", remotes[0][1]);
+        })
+        .fail(function (err) {
+            ErrorHandler.logError(err);
+            gitPanel.$panel.find(".git-remotes-dropdown").empty();
+            gitPanel.$panel.find("git-remotes").attr("title", err);
+            gitPanel.$panel.find(".git-remotes-field").text("error");
+        });
+    }
+
     function _showCommitDialog(stagedDiff, lintResults) {
         // Flatten the error structure from various providers
         lintResults.forEach(function (lintResult) {
@@ -579,8 +596,9 @@ define(function (require, exports) {
     }
 
     function handleGitPush() {
-        var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true);
-        Main.gitControl.gitPush().fail(function (err) {
+        var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true),
+            remote = gitPanel.$panel.find(".git-remotes-field").attr("data-url");
+        Main.gitControl.gitPush(remote).fail(function (err) {
             if (typeof err !== "string") { throw err; }
             var m = err.match(/git remote add <name> <url>/);
             if (!m) { throw err; }
@@ -638,8 +656,9 @@ define(function (require, exports) {
     }
 
     function handleGitPull() {
-        var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true);
-        Main.gitControl.gitPull().then(function (result) {
+        var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true),
+            remote = gitPanel.$panel.find(".git-remotes-field").attr("data-url");
+        Main.gitControl.gitPull(remote).then(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GIT_PULL_RESPONSE, // title
@@ -677,7 +696,7 @@ define(function (require, exports) {
     function refresh() {
         // set the history panel to false and remove the class that show the button history active when refresh
         showingHistory = false;
-        gitPanel.$panel.find(".git-history").removeClass("btn-active");
+        gitPanel.$panel.find(".git-history").removeClass("btn-active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
 
         // re-attach the table handlers
         attachDefaultTableHandlers();
@@ -749,6 +768,13 @@ define(function (require, exports) {
             $pushBtn.children("span").remove();
         });
 
+        //- Clone button
+        gitPanel.$panel.find(".git-clone").prop("disabled", false);
+
+        //- Remotes picker
+
+        prepareRemotesPicker();
+
         return q.all([p1, p2]);
     }
 
@@ -807,7 +833,7 @@ define(function (require, exports) {
 
         if (showingHistory) {
             var $panel = gitPanel.$panel;
-            $panel.find(".git-history").addClass("btn-active");
+            $panel.find(".git-history").addClass("btn-active").attr("title", Strings.TOOLTIP_HIDE_HISTORY);
 
             // Disabling commit button when history table is showed
             $panel.find(".git-commit").prop("disabled", showingHistory);
@@ -887,6 +913,29 @@ define(function (require, exports) {
         });
     }
 
+    function handleGitClone() {
+        Main.isProjectRootEmpty()
+        .then(function (isEmpty) {
+            if (isEmpty) {
+                return askQuestion(Strings.CLONE_REPOSITORY, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
+                    gitPanel.$panel.find(".git-clone").prop("disabled", true);
+                    return Main.gitControl.gitClone(remoteGitUrl, ".")
+                    .then(function () {
+                        refresh();
+                    });
+                });
+            }
+            else {
+                var err = new ExpectedError("Project root is not empty, be sure you have deleted hidden files");
+                ErrorHandler.showError(err, "Cloning remote repository failed!");
+            }
+        })
+
+        .fail(function (err) {
+            ErrorHandler.showError(err);
+        });
+    }
+
     function commitCurrentFile() {
         return q.when(CommandManager.execute("file.save")).then(function () {
             return handleGitReset();
@@ -918,7 +967,7 @@ define(function (require, exports) {
         if (typeof enableButton !== "boolean") {
             enableButton = gitPanel.$panel.find(".check-one:checked").length > 0;
         }
-        $(".git-commit").prop("disabled", !enableButton);
+        gitPanel.$panel.find(".git-commit").prop("disabled", !enableButton);
     }
 
     function attachDefaultTableHandlers() {
@@ -963,6 +1012,7 @@ define(function (require, exports) {
 
     function init() {
         // Add panel
+        prepareRemotesPicker();
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
         var $panelHtml = $(panelHtml);
         $panelHtml.find(".git-available").hide();
@@ -990,6 +1040,11 @@ define(function (require, exports) {
             .on("click", ".git-pull", handleGitPull)
             .on("click", ".git-bug", ErrorHandler.reportBug)
             .on("click", ".git-init", handleGitInit)
+            .on("click", ".git-clone", handleGitClone)
+            .on("click", ".git-remotes-dropdown a", function () {
+                var selected = $(this);
+                gitPanel.$panel.find(".git-remotes-field").text(selected.text()).attr("data-url", selected.attr("data-url"));
+            })
             .on("contextmenu", "tr", function (e) {
                 $(this).click();
                 setTimeout(function () {

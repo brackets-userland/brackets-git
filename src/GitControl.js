@@ -214,6 +214,14 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " checkout -b " + branchName);
         },
 
+        getRemotes: function () {
+            return this.executeCommand(this._git + " remote -v").then(function (stdout) {
+                return $.unique(stdout.replace(/\((push|fetch)\)/g, "").split("\n")).map(function (l) {
+                    return l.trim().split("\t");
+                });
+            });
+        },
+
         getGitStatus: function () {
             function unquote(str) {
                 if (str[0] === "\"" && str[str.length - 1] === "\"") {
@@ -357,12 +365,17 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " push --porcelain --set-upstream " + upstream + " " + branch);
         },
 
-        gitPull: function () {
-            return this.executeCommand(this._git + " pull --ff-only");
+        gitPull: function (remote) {
+            remote = remote || "";
+            return this.executeCommand(this._git + " pull --ff-only " + escapeShellArg(remote));
         },
 
         gitInit: function () {
             return this.executeCommand(this._git + " init");
+        },
+
+        gitClone: function (remoteGitUrl, destinationFolder) {
+            return this.executeCommand(this._git + " clone " + escapeShellArg(remoteGitUrl) + " " + escapeShellArg(destinationFolder));
         },
 
         gitHistory: function (branch) {
