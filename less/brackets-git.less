@@ -251,6 +251,24 @@
     }
 }
 
+#git-commit-diff-dialog {
+    min-width: 800px;
+    .modal-body {
+        .flex-box();
+        .commit-files {
+            .flex-item(0, 0);
+            margin-right: 10px;
+            width: 200px;
+            word-wrap: break-word;
+        }
+        .commit-diff {
+            // shrink up to min-width
+            .flex-item(1, 1);
+            height: 290px;
+        }
+    }
+}
+
 // nice, formatted and colored diff
 .commit-diff {
     .user-select(text);
