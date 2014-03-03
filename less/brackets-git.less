@@ -1,4 +1,5 @@
 @gutterWidth: 6px;
+@defaultText: #333333;
 @lightGrey:   #BBBBBB;
 @darkGrey:    #9c9e9e;
 @moreDarkGrey:#868888;
@@ -283,6 +284,12 @@
             // shrink up to min-width
             .flex-item(1, 1);
             height: 290px;
+        }
+        ul.nav-stacked {
+            a {
+                color: @defaultText;
+                cursor: pointer;
+            }
         }
     }
 }

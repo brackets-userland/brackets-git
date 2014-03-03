@@ -56,7 +56,7 @@ define({
     GOTO_PREVIOUS_GIT_CHANGE:           "Go to previous Git change",
     GOTO_NEXT_GIT_CHANGE:               "Go to next Git change",
     LOADING:                            "Loading\u2026",
-    LIST_MODIFIED_FILES:                "Modified files list",
+    LIST_MODIFIED_FILES:                "Modified files",
     MARK_MODIFIED_FILES_IN_TREE:        "Mark modified files in file tree",
     NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
     PANEL_COMMAND:                      "Git",

@@ -887,7 +887,7 @@ define(function (require, exports) {
             $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
         });
 
-        $dialog.find(".commit-files ul li").on("click", function () {
+        $dialog.find(".commit-files a").on("click", function () {
             Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).html()).then(function (diff) {
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
             });

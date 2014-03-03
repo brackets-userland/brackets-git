@@ -5,11 +5,13 @@
     </div>
     <div class="modal-body table-striped tab-content">
         <div class="commit-files">
-            <span><b>{{Strings.LIST_MODIFIED_FILES}}</b></span>
+            <span><b>{{Strings.LIST_MODIFIED_FILES}}:</b></span>
             <div style="height: 10px;"></div>
-            <ul>
+            <ul class="nav nav-tabs nav-stacked">
             {{#files}}
-                <li style="cursor: pointer;">{{.}}</li>
+                <li>
+                    <a>{{.}}</a>
+                </li>
             {{/files}}
             </ul>
         </div>
