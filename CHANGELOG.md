@@ -1,7 +1,9 @@
 # Changelog
 
-## 0.9.4
+## 0.10.0
 * Feature to browse commit history by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
+* Feature to clone a repositry when in an empty folder by [Fez Vrasta](https://github.com/FezVrasta)
+* Feature to use pull & push with multiple remotes by [Fez Vrasta](https://github.com/FezVrasta)
 * You can now navigate between modifications inside a file.
 * Bash/Terminal button and Report Bug button can be hidden from panel in the settings.
 * Shortcut for Push is now configurable in the settings by [Matt Hayward](https://github.com/matthaywardwebdesign)
