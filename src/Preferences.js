@@ -21,6 +21,7 @@ define(function (require, exports, module) {
         "panelShortcut": {                  "type": "string",            "value": "Ctrl-Alt-G"  },
         "commitCurrentShortcut": {          "type": "string",            "value": null          },
         "commitAllShortcut": {              "type": "string",            "value": null          },
+        "pushShortcut": {                   "type": "string",            "value": null          },
         // system
         "lastVersion": {                    "type": "string",            "value": null          },
         "panelEnabled": {                   "type": "boolean",           "value": true          },

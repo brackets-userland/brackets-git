@@ -31,7 +31,8 @@ define(function (require, exports) {
         Utils              = require("./Utils"),
         PANEL_COMMAND_ID   = "brackets-git.panel",
         COMMIT_CURRENT_CMD = "brackets-git.commitCurrent",
-        COMMIT_ALL_CMD     = "brackets-git.commitAll";
+        COMMIT_ALL_CMD     = "brackets-git.commitAll",
+        PUSH_CMD           = "brackets-git.push";
 
     var gitPanelTemplate            = require("text!htmlContent/git-panel.html"),
         gitPanelResultsTemplate     = require("text!htmlContent/git-panel-results.html"),
@@ -1029,6 +1030,8 @@ define(function (require, exports) {
         menu.addMenuItem(COMMIT_CURRENT_CMD, Preferences.get("commitCurrentShortcut"));
         CommandManager.register(Strings.COMMIT_ALL_SHORTCUT, COMMIT_ALL_CMD, commitAllFiles);
         menu.addMenuItem(COMMIT_ALL_CMD, Preferences.get("commitAllShortcut"));
+        CommandManager.register(Strings.PUSH_SHORTCUT, PUSH_CMD, handleGitPush);
+        menu.addMenuItem(PUSH_CMD, Preferences.get("pushShortcut"));
     }
 
     function enable() {
