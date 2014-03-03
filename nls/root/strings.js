@@ -50,6 +50,8 @@ define({
     GIT_PULL_RESPONSE:                  "Git Pull response",
     GIT_PUSH_RESPONSE:                  "Git Push response",
     GIT_SETTINGS:                       "Git Settings\u2026",
+    GOTO_PREVIOUS_GIT_CHANGE:           "Go to previous Git change",
+    GOTO_NEXT_GIT_CHANGE:               "Go to next Git change",
     LOADING:                            "Loading\u2026",
     LIST_MODIFIED_FILES:                "Modified files list",
     MARK_MODIFIED_FILES_IN_TREE:        "Mark modified files in file tree",

@@ -66,7 +66,7 @@ define(function (require, exports) {
 
     function showGutters(_cm, _results) {
         prepareGutter(_cm);
-        results = _results;
+        results = _.sortBy(_results, "line");
 
         // get line numbers of currently opened widgets
         var openBefore = clearWidgets();
@@ -88,7 +88,7 @@ define(function (require, exports) {
         }
 
         var mark = _.find(results, function (o) { return o.line === lineIndex; });
-        if (!mark) { return; }
+        if (!mark || mark.type === "added") { return; }
         if (mark.parentMark) { mark = mark.parentMark; }
 
         if (!mark.lineWidget) {
@@ -170,7 +170,8 @@ define(function (require, exports) {
                 lineFrom = parseInt(s2[0], 10);
                 lineCount = parseInt(s2[1], 10);
                 if (isNaN(lineCount)) { lineCount = 1; }
-                var isModified = false;
+                var isModifiedMark = false;
+                var firstAddedMark = false;
                 for (var i = lineFrom, lineTo = lineFrom + lineCount; i < lineTo; i++) {
                     var lineNo = i > 0 ? i - 1 : 0;
                     if (lineNo === lineRemovedFrom) {
@@ -178,14 +179,18 @@ define(function (require, exports) {
                         var o = removed.pop();
                         o.type = "modified";
                         modified.push(o);
-                        isModified = o;
+                        isModifiedMark = o;
                     } else {
-                        // added new
-                        added.push({
-                            type: isModified ? "modified" : "added",
+                        var mark = {
+                            type: isModifiedMark ? "modified" : "added",
                             line: lineNo,
-                            parentMark: isModified || null
-                        });
+                            parentMark: isModifiedMark || firstAddedMark || null
+                        };
+                        if (!isModifiedMark && !firstAddedMark) {
+                            firstAddedMark = mark;
+                        }
+                        // added new
+                        added.push(mark);
                     }
                 }
             });
@@ -199,7 +204,46 @@ define(function (require, exports) {
         });
     }
 
+    function goToPrev() {
+        var activeEditor = EditorManager.getActiveEditor();
+        if (!activeEditor) { return; }
+
+        var searched = _.filter(results, function (i) { return !i.parentMark; });
+
+        var currentPos = activeEditor.getCursorPos();
+        var i = searched.length;
+        while (i--) {
+            if (searched[i].line < currentPos.line) {
+                break;
+            }
+        }
+        if (i > -1) {
+            var goToMark = searched[i];
+            activeEditor.setCursorPos(goToMark.line, currentPos.ch);
+        }
+    }
+
+    function goToNext() {
+        var activeEditor = EditorManager.getActiveEditor();
+        if (!activeEditor) { return; }
+
+        var searched = _.filter(results, function (i) { return !i.parentMark; });
+
+        var currentPos = activeEditor.getCursorPos();
+        for (var i = 0, l = searched.length; i < l; i++) {
+            if (searched[i].line > currentPos.line) {
+                break;
+            }
+        }
+        if (i < searched.length) {
+            var goToMark = searched[i];
+            activeEditor.setCursorPos(goToMark.line, currentPos.ch);
+        }
+    }
+
     // API
     exports.refresh = refresh;
+    exports.goToPrev = goToPrev;
+    exports.goToNext = goToNext;
 
 });

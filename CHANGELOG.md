@@ -2,6 +2,7 @@
 
 ## 0.9.4
 * Feature to browse commit history by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
+* You can now navigate between modifications inside a file.
 * Bash/Terminal button and Report Bug button can be hidden from panel in the settings.
 * Shortcut for Push is now configurable in the settings by [Matt Hayward](https://github.com/matthaywardwebdesign)
 * Bug when pushing failed in case of a password containing a quote fixed by [Matt Hayward](https://github.com/matthaywardwebdesign)

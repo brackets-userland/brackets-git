@@ -25,6 +25,7 @@ define(function (require, exports) {
         ErrorHandler       = require("./ErrorHandler"),
         ExpectedError      = require("./ExpectedError"),
         Main               = require("./Main"),
+        GutterManager      = require("./GutterManager"),
         Branch             = require("./Branch"),
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
@@ -977,6 +978,8 @@ define(function (require, exports) {
             })
             .on("click", ".git-reset", handleGitReset)
             .on("click", ".git-commit", handleGitCommit)
+            .on("click", ".git-prev-gutter", GutterManager.goToPrev)
+            .on("click", ".git-next-gutter", GutterManager.goToNext)
             .on("click", ".git-close-notmodified", handleCloseNotModified)
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
             .on("click", ".git-history", handleToggleHistory)
