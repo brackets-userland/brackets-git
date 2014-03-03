@@ -115,6 +115,23 @@ define(function (require, exports) {
         });
     }
 
+    function prepareRemotesPicker() {
+        Main.gitControl.getRemotes()
+        .then(function (remotes) {
+            for (var index = 0; index < remotes.length; ++index) {
+                gitPanel.$panel.find(".git-remotes-dropdown").empty()
+                .append("<li><a href=\"#\" data-url=\"" + remotes[index][1] + "\">" + remotes[index][0] + "</a></li>");
+            }
+            gitPanel.$panel.find(".git-remotes-field").text(remotes[0][0]).attr("data-url", remotes[0][1]);
+        })
+        .fail(function (err) {
+            ErrorHandler.logError(err);
+            gitPanel.$panel.find(".git-remotes-dropdown").empty();
+            gitPanel.$panel.find("git-remotes").attr("title", err);
+            gitPanel.$panel.find(".git-remotes-field").text("error");
+        });
+    }
+
     function _showCommitDialog(stagedDiff, lintResults) {
         // Flatten the error structure from various providers
         lintResults.forEach(function (lintResult) {
@@ -749,6 +766,9 @@ define(function (require, exports) {
         //- Clone button
         gitPanel.$panel.find(".git-clone").prop("disabled", false);
 
+        //- Remotes picker
+
+        prepareRemotesPicker();
 
         return q.all([p1, p2]);
     }
@@ -977,17 +997,7 @@ define(function (require, exports) {
 
     function init() {
         // Add panel
-        Main.gitControl.getRemotes()
-        .then(function (remotes) {
-            for (var index = 0; index < remotes.length; ++index) {
-                gitPanel.$panel.find(".git-remotes-dropdown")
-                .append("<li><a href=\"#\" data-url=\"" + remotes[index][1] + "\">" + remotes[index][0] + "</a></li>");
-            }
-            gitPanel.$panel.find(".git-remotes-field").text(remotes[0][0]).attr("data-url", remotes[0][1]);
-        })
-        .fail(function () {
-            gitPanel.$panel.find(".git-remotes-field").text("error");
-        });
+        prepareRemotesPicker();
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
         var $panelHtml = $(panelHtml);
         $panelHtml.find(".git-available").hide();

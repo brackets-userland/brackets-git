@@ -357,7 +357,7 @@ define(function (require, exports, module) {
 
         gitPull: function (remote) {
             remote = remote || "";
-            return this.executeCommand(this._git + " pull --ff-only " + remote);
+            return this.executeCommand(this._git + " pull --ff-only " + escapeShellArg(remote));
         },
 
         gitInit: function () {
@@ -365,7 +365,7 @@ define(function (require, exports, module) {
         },
 
         gitClone: function (remoteGitUrl, destinationFolder) {
-            return this.executeCommand(this._git + " clone " + remoteGitUrl + " " + destinationFolder);
+            return this.executeCommand(this._git + " clone " + escapeShellArg(remoteGitUrl) + " " + escapeShellArg(destinationFolder));
         },
 
         gitHistory: function (branch) {
