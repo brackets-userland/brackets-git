@@ -210,7 +210,10 @@ define(function (require, exports) {
     }
 
     function init(nodeConnection) {
-        var TIMEOUT_VALUE = Preferences.get("TIMEOUT_VALUE");
+        var debugOn       = Preferences.get("debugMode"),
+            extName       = "[brackets-git] ",
+            TIMEOUT_VALUE = Preferences.get("TIMEOUT_VALUE");
+
         // Creates an GitControl Instance
         gitControl = exports.gitControl = new GitControl({
             handler: function (method, cmd, args, opts) {
@@ -221,21 +224,21 @@ define(function (require, exports) {
                 if (opts.cwd) { opts.customCwd = true; }
                 else { opts.cwd = getProjectRoot(); }
 
-                if (window.bracketsGit.debug) {
-                    console.log("cmd-" + method + ": " + (opts.customCwd ? opts.cwd + "\\" : "") + cmd + " " + args.join(" "));
+                if (debugOn) {
+                    console.log(extName + "cmd-" + method + ": " + (opts.customCwd ? opts.cwd + "\\" : "") + cmd + " " + args.join(" "));
                 }
 
                 // nodeConnection returns jQuery deffered, not Q
                 nodeConnection.domains["brackets-git"][method](opts.cwd, cmd, args)
                     .then(function (out) {
                         if (!resolved) {
-                            if (window.bracketsGit.debug) { console.log("cmd-" + method + "-out: " + out); }
+                            if (debugOn) { console.log(extName + "cmd-" + method + "-out: " + out); }
                             rv.resolve(sanitizeOutput(out));
                         }
                     })
                     .fail(function (err) {
                         if (!resolved) {
-                            if (window.bracketsGit.debug) { console.log("cmd-" + method + "-fail: " + err); }
+                            if (debugOn) { console.log(extName + "cmd-" + method + "-fail: " + err); }
                             rv.reject(sanitizeOutput(err));
                         }
                     })

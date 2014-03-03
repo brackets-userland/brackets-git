@@ -31,6 +31,7 @@ define({
     CLONE_REPOSITORY:                   "Clone repository",
     CREATE_NEW_BRANCH:                  "Create new branch\u2026",
     CUSTOM_TERMINAL_COMMAND:            "Custom terminal command (sample: gnome-terminal --window --working-directory=$1)",
+    DEBUG_MODE_SETTING:                 "DEBUG mode &mdash; Leave this OFF unless you need to find a problem with the extension. All Git communication will be forwarded to Brackets console!",
     DELETE_FILE:                        "Delete file",
     DIFF:                               "Diff",
     ENTER_PASSWORD:                     "Enter password",

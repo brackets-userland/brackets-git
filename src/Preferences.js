@@ -23,6 +23,7 @@ define(function (require, exports, module) {
         "commitAllShortcut": {              "type": "string",            "value": null          },
         "pushShortcut": {                   "type": "string",            "value": null          },
         // system
+        "debugMode": {                      "type": "boolean",           "value": false         },
         "lastVersion": {                    "type": "string",            "value": null          },
         "panelEnabled": {                   "type": "boolean",           "value": true          },
         "TIMEOUT_VALUE": {                  "type": "number",            "value": 30000         },
