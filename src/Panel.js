@@ -644,6 +644,8 @@ define(function (require, exports) {
                 Strings.GIT_PULL_RESPONSE, // title
                 result // message
             );
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Pulling from remote repository failed.");
         }).fin(function () {
             $btn.prop("disabled", false);
             refresh();
