@@ -3,6 +3,7 @@
 ## 0.9.4
 * Feature to browse commit history by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
 * Bash/Terminal button and Report Bug button can be hidden from panel in the settings.
+* Shortcut for Push is now configurable in the settings by [Matt Hayward](https://github.com/matthaywardwebdesign)
 * Bug when pushing failed in case of a password containing a quote fixed by [Matt Hayward](https://github.com/matthaywardwebdesign)
 * Improved function for escaping shell arguments on Windows, commits can now contain doublequotes.
 
