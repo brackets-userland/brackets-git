@@ -353,6 +353,7 @@ define(function (require, exports) {
             _cleanLines(null);
         } else {
             Main.gitControl.gitDiff(filename).then(function (diff) {
+                if (!diff) { return rv.resolve(); }
                 var modified = [],
                     changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
                 // collect line numbers to clean
