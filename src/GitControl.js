@@ -380,7 +380,7 @@ define(function (require, exports, module) {
         },
 
         getFilesFromCommit: function (hash) {
-            return this.executeCommand(this._git + " diff --name-only " + hash + "~ " + hash ).then(function (stdout) {
+            return this.executeCommand(this._git + " diff --name-only " + hash + "~ " + hash).then(function (stdout) {
                 return stdout.length === 0 ? [] : stdout.split("\n");
             });
         },
