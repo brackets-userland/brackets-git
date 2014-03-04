@@ -119,9 +119,9 @@ define(function (require, exports) {
         .then(function (remotes) {
             for (var index = 0; index < remotes.length; ++index) {
                 gitPanel.$panel.find(".git-remotes-dropdown").empty()
-                .append("<li><a href=\"#\" data-url=\"" + remotes[index][1] + "\">" + remotes[index][0] + "</a></li>");
+                .append("<li><a href=\"#\" data-url=\"" + remotes[index][0] + "\">" + remotes[index][0] + "</a></li>");
             }
-            gitPanel.$panel.find(".git-remotes-field").text(remotes[0][0]).attr("data-url", remotes[0][1]);
+            gitPanel.$panel.find(".git-remotes-field").text(remotes[0][0]).attr("data-url", remotes[0][0]);
         })
         .fail(function (err) {
             ErrorHandler.logError(err);
@@ -254,7 +254,6 @@ define(function (require, exports) {
                 }).fail(function (err) {
                     ErrorHandler.showError(err, "Git Commit failed");
                 });
-
             } else {
                 handleGitReset();
             }
