@@ -2,118 +2,137 @@
     <div class="modal-header">
         <h1 class="dialog-title">{{GIT_SETTINGS}}</h1>
     </div>
-    <div class="modal-body table-striped tab-content">
-        <h4>{{FEATURES}}</h4>
-        <div class="row-fluid">
-            <div class="span6">
-                <label for="git-settings-stripWhitespaceFromCommits">
-                    <input id="git-settings-stripWhitespaceFromCommits" type="checkbox" settingsProperty="stripWhitespaceFromCommits" />
-                    {{STRIP_WHITESPACE_FROM_COMMITS}}
-                </label>
-            </div>
-            <div class="span6">
-                <label for="git-settings-addEndlineToTheEndOfFile">
-                    <input id="git-settings-addEndlineToTheEndOfFile" type="checkbox" settingsProperty="addEndlineToTheEndOfFile" />
-                    {{ADD_ENDLINE_TO_THE_END_OF_FILE}}
-                </label>
-            </div>
-        </div>
-        <div class="row-fluid">
-            <div class="span6">
-                <label for="git-settings-useGitGutter">
-                    <input id="git-settings-useGitGutter" type="checkbox" settingsProperty="useGitGutter" />
-                    {{USE_GIT_GUTTER}}
-                </label>
-            </div>
-            <div class="span6">
-                <label for="git-settings-markModifiedInTree">
-                    <input id="git-settings-markModifiedInTree" type="checkbox" settingsProperty="markModifiedInTree" />
-                    {{MARK_MODIFIED_FILES_IN_TREE}}
-                </label>
-            </div>
-        </div>
-        <div class="row-fluid">
-            <div class="span6">
-                <label for="git-settings-showBashButton">
-                    <input id="git-settings-showBashButton" type="checkbox" settingsProperty="showBashButton" />
-                    {{SHOW_BASH_TERMINAL_BUTTON}}
-                </label>
-            </div>
-            <div class="span6">
-                <label for="git-settings-showReportBugButton">
-                    <input id="git-settings-showReportBugButton" type="checkbox" settingsProperty="showReportBugButton" />
-                    {{SHOW_REPORT_BUG_BUTTON}}
-                </label>
-            </div>
-        </div>
-        <div class="row-fluid">
-            <div class="span6">
-                <label for="git-settings-useCodeInspection">
-                    <input id="git-settings-useCodeInspection" type="checkbox" settingsProperty="useCodeInspection" />
-                    {{USE_CODE_INSPECTION}}
-                </label>
-            </div>
-        </div>
-        <hr/>
-        <h4>Shortcuts</h4>
-        <div class="row-fluid">
-            <div class="span4">
-                <label for="git-settings-panelShortcut">{{PANEL_SHORTCUT}}:</label>
-                <input id="git-settings-panelShortcut" type="text" settingsProperty="panelShortcut" />
-            </div>
-            <div class="span4">
-                <label for="git-settings-commitCurrentShortcut">{{COMMIT_CURRENT_SHORTCUT}}:</label>
-                <input id="git-settings-commitCurrentShortcut" type="text" settingsProperty="commitCurrentShortcut" />
-            </div>
-            <div class="span4">
-                <label for="git-settings-commitAllShortcut">{{COMMIT_ALL_SHORTCUT}}:</label>
-                <input id="git-settings-commitAllShortcut" type="text" settingsProperty="commitAllShortcut" />
-            </div>
-        </div>
-        <div class="row-fluid">
-            <div class="span4">
-                <label for="git-settings-pushShortcut">{{PUSH_SHORTCUT}}:</label>
-                <input id="git-settings-pushShortcut" type="text" settingsProperty="pushShortcut" />
-            </div>
-        </div>
-        <hr/>
-        <h4>{{PASSWORDS}}</h4>
-        <label for="git-settings-storePlainTextPasswords">
-            <input id="git-settings-storePlainTextPasswords" type="checkbox" settingsProperty="storePlainTextPasswords" />
-            {{AGREE_TO_STORE_PASSWORDS}}
-        </label>
-        <h4>{{BASIC_CONFIGURATION}}</h4>
-        <label for="git-settings-gitIsInSystemPath">
-            <input id="git-settings-gitIsInSystemPath" type="checkbox" settingsProperty="gitIsInSystemPath" />
-            {{GIT_IS_IN_PATH}}
-        </label>
-        <br/>
-        <label for="git-settings-gitPath">{{PATH_TO_GIT_EXECUTABLE}}:</label>
-        <input id="git-settings-gitPath" type="text" settingsProperty="gitPath" />
-        <br/>
-        <span class="windows-only">
-        <hr/>
-        <h4>{{FOR_WINDOWS_USERS}}</h4>
-        <br/>
-        <label for="git-settings-msysgitPath">{{PATH_TO_GIT_MSYSGIT}}:</label>
-        <input id="git-settings-msysgitPath" type="text" settingsProperty="msysgitPath" />
-        </span>
-        <span class="non-windows-only">
-        <hr/>
-        <h4>{{FOR_MAC_LINUX_USERS}}</h4>
-        <br/>
-        <label for="git-settings-terminalCommand">{{CUSTOM_TERMINAL_COMMAND}}:</label>
-        <input id="git-settings-terminalCommand" type="text" settingsProperty="terminalCommand" />
-        </span>
+    <div class="modal-body">
 
-        <hr/>
+        <ul class="nav nav-tabs" id="git-settings-tabs">
+            <li class="active"><a href="#git-settings-tab-features">{{FEATURES}}</a></li>
+            <li>               <a href="#git-settings-tab-shortcuts">{{SHORTCUTS}}</a></li>
+            <li>               <a href="#git-settings-tab-gitConfig">{{GIT_CONFIGURATION}}</a></li>
+            <li>               <a href="#git-settings-tab-debug">{{DEBUG}}</a></li>
+        </ul>
 
-        <div class="row-fluid">
-            <div class="pull-right">
-                <label for="git-settings-debugMode">
-                    <input id="git-settings-debugMode" type="checkbox" settingsProperty="debugMode" />
-                    {{{DEBUG_MODE_SETTING}}}
-                </label>
+        <div class="tab-content">
+            <div class="tab-pane active" id="git-settings-tab-features">
+                <!-- #features -->
+                <div class="row-fluid">
+                    <div class="span6">
+                        <label for="git-settings-stripWhitespaceFromCommits">
+                            <input id="git-settings-stripWhitespaceFromCommits" type="checkbox" settingsProperty="stripWhitespaceFromCommits" />
+                            {{STRIP_WHITESPACE_FROM_COMMITS}}
+                        </label>
+                    </div>
+                    <div class="span6">
+                        <label for="git-settings-addEndlineToTheEndOfFile">
+                            <input id="git-settings-addEndlineToTheEndOfFile" type="checkbox" settingsProperty="addEndlineToTheEndOfFile" />
+                            {{ADD_ENDLINE_TO_THE_END_OF_FILE}}
+                        </label>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <label for="git-settings-useGitGutter">
+                            <input id="git-settings-useGitGutter" type="checkbox" settingsProperty="useGitGutter" />
+                            {{USE_GIT_GUTTER}}
+                        </label>
+                    </div>
+                    <div class="span6">
+                        <label for="git-settings-markModifiedInTree">
+                            <input id="git-settings-markModifiedInTree" type="checkbox" settingsProperty="markModifiedInTree" />
+                            {{MARK_MODIFIED_FILES_IN_TREE}}
+                        </label>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <label for="git-settings-showBashButton">
+                            <input id="git-settings-showBashButton" type="checkbox" settingsProperty="showBashButton" />
+                            {{SHOW_BASH_TERMINAL_BUTTON}}
+                        </label>
+                    </div>
+                    <div class="span6">
+                        <label for="git-settings-showReportBugButton">
+                            <input id="git-settings-showReportBugButton" type="checkbox" settingsProperty="showReportBugButton" />
+                            {{SHOW_REPORT_BUG_BUTTON}}
+                        </label>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <label for="git-settings-useCodeInspection">
+                            <input id="git-settings-useCodeInspection" type="checkbox" settingsProperty="useCodeInspection" />
+                            {{USE_CODE_INSPECTION}}
+                        </label>
+                    </div>
+                </div>
+                <!-- /features -->
+            </div>
+            <div class="tab-pane" id="git-settings-tab-shortcuts">
+                <!-- #shortcuts -->
+                <div class="row-fluid">
+                    <div class="span4">
+                        <label for="git-settings-panelShortcut">{{PANEL_SHORTCUT}}:</label>
+                        <input id="git-settings-panelShortcut" type="text" settingsProperty="panelShortcut" />
+                    </div>
+                    <div class="span4">
+                        <label for="git-settings-commitCurrentShortcut">{{COMMIT_CURRENT_SHORTCUT}}:</label>
+                        <input id="git-settings-commitCurrentShortcut" type="text" settingsProperty="commitCurrentShortcut" />
+                    </div>
+                    <div class="span4">
+                        <label for="git-settings-commitAllShortcut">{{COMMIT_ALL_SHORTCUT}}:</label>
+                        <input id="git-settings-commitAllShortcut" type="text" settingsProperty="commitAllShortcut" />
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span4">
+                        <label for="git-settings-pushShortcut">{{PUSH_SHORTCUT}}:</label>
+                        <input id="git-settings-pushShortcut" type="text" settingsProperty="pushShortcut" />
+                    </div>
+                </div>
+                <!-- /shortcuts -->
+            </div>
+            <div class="tab-pane" id="git-settings-tab-gitConfig">
+                <!-- #gitConfig -->
+                <h4>{{PASSWORDS}}</h4>
+                <div class="row-fluid">
+                    <label for="git-settings-storePlainTextPasswords">
+                        <input id="git-settings-storePlainTextPasswords" type="checkbox" settingsProperty="storePlainTextPasswords" />
+                        {{AGREE_TO_STORE_PASSWORDS}}
+                    </label>
+                </div>
+                <h4>{{BASIC_CONFIGURATION}}</h4>
+                <div class="row-fluid">
+                    <label for="git-settings-gitIsInSystemPath">
+                        <input id="git-settings-gitIsInSystemPath" type="checkbox" settingsProperty="gitIsInSystemPath" />
+                        {{GIT_IS_IN_PATH}}
+                    </label>
+                </div>
+                <div class="row-fluid">
+                    <label for="git-settings-gitPath">{{PATH_TO_GIT_EXECUTABLE}}:</label>
+                    <input id="git-settings-gitPath" type="text" settingsProperty="gitPath" />
+                </div>
+                <div class="row-fluid windows-only">
+                    <h4>{{FOR_WINDOWS_USERS}}</h4>
+                    <label for="git-settings-msysgitPath">{{PATH_TO_GIT_MSYSGIT}}:</label>
+                    <input id="git-settings-msysgitPath" type="text" settingsProperty="msysgitPath" />
+                </div>
+                <div class="row-fluid non-windows-only">
+                    <h4>{{FOR_MAC_LINUX_USERS}}</h4>
+                    <label for="git-settings-terminalCommand">{{CUSTOM_TERMINAL_COMMAND}}:</label>
+                    <input id="git-settings-terminalCommand" type="text" settingsProperty="terminalCommand" />
+                </div>
+                <!-- /gitConfig -->
+            </div>
+            <div class="tab-pane" id="git-settings-tab-debug">
+                <!-- #debug -->
+                <div class="row-fluid">
+                    <div class="pull-right">
+                        <label for="git-settings-debugMode">
+                            <input id="git-settings-debugMode" type="checkbox" settingsProperty="debugMode" />
+                            {{{DEBUG_MODE_SETTING}}}
+                        </label>
+                    </div>
+                </div>
+                <!-- /debug -->
             </div>
         </div>
 

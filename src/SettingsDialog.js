@@ -76,6 +76,10 @@ define(function (require, exports) {
         assignActions();
         $(".windows-only", $dialog).toggle(brackets.platform === "win");
         $(".non-windows-only", $dialog).toggle(brackets.platform !== "win");
+        $("#git-settings-tabs a", $dialog).click(function (e) {
+            e.preventDefault();
+            $(this).tab("show");
+        });
     }
 
     function showRestartDialog() {
