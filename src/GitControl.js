@@ -356,24 +356,20 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " diff --no-color --staged");
         },
 
+        gitFetch: function (remote) {
+            remote = remote || "";
+            return this.executeCommand(this._git + " fetch " + remote);
+        },
+
         gitPush: function (remote) {
             var self = this;
             remote = remote || "";
-            if (remote) {
-                return self.getBranchName()
-                .then(function (branchName) {
-                    return self.getGitConfig("branch." + branchName + ".remote");
-                })
-                .then(function (remoteName) {
-                    // don't use remote name for the default remote
-                    if (remoteName === remote) {
-                        remote = "";
-                    }
-                    return self.executeCommand(self._git + " push " + remote + " --porcelain");
+            return self.executeCommand(self._git + " push " + remote + " --porcelain")
+                .then(function (pushOut) {
+                    return self.gitFetch(remote).then(function (fetchOut) {
+                        return [pushOut, fetchOut].join("\n");
+                    });
                 });
-            } else {
-                return self.executeCommand(self._git + " push " + remote + " --porcelain");
-            }
         },
 
         gitPushUpstream: function (upstream, branch) {
