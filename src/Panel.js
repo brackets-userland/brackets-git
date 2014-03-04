@@ -30,10 +30,7 @@ define(function (require, exports) {
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
         Utils              = require("./Utils"),
-        PANEL_COMMAND_ID   = "brackets-git.panel",
-        COMMIT_CURRENT_CMD = "brackets-git.commitCurrent",
-        COMMIT_ALL_CMD     = "brackets-git.commitAll",
-        PUSH_CMD           = "brackets-git.push";
+        PANEL_COMMAND_ID   = "brackets-git.panel";
 
     var gitPanelTemplate            = require("text!htmlContent/git-panel.html"),
         gitPanelResultsTemplate     = require("text!htmlContent/git-panel-results.html"),
@@ -962,6 +959,21 @@ define(function (require, exports) {
         });
     }
 
+    function openBashConsole() {
+        if (brackets.platform === "win") {
+            Main.gitControl.bashOpen(Main.getProjectRoot());
+        } else {
+            var customTerminal = Preferences.get("terminalCommand");
+            Main.gitControl.terminalOpen(Main.getProjectRoot(), customTerminal).fail(function (err) {
+                throw ErrorHandler.showError(err);
+            }).then(function (result) {
+                if (!customTerminal && result !== "ok") {
+                    ErrorHandler.showError(new Error(Strings.ERROR_TERMINAL_NOT_FOUND));
+                }
+            });
+        }
+    }
+
     // Disable "commit" button if there aren't selected files and vice versa
     function toggleCommitButton(enableButton) {
         if (typeof enableButton !== "boolean") {
@@ -1059,23 +1071,12 @@ define(function (require, exports) {
         if (brackets.platform === "win") {
             Main.gitControl.bashVersion().fail(function (e) {
                 gitPanel.$panel.find(".git-bash").prop("disabled", true).attr("title", Strings.BASH_NOT_AVAILABLE);
-                throw e;
+                ErrorHandler.logError(e);
             }).then(function () {
-                gitPanel.$panel.find(".git-bash").on("click", function () {
-                    Main.gitControl.bashOpen(Main.getProjectRoot());
-                });
+                gitPanel.$panel.find(".git-bash").on("click", openBashConsole);
             });
         } else {
-            gitPanel.$panel.find(".git-bash").on("click", function () {
-                var customTerminal = Preferences.get("terminalCommand");
-                Main.gitControl.terminalOpen(Main.getProjectRoot(), customTerminal).fail(function (err) {
-                    throw ErrorHandler.showError(err);
-                }).then(function (result) {
-                    if (!customTerminal && result !== "ok") {
-                        ErrorHandler.showError(new Error(Strings.ERROR_TERMINAL_NOT_FOUND));
-                    }
-                });
-            });
+            gitPanel.$panel.find(".git-bash").on("click", openBashConsole);
         }
 
         // Register command for opening bottom panel.
@@ -1087,12 +1088,28 @@ define(function (require, exports) {
         menu.addMenuItem(PANEL_COMMAND_ID, Preferences.get("panelShortcut"));
 
         // Commit current and all shortcuts
+        var COMMIT_CURRENT_CMD = "brackets-git.commitCurrent",
+            COMMIT_ALL_CMD     = "brackets-git.commitAll",
+            BASH_CMD           = "brackets-git.launchBash",
+            PUSH_CMD           = "brackets-git.push",
+            PULL_CMD           = "brackets-git.pull",
+            GOTO_PREV_CHANGE   = "brackets-git.gotoPrevChange",
+            GOTO_NEXT_CHANGE   = "brackets-git.gotoNextChange";
+
         CommandManager.register(Strings.COMMIT_CURRENT_SHORTCUT, COMMIT_CURRENT_CMD, commitCurrentFile);
         menu.addMenuItem(COMMIT_CURRENT_CMD, Preferences.get("commitCurrentShortcut"));
         CommandManager.register(Strings.COMMIT_ALL_SHORTCUT, COMMIT_ALL_CMD, commitAllFiles);
         menu.addMenuItem(COMMIT_ALL_CMD, Preferences.get("commitAllShortcut"));
+        CommandManager.register(Strings.LAUNCH_BASH_SHORTCUT, BASH_CMD, openBashConsole);
+        menu.addMenuItem(BASH_CMD, Preferences.get("bashShortcut"));
         CommandManager.register(Strings.PUSH_SHORTCUT, PUSH_CMD, handleGitPush);
         menu.addMenuItem(PUSH_CMD, Preferences.get("pushShortcut"));
+        CommandManager.register(Strings.PULL_SHORTCUT, PULL_CMD, handleGitPull);
+        menu.addMenuItem(PULL_CMD, Preferences.get("pullShortcut"));
+        CommandManager.register(Strings.GOTO_PREVIOUS_GIT_CHANGE, GOTO_PREV_CHANGE, GutterManager.goToPrev);
+        menu.addMenuItem(GOTO_PREV_CHANGE, Preferences.get("gotoPrevChangeShortcut"));
+        CommandManager.register(Strings.GOTO_NEXT_GIT_CHANGE, GOTO_NEXT_CHANGE, GutterManager.goToNext);
+        menu.addMenuItem(GOTO_NEXT_CHANGE, Preferences.get("gotoNextChangeShortcut"));
     }
 
     function enable() {

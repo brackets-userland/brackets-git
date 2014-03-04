@@ -21,7 +21,11 @@ define(function (require, exports, module) {
         "panelShortcut": {                  "type": "string",            "value": "Ctrl-Alt-G"  },
         "commitCurrentShortcut": {          "type": "string",            "value": null          },
         "commitAllShortcut": {              "type": "string",            "value": null          },
+        "bashShortcut": {                   "type": "string",            "value": null          },
         "pushShortcut": {                   "type": "string",            "value": null          },
+        "pullShortcut": {                   "type": "string",            "value": null          },
+        "gotoPrevChangeShortcut": {         "type": "string",            "value": null          },
+        "gotoNextChangeShortcut": {         "type": "string",            "value": null          },
         // system
         "debugMode": {                      "type": "boolean",           "value": false         },
         "lastVersion": {                    "type": "string",            "value": null          },

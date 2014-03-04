@@ -69,6 +69,11 @@
             <div class="tab-pane" id="git-settings-tab-shortcuts">
                 <!-- #shortcuts -->
                 <div class="row-fluid">
+                    <div class="span12">
+                        {{SHORTCUTS_HINT}}
+                    </div>
+                </div>
+                <div class="row-fluid">
                     <div class="span4">
                         <label for="git-settings-panelShortcut">{{PANEL_SHORTCUT}}:</label>
                         <input id="git-settings-panelShortcut" type="text" settingsProperty="panelShortcut" />
@@ -84,8 +89,26 @@
                 </div>
                 <div class="row-fluid">
                     <div class="span4">
+                        <label for="git-settings-bashShortcut">{{LAUNCH_BASH_SHORTCUT}}:</label>
+                        <input id="git-settings-bashShortcut" type="text" settingsProperty="bashShortcut" />
+                    </div>
+                    <div class="span4">
                         <label for="git-settings-pushShortcut">{{PUSH_SHORTCUT}}:</label>
                         <input id="git-settings-pushShortcut" type="text" settingsProperty="pushShortcut" />
+                    </div>
+                    <div class="span4">
+                        <label for="git-settings-pullShortcut">{{PULL_SHORTCUT}}:</label>
+                        <input id="git-settings-pullShortcut" type="text" settingsProperty="pullShortcut" />
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span4">
+                        <label for="git-settings-gotoPrevChangeShortcut">{{GOTO_PREVIOUS_GIT_CHANGE}}:</label>
+                        <input id="git-settings-gotoPrevChangeShortcut" type="text" settingsProperty="gotoPrevChangeShortcut" />
+                    </div>
+                    <div class="span4">
+                        <label for="git-settings-gotoNextChangeShortcut">{{GOTO_NEXT_GIT_CHANGE}}:</label>
+                        <input id="git-settings-gotoNextChangeShortcut" type="text" settingsProperty="gotoNextChangeShortcut" />
                     </div>
                 </div>
                 <!-- /shortcuts -->
