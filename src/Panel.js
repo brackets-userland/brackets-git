@@ -788,7 +788,7 @@ define(function (require, exports) {
 
         //- Remotes picker
 
-        prepareRemotesPicker();
+        //prepareRemotesPicker();
 
         return q.all([p1, p2]);
     }
