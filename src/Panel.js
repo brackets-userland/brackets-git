@@ -886,7 +886,13 @@ define(function (require, exports) {
     // handle click in a commit from the history table to show a dialog with the modified files
     function handleCommitDiff(hash) {
         Main.gitControl.getFilesFromCommit(hash).then(function (files) {
-            _showCommitDiffDialog(hash, files);
+            var list = $.map(files, function (file) {
+                var dotPosition = file.lastIndexOf("."),
+                    fileName = file.substring(0, dotPosition),
+                    fileExtension = file.substring(dotPosition, file.length);
+                return {name: fileName, extension: fileExtension};
+            });
+            _showCommitDiffDialog(hash, list);
         }).fail(function (err) {
             ErrorHandler.showError(err, "Git Commit Diff failed");
         });
@@ -898,12 +904,12 @@ define(function (require, exports) {
             $dialog          = dialog.getElement();
         _makeDialogBig($dialog);
 
-        Main.gitControl.getDiffOfFileFromCommit(hashCommit, files[0]).then(function (diff) {
+        Main.gitControl.getDiffOfFileFromCommit(hashCommit, $dialog.find(".commit-files ul li:first-child").text()).then(function (diff) {
             $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
         });
 
         $dialog.find(".commit-files a").on("click", function () {
-            Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).html()).then(function (diff) {
+            Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).text()).then(function (diff) {
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
             });
         });
