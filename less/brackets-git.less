@@ -288,6 +288,7 @@
             margin-right: 10px;
             width: 200px;
             word-wrap: break-word;
+            overflow-y: auto;
         }
         .commit-diff {
             // shrink up to min-width
@@ -298,6 +299,9 @@
             a {
                 color: @defaultText;
                 cursor: pointer;
+            }
+            .active {
+                background-color: #eee;
             }
         }
     }

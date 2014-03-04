@@ -786,10 +786,6 @@ define(function (require, exports) {
         //- Clone button
         gitPanel.$panel.find(".git-clone").prop("disabled", false);
 
-        //- Remotes picker
-
-        prepareRemotesPicker();
-
         return q.all([p1, p2]);
     }
 
@@ -842,6 +838,7 @@ define(function (require, exports) {
         refresh();
     }
 
+    // Render the dialog with the modified files list and the diff commited
     function _showCommitDiffDialog(hashCommit, files) {
         var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { hashCommit: hashCommit, files: files, Strings: Strings }),
             dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
@@ -850,17 +847,21 @@ define(function (require, exports) {
 
         if (files.length > 0) {
             Main.gitControl.getDiffOfFileFromCommit(hashCommit, files[0]).then(function (diff) {
+                $dialog.find(".commit-files a").first().addClass("active");
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
             });
         }
 
         $dialog.find(".commit-files a").on("click", function () {
+            var self = $(this);
             Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).html()).then(function (diff) {
+                $dialog.find(".commit-files a").removeClass("active");
+                self.addClass("active");
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
             });
         });
     }
-
+    
     // show a commit with given hash in a dialog
     function showCommitDialog(hash) {
         Main.gitControl.getFilesFromCommit(hash).then(function (files) {
@@ -1164,5 +1165,6 @@ define(function (require, exports) {
     exports.enable = enable;
     exports.disable = disable;
     exports.refreshCurrentFile = refreshCurrentFile;
+    exports.prepareRemotesPicker = prepareRemotesPicker;
     exports.getPanel = getPanel;
 });
