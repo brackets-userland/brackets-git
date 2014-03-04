@@ -2,6 +2,7 @@
 
 ## 0.10.2
 * xfce4-terminal support by [Ben Keith](https://github.com/benlk)
+* Fixed an issue with pull command.
 
 ## 0.10.1
 * Fixed a push bug that was introduced in 0.10.0
