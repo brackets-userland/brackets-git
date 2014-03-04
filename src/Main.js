@@ -85,6 +85,7 @@ define(function (require, exports) {
     function attachEventsToBrackets() {
         $(ProjectManager).on("projectOpen projectRefresh", function () {
             Branch.refresh();
+            Panel.prepareRemotesPicker();
             refreshIgnoreEntries().then(Panel.refresh);
         });
         $(FileSystem).on("change rename", function () {
@@ -99,6 +100,7 @@ define(function (require, exports) {
             Panel.refreshCurrentFile();
             GutterManager.refresh();
         });
+
         refreshIgnoreEntries();
         GutterManager.refresh();
     }
