@@ -358,16 +358,16 @@ define(function (require, exports, module) {
 
         gitPush: function (remote) {
             remote = remote || "";
-            return this.executeCommand(this._git + " push " + escapeShellArg(remote) + " --porcelain");
+            return this.executeCommand(this._git + " push --porcelain " + escapeShellArg(remote));
         },
 
         gitPushUpstream: function (upstream, branch) {
-            return this.executeCommand(this._git + " push --porcelain --set-upstream " + upstream + " " + branch);
+            return this.executeCommand(this._git + " push --porcelain --set-upstream " + escapeShellArg(upstream) + " " + escapeShellArg(branch));
         },
 
         gitPull: function (remote) {
             remote = remote || "";
-            return this.executeCommand(this._git + " pull " + escapeShellArg(remote) + " --ff-only");
+            return this.executeCommand(this._git + " pull --ff-only " + escapeShellArg(remote));
         },
 
         gitInit: function () {
