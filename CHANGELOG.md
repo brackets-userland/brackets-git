@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.1
+* Fixed a push bug that was introduced in 0.10.0
+
 ## 0.10.0
 * Feature to browse commit history by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
 * Feature to clone a repositry when in an empty folder by [Fez Vrasta](https://github.com/FezVrasta)
