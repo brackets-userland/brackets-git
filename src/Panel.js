@@ -114,14 +114,32 @@ define(function (require, exports) {
         });
     }
 
+    function handleRemotePick(e, $a) {
+        var $selected = e ? $(e.target) : $a;
+        gitPanel.$panel.find(".git-remotes-field")
+            .text($selected.text())
+            .attr({
+                "data-remote-name": $selected.attr("data-remote-name"),
+                "data-remote-url": $selected.attr("data-remote-url")
+            });
+    }
+
     function prepareRemotesPicker() {
         Main.gitControl.getRemotes()
         .then(function (remotes) {
-            for (var index = 0; index < remotes.length; ++index) {
-                gitPanel.$panel.find(".git-remotes-dropdown").empty()
-                .append("<li><a href=\"#\" data-url=\"" + remotes[index][1] + "\">" + remotes[index][0] + "</a></li>");
+            var $first;
+            var $remotesDropdown = gitPanel.$panel.find(".git-remotes-dropdown").empty();
+            remotes.forEach(function (remoteInfo) {
+                var $a = $("<a/>").attr({
+                    "href": "#",
+                    "data-remote-name": remoteInfo[0],
+                    "data-remote-url": remoteInfo[1]
+                }).text(remoteInfo[0]).appendTo($("<li/>").appendTo($remotesDropdown));
+                if (!$first) { $first = $a; }
+            });
+            if ($first) {
+                handleRemotePick(null, $first);
             }
-            gitPanel.$panel.find(".git-remotes-field").text(remotes[0][0]).attr("data-url", remotes[0][1]);
         })
         .fail(function (err) {
             ErrorHandler.logError(err);
@@ -594,8 +612,8 @@ define(function (require, exports) {
 
     function handleGitPush() {
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true),
-            remote = gitPanel.$panel.find(".git-remotes-field").attr("data-url");
-        Main.gitControl.gitPush(remote).fail(function (err) {
+            remoteName = gitPanel.$panel.find(".git-remotes-field").attr("data-remote-name");
+        Main.gitControl.gitPush(remoteName).fail(function (err) {
             if (typeof err !== "string") { throw err; }
             var m = err.match(/git remote add <name> <url>/);
             if (!m) { throw err; }
@@ -654,8 +672,8 @@ define(function (require, exports) {
 
     function handleGitPull() {
         var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true),
-            remote = gitPanel.$panel.find(".git-remotes-field").attr("data-url");
-        Main.gitControl.gitPull(remote).then(function (result) {
+            remoteName = gitPanel.$panel.find(".git-remotes-field").attr("data-remote-name");
+        Main.gitControl.gitPull(remoteName).then(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GIT_PULL_RESPONSE, // title
@@ -927,7 +945,6 @@ define(function (require, exports) {
                 ErrorHandler.showError(err, "Cloning remote repository failed!");
             }
         })
-
         .fail(function (err) {
             ErrorHandler.showError(err);
         });
@@ -1053,10 +1070,7 @@ define(function (require, exports) {
             .on("click", ".git-bug", ErrorHandler.reportBug)
             .on("click", ".git-init", handleGitInit)
             .on("click", ".git-clone", handleGitClone)
-            .on("click", ".git-remotes-dropdown a", function () {
-                var selected = $(this);
-                gitPanel.$panel.find(".git-remotes-field").text(selected.text()).attr("data-url", selected.attr("data-url"));
-            })
+            .on("click", ".git-remotes-dropdown a", handleRemotePick)
             .on("contextmenu", "tr", function (e) {
                 $(this).click();
                 setTimeout(function () {

@@ -60,7 +60,7 @@ define(function (require, exports) {
         var defer = q.defer();
         ProjectManager.getProjectRoot().getContents(function (err, entries) {
             if (err) {
-                defer.reject(err);
+                return defer.reject(err);
             }
             defer.resolve(entries.length === 0);
         });

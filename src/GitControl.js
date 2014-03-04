@@ -367,7 +367,7 @@ define(function (require, exports, module) {
 
         gitPull: function (remote) {
             remote = remote || "";
-            return this.executeCommand(this._git + " pull --ff-only " + escapeShellArg(remote));
+            return this.executeCommand(this._git + " pull " + escapeShellArg(remote) + " --ff-only");
         },
 
         gitInit: function () {
