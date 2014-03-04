@@ -787,8 +787,7 @@ define(function (require, exports) {
         gitPanel.$panel.find(".git-clone").prop("disabled", false);
 
         //- Remotes picker
-
-        //prepareRemotesPicker();
+        prepareRemotesPicker();
 
         return q.all([p1, p2]);
     }
