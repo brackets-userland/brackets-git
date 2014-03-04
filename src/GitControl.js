@@ -379,15 +379,17 @@ define(function (require, exports, module) {
         },
 
         gitHistory: function (branch) {
-            return this.executeCommand(this._git + " log " + branch + " --format=\"%h_._%an_._%ai_._%s\"").then(function (stdout) {
+            var separator = "_._",
+                items  = ["hashShort", "hash", "author", "date", "message"],
+                format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
+            return this.executeCommand(this._git + " log " + branch + " --format=" + escapeShellArg(format)).then(function (stdout) {
                 return stdout.length === 0 ? [] : stdout.split("\n").map(function (line) {
-                    var data = line.split("_._");
-                    return {
-                        hash: data[0].trim(),
-                        author: data[1].trim(),
-                        date: data[2].trim(),
-                        message: data[3].trim()
-                    };
+                    var result = {},
+                        data = line.split(separator);
+                    items.forEach(function (name, i) {
+                        result[name] = data[i];
+                    });
+                    return result;
                 });
             });
         },
@@ -399,7 +401,7 @@ define(function (require, exports, module) {
         },
 
         getDiffOfFileFromCommit: function (hash, file) {
-            return this.executeCommand(this._git + " diff --no-color " + hash + "~ " + hash + " " + file);
+            return this.executeCommand(this._git + " diff --no-color " + hash + "~ " + hash + " " + escapeShellArg(file));
         },
 
         remoteAdd: function (remote, url) {

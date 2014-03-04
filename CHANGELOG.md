@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.3
+* Fixed ambiguous argument error when viewing history.
+
 ## 0.10.2
 * xfce4-terminal support by [Ben Keith](https://github.com/benlk)
 * Fixed an issue with pull command.

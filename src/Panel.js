@@ -842,6 +842,34 @@ define(function (require, exports) {
         refresh();
     }
 
+    function _showCommitDiffDialog(hashCommit, files) {
+        var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { hashCommit: hashCommit, files: files, Strings: Strings }),
+            dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+            $dialog          = dialog.getElement();
+        _makeDialogBig($dialog);
+
+        if (files.length > 0) {
+            Main.gitControl.getDiffOfFileFromCommit(hashCommit, files[0]).then(function (diff) {
+                $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
+            });
+        }
+
+        $dialog.find(".commit-files a").on("click", function () {
+            Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).html()).then(function (diff) {
+                $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
+            });
+        });
+    }
+
+    // show a commit with given hash in a dialog
+    function showCommitDialog(hash) {
+        Main.gitControl.getFilesFromCommit(hash).then(function (files) {
+            _showCommitDiffDialog(hash, files);
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Git Commit Diff failed");
+        });
+    }
+
     // History table renderer to show the history commits
     function handleToggleHistory() {
         showingHistory = !showingHistory;
@@ -871,7 +899,7 @@ define(function (require, exports) {
                     // Removing the table defaults handlers and add a new one to handle the click in the commits history
                     $tableContainer.off().on("click", "tr", function () {
                         // if click in a row a dialog will be open to show the modified file list of the commit
-                        handleCommitDiff($(this).data("hash"));
+                        showCommitDialog($(this).data("hash"));
                     });
                 });
             }).fail(function (err) {
@@ -881,32 +909,6 @@ define(function (require, exports) {
             // When u click again in the history button the refresh method will be render the default table to show git status
             refresh();
         }
-    }
-
-    // handle click in a commit from the history table to show a dialog with the modified files
-    function handleCommitDiff(hash) {
-        Main.gitControl.getFilesFromCommit(hash).then(function (files) {
-            _showCommitDiffDialog(hash, files);
-        }).fail(function (err) {
-            ErrorHandler.showError(err, "Git Commit Diff failed");
-        });
-    }
-
-    function _showCommitDiffDialog(hashCommit, files) {
-        var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { hashCommit: hashCommit, files: files, Strings: Strings }),
-            dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-            $dialog          = dialog.getElement();
-        _makeDialogBig($dialog);
-
-        Main.gitControl.getDiffOfFileFromCommit(hashCommit, files[0]).then(function (diff) {
-            $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
-        });
-
-        $dialog.find(".commit-files a").on("click", function () {
-            Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).html()).then(function (diff) {
-                $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
-            });
-        });
     }
 
     function handleGitInit() {
