@@ -357,8 +357,23 @@ define(function (require, exports, module) {
         },
 
         gitPush: function (remote) {
+            var self = this;
             remote = remote || "";
-            return this.executeCommand(this._git + " push " + escapeShellArg(remote) + " --porcelain");
+            if (remote) {
+                return self.getBranchName()
+                .then(function (branchName) {
+                    return self.getGitConfig("branch." + branchName + ".remote");
+                })
+                .then(function (remoteName) {
+                    // don't use remote name for the default remote
+                    if (remoteName === remote) {
+                        remote = "";
+                    }
+                    return self.executeCommand(self._git + " push " + remote + " --porcelain");
+                });
+            } else {
+                return self.executeCommand(self._git + " push " + remote + " --porcelain");
+            }
         },
 
         gitPushUpstream: function (upstream, branch) {
@@ -367,7 +382,7 @@ define(function (require, exports, module) {
 
         gitPull: function (remote) {
             remote = remote || "";
-            return this.executeCommand(this._git + " pull --ff-only " + escapeShellArg(remote));
+            return this.executeCommand(this._git + " pull " + remote + " --ff-only");
         },
 
         gitInit: function () {
