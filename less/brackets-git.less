@@ -17,7 +17,8 @@
     li.git-modified > a:before {
         content: "|";
         color: @orange;
-        padding-right: 2px;
+        position: absolute;
+        margin-left: -4px;
     }
     li.git-ignored > a {
         color: @moreDarkGrey !important;
@@ -289,6 +290,12 @@
             width: 200px;
             word-wrap: break-word;
             overflow-y: auto;
+            .commit-label {
+                font-weight: bold;
+            }
+            .extension {
+                color: @darkGrey;
+            }
         }
         .commit-diff {
             // shrink up to min-width

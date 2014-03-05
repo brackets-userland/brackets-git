@@ -844,9 +844,10 @@ define(function (require, exports) {
             dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
             $dialog          = dialog.getElement();
         _makeDialogBig($dialog);
-
-        if (files.length > 0) {
-            Main.gitControl.getDiffOfFileFromCommit(hashCommit, files[0]).then(function (diff) {
+        
+        var firstFile = $dialog.find(".commit-files ul li:first-child").text();
+        if (firstFile) {
+            Main.gitControl.getDiffOfFileFromCommit(hashCommit, firstFile).then(function (diff) {
                 $dialog.find(".commit-files a").first().addClass("active");
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
             });
@@ -854,7 +855,7 @@ define(function (require, exports) {
 
         $dialog.find(".commit-files a").on("click", function () {
             var self = $(this);
-            Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).html()).then(function (diff) {
+            Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).text()).then(function (diff) {
                 $dialog.find(".commit-files a").removeClass("active");
                 self.addClass("active");
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
@@ -865,12 +866,18 @@ define(function (require, exports) {
     // show a commit with given hash in a dialog
     function showCommitDialog(hash) {
         Main.gitControl.getFilesFromCommit(hash).then(function (files) {
-            _showCommitDiffDialog(hash, files);
+            var list = $.map(files, function (file) {
+                var dotPosition = file.lastIndexOf("."),
+                    fileName = file.substring(0, dotPosition),
+                    fileExtension = file.substring(dotPosition, file.length);
+                return {name: fileName, extension: fileExtension};
+            });
+            _showCommitDiffDialog(hash, list);
         }).fail(function (err) {
             ErrorHandler.showError(err, "Git Commit Diff failed");
         });
     }
-
+    
     // History table renderer to show the history commits
     function handleToggleHistory() {
         showingHistory = !showingHistory;
