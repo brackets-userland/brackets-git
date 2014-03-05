@@ -117,7 +117,7 @@ define(function (require, exports) {
     function handleRemotePick(e, $a) {
         var $selected = e ? $(e.target) : $a;
         gitPanel.$panel.find(".git-remotes-field")
-            .text($selected.text())
+            .text($selected.text().trim())
             .attr({
                 "data-remote-name": $selected.attr("data-remote-name"),
                 "data-remote-url": $selected.attr("data-remote-url")
@@ -845,7 +845,7 @@ define(function (require, exports) {
             $dialog          = dialog.getElement();
         _makeDialogBig($dialog);
         
-        var firstFile = $dialog.find(".commit-files ul li:first-child").text();
+        var firstFile = $dialog.find(".commit-files ul li:first-child").text().trim();
         if (firstFile) {
             Main.gitControl.getDiffOfFileFromCommit(hashCommit, firstFile).then(function (diff) {
                 $dialog.find(".commit-files a").first().addClass("active");
@@ -855,7 +855,7 @@ define(function (require, exports) {
 
         $dialog.find(".commit-files a").on("click", function () {
             var self = $(this);
-            Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).text()).then(function (diff) {
+            Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).text().trim()).then(function (diff) {
                 $dialog.find(".commit-files a").removeClass("active");
                 self.addClass("active");
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
