@@ -204,7 +204,7 @@ define(function (require, exports) {
 
     function sanitizeOutput(str) {
         if (typeof str === "string") {
-            str = str.trim().replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
+            str = str.replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
                 return protocol + user + ":***@";
             });
         }
@@ -234,13 +234,13 @@ define(function (require, exports) {
                 nodeConnection.domains["brackets-git"][method](opts.cwd, cmd, args)
                     .then(function (out) {
                         if (!resolved) {
-                            if (debugOn) { console.log(extName + "cmd-" + method + "-out: " + out); }
+                            if (debugOn) { console.log(extName + "cmd-" + method + "-out: \"" + out + "\""); }
                             rv.resolve(sanitizeOutput(out));
                         }
                     })
                     .fail(function (err) {
                         if (!resolved) {
-                            if (debugOn) { console.log(extName + "cmd-" + method + "-fail: " + err); }
+                            if (debugOn) { console.log(extName + "cmd-" + method + "-fail: \"" + err + "\""); }
                             rv.reject(sanitizeOutput(err));
                         }
                     })
