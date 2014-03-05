@@ -207,6 +207,12 @@ define(function (require, exports) {
             str = str.replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
                 return protocol + user + ":***@";
             });
+        } else {
+            if (str != null) { // checks for both null & undefined
+                str = str.toString();
+            } else {
+                str = "";
+            }
         }
         return str;
     }
