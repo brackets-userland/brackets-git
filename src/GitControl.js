@@ -171,12 +171,8 @@ define(function (require, exports, module) {
         },
 
         getCommitsAhead: function () {
-            return this.executeCommand(this._git + " rev-list HEAD --not --remotes").then(function (output) {
-                if (output.trim().length === 0) {
-                    return [];
-                } else {
-                    return output.split("\n");
-                }
+            return this.executeCommand(this._git + " rev-list HEAD --not --remotes").then(function (stdout) {
+                return !stdout ? [] : stdout.split("\n");
             });
         },
 
@@ -231,7 +227,7 @@ define(function (require, exports, module) {
             }
 
             return this.executeCommand(this._git + " status -u --porcelain").then(function (stdout) {
-                if (stdout.length === 0) {
+                if (!stdout) {
                     return [];
                 }
 
@@ -383,7 +379,7 @@ define(function (require, exports, module) {
                 items  = ["hashShort", "hash", "author", "date", "message"],
                 format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
             return this.executeCommand(this._git + " log " + branch + " --format=" + escapeShellArg(format)).then(function (stdout) {
-                return stdout.length === 0 ? [] : stdout.split("\n").map(function (line) {
+                return !stdout ? [] : stdout.split("\n").map(function (line) {
                     var result = {},
                         data = line.split(separator);
                     items.forEach(function (name, i) {
@@ -396,7 +392,7 @@ define(function (require, exports, module) {
 
         getFilesFromCommit: function (hash) {
             return this.executeCommand(this._git + " diff --name-only " + escapeShellArg(hash + "^!")).then(function (stdout) {
-                return stdout.length === 0 ? [] : stdout.split("\n");
+                return !stdout ? [] : stdout.split("\n");
             });
         },
 
