@@ -2,6 +2,7 @@
 
 ## 0.10.3
 * Fixed ambiguous argument error when viewing history.
+* Tweaks to commit history by [Fez Vrasta](https://github.com/FezVrasta) & [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
 
 ## 0.10.2
 * xfce4-terminal support by [Ben Keith](https://github.com/benlk)

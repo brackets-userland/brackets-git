@@ -108,6 +108,7 @@
     }
     .brackets-git-gutter-deleted-lines {
         background-color: @lighterRed;
+        .selectable-text();
     }
 }
 
@@ -316,7 +317,7 @@
 
 // nice, formatted and colored diff
 .commit-diff {
-    .user-select(text);
+    .selectable-text();
     code, pre {
         background: none;
         border: none;
@@ -364,6 +365,10 @@
     -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, .15), 0 1px 2px rgba(0, 0, 0, .05);
     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, .15), 0 1px 2px rgba(0, 0, 0, .05);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, .15), 0 1px 2px rgba(0, 0, 0, .05);
+}
+
+.selectable-text {
+    .user-select(text);
 }
 
 /*
