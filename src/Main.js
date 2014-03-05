@@ -232,16 +232,16 @@ define(function (require, exports) {
 
                 // nodeConnection returns jQuery deffered, not Q
                 nodeConnection.domains["brackets-git"][method](opts.cwd, cmd, args)
-                    .then(function (out) {
-                        if (!resolved) {
-                            if (debugOn) { console.log(extName + "cmd-" + method + "-out: \"" + out + "\""); }
-                            rv.resolve(sanitizeOutput(out));
-                        }
-                    })
                     .fail(function (err) {
                         if (!resolved) {
                             if (debugOn) { console.log(extName + "cmd-" + method + "-fail: \"" + err + "\""); }
                             rv.reject(sanitizeOutput(err));
+                        }
+                    })
+                    .then(function (out) {
+                        if (!resolved) {
+                            if (debugOn) { console.log(extName + "cmd-" + method + "-out: \"" + out + "\""); }
+                            rv.resolve(sanitizeOutput(out));
                         }
                     })
                     .always(function () {
