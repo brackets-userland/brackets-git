@@ -374,11 +374,17 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " clone " + escapeShellArg(remoteGitUrl) + " " + escapeShellArg(destinationFolder));
         },
 
-        gitHistory: function (branch) {
+        gitHistory: function (branch, skip_commits) {
             var separator = "_._",
                 items  = ["hashShort", "hash", "author", "date", "message"],
-                format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
-            return this.executeCommand(this._git + " log -500 " + branch + " --format=" + escapeShellArg(format)).then(function (stdout) {
+                format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator),
+                skip = "";
+
+            if (skip_commits > 0) {
+                skip = "--skip=" + skip_commits;
+            }
+
+            return this.executeCommand(this._git + " log -100 " + branch + " --format=" + escapeShellArg(format) + " " + skip).then(function (stdout) {
                 return !stdout ? [] : stdout.split("\n").map(function (line) {
                     var result = {},
                         data = line.split(separator);

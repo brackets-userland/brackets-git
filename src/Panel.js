@@ -909,6 +909,27 @@ define(function (require, exports) {
                         // if click in a row a dialog will be open to show the modified file list of the commit
                         showCommitDialog($(this).data("hash"));
                     });
+
+                    $tableContainer.on("scroll", function () {
+                        if (($tableContainer.get(0).scrollHeight - $tableContainer.scrollTop()) == $tableContainer.height()) {
+                            Main.gitControl.gitHistory(branchName, $tableContainer.find("tr").length).then(function (commits) {
+                                if (commits.length > 0) {
+                                    var more_commits = "";
+
+                                    commits.forEach(function (commit) {
+                                        more_commits += "<tr data-hash=\"" + commit.hash + "\">";
+                                        more_commits += "<td>" + commit.hashShort + "</td>";
+                                        more_commits += "<td>" + commit.message + "</td>";
+                                        more_commits += "<td>" + commit.author + "</td>";
+                                        more_commits += "<td>" + commit.date + "</td>";
+                                        more_commits += "</tr>";
+                                    });
+
+                                    $tableContainer.find("tr:last").after(more_commits);
+                                }
+                            });
+                        }
+                    });
                 });
             }).fail(function (err) {
                 ErrorHandler.showError(err, "Git History Commit failed");
