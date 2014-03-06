@@ -920,8 +920,9 @@ define(function (require, exports) {
                     });
 
                     $tableContainer.on("scroll", function () {
-                        if (($tableContainer.get(0).scrollHeight - $tableContainer.scrollTop()) == $tableContainer.height()) {
-                            Main.gitControl.gitHistory(branchName, $tableContainer.find("tr").length).then(function (commits) {
+                        var $this = $(this);
+                        if (($this.prop("scrollHeight") - $this.scrollTop()) == $this.height()) {
+                            Main.gitControl.gitHistory(branchName, $this.find("tr").length).then(function (commits) {
                                 if (commits.length > 0) {
                                     var moreCommits = "";
 
@@ -934,7 +935,7 @@ define(function (require, exports) {
                                         moreCommits += "</tr>";
                                     });
 
-                                    $tableContainer.find("tr:last").after(moreCommits);
+                                    $this.find("tr:last").after(moreCommits);
                                 }
                             });
                         }
