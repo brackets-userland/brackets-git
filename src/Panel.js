@@ -1,4 +1,4 @@
-/*jslint plusplus: true, vars: true, nomen: true, multistr: true */
+/*jslint plusplus: true, vars: true, nomen: true */
 /*global $, brackets, console, define, Mustache, refresh */
 
 define(function (require, exports) {
@@ -903,21 +903,23 @@ define(function (require, exports) {
     // Load more rows in the history list on scroll
     function loadMoreHistory() {
         if ($tableContainer.find(".git-history-list").is(":visible")) {
-            if (($tableContainer.prop("scrollHeight") - $tableContainer.scrollTop()) == $tableContainer.height()) {
+            if (($tableContainer.prop("scrollHeight") - $tableContainer.scrollTop()) === $tableContainer.height()) {
                 return Main.gitControl.getBranchName().then(function (branchName) {
-                    return Main.gitControl.gitHistory(branchName, $tableContainer.find("tr").length).then(function (commits) {
-                        if (commits.length > 0) {
-                            var template = "{{#.}}\
-                                            <tr class=\"git-diff\" data-hash=\"{{hash}}\">\
-                                                <td>{{hashShort}}</td>\
-                                                <td>{{message}}</td>\
-                                                <td>{{author}}</td>\
-                                                <td>{{date}}</td>\
-                                            </tr>\
-                                            {{/.}}";
-
-                            $tableContainer.find(".git-history-list > tbody").append(Mustache.to_html(template, commits));
+                    return Main.gitControl.gitHistory(branchName, $tableContainer.find("tr.history-commit").length).then(function (commits) {
+                        if (commits.length === 0) {
+                            return;
                         }
+
+                        var template = "{{#.}}";
+                        template += "<tr class=\"history-commit\" data-hash=\"{{hash}}\">";
+                        template += "<td>{{hashShort}}</td>";
+                        template += "<td>{{message}}</td>";
+                        template += "<td>{{author}}</td>";
+                        template += "<td>{{date}}</td>";
+                        template += "</tr>";
+                        template += "{{/.}}";
+
+                        $tableContainer.find(".git-history-list > tbody").append(Mustache.to_html(template, commits));
                     })
                     .fail(function (err) {
                         ErrorHandler.showError(err, "Failed to load more history rows");
@@ -934,20 +936,20 @@ define(function (require, exports) {
     function handleToggleHistory() {
 
         var $panel = gitPanel.$panel,
-            historyStatus = !$panel.find(".git-history-list").is(":visible");
+            historyEnabled = !$panel.find(".git-history-list").is(":visible");
 
         // Render .git-history-list if is not already generated
         if ($tableContainer.find(".git-history-list").length === 0) { renderHistory(); }
 
         // Toggle commit button and check-all checkbox
-        $panel.find(".git-commit, .check-all").prop("disabled", historyStatus);
+        $panel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
 
         // Toggle visibility of .git-edited-list and .git-history-list
         $tableContainer.find(".git-edited-list, .git-history-list").toggle();
 
         // Toggle history button
         $panel.find(".git-history").toggleClass("btn-active")
-        .attr("title", historyStatus ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
+        .attr("title", historyEnabled ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
 
     }
 
@@ -1063,7 +1065,7 @@ define(function (require, exports) {
                 e.stopPropagation();
                 handleGitDelete($(e.target).closest("tr").data("file"));
             })
-            .on("click", ".git-edited", function (e) {
+            .on("click", ".modified-file", function (e) {
                 var $this = $(e.currentTarget);
                 if ($this.data("status") === GitControl.FILE_STATUS.DELETED) {
                     return;
@@ -1072,14 +1074,14 @@ define(function (require, exports) {
                     fullPath: Main.getProjectRoot() + $this.data("file")
                 });
             })
-            .on("dblclick", ".git-edited", function (e) {
+            .on("dblclick", ".modified-file", function (e) {
                 var $this = $(e.currentTarget);
                 if ($this.data("status") === GitControl.FILE_STATUS.DELETED) {
                     return;
                 }
                 FileViewController.addToWorkingSetAndSelect(Main.getProjectRoot() + $this.data("file"));
             })
-            .on("click", ".git-diff", function () {
+            .on("click", ".history-commit", function () {
                 showHistoryCommitDialog($(this).attr("data-hash"));
             })
             .on("scroll", function () {
