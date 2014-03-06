@@ -46,7 +46,6 @@ define(function (require, exports) {
         gitPanelDisabled = null,
         gitPanelMode = null,
         showingUntracked = true,
-        showingHistory = false,
         $tableContainer = null;
 
     /**
@@ -719,7 +718,6 @@ define(function (require, exports) {
 
     function refresh() {
         // set the history panel to false and remove the class that show the button history active when refresh
-        showingHistory = false;
         gitPanel.$panel.find(".git-history").removeClass("btn-active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
 
         // re-attach the table handlers
@@ -750,7 +748,7 @@ define(function (require, exports) {
             gitPanel.$panel.find(".check-all").prop("checked", false).prop("disabled", files.length === 0);
 
             if (files.length === 0) {
-                $tableContainer.append($("<p class='nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
+                $tableContainer.append($("<p class='git-edited-list nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
             } else {
                 // if desired, remove untracked files from the results
                 if (showingUntracked === false) {
@@ -853,7 +851,7 @@ define(function (require, exports) {
             dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
             $dialog          = dialog.getElement();
         _makeDialogBig($dialog);
-        
+
         var firstFile = $dialog.find(".commit-files ul li:first-child").text().trim();
         if (firstFile) {
             Main.gitControl.getDiffOfFileFromCommit(hashCommit, firstFile).then(function (diff) {
@@ -871,9 +869,9 @@ define(function (require, exports) {
             });
         });
     }
-    
+
     // show a commit with given hash in a dialog
-    function showCommitDialog(hash) {
+    function showHistoryCommitDialog(hash) {
         Main.gitControl.getFilesFromCommit(hash).then(function (files) {
             var list = $.map(files, function (file) {
                 var dotPosition = file.lastIndexOf("."),
@@ -883,49 +881,76 @@ define(function (require, exports) {
             });
             _showCommitDiffDialog(hash, list);
         }).fail(function (err) {
-            ErrorHandler.showError(err, "Git Commit Diff failed");
+            ErrorHandler.showError(err, "Failed to load list of diff files");
         });
     }
-    
-    // History table renderer to show the history commits
-    function handleToggleHistory() {
-        showingHistory = !showingHistory;
 
-        if (showingHistory) {
-            var $panel = gitPanel.$panel;
-            $panel.find(".git-history").addClass("btn-active").attr("title", Strings.TOOLTIP_HIDE_HISTORY);
-
-            // Disabling commit button when history table is showed
-            $panel.find(".git-commit").prop("disabled", showingHistory);
-
-            // Disabling and uncheck check-all checkbox when history table is showed
-            $panel.find(".check-all").prop("checked", !showingHistory).prop("disabled", showingHistory);
-
-            // Clear the table container to show the history data
-            $tableContainer.empty();
-
-            // Get the actual branch
-            return Main.gitControl.getBranchName().then(function (branchName) {
-                // Get the history commit of the actual branch
-                return Main.gitControl.gitHistory(branchName).then(function (commits) {
-                    $tableContainer.append(Mustache.render(gitPanelHistoryTemplate, {
-                        files: commits,
-                        Strings: Strings
-                    }));
-
-                    // Removing the table defaults handlers and add a new one to handle the click in the commits history
-                    $tableContainer.off().on("click", "tr", function () {
-                        // if click in a row a dialog will be open to show the modified file list of the commit
-                        showCommitDialog($(this).data("hash"));
-                    });
-                });
-            }).fail(function (err) {
-                ErrorHandler.showError(err, "Git History Commit failed");
+    // Render history list the first time
+    function renderHistory() {
+        return Main.gitControl.getBranchName().then(function (branchName) {
+            // Get the history commit of the current branch
+            return Main.gitControl.gitHistory(branchName).then(function (commits) {
+                $tableContainer.append(Mustache.render(gitPanelHistoryTemplate, {
+                    files: commits,
+                    Strings: Strings
+                }));
             });
-        } else {
-            // When u click again in the history button the refresh method will be render the default table to show git status
-            refresh();
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Failed to get history");
+        });
+    }
+
+    // Load more rows in the history list on scroll
+    function loadMoreHistory() {
+        if ($tableContainer.find(".git-history-list").is(":visible")) {
+            if (($tableContainer.prop("scrollHeight") - $tableContainer.scrollTop()) === $tableContainer.height()) {
+                return Main.gitControl.getBranchName().then(function (branchName) {
+                    return Main.gitControl.gitHistory(branchName, $tableContainer.find("tr.history-commit").length).then(function (commits) {
+                        if (commits.length === 0) {
+                            return;
+                        }
+
+                        var template = "{{#.}}";
+                        template += "<tr class=\"history-commit\" data-hash=\"{{hash}}\">";
+                        template += "<td>{{hashShort}}</td>";
+                        template += "<td>{{message}}</td>";
+                        template += "<td>{{author}}</td>";
+                        template += "<td>{{date}}</td>";
+                        template += "</tr>";
+                        template += "{{/.}}";
+
+                        $tableContainer.find(".git-history-list > tbody").append(Mustache.to_html(template, commits));
+                    })
+                    .fail(function (err) {
+                        ErrorHandler.showError(err, "Failed to load more history rows");
+                    });
+                })
+                .fail(function (err) {
+                    ErrorHandler.showError(err, "Failed to get branch name");
+                });
+            }
         }
+    }
+
+    // Show or hide the history list on click of .history button
+    function handleToggleHistory() {
+
+        var $panel = gitPanel.$panel,
+            historyEnabled = !$panel.find(".git-history-list").is(":visible");
+
+        // Render .git-history-list if is not already generated
+        if ($tableContainer.find(".git-history-list").length === 0) { renderHistory(); }
+
+        // Toggle commit button and check-all checkbox
+        $panel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
+
+        // Toggle visibility of .git-edited-list and .git-history-list
+        $tableContainer.find(".git-edited-list, .git-history-list").toggle();
+
+        // Toggle history button
+        $panel.find(".git-history").toggleClass("btn-active")
+        .attr("title", historyEnabled ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
+
     }
 
     function handleGitInit() {
@@ -1040,7 +1065,7 @@ define(function (require, exports) {
                 e.stopPropagation();
                 handleGitDelete($(e.target).closest("tr").data("file"));
             })
-            .on("click", "tr", function (e) {
+            .on("click", ".modified-file", function (e) {
                 var $this = $(e.currentTarget);
                 if ($this.data("status") === GitControl.FILE_STATUS.DELETED) {
                     return;
@@ -1049,12 +1074,18 @@ define(function (require, exports) {
                     fullPath: Main.getProjectRoot() + $this.data("file")
                 });
             })
-            .on("dblclick", "tr", function (e) {
+            .on("dblclick", ".modified-file", function (e) {
                 var $this = $(e.currentTarget);
                 if ($this.data("status") === GitControl.FILE_STATUS.DELETED) {
                     return;
                 }
                 FileViewController.addToWorkingSetAndSelect(Main.getProjectRoot() + $this.data("file"));
+            })
+            .on("click", ".history-commit", function () {
+                showHistoryCommitDialog($(this).attr("data-hash"));
+            })
+            .on("scroll", function () {
+                loadMoreHistory();
             });
     }
 

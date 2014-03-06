@@ -389,11 +389,21 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " clone " + escapeShellArg(remoteGitUrl) + " " + escapeShellArg(destinationFolder));
         },
 
-        gitHistory: function (branch) {
+        gitHistory: function (branch, skipCommits) {
             var separator = "_._",
                 items  = ["hashShort", "hash", "author", "date", "message"],
                 format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
-            return this.executeCommand(this._git + " log -500 " + branch + " --format=" + escapeShellArg(format)).then(function (stdout) {
+
+            var cmd = [
+                this._git,
+                "log",
+                "-100",
+                skipCommits ? "--skip=" + skipCommits : "",
+                "--format=" + escapeShellArg(format),
+                escapeShellArg(branch)
+            ];
+
+            return this.executeCommand(cmd.join(" ")).then(function (stdout) {
                 return !stdout ? [] : stdout.split("\n").map(function (line) {
                     var result = {},
                         data = line.split(separator);
@@ -412,7 +422,7 @@ define(function (require, exports, module) {
         },
 
         getDiffOfFileFromCommit: function (hash, file) {
-            return this.executeCommand(this._git + " diff --no-color " + escapeShellArg(hash + "^!") + " " + escapeShellArg(file));
+            return this.executeCommand(this._git + " diff --no-color " + escapeShellArg(hash + "^!") + " -- " + escapeShellArg(file));
         },
 
         remoteAdd: function (remote, url) {
