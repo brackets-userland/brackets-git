@@ -389,17 +389,23 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " clone " + escapeShellArg(remoteGitUrl) + " " + escapeShellArg(destinationFolder));
         },
 
-        gitHistory: function (branch, skip_commits) {
+        gitHistory: function (branch, skipCommits) {
             var separator = "_._",
                 items  = ["hashShort", "hash", "author", "date", "message"],
-                format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator),
-                skip = "";
+                format = "--format=" +  escapeShellArg(["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator)),
+                skip = (skipCommits) ? "--skip=" + skipCommits : "",
+                limit = "-100",
+                options = [];
 
-            if (skip_commits > 0) {
-                skip = "--skip=" + skip_commits;
+            options.push(limit, branch, format, skip);
+
+            var cmd = [this._git, "log"];
+
+            if (Array.isArray(options)) {
+                cmd = cmd.concat(options);
             }
 
-            return this.executeCommand(this._git + " log -100 " + branch + " --format=" + escapeShellArg(format) + " " + skip).then(function (stdout) {
+            return this.executeCommand(cmd.join(" ")).then(function (stdout) {
                 return !stdout ? [] : stdout.split("\n").map(function (line) {
                     var result = {},
                         data = line.split(separator);
