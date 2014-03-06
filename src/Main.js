@@ -240,14 +240,16 @@ define(function (require, exports) {
                 nodeConnection.domains["brackets-git"][method](opts.cwd, cmd, args)
                     .fail(function (err) {
                         if (!resolved) {
+                            err = sanitizeOutput(err);
                             if (debugOn) { console.log(extName + "cmd-" + method + "-fail: \"" + err + "\""); }
-                            rv.reject(sanitizeOutput(err));
+                            rv.reject(err);
                         }
                     })
                     .then(function (out) {
                         if (!resolved) {
+                            out = sanitizeOutput(out);
                             if (debugOn) { console.log(extName + "cmd-" + method + "-out: \"" + out + "\""); }
-                            rv.resolve(sanitizeOutput(out));
+                            rv.resolve(out);
                         }
                     })
                     .always(function () {

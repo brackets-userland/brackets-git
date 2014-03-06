@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.4
+* Fixed multiple issues with pushing into remote repository.
+* Fixed an issue where history was not working for large repositories.
+* Fixed an issue with displaying some commits in the history.
+
 ## 0.10.3
 * Fixed ambiguous argument error when viewing history.
 * Tweaks to commit history by [Fez Vrasta](https://github.com/FezVrasta) & [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
@@ -13,7 +18,7 @@
 
 ## 0.10.0
 * Feature to browse commit history by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
-* Feature to clone a repositry when in an empty folder by [Fez Vrasta](https://github.com/FezVrasta)
+* Feature to clone a repository when in an empty folder by [Fez Vrasta](https://github.com/FezVrasta)
 * Feature to use pull & push with multiple remotes by [Fez Vrasta](https://github.com/FezVrasta)
 * Tabs have been added to settings dialog, a lot of new shorcuts to configure added.
 * You can now navigate between modifications inside a file.

@@ -573,7 +573,7 @@ define(function (require, exports) {
                             });
                         });
                     }
-                    if (!hasUsername) {
+                    if (!hasPassword) {
                         p = p.then(function () {
                             return askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_PASSWORD).then(function (str) {
                                 password = str;
@@ -595,7 +595,7 @@ define(function (require, exports) {
                             var io = remoteUrl.indexOf("@");
                             remoteUrl = remoteUrl.substring(0, io) + ":" + password + remoteUrl.substring(io);
                         }
-                        return Main.gitControl.gitPush(remoteUrl + " " + branchName).then(function (stdout) {
+                        return Main.gitControl.gitPush(remoteUrl, branchName).then(function (stdout) {
                             if (shouldSave) {
                                 return Main.gitControl.setGitConfig("remote." + remoteName + ".url", remoteUrl).then(function () {
                                     return stdout;
@@ -648,12 +648,21 @@ define(function (require, exports) {
             if (typeof err !== "string") { throw err; }
             var m = err.match(/git push --set-upstream ([-0-9a-zA-Z]+) ([-0-9a-zA-Z]+)/);
             if (!m) { throw err; }
-            return Main.gitControl.gitPushUpstream(m[1], m[2]);
+            return Main.gitControl.gitPushSetUpstream(m[1], m[2]);
 
         }).fail(function (err) {
 
-            console.warn("Traditional push failed: " + err);
-            return handleGitPushWithPassword(err);
+            var validFail = false;
+            if (err.match(/rejected because/)) {
+                validFail = true;
+            }
+
+            if (validFail) {
+                throw err;
+            } else {
+                console.warn("Traditional push failed: " + err);
+                return handleGitPushWithPassword(err);
+            }
 
         }).then(function (result) {
             Dialogs.showModalDialog(
