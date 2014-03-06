@@ -352,13 +352,28 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " diff --no-color --staged");
         },
 
-        gitPush: function (remote) {
+        gitPush: function (remote, branch, options) {
             remote = remote || "";
-            return this.executeCommand(this._git + " push --porcelain " + escapeShellArg(remote));
+            branch = branch || "";
+
+            var cmd = [this._git, "push", "--porcelain"];
+
+            if (Array.isArray(options)) {
+                cmd = cmd.concat(options);
+            }
+
+            if (remote) {
+                cmd.push(escapeShellArg(remote));
+                if (branch) {
+                    cmd.push(escapeShellArg(branch));
+                }
+            }
+
+            return this.executeCommand(cmd.join(" "));
         },
 
-        gitPushUpstream: function (upstream, branch) {
-            return this.executeCommand(this._git + " push --porcelain --set-upstream " + escapeShellArg(upstream) + " " + escapeShellArg(branch));
+        gitPushSetUpstream: function (remote, branch) {
+            return this.gitPush(remote, branch, ["--set-upstream"]);
         },
 
         gitPull: function (remote) {
