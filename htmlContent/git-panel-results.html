@@ -1,7 +1,7 @@
-<table class="bottom-panel-table table table-striped table-condensed row-highlight">
+<table class="git-edited-list bottom-panel-table table table-striped table-condensed row-highlight">
     <tbody>
         {{#files}}
-        <tr data-file="{{file}}" data-status="{{status}}">
+        <tr class="git-edited" data-file="{{file}}" data-status="{{status}}">
             <td class="checkbox-column"><input type="checkbox" class="check-one" /></td>
             <td class="status-column">{{statusText}}</td>
             <td>{{file}}</td>
