@@ -392,18 +392,16 @@ define(function (require, exports, module) {
         gitHistory: function (branch, skipCommits) {
             var separator = "_._",
                 items  = ["hashShort", "hash", "author", "date", "message"],
-                format = "--format=" +  escapeShellArg(["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator)),
-                skip = (skipCommits) ? "--skip=" + skipCommits : "",
-                limit = "-100",
-                options = [];
+                format = "--format=" +  escapeShellArg(["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator));
 
-            options.push(limit, branch, format, skip);
-
-            var cmd = [this._git, "log"];
-
-            if (Array.isArray(options)) {
-                cmd = cmd.concat(options);
-            }
+            var cmd = [
+                this._git,
+                "log",
+                "-100",
+                skipCommits ? "--skip=" + skipCommits : "",
+                "--format=" + escapeShellArg(format),
+                escapeShellArg(branch)
+            ];
 
             return this.executeCommand(cmd.join(" ")).then(function (stdout) {
                 return !stdout ? [] : stdout.split("\n").map(function (line) {
