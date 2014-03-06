@@ -23,9 +23,20 @@
     // handler with ChildProcess.exec
     function execute(directory, command, args, callback) {
         // http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
-        ChildProcess.exec(command + " " + args.join(" "), {
-            cwd: directory
-        }, function (err, stdout, stderr) {
+        var toExec = command + " " + args.join(" ");
+        ChildProcess.exec(toExec, { cwd: directory }, function (err, stdout, stderr) {
+            /*
+            if (true) {
+                var line = [
+                    "in(" + typeof toExec + ")",
+                    toExec,
+                    "out(" + typeof stderr + "," + typeof stdout + ")",
+                    stderr,
+                    stdout
+                ];
+                fs.appendFileSync(__dirname + "/git.log", line.join("|") + "\n");
+            }
+            */
             callback(err ? fixEOL(stderr) : undefined, err ? undefined : fixEOL(stdout));
         });
     }
