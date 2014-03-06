@@ -924,18 +924,16 @@ define(function (require, exports) {
                         if (($this.prop("scrollHeight") - $this.scrollTop()) == $this.height()) {
                             Main.gitControl.gitHistory(branchName, $this.find("tr").length).then(function (commits) {
                                 if (commits.length > 0) {
-                                    var moreCommits = "";
+                                    var template = "{{#.}}";
+                                    template += "<tr data-hash=\"{{hash}}\">";
+                                    template += "<td>{{hashShort}}</td>";
+                                    template += "<td>{{message}}</td>";
+                                    template += "<td>{{author}}</td>";
+                                    template += "<td>{{date}}</td>";
+                                    template += "</tr>";
+                                    template += "{{/.}}";
 
-                                    commits.forEach(function (commit) {
-                                        moreCommits += "<tr data-hash=\"" + commit.hash + "\">";
-                                        moreCommits += "<td>" + commit.hashShort + "</td>";
-                                        moreCommits += "<td>" + commit.message + "</td>";
-                                        moreCommits += "<td>" + commit.author + "</td>";
-                                        moreCommits += "<td>" + commit.date + "</td>";
-                                        moreCommits += "</tr>";
-                                    });
-
-                                    $this.find("tr:last").after(moreCommits);
+                                    $this.find("tr:last").after(Mustache.to_html(template, commits));
                                 }
                             });
                         }
