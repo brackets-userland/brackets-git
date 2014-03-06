@@ -871,7 +871,7 @@ define(function (require, exports) {
     }
 
     // show a commit with given hash in a dialog
-    function showCommitDialog(hash) {
+    function showHistoryCommitDialog(hash) {
         Main.gitControl.getFilesFromCommit(hash).then(function (files) {
             var list = $.map(files, function (file) {
                 var dotPosition = file.lastIndexOf("."),
@@ -1080,7 +1080,7 @@ define(function (require, exports) {
                 FileViewController.addToWorkingSetAndSelect(Main.getProjectRoot() + $this.data("file"));
             })
             .on("click", ".git-diff", function () {
-                showCommitDialog($(this).attr("data-hash"));
+                showHistoryCommitDialog($(this).attr("data-hash"));
             })
             .on("scroll", function () {
                 loadMoreHistory();

@@ -392,7 +392,7 @@ define(function (require, exports, module) {
         gitHistory: function (branch, skipCommits) {
             var separator = "_._",
                 items  = ["hashShort", "hash", "author", "date", "message"],
-                format = "--format=" +  escapeShellArg(["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator));
+                format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
 
             var cmd = [
                 this._git,
