@@ -916,7 +916,7 @@ define(function (require, exports) {
                                             </tr>\
                                             {{/.}}";
 
-                            $tableContainer.find(".git-history-list").append(Mustache.to_html(template, commits));
+                            $tableContainer.find(".git-history-list > tbody").append(Mustache.to_html(template, commits));
                         }
                     })
                     .fail(function (err) {
