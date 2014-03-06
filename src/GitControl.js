@@ -378,7 +378,7 @@ define(function (require, exports, module) {
             var separator = "_._",
                 items  = ["hashShort", "hash", "author", "date", "message"],
                 format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
-            return this.executeCommand(this._git + " log " + branch + " --format=" + escapeShellArg(format)).then(function (stdout) {
+            return this.executeCommand(this._git + " log -500 " + branch + " --format=" + escapeShellArg(format)).then(function (stdout) {
                 return !stdout ? [] : stdout.split("\n").map(function (line) {
                     var result = {},
                         data = line.split(separator);
