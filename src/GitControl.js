@@ -422,7 +422,7 @@ define(function (require, exports, module) {
         },
 
         getDiffOfFileFromCommit: function (hash, file) {
-            return this.executeCommand(this._git + " diff --no-color " + escapeShellArg(hash + "^!") + " " + escapeShellArg(file));
+            return this.executeCommand(this._git + " diff --no-color " + escapeShellArg(hash + "^!") + " -- " + escapeShellArg(file));
         },
 
         remoteAdd: function (remote, url) {
