@@ -569,7 +569,7 @@ define(function (require, exports) {
                     if (!hasUsername) {
                         p = p.then(function () {
                             return askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_USERNAME).then(function (str) {
-                                username = str;
+                                username = encodeURIComponent(str);
                             });
                         });
                     }
