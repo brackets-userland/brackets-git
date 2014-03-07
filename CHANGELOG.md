@@ -4,6 +4,7 @@
 * Escape special characters in username and password by [Zhi](https://github.com/yfwz100)
 * Implemented infinite scrolling by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
 * Fixed commit message escaping issues in Linux
+* Git commands added into own top menu by [Matt Hayward](https://github.com/matthaywardwebdesign)
 
 ## 0.10.4
 * Fixed multiple issues with pushing into remote repository.

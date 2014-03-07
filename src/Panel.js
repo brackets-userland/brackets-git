@@ -1148,19 +1148,22 @@ define(function (require, exports) {
 
 
         // Commit current and all shortcuts
-        var COMMIT_CURRENT_CMD = "brackets-git.commitCurrent",
+        var GIT_MENU           = "brackets-git.gitMenu",
+            COMMIT_CURRENT_CMD = "brackets-git.commitCurrent",
             COMMIT_ALL_CMD     = "brackets-git.commitAll",
             BASH_CMD           = "brackets-git.launchBash",
             PUSH_CMD           = "brackets-git.push",
             PULL_CMD           = "brackets-git.pull",
             GOTO_PREV_CHANGE   = "brackets-git.gotoPrevChange",
-            GIT_MENU           = "brackets-git.gitMenu",
             GOTO_NEXT_CHANGE   = "brackets-git.gotoNextChange";
         
          // Add command to menu.
-        var menu = Menus.addMenu("Git",GIT_MENU);
+        var menu = Menus.getMenu(GIT_MENU);
+
+        menu.addMenuDivider();
         menu.addMenuItem(PANEL_COMMAND_ID, Preferences.get("panelShortcut"));
 
+        menu.addMenuDivider();
         CommandManager.register(Strings.COMMIT_CURRENT_SHORTCUT, COMMIT_CURRENT_CMD, commitCurrentFile);
         menu.addMenuItem(COMMIT_CURRENT_CMD, Preferences.get("commitCurrentShortcut"));
         CommandManager.register(Strings.COMMIT_ALL_SHORTCUT, COMMIT_ALL_CMD, commitAllFiles);

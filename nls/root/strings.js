@@ -62,7 +62,7 @@ define({
     LIST_MODIFIED_FILES:                "Modified files",
     MARK_MODIFIED_FILES_IN_TREE:        "Mark modified files in file tree",
     NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
-    PANEL_COMMAND:                      "Git",
+    PANEL_COMMAND:                      "Show Git panel",
     PANEL_SHORTCUT:                     "Toggle panel",
     PASSWORDS:                          "Passwords",
     PATH_TO_GIT_EXECUTABLE:             "Path to Git executable",

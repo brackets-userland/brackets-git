@@ -15,7 +15,6 @@ define(function (require, exports, module) {
     var q                          = require("./thirdparty/q"),
         AppInit                    = brackets.getModule("utils/AppInit"),
         CommandManager             = brackets.getModule("command/CommandManager"),
-        Commands                   = brackets.getModule("command/Commands"),
         ExtensionUtils             = brackets.getModule("utils/ExtensionUtils"),
         Menus                      = brackets.getModule("command/Menus"),
         NodeConnection             = brackets.getModule("utils/NodeConnection"),
@@ -32,6 +31,7 @@ define(function (require, exports, module) {
         ErrorHandler               = require("./src/ErrorHandler"),
         ExpectedError              = require("./src/ExpectedError"),
         SettingsDialog             = require("./src/SettingsDialog"),
+        TOP_MENU_ID                = "brackets-git.gitMenu",
         SETTINGS_COMMAND_ID        = "brackets-git.settings",
         domainModulePath           = moduleDirectory + "domain",
         nodeConnection             = new NodeConnection();
@@ -67,7 +67,9 @@ define(function (require, exports, module) {
 
     // Register command and add it to the menu.
 	CommandManager.register(Strings.GIT_SETTINGS, SETTINGS_COMMAND_ID, openSettingsPanel);
-	Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(SETTINGS_COMMAND_ID, "", Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
+	Menus
+        .addMenu("Git", TOP_MENU_ID)
+        .addMenuItem(SETTINGS_COMMAND_ID);
 
     AppInit.appReady(function () {
         // Connects to Node
