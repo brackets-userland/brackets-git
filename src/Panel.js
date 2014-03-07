@@ -576,7 +576,7 @@ define(function (require, exports) {
                     if (!hasPassword) {
                         p = p.then(function () {
                             return askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_PASSWORD).then(function (str) {
-                                password = str;
+                                password = encodeURIComponent(str);
                             });
                         });
                     }

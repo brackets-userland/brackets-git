@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.5
+* Escape special characters in username and password by [Zhi](https://github.com/yfwz100)
+
 ## 0.10.4
 * Fixed multiple issues with pushing into remote repository.
 * Fixed an issue where history was not working for large repositories.
