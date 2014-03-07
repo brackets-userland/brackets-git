@@ -919,7 +919,7 @@ define(function (require, exports) {
                         template += "</tr>";
                         template += "{{/.}}";
 
-                        $tableContainer.find(".git-history-list > tbody").append(Mustache.to_html(template, commits));
+                        $tableContainer.find(".git-history-list > tbody").append(Mustache.render(template, commits));
                     })
                     .fail(function (err) {
                         ErrorHandler.showError(err, "Failed to load more history rows");
