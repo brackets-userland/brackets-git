@@ -30,11 +30,6 @@ define(function (require, exports, module) {
     }
 
     function escapeShellArg(str) {
-        // From: http://phpjs.org/functions
-        // +   original by: Felix Geisendoerfer (http://www.debuggable.com/felix)
-        // +   improved by: Brett Zamir (http://brett-zamir.me)
-        // *     example 1: escapeshellarg("kevin's birthday");
-        // *     returns 1: "'kevin\'s birthday'"
         if (typeof str !== "string") {
             throw new Error("escapeShellArg argument is not a string: " + typeof str);
         }
@@ -42,10 +37,11 @@ define(function (require, exports, module) {
             return str;
         }
         if (brackets.platform !== "win") {
-            str = str.replace(/[^\\]'/g, function (m) {
-                return m.slice(0, 1) + "\\\'";
+            // http://steve-parker.org/sh/escape.shtml
+            str = str.replace(/["$`\\]/g, function (m) {
+                return "\\" + m;
             });
-            return "'" + str + "'";
+            return "\"" + str + "\"";
         } else {
             // http://stackoverflow.com/questions/7760545/cmd-escape-double-quotes-in-parameter
             str = str.replace(/"/g, function () {
