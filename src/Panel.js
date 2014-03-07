@@ -113,31 +113,53 @@ define(function (require, exports) {
         });
     }
 
+    function _getDefaultRemote() {
+        // refactor later when Preferences are fixed
+        var key = ["defaultRemotes", Main.getProjectRoot()].join(".");
+        var defaultRemote = Preferences.get(key);
+        return defaultRemote || "origin";
+    }
+
+    function _setDefaultRemote(remoteName) {
+        // refactor later when Preferences are fixed
+        var key = ["defaultRemotes", Main.getProjectRoot()].join(".");
+        Preferences.persist(key, remoteName);
+    }
+
     function handleRemotePick(e, $a) {
         var $selected = e ? $(e.target) : $a;
+
+        var remoteName = $selected.attr("data-remote-name");
+        _setDefaultRemote(remoteName);
+
         gitPanel.$panel.find(".git-remotes-field")
             .text($selected.text().trim())
             .attr({
-                "data-remote-name": $selected.attr("data-remote-name"),
-                "data-remote-url": $selected.attr("data-remote-url")
+                "data-remote-name": remoteName
             });
     }
 
     function prepareRemotesPicker() {
         Main.gitControl.getRemotes()
         .then(function (remotes) {
-            var $first;
-            var $remotesDropdown = gitPanel.$panel.find(".git-remotes-dropdown").empty();
+            var defaultRemoteName = _getDefaultRemote(),
+                $defaultRemote,
+                $remotesDropdown = gitPanel.$panel.find(".git-remotes-dropdown").empty();
+
             remotes.forEach(function (remoteInfo) {
+                var remoteName = remoteInfo[0];
                 var $a = $("<a/>").attr({
                     "href": "#",
-                    "data-remote-name": remoteInfo[0],
-                    "data-remote-url": remoteInfo[1]
+                    "data-remote-name": remoteName
                 }).text(remoteInfo[0]).appendTo($("<li/>").appendTo($remotesDropdown));
-                if (!$first) { $first = $a; }
+
+                if (remoteName === defaultRemoteName) {
+                    $defaultRemote = $a;
+                }
             });
-            if ($first) {
-                handleRemotePick(null, $first);
+
+            if ($defaultRemote) {
+                handleRemotePick(null, $defaultRemote);
             }
         })
         .fail(function (err) {

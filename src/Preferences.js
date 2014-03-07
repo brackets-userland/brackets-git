@@ -34,6 +34,7 @@ define(function (require, exports, module) {
         "terminalCommand": {                "type": "string",            "value": null          },
         "extensionDirectory": {             "type": "string",            "value": undefined     },
         "gitIsInSystemPath": {              "type": "boolean",           "value": false         },
+        "defaultRemotes": {                 "type": "object",            "value": {}            },
         // platform specific
         "gitPath": {
             "type": "string",
