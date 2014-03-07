@@ -1146,10 +1146,6 @@ define(function (require, exports) {
         // Register command for opening bottom panel.
         CommandManager.register(Strings.PANEL_COMMAND, PANEL_COMMAND_ID, toggle);
 
-        // Add command to menu.
-        var menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
-        menu.addMenuDivider();
-        menu.addMenuItem(PANEL_COMMAND_ID, Preferences.get("panelShortcut"));
 
         // Commit current and all shortcuts
         var COMMIT_CURRENT_CMD = "brackets-git.commitCurrent",
@@ -1158,7 +1154,12 @@ define(function (require, exports) {
             PUSH_CMD           = "brackets-git.push",
             PULL_CMD           = "brackets-git.pull",
             GOTO_PREV_CHANGE   = "brackets-git.gotoPrevChange",
+            GIT_MENU           = "brackets-git.gitMenu",
             GOTO_NEXT_CHANGE   = "brackets-git.gotoNextChange";
+        
+         // Add command to menu.
+        var menu = Menus.addMenu("Git",GIT_MENU);
+        menu.addMenuItem(PANEL_COMMAND_ID, Preferences.get("panelShortcut"));
 
         CommandManager.register(Strings.COMMIT_CURRENT_SHORTCUT, COMMIT_CURRENT_CMD, commitCurrentFile);
         menu.addMenuItem(COMMIT_CURRENT_CMD, Preferences.get("commitCurrentShortcut"));
