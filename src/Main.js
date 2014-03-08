@@ -168,12 +168,17 @@ define(function (require, exports) {
             return;
         }
 
+        function isIgnored(path) {
+            return _.any(_ignoreEntries, function (entry) {
+                return path.match(entry + "/?$");
+            });
+        }
+
         $("#project-files-container").find("li").each(function () {
             var $li = $(this),
                 fullPath = $li.data("entry").fullPath,
-                isIgnored = _ignoreEntries.indexOf(fullPath) !== -1,
                 isModified = modifiedEntries.indexOf(fullPath) !== -1;
-            $li.toggleClass("git-ignored", isIgnored)
+            $li.toggleClass("git-ignored", isIgnored(fullPath))
                .toggleClass("git-modified", isModified);
         });
     }
