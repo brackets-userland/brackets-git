@@ -635,10 +635,10 @@ define(function (require, exports) {
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true),
             remoteName = gitPanel.$panel.find(".git-remotes-field").attr("data-remote-name");
         Main.gitControl.gitPush(remoteName).fail(function (err) {
-            if (typeof err !== "string") { throw err; }
-            var m = err.match(/git remote add <name> <url>/);
-            if (!m) { throw err; }
 
+            if (!ErrorHandler.contains(err, "git remote add <name> <url>")) {
+                throw err;
+            }
             // this will ask user to enter an origin url for pushing
             // it's pretty dumb because if he enters invalid url, he has to go to console again
             // but our users are very wise so that definitely won't happen :)))
@@ -674,10 +674,9 @@ define(function (require, exports) {
         }).fail(function (err) {
 
             var validFail = false;
-            if (err.match(/rejected because/)) {
+            if (ErrorHandler.contains(err, "rejected because")) {
                 validFail = true;
             }
-
             if (validFail) {
                 throw err;
             } else {

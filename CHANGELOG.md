@@ -4,6 +4,7 @@
 * Fixes an issue with timeout error while launching terminal in Linux.
 * Automatically does chmod +x when there's permission denied on terminal script.
 * Fixed issue when ignored directories were not marked as ignored without trailing slash.
+* Last selected remote is now saved for the project when you reopen Brackets.
 
 ## 0.10.5
 * Escape special characters in username and password by [Zhi](https://github.com/yfwz100)
