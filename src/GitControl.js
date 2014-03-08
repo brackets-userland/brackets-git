@@ -130,6 +130,15 @@ define(function (require, exports, module) {
             }
         },
 
+        chmodTerminalScript: function () {
+            var file = Preferences.get("extensionDirectory") + "shell/" +
+                    (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
+            return this.executeCommand("chmod", [
+                "+x",
+                escapeShellArg(file)
+            ]);
+        },
+
         terminalOpen: function (folder, customCmd) {
             var cmd;
             if (customCmd) {

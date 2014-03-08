@@ -54,8 +54,14 @@ define(function (require, exports) {
     };
 
     exports.isTimeout = function (err) {
-        return err.message.indexOf("cmd-execute-timeout") === 0 ||
-               err.message.indexOf("cmd-spawn-timeout") === 0;
+        return err instanceof Error && (
+            err.message.indexOf("cmd-execute-timeout") === 0 ||
+            err.message.indexOf("cmd-spawn-timeout") === 0
+        );
+    };
+
+    exports.contains = function (err, what) {
+        return err.toString().toLowerCase().indexOf(what.toLowerCase()) !== -1;
     };
 
     exports.logError = function (err) {

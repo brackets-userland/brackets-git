@@ -2,6 +2,7 @@
 
 ## 0.10.6
 * Fixes an issue with timeout error while launching terminal in Linux.
+* Automatically does chmod +x when there's permission denied on terminal script.
 
 ## 0.10.5
 * Escape special characters in username and password by [Zhi](https://github.com/yfwz100)

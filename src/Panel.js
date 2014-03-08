@@ -1020,7 +1020,7 @@ define(function (require, exports) {
         });
     }
 
-    function openBashConsole() {
+    function openBashConsole(event) {
         if (brackets.platform === "win") {
             Main.gitControl.bashOpen(Main.getProjectRoot()).fail(function (err) {
                 throw ErrorHandler.showError(err);
@@ -1028,6 +1028,14 @@ define(function (require, exports) {
         } else {
             var customTerminal = Preferences.get("terminalCommand");
             Main.gitControl.terminalOpen(Main.getProjectRoot(), customTerminal).fail(function (err) {
+                if (event !== "retry" && ErrorHandler.contains(err, "Permission denied")) {
+                    Main.gitControl.chmodTerminalScript().fail(function (err) {
+                        throw ErrorHandler.showError(err);
+                    }).then(function () {
+                        openBashConsole("retry");
+                    });
+                    return;
+                }
                 if (ErrorHandler.isTimeout(err)) {
                     // process is running after 1 second timeout so terminal is open
                     return;
