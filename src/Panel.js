@@ -1022,14 +1022,17 @@ define(function (require, exports) {
 
     function openBashConsole() {
         if (brackets.platform === "win") {
-            Main.gitControl.bashOpen(Main.getProjectRoot());
+            Main.gitControl.bashOpen(Main.getProjectRoot()).fail(function (err) {
+                throw ErrorHandler.showError(err);
+            });
         } else {
             var customTerminal = Preferences.get("terminalCommand");
             Main.gitControl.terminalOpen(Main.getProjectRoot(), customTerminal).fail(function (err) {
-                throw ErrorHandler.showError(err);
-            }).then(function (result) {
-                if (!customTerminal && result !== "ok") {
-                    ErrorHandler.showError(new Error(Strings.ERROR_TERMINAL_NOT_FOUND));
+                if (ErrorHandler.isTimeout(err)) {
+                    // process is running after 1 second timeout so terminal is open
+                    return;
+                } else {
+                    throw ErrorHandler.showError(err);
                 }
             });
         }

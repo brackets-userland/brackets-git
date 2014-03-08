@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.6
+* Fixes an issue with timeout error while launching terminal in Linux.
+
 ## 0.10.5
 * Escape special characters in username and password by [Zhi](https://github.com/yfwz100)
 * Implemented infinite history scrolling by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)

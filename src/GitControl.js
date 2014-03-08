@@ -139,7 +139,10 @@ define(function (require, exports, module) {
                     (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
                 cmd = escapeShellArg(cmd) + " " + escapeShellArg(folder);
             }
-            return this.executeCommand(cmd);
+            return this.executeCommand(cmd, null, {
+                timeout: 1,
+                timeoutExpected: true
+            });
         },
 
         getVersion: function () {

@@ -53,9 +53,14 @@ define(function (require, exports) {
                                           encodeURIComponent(mdReport));
     };
 
+    exports.isTimeout = function (err) {
+        return err.message.indexOf("cmd-execute-timeout") === 0 ||
+               err.message.indexOf("cmd-spawn-timeout") === 0;
+    };
+
     exports.logError = function (err) {
-        console.error("[brackets-git] " + err);
-        if (err && err.stack) { console.error(err.stack); }
+        var msg = err && err.stack ? err.stack : err;
+        console.error("[brackets-git] " + msg);
         errorQueue.push(err);
         return err;
     };

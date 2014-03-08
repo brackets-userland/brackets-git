@@ -260,11 +260,18 @@ define(function (require, exports) {
                 setTimeout(function () {
                     if (!resolved) {
                         var err = new Error("cmd-" + method + "-timeout: " + cmd + " " + args.join(" "));
-                        ErrorHandler.logError(err);
+                        if (opts.timeoutExpected) {
+                            if (debugOn) {
+                                console.log(extName + "cmd-" + method + "-timeout: \"" + err + "\"");
+                            }
+                        } else {
+                            ErrorHandler.logError(err);
+                        }
+
                         rv.reject(err);
                         resolved = true;
                     }
-                }, opts.timeout || TIMEOUT_VALUE);
+                }, opts.timeout ? (opts.timeout * 1000) : TIMEOUT_VALUE);
 
                 return rv.promise;
             }
