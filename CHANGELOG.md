@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.7
+* Updated Simplified Chinese translation by [Zhi](https://github.com/yfwz100)
+
 ## 0.10.6
 * Fixes an issue with timeout error while launching terminal in Linux.
 * Automatically does chmod +x when there's permission denied on terminal script.
