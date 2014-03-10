@@ -389,7 +389,11 @@ define(function (require, exports) {
                 }
                 //-
                 text = lines.join("\n");
-                return FileUtils.writeText(fileEntry, text).then(function () {
+                return FileUtils.writeText(fileEntry, text).fail(function (err) {
+                    ErrorHandler.logError("Wasn't able to clean whitespace from file: " + fullPath);
+                    rv.resolve();
+                    throw err;
+                }).then(function () {
                     // refresh the file if it's open in the background
                     DocumentManager.getAllOpenDocuments().forEach(function (doc) {
                         if (doc.file.fullPath === fullPath) {
