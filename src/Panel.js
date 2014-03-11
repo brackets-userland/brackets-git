@@ -551,84 +551,82 @@ define(function (require, exports) {
         return response.promise;
     }
 
-    function handleGitPushWithPassword(originalPushError) {
+    function handleGitPushWithPassword(originalPushError, remoteName) {
         return Main.gitControl.getBranchName().then(function (branchName) {
-            return Main.gitControl.getGitConfig("branch." + branchName + ".remote").then(function (remoteName) {
-                if (!remoteName) {
-                    throw ErrorHandler.rewrapError(originalPushError, new Error("git config branch." + branchName + ".remote is empty!"));
+            if (!remoteName) {
+                throw ErrorHandler.rewrapError(originalPushError, new Error("handleGitPushWithPassword remote argument is empty!"));
+            }
+            return Main.gitControl.getGitConfig("remote." + remoteName + ".url").then(function (remoteUrl) {
+                if (!remoteUrl) {
+                    throw ErrorHandler.rewrapError(originalPushError, new Error("git config remote." + remoteName + ".url is empty!"));
                 }
-                return Main.gitControl.getGitConfig("remote." + remoteName + ".url").then(function (remoteUrl) {
-                    if (!remoteUrl) {
-                        throw ErrorHandler.rewrapError(originalPushError, new Error("git config remote." + remoteName + ".url is empty!"));
-                    }
 
-                    var isHttp = remoteUrl.indexOf("http") === 0;
-                    if (!isHttp) {
-                        throw ErrorHandler.rewrapError(originalPushError,
-                                                       new Error("Asking for username/password aborted because remote is not HTTP(S)"));
-                    }
+                var isHttp = remoteUrl.indexOf("http") === 0;
+                if (!isHttp) {
+                    throw ErrorHandler.rewrapError(originalPushError,
+                                                   new Error("Asking for username/password aborted because remote is not HTTP(S)"));
+                }
 
-                    var username,
-                        password,
-                        hasUsername,
-                        hasPassword,
-                        shouldSave = false;
+                var username,
+                    password,
+                    hasUsername,
+                    hasPassword,
+                    shouldSave = false;
 
-                    var m = remoteUrl.match(/https?:\/\/([^@]+)@/);
-                    if (!m) {
-                        hasUsername = false;
-                        hasPassword = false;
-                    } else if (m[1].split(":").length === 1) {
-                        hasUsername = true;
-                        hasPassword = false;
-                    } else {
-                        hasUsername = true;
-                        hasPassword = true;
-                    }
+                var m = remoteUrl.match(/https?:\/\/([^@]+)@/);
+                if (!m) {
+                    hasUsername = false;
+                    hasPassword = false;
+                } else if (m[1].split(":").length === 1) {
+                    hasUsername = true;
+                    hasPassword = false;
+                } else {
+                    hasUsername = true;
+                    hasPassword = true;
+                }
 
-                    if (hasUsername && hasPassword) {
-                        throw ErrorHandler.rewrapError(originalPushError, new Error("Username/password is already present in the URL"));
-                    }
+                if (hasUsername && hasPassword) {
+                    throw ErrorHandler.rewrapError(originalPushError, new Error("Username/password is already present in the URL"));
+                }
 
-                    var p = q();
-                    if (!hasUsername) {
-                        p = p.then(function () {
-                            return askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_USERNAME).then(function (str) {
-                                username = encodeURIComponent(str);
-                            });
+                var p = q();
+                if (!hasUsername) {
+                    p = p.then(function () {
+                        return askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_USERNAME).then(function (str) {
+                            username = encodeURIComponent(str);
                         });
+                    });
+                }
+                if (!hasPassword) {
+                    p = p.then(function () {
+                        return askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_PASSWORD).then(function (str) {
+                            password = encodeURIComponent(str);
+                        });
+                    });
+                }
+                if (Preferences.get("storePlainTextPasswords")) {
+                    p = p.then(function () {
+                        return askQuestion(Strings.TOOLTIP_PUSH, Strings.SAVE_PASSWORD_QUESTION, true).then(function (bool) {
+                            shouldSave = bool;
+                        });
+                    });
+                }
+                return p.then(function () {
+                    if (!hasUsername) {
+                        remoteUrl = remoteUrl.replace(/(https?:\/\/)/, function (a, protocol) { return protocol + username + "@"; });
                     }
                     if (!hasPassword) {
-                        p = p.then(function () {
-                            return askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_PASSWORD).then(function (str) {
-                                password = encodeURIComponent(str);
-                            });
-                        });
+                        var io = remoteUrl.indexOf("@");
+                        remoteUrl = remoteUrl.substring(0, io) + ":" + password + remoteUrl.substring(io);
                     }
-                    if (Preferences.get("storePlainTextPasswords")) {
-                        p = p.then(function () {
-                            return askQuestion(Strings.TOOLTIP_PUSH, Strings.SAVE_PASSWORD_QUESTION, true).then(function (bool) {
-                                shouldSave = bool;
-                            });
-                        });
-                    }
-                    return p.then(function () {
-                        if (!hasUsername) {
-                            remoteUrl = remoteUrl.replace(/(https?:\/\/)/, function (a, protocol) { return protocol + username + "@"; });
-                        }
-                        if (!hasPassword) {
-                            var io = remoteUrl.indexOf("@");
-                            remoteUrl = remoteUrl.substring(0, io) + ":" + password + remoteUrl.substring(io);
-                        }
-                        return Main.gitControl.gitPush(remoteUrl, branchName).then(function (stdout) {
-                            if (shouldSave) {
-                                return Main.gitControl.setGitConfig("remote." + remoteName + ".url", remoteUrl).then(function () {
-                                    return stdout;
-                                });
-                            } else {
+                    return Main.gitControl.gitPush(remoteUrl, branchName).then(function (stdout) {
+                        if (shouldSave) {
+                            return Main.gitControl.setGitConfig("remote." + remoteName + ".url", remoteUrl).then(function () {
                                 return stdout;
-                            }
-                        });
+                            });
+                        } else {
+                            return stdout;
+                        }
                     });
                 });
             });
@@ -685,7 +683,7 @@ define(function (require, exports) {
                 throw err;
             } else {
                 console.warn("Traditional push failed: " + err);
-                return handleGitPushWithPassword(err);
+                return handleGitPushWithPassword(err, remoteName);
             }
 
         }).then(function (result) {
