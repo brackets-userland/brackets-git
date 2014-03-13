@@ -127,12 +127,20 @@ define(function (require, exports) {
     }
 
     function handleRemotePick(e, $a) {
-        var $selected = e ? $(e.target) : $a;
+        var $selected = e ? $(e.target) : $a,
+            $remoteField = gitPanel.$panel.find(".git-remotes-field");
+
+        if (!$selected) {
+            $remoteField.html("&mdash;").attr({
+                "data-remote-name": null
+            });
+            return;
+        }
 
         var remoteName = $selected.attr("data-remote-name");
         _setDefaultRemote(remoteName);
 
-        gitPanel.$panel.find(".git-remotes-field")
+        $remoteField
             .text($selected.text().trim())
             .attr({
                 "data-remote-name": remoteName
@@ -140,33 +148,34 @@ define(function (require, exports) {
     }
 
     function prepareRemotesPicker() {
-        Main.gitControl.getRemotes()
-        .then(function (remotes) {
+        Main.gitControl.getRemotes().then(function (remotes) {
             var defaultRemoteName = _getDefaultRemote(),
                 $defaultRemote,
                 $remotesDropdown = gitPanel.$panel.find(".git-remotes-dropdown").empty();
 
-            remotes.forEach(function (remoteInfo) {
-                var remoteName = remoteInfo[0];
+            gitPanel.$panel.find(".git-pull").prop("disabled", remotes.length === 0);
+            gitPanel.$panel.find(".git-push").prop("disabled", remotes.length === 0);
+
+            var $remotes = remotes.map(function (remoteInfo) {
                 var $a = $("<a/>").attr({
                     "href": "#",
-                    "data-remote-name": remoteName
-                }).text(remoteInfo[0]).appendTo($("<li/>").appendTo($remotesDropdown));
+                    "data-remote-name": remoteInfo.name
+                }).text(remoteInfo.name).appendTo($("<li/>").appendTo($remotesDropdown));
 
-                if (remoteName === defaultRemoteName) {
+                if (remoteInfo.name === defaultRemoteName) {
                     $defaultRemote = $a;
                 }
+
+                return $a;
             });
 
             if ($defaultRemote) {
                 handleRemotePick(null, $defaultRemote);
+            } else {
+                handleRemotePick(null, _.first($remotes));
             }
-        })
-        .fail(function (err) {
-            ErrorHandler.logError(err);
-            gitPanel.$panel.find(".git-remotes-dropdown").empty();
-            gitPanel.$panel.find("git-remotes").attr("title", err);
-            gitPanel.$panel.find(".git-remotes-field").text("error");
+        }).fail(function (err) {
+            throw ErrorHandler.showError(err, "Failed to get a list of remotes.");
         });
     }
 

@@ -4,10 +4,11 @@
 define(function (require, exports, module) {
     "use strict";
 
-    var q               = require("../thirdparty/q"),
+    var _               = brackets.getModule("thirdparty/lodash"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
+        q               = require("../thirdparty/q"),
         Preferences     = require("./Preferences");
 
     var FILE_STATUS = {
@@ -221,8 +222,12 @@ define(function (require, exports, module) {
 
         getRemotes: function () {
             return this.executeCommand(this._git + " remote -v").then(function (stdout) {
-                return $.unique(stdout.replace(/\((push|fetch)\)/g, "").split("\n")).map(function (l) {
-                    return l.trim().split("\t");
+                return !stdout ? [] : _.uniq(stdout.replace(/\((push|fetch)\)/g, "").split("\n")).map(function (l) {
+                    var s = l.trim().split("\t");
+                    return {
+                        name: s[0],
+                        url: s[1]
+                    };
                 });
             });
         },

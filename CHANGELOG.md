@@ -4,6 +4,7 @@
 * Unmerged file state is now properly recognized.
 * Should now recognize git root even in soft links.
 * Fixed bugs when handling various .gitignore entries.
+* Pull and Push are now disabled when there are no remotes to work with.
 
 ## 0.10.7
 * Fixed an issue when commiting large files failed to open commit dialog.
