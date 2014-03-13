@@ -46,6 +46,7 @@ define({
     FILE_RENAMED:                       "Renamed",
     FILE_STAGED:                        "Staged",
     FILE_UNTRACKED:                     "Untracked",
+    FILE_UNMERGED:                      "Unmerged",
     FOR_MAC_LINUX_USERS:                "For Mac/Linux users",
     FOR_WINDOWS_USERS:                  "For Windows users",
     GIT_COMMIT:                         "Git commit\u2026",

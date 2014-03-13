@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.8
+* Unmerged file state is now properly recognized.
+
 ## 0.10.7
 * Fixed an issue when commiting large files failed to open commit dialog.
 * Updated Simplified Chinese translation by [Zhi](https://github.com/yfwz100)

@@ -16,7 +16,8 @@ define(function (require, exports, module) {
         MODIFIED: "FILE_MODIFIED",
         DELETED: "FILE_DELETED",
         RENAMED: "FILE_RENAMED",
-        UNTRACKED: "FILE_UNTRACKED"
+        UNTRACKED: "FILE_UNTRACKED",
+        UNMERGED: "FILE_UNMERGED"
     };
 
     function uniqSorted(arr) {
@@ -265,6 +266,9 @@ define(function (require, exports, module) {
                     case "R":
                         status.push(FILE_STATUS.STAGED, FILE_STATUS.RENAMED);
                         break;
+                    case "U":
+                        status.push(FILE_STATUS.UNMERGED);
+                        break;
                     default:
                         throw new Error("Unexpected status: " + statusStaged);
                     }
@@ -280,6 +284,9 @@ define(function (require, exports, module) {
                         break;
                     case "M":
                         status.push(FILE_STATUS.MODIFIED);
+                        break;
+                    case "U":
+                        status.push(FILE_STATUS.UNMERGED);
                         break;
                     default:
                         throw new Error("Unexpected status: " + statusStaged);
