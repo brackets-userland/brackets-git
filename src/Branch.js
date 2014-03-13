@@ -8,11 +8,13 @@ define(function (require, exports) {
         CommandManager          = brackets.getModule("command/CommandManager"),
         Dialogs                 = brackets.getModule("widgets/Dialogs"),
         EditorManager           = brackets.getModule("editor/EditorManager"),
+        FileSystem              = brackets.getModule("filesystem/FileSystem"),
         Menus                   = brackets.getModule("command/Menus"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         SidebarView             = brackets.getModule("project/SidebarView");
     
-    var ErrorHandler            = require("./ErrorHandler"),
+    var q                       = require("../thirdparty/q"),
+        ErrorHandler            = require("./ErrorHandler"),
         Main                    = require("./Main"),
         Panel                   = require("./Panel"),
         Strings                 = require("../strings"),
@@ -129,6 +131,26 @@ define(function (require, exports) {
         });
     }
     
+    function _isRepository() {
+        return Main.gitControl.getGitStatus().then(function () {
+            return true;
+        }).fail(function (err) {
+            if (err.match(/not a git repository/i)) {
+                return false;
+            }
+            throw err;
+        });
+    }
+
+    function _isRepositoryRoot() {
+        var currentFolder = Main.getProjectRoot();
+        return q.ninvoke(FileSystem, "resolve", currentFolder).spread(function (directory) {
+            return q.ninvoke(directory, "getContents");
+        }).spread(function (contents) {
+            return _.any(contents, function (content) { return content.name === ".git"; });
+        });
+    }
+
     function refresh() {
         // show info that branch is refreshing currently
         $gitBranchName
@@ -136,9 +158,27 @@ define(function (require, exports) {
             .parent()
                 .show();
 
-        Main.gitControl.getRepositoryRoot().then(function (root) {
-            if (root === Main.getProjectRoot()) {
-                Main.gitControl.getBranchName().then(function (branchName) {
+        _isRepository().then(function (isRepo) {
+            $gitBranchName.parent().toggle(isRepo);
+
+            if (!isRepo) {
+                $gitBranchName
+                    .off("click")
+                    .text("not a git repo");
+                Panel.disable("not-repo");
+                return;
+            }
+
+            return _isRepositoryRoot().then(function (isRepositoryRoot) {
+                if (!isRepositoryRoot) {
+                    $gitBranchName
+                        .off("click")
+                        .text("not a git root");
+                    Panel.disable("not-root");
+                    return;
+                }
+
+                return Main.gitControl.getBranchName().then(function (branchName) {
                     $gitBranchName.text(branchName)
                         .off("click")
                         .on("click", toggleDropdown)
@@ -146,26 +186,17 @@ define(function (require, exports) {
                     Panel.enable();
                 }).fail(function (ex) {
                     if (ex.match(/unknown revision/)) {
-                        $gitBranchName.text("no branch").off("click");
+                        $gitBranchName
+                            .off("click")
+                            .text("no branch");
                         Panel.enable();
                     } else {
-                        ErrorHandler.showError(ex, "Could not read branch name");
+                        throw ex;
                     }
                 });
-            } else {
-                // Current working folder is not a git root
-                $gitBranchName.text("not a git root").off("click");
-                Panel.disable("not-root");
-            }
-        }).fail(function () {
-            // current working folder is not a git repository, hide branch info
-            $gitBranchName
-                .text("not a git repo")
-                .off("click")
-                .parent()
-                    .hide();
-
-            Panel.disable("not-repo");
+            });
+        }).fail(function (err) {
+            throw ErrorHandler.showError(err);
         });
     }
     
