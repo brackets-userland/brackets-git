@@ -169,8 +169,8 @@ define(function (require, exports) {
         }
 
         function isIgnored(path) {
-            return _.any(_ignoreEntries, function (entry) {
-                return path.match(entry + "/?$");
+            return _.any(_ignoreEntries, function (regExp) {
+                return regExp.test(path);
             });
         }
 
@@ -196,11 +196,33 @@ define(function (require, exports) {
                 p.reject(err);
                 return;
             }
-            _ignoreEntries = _.map(_.compact(content.split("\n")), function (line) {
+            _ignoreEntries = _.compact(_.map(content.split("\n"), function (line) {
                 line = line.trim();
-                if (line.indexOf("/") === 0) { line = line.substring(1); }
-                return projectRoot + line;
-            });
+                if (!line || line.indexOf("#") === 0) {
+                    return;
+                }
+
+                var path;
+                if (line.indexOf("/") === 0) {
+                    line = line.substring(1);
+                    path = projectRoot + line;
+                } else {
+                    path = projectRoot + "(**/)?" + line;
+                }
+
+                path = "^" + path + "/?$";
+
+                path = path.replace(/\*+/g, function (match) {
+                    if (match.length === 2) {
+                        return ".*";
+                    }
+                    if (match.length === 1) {
+                        return "[^/]*";
+                    }
+                });
+
+                return new RegExp(path);
+            }));
             p.resolve();
         });
 

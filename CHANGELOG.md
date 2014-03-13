@@ -3,6 +3,7 @@
 ## 0.10.8
 * Unmerged file state is now properly recognized.
 * Should now recognize git root even in soft links.
+* Fixed bugs when handling various .gitignore entries.
 
 ## 0.10.7
 * Fixed an issue when commiting large files failed to open commit dialog.
