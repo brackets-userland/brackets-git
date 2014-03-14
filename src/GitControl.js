@@ -53,6 +53,11 @@ define(function (require, exports, module) {
         }
     }
 
+    // Converts UNC (Samba) urls from `//server/` to `\\server\`
+    function normalizeUncUrls(url) {
+        return (url.substring(0, 1) === "//" && brackets.platform === "win") ? url.replace("/", "\\") : url;
+    }
+
     function GitControl(options) {
         this._isHandlerRunning = false;
         this._queue = [];
@@ -125,7 +130,7 @@ define(function (require, exports, module) {
         bashOpen: function (folder) {
             if (brackets.platform === "win") {
                 var cmd = "\"" + Preferences.get("msysgitPath") + "Git Bash.vbs" + "\"";
-                var arg = " \"" + folder + "\"";
+                var arg = " \"" + normalizeUncUrls(folder) + "\"";
                 return this.executeCommand(cmd + arg);
             } else {
                 return q().thenReject();
