@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.10
+* Fixed extension not working on Mac & Linux platforms.
+
 ## 0.10.9
 * Fixed critical bug in 0.10.8 when not working in a git repo.
 

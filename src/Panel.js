@@ -1238,7 +1238,7 @@ define(function (require, exports) {
 
     function disable(cause) {
         gitPanelMode = cause;
-        // causes: not-repo, not-root
+        // causes: not-repo
         if (gitPanelMode === "not-repo") {
             gitPanel.$panel.find(".git-available").hide();
             gitPanel.$panel.find(".git-not-available").show();
