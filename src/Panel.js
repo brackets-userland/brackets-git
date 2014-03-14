@@ -105,8 +105,8 @@ define(function (require, exports) {
 
     function handleGitReset() {
         return Main.gitControl.gitReset().then(function () {
-            Branch.refresh();
-            return refresh();
+            // Branch.refresh will refresh also Panel
+            return Branch.refresh();
         }).fail(function (err) {
             // reset is executed too often so just log this error, but do not display a dialog
             ErrorHandler.logError(err);
@@ -1134,7 +1134,6 @@ define(function (require, exports) {
 
     function init() {
         // Add panel
-        prepareRemotesPicker();
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
         var $panelHtml = $(panelHtml);
         $panelHtml.find(".git-available").hide();
@@ -1224,7 +1223,9 @@ define(function (require, exports) {
     }
 
     function enable() {
+        // this function is called after every Branch.refresh
         gitPanelMode = null;
+        prepareRemotesPicker();
         //
         gitPanel.$panel.find(".git-available").show();
         gitPanel.$panel.find(".git-not-available").hide();
@@ -1259,6 +1260,5 @@ define(function (require, exports) {
     exports.enable = enable;
     exports.disable = disable;
     exports.refreshCurrentFile = refreshCurrentFile;
-    exports.prepareRemotesPicker = prepareRemotesPicker;
     exports.getPanel = getPanel;
 });

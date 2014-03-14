@@ -84,13 +84,15 @@ define(function (require, exports) {
     // Call this only when Git is available
     function attachEventsToBrackets() {
         $(ProjectManager).on("projectOpen projectRefresh", function () {
-            Branch.refresh();
-            Panel.prepareRemotesPicker();
-            refreshIgnoreEntries().then(Panel.refresh);
+            // use .fin in case there's no .gitignore file
+            refreshIgnoreEntries().fin(function () {
+                // Branch.refresh will refresh also Panel
+                Branch.refresh();
+            });
         });
         $(FileSystem).on("change rename", function () {
+            // Branch.refresh will refresh also Panel
             Branch.refresh();
-            Panel.refresh();
         });
         $(DocumentManager).on("documentSaved", function () {
             Panel.refresh();
@@ -193,6 +195,7 @@ define(function (require, exports) {
 
         FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
             if (err) {
+                _ignoreEntries = [];
                 p.reject(err);
                 return;
             }

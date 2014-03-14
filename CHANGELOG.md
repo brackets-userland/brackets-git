@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.9
+* Fixed critical bug in 0.10.8 when not working in a git repo.
+
 ## 0.10.8
 * Unmerged file state is now properly recognized.
 * Should now recognize git root even in soft links.

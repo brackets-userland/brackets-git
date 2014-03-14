@@ -158,7 +158,7 @@ define(function (require, exports) {
             .parent()
                 .show();
 
-        _isRepository().then(function (isRepo) {
+        return _isRepository().then(function (isRepo) {
             $gitBranchName.parent().toggle(isRepo);
 
             if (!isRepo) {
