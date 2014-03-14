@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.11
+* Fixed Bash button when working with UNC paths on Windows by [Fez Vrasta](https://github.com/FezVrasta)
+
 ## 0.10.10
 * Fixed extension not working on Mac & Linux platforms.
 
