@@ -131,24 +131,13 @@ define(function (require, exports) {
         });
     }
     
-    function _isRepository() {
-        return Main.gitControl.getGitStatus().then(function () {
-            return true;
-        }).fail(function (err) {
-            if (err.match(/not a git repository/i)) {
-                return false;
-            }
-            throw err;
-        });
-    }
-
     function _isRepositoryRoot() {
-        var currentFolder = Main.getProjectRoot();
-        return q.ninvoke(FileSystem, "resolve", currentFolder).spread(function (directory) {
-            return q.ninvoke(directory, "getContents");
-        }).spread(function (contents) {
-            return _.any(contents, function (content) { return content.name === ".git"; });
+        var gitFolder = Main.getProjectRoot() + "/.git",
+            defer = q.defer();
+        FileSystem.resolve(gitFolder, function (err, directory) {
+            defer.resolve(directory && !err ? true : false);
         });
+        return defer.promise;
     }
 
     function refresh() {
@@ -158,42 +147,32 @@ define(function (require, exports) {
             .parent()
                 .show();
 
-        return _isRepository().then(function (isRepo) {
-            $gitBranchName.parent().toggle(isRepo);
+        return _isRepositoryRoot().then(function (isRepositoryRoot) {
+            $gitBranchName.parent().toggle(isRepositoryRoot);
 
-            if (!isRepo) {
+            if (!isRepositoryRoot) {
                 $gitBranchName
                     .off("click")
                     .text("not a git repo");
                 Panel.disable("not-repo");
                 return;
             }
-
-            return _isRepositoryRoot().then(function (isRepositoryRoot) {
-                if (!isRepositoryRoot) {
+            
+            return Main.gitControl.getBranchName().then(function (branchName) {
+                $gitBranchName.text(branchName)
+                    .off("click")
+                    .on("click", toggleDropdown)
+                    .append($("<span class='dropdown-arrow' />"));
+                Panel.enable();
+            }).fail(function (ex) {
+                if (ex.match(/unknown revision/)) {
                     $gitBranchName
                         .off("click")
-                        .text("not a git root");
-                    Panel.disable("not-root");
-                    return;
-                }
-
-                return Main.gitControl.getBranchName().then(function (branchName) {
-                    $gitBranchName.text(branchName)
-                        .off("click")
-                        .on("click", toggleDropdown)
-                        .append($("<span class='dropdown-arrow' />"));
+                        .text("no branch");
                     Panel.enable();
-                }).fail(function (ex) {
-                    if (ex.match(/unknown revision/)) {
-                        $gitBranchName
-                            .off("click")
-                            .text("no branch");
-                        Panel.enable();
-                    } else {
-                        throw ex;
-                    }
-                });
+                } else {
+                    throw ex;
+                }
             });
         }).fail(function (err) {
             throw ErrorHandler.showError(err);
