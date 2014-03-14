@@ -447,6 +447,8 @@ define(function (require, exports) {
         var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
         // Get checked files
         var $checked = gitPanel.$panel.find(".check-one:checked");
+        // Disable button (it will be enabled when selecting files after reset)
+        gitPanel.$panel.find(".git-commit").prop("disabled", true);
         // TODO: probably some user friendly message that no files are checked for commit.
         if ($checked.length === 0) { return; }
 
@@ -522,11 +524,13 @@ define(function (require, exports) {
             return q.all(promises).then(function () {
                 // All files are in the index now, get the diff and show dialog.
                 return Main.gitControl.gitDiffStaged().then(function (diff) {
-                    if (diff) {
-                        _showCommitDialog(diff, lintResults);
-                    } else {
-                        handleGitReset();
+                    if (!diff) {
+                        return Main.gitControl.gitDiffStagedFiles().then(function (filesList) {
+                            diff = Strings.DIFF_FAILED_SEE_FILES + "\n\n" + filesList;
+                            return _showCommitDialog(diff, lintResults);
+                        });
                     }
+                    return _showCommitDialog(diff, lintResults);
                 });
             });
         }).fail(function (err) {

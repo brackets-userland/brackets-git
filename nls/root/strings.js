@@ -34,6 +34,7 @@ define({
     DEBUG_MODE_SETTING:                 "DEBUG mode &mdash; Leave this OFF unless you need to find a problem with the extension. All Git communication will be forwarded to Brackets console!",
     DELETE_FILE:                        "Delete file",
     DIFF:                               "Diff",
+    DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     ENTER_PASSWORD:                     "Enter password",
     ENTER_USERNAME:                     "Enter username",
     ENTER_REMOTE_GIT_URL:               "Enter Git URL of the repository you want to clone",

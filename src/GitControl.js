@@ -377,6 +377,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " diff --no-color --staged");
         },
 
+        gitDiffStagedFiles: function () {
+            return this.executeCommand(this._git + " diff --no-color --staged --name-only");
+        },
+
         gitPush: function (remote, branch, options) {
             remote = remote || "";
             branch = branch || "";
