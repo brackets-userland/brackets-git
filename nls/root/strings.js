@@ -39,6 +39,7 @@ define({
     ENTER_USERNAME:                     "Enter username",
     ENTER_REMOTE_GIT_URL:               "Enter Git URL of the repository you want to clone",
     ERROR_TERMINAL_NOT_FOUND:           "Terminal was not found for your OS, you can define a custom Terminal command in the settings",
+    EXTENDED_COMMIT_MESSAGE:            "EXTENDED",
     EXTENSION_WAS_UPDATED_TITLE:        "The extension was updated to {0}",
     FEATURES:                           "Features",
     FILE_DELETED:                       "Deleted",
