@@ -4,7 +4,7 @@
 define({
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Aggiungi fine riga alla fine del file",
     ADD_TO_GITIGNORE:                   "Aggiungi a .gitignore",
-    AMEND_COMMIT:                       "COrreggi ultimo commit",
+    AMEND_COMMIT:                       "Correggi ultimo commit",
     AMEND_COMMIT_FORBIDDEN:             "Impossibile correggere un commit quando non ve ne sono non inviati (unpushed)",
     BASH_NOT_AVAILABLE:                 "Bash non è disponibile o non è correttamente configurato",
     BASIC_CONFIGURATION:                "Configurazione base",
