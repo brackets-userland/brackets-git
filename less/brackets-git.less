@@ -158,18 +158,29 @@
         margin-left: 15px;
     }
     .dropdown-toggle {
-        border-radius: 4px 0 0 4px;
-        border-right: 0;
-        padding-top: 5px;
+        height: 26px;
         &:focus {
             border: 1px solid #9c9e9e;
-            border-right: 0;
             box-shadow: none;
+        }
+        .caret {
+            margin-right: 5px;
+            position: relative;
+            top: -1px;
+        }
+    }
+    .git-more {
+        border-radius: 0 4px 4px 0;
+        border-left: 0;
+        &:focus {
+            border-left: 0;
         }
     }
     .git-remotes {
-        .git-remotes-field {
-            padding-left: 5px;
+        border-radius: 4px 0 0 4px;
+        border-right: 0;
+        &:focus {
+            border-right: 0;
         }
     }
 }

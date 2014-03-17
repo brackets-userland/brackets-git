@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.12
+* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+
 ## 0.10.11
 * Fixed an issue when commit dialog won't show on a large number of files.
 * Fixed Bash button when working with UNC paths on Windows by [Fez Vrasta](https://github.com/FezVrasta)

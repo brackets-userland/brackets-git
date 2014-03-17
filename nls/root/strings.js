@@ -98,6 +98,7 @@ define({
     TOOLTIP_HIDE_HISTORY:               "Hide history",
     TOOLTIP_SHOW_HISTORY:               "Show history",
     TOOLTIP_PICK_REMOTE:                "Pick prefered remote",
+    TOOLTIP_MORE:                       "More actions\u2026",
     UNDO_CHANGES:                       "Undo changes",
     URL:                                "URL",
     USE_CODE_INSPECTION:                "Use Code inspection",
