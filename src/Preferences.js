@@ -85,6 +85,10 @@ define(function (require, exports, module) {
         return obj;
     };
 
+    prefs.getGlobal = function (key) {
+        return PreferencesManager.get(key);
+    };
+
     prefs.persist = function (key, value) {
         this.set(key, value);
         this.save();

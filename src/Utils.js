@@ -4,10 +4,12 @@
 define(function (require, exports) {
     "use strict";
 
-    var _ = brackets.getModule("thirdparty/lodash");
+    var _           = brackets.getModule("thirdparty/lodash"),
+        Preferences = require("./Preferences");
 
     function formatDiff(diff) {
-        var rv = [];
+        var rv      = [],
+            tabSize = Preferences.getGlobal("tabSize");
 
         diff.split("\n").forEach(function (line) {
             if (line === " ") { line = ""; }
@@ -27,7 +29,9 @@ define(function (require, exports) {
             line = line.replace(/(&nbsp;)+$/g, function (trailingWhitespace) {
                 return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
             });
-            var $line = $("<pre/>").html(line.length > 0 ? line : "&nbsp;");
+            var $line = $("<pre/>")
+                            .attr("style", "tab-size:" + tabSize)
+                            .html(line.length > 0 ? line : "&nbsp;");
             if (lineClass) { $line.addClass(lineClass); }
             rv.push($line);
         });

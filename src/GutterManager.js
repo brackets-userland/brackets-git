@@ -97,6 +97,7 @@ define(function (require, exports) {
                 element: $("<div class='" + gutterName + "-deleted-lines'></div>")
             };
             $("<pre/>")
+                .attr("style", "tab-size:" + cm.getOption("tabSize"))
                 .text(mark.content || " ")
                 .appendTo(mark.lineWidget.element);
         }
