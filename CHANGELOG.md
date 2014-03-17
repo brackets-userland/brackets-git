@@ -3,6 +3,7 @@
 ## 0.10.12
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
 * Push dialog shows masked password.
+* Tabs are now properly displayed in the diffs respecting Brackets "tabSize" preference.
 
 ## 0.10.11
 * Fixed an issue when commit dialog won't show on a large number of files.
