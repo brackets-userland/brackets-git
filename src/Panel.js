@@ -538,20 +538,23 @@ define(function (require, exports) {
         });
     }
 
-    function askQuestion(title, question, booleanResponse) {
+    function askQuestion(title, question, options) {
+        options = options || {};
+
         var response = q.defer();
         var compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: title,
             question: question,
-            stringInput: !booleanResponse,
+            stringInput: !options.booleanResponse && !options.password,
+            passwordInput: options.password,
             Strings: Strings
         });
         var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
-        if (!booleanResponse) {
+        if (!options.booleanResponse) {
             dialog.getElement().find("input").focus();
         }
         dialog.done(function (buttonId) {
-            if (booleanResponse) {
+            if (options.booleanResponse) {
                 response.resolve(buttonId === "ok");
                 return;
             }
@@ -612,14 +615,14 @@ define(function (require, exports) {
                 }
                 if (!hasPassword) {
                     p = p.then(function () {
-                        return askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_PASSWORD).then(function (str) {
+                        return askQuestion(Strings.TOOLTIP_PUSH, Strings.ENTER_PASSWORD, {password: true}).then(function (str) {
                             password = encodeURIComponent(str);
                         });
                     });
                 }
                 if (Preferences.get("storePlainTextPasswords")) {
                     p = p.then(function () {
-                        return askQuestion(Strings.TOOLTIP_PUSH, Strings.SAVE_PASSWORD_QUESTION, true).then(function (bool) {
+                        return askQuestion(Strings.TOOLTIP_PUSH, Strings.SAVE_PASSWORD_QUESTION, {booleanResponse: true}).then(function (bool) {
                             shouldSave = bool;
                         });
                     });
