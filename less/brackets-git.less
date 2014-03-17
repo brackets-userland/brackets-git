@@ -6,6 +6,7 @@
 @almostWhite: #f5f5f5;
 @green:       #3B9102;
 @red:         #F74687;
+@slightBlue:  #E0F0FA;
 @lightBlue:   #78B2F2;
 @darkBlue:    #1976DD;
 @orange:      #DB8D03;
@@ -72,7 +73,7 @@
         }
     }
     a.selected {
-        background: #E0F0FA;
+        background: @slightBlue;
     }
     a:not(.selected):hover {
         background: none;
@@ -183,24 +184,20 @@
             border-right: 0;
         }
     }
-    /*
     .dropdown-menu {
         > li {
             > a:hover, > a:focus {
                 color: @defaultText;
-                background-color: @lightGrey;
-                background-image: linear-gradient(to bottom, @lightGrey, @darkGrey);
-                background-repeat: repeat-x;
+                background: @slightBlue;
             }
         }
         .dropdown-submenu:hover, .dropdown-submenu:focus {
             > a {
                 color: @defaultText;
-                background-color: @lightGrey;
+                background: @slightBlue;
             }
         }
     }
-    */
 }
 
 /* Toolbar icon */
