@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.13
+* Updated Italian translation by [Pietro Albini](https://github.com/pietroalbini)
+
 ## 0.10.12
 * Added features to view authors of a file or current selection.
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
