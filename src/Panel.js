@@ -35,6 +35,7 @@ define(function (require, exports) {
     var gitPanelTemplate            = require("text!htmlContent/git-panel.html"),
         gitPanelResultsTemplate     = require("text!htmlContent/git-panel-results.html"),
         gitPanelHistoryTemplate     = require("text!htmlContent/git-panel-history.html"),
+        gitAuthorsDialogTemplate    = require("text!htmlContent/authors-dialog.html"),
         gitCommitDialogTemplate     = require("text!htmlContent/git-commit-dialog.html"),
         gitDiffDialogTemplate       = require("text!htmlContent/git-diff-dialog.html"),
         gitCommitDiffDialogTemplate = require("text!htmlContent/git-commit-diff-dialog.html"),
@@ -92,15 +93,6 @@ define(function (require, exports) {
             .end();
 
         return { width: desiredWidth, height: desiredHeight };
-    }
-
-    function _showDiffDialog(file, diff) {
-        var compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file: file, Strings: Strings }),
-            dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-            $dialog          = dialog.getElement();
-
-        _makeDialogBig($dialog);
-        $dialog.find(".commit-diff").append(Utils.formatDiff(diff));
     }
 
     function handleGitReset() {
@@ -309,9 +301,87 @@ define(function (require, exports) {
         });
     }
 
+    function _showAuthors(file, blame, fromLine, toLine) {
+        var linesTotal = blame.length;
+        var blameStats = blame.reduce(function (stats, lineInfo) {
+            var name = lineInfo.author + " " + lineInfo["author-mail"];
+            if (stats[name]) {
+                stats[name] += 1;
+            } else {
+                stats[name] = 1;
+            }
+            return stats;
+        }, {});
+        blameStats = _.reduce(blameStats, function (arr, val, key) {
+            arr.push({
+                authorName: key,
+                lines: val,
+                percentage: Math.round(val / (linesTotal / 100))
+            });
+            return arr;
+        }, []);
+        blameStats = _.sortBy(blameStats, "lines").reverse();
+
+        if (fromLine || toLine) {
+            file += " (" + Strings.LINES + " " + fromLine + "-" + toLine + ")";
+        }
+
+        var compiledTemplate = Mustache.render(gitAuthorsDialogTemplate, {
+                file: file,
+                blameStats: blameStats,
+                Strings: Strings
+            });
+        Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+    }
+
+    function _getCurrentFilePath(editor) {
+        var projectRoot = Main.getProjectRoot(),
+            document = editor ? editor.document : DocumentManager.getCurrentDocument(),
+            filePath = document.file.fullPath;
+        if (filePath.indexOf(projectRoot) === 0) {
+            filePath = filePath.substring(projectRoot.length);
+        }
+        return filePath;
+    }
+
+    function handleAuthorsSelection() {
+        var editor = EditorManager.getActiveEditor(),
+            filePath = _getCurrentFilePath(editor),
+            currentSelection = editor.getSelection(),
+            fromLine = currentSelection.start.line + 1,
+            toLine = currentSelection.end.line + 1;
+
+        var isSomethingSelected = currentSelection.start.line !== currentSelection.end.line ||
+                                  currentSelection.start.ch !== currentSelection.end.ch;
+        if (!isSomethingSelected) {
+            ErrorHandler.showError(new ExpectedError("Nothing is selected!"));
+            return;
+        }
+
+        Main.gitControl.getBlame(filePath, fromLine, toLine).then(function (blame) {
+            return _showAuthors(filePath, blame, fromLine, toLine);
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Git Blame failed");
+        });
+    }
+
+    function handleAuthorsFile() {
+        var filePath = _getCurrentFilePath();
+        Main.gitControl.getBlame(filePath).then(function (blame) {
+            return _showAuthors(filePath, blame);
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Git Blame failed");
+        });
+    }
+
     function handleGitDiff(file) {
         Main.gitControl.gitDiffSingle(file).then(function (diff) {
-            _showDiffDialog(file, diff);
+            // show the dialog with the diff
+            var compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file: file, Strings: Strings }),
+                dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+                $dialog          = dialog.getElement();
+            _makeDialogBig($dialog);
+            $dialog.find(".commit-diff").append(Utils.formatDiff(diff));
         }).fail(function (err) {
             ErrorHandler.showError(err, "Git Diff failed");
         });
@@ -1163,6 +1233,8 @@ define(function (require, exports) {
             .on("click", ".git-next-gutter", GutterManager.goToNext)
             .on("click", ".git-close-notmodified", handleCloseNotModified)
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
+            .on("click", ".authors-selection", handleAuthorsSelection)
+            .on("click", ".authors-file", handleAuthorsFile)
             .on("click", ".git-history", handleToggleHistory)
             .on("click", ".git-push", handleGitPush)
             .on("click", ".git-pull", handleGitPull)

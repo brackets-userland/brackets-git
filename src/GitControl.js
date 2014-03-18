@@ -9,6 +9,7 @@ define(function (require, exports, module) {
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
         q               = require("../thirdparty/q"),
+        ExpectedError   = require("./ExpectedError"),
         Preferences     = require("./Preferences");
 
     var FILE_STATUS = {
@@ -456,6 +457,48 @@ define(function (require, exports, module) {
 
         remoteAdd: function (remote, url) {
             return this.executeCommand(this._git + " remote add " + escapeShellArg(remote) + " " + escapeShellArg(url));
+        },
+
+        getBlame: function (file, from, to) {
+            var args = ["blame", "-w", "--line-porcelain"];
+            if (from || to) { args.push("-L" + from + "," + to); }
+            args.push(file); // spawnCommand doesn't need arguments escaped
+            return this.spawnCommand(this._git, args).then(function (stdout) {
+                if (!stdout) { return []; }
+
+                var separator = "-@-BREAK-HERE-@-";
+                stdout = stdout.replace(/^\t(.*)$/gm, function (a, b) { return b + separator; });
+
+                return stdout.split(separator).reduce(function (arr, lineInfo) {
+                    if (!lineInfo) { return arr; }
+
+                    var obj = {},
+                        lines = lineInfo.split("\n"),
+                        firstLine = _.first(lines).split(" ");
+
+                    obj.hash = firstLine[0];
+                    obj.num = firstLine[1];
+                    obj.content = _.last(lines);
+
+                    // process all but first and last lines
+                    for (var i = 1, l = lines.length - 1; i < l; i++) {
+                        var line = lines[i],
+                            io = line.indexOf(" "),
+                            key = line.substring(0, io),
+                            val = line.substring(io + 1);
+                        obj[key] = val;
+                    }
+
+                    arr.push(obj);
+                    return arr;
+                }, []);
+            }).fail(function (stderr) {
+                var m = stderr.match(/no such path (\S+)/);
+                if (m) {
+                    throw new ExpectedError("File is not tracked by Git: " + m[1]);
+                }
+                throw stderr;
+            });
         }
 
     };

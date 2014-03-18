@@ -7,6 +7,8 @@ define({
     AGREE_TO_STORE_PASSWORDS:           "I agree that password are stored in plain text on my computer",
     AMEND_COMMIT:                       "Amend last commit",
     AMEND_COMMIT_FORBIDDEN:             "Cannot amend commit when there are no unpushed commits",
+    AUTHOR:                             "Author",
+    AUTHORS_OF:                         "Authors of",
     BASH_NOT_AVAILABLE:                 "Bash is not available or properly configured",
     BASIC_CONFIGURATION:                "Basic configuration",
     BRACKETS_GIT_ERROR:                 "Brackets Git encountered an error\u2026",
@@ -62,6 +64,8 @@ define({
     GOTO_NEXT_GIT_CHANGE:               "Go to next Git change",
     LAUNCH_BASH_SHORTCUT:               "Bash/Terminal shortcut",
     LOADING:                            "Loading\u2026",
+    LINES:                              "Lines",
+    _LINES:                             "lines",
     LIST_MODIFIED_FILES:                "Modified files",
     MARK_MODIFIED_FILES_IN_TREE:        "Mark modified files in file tree",
     NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
@@ -103,5 +107,7 @@ define({
     URL:                                "URL",
     USE_CODE_INSPECTION:                "Use Code inspection",
     USE_GIT_GUTTER:                     "Use Git gutter marks",
-    USING_GIT_VERSION:                  "Git version"
+    USING_GIT_VERSION:                  "Git version",
+    VIEW_AUTHORS_SELECTION:             "View authors of selection",
+    VIEW_AUTHORS_FILE:                  "View authors of file"
 });
