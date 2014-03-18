@@ -3,8 +3,9 @@
 define(function (require, exports) {
     "use strict";
 
-    var FileSystem = brackets.getModule("filesystem/FileSystem"),
-        FileUtils  = brackets.getModule("file/FileUtils");
+    var ExtensionManager  = brackets.getModule("extensibility/ExtensionManager"),
+        FileSystem        = brackets.getModule("filesystem/FileSystem"),
+        FileUtils         = brackets.getModule("file/FileUtils");
 
     var packageJson,
         moduleDirectory;
@@ -40,6 +41,38 @@ define(function (require, exports) {
         } else {
             throw new Error("[brackets-git] package.json is not loaded yet!");
         }
+    };
+
+    function getLatestRegistryVersion(callback) {
+        var extName = packageJson.name,
+            registryInfo = ExtensionManager.extensions[extName].registryInfo;
+
+        var cont = function () {
+            registryInfo = ExtensionManager.extensions[extName].registryInfo;
+            callback(registryInfo.metadata.version);
+        };
+
+        if (!registryInfo) {
+            ExtensionManager.downloadRegistry()
+                .done(cont)
+                .fail(function () {
+                    callback(null);
+                });
+        } else {
+            cont();
+        }
+    }
+
+    // responds to callback with: hasLatestVersion, currentVersion, latestVersion
+    exports.hasLatestVersion = function (callback) {
+        getLatestRegistryVersion(function (registryVersion) {
+            if (registryVersion === null) {
+                callback(true, packageJson.version, "unknown");
+            } else {
+                var has = packageJson.version >= registryVersion;
+                callback(has, packageJson.version, registryVersion);
+            }
+        });
     };
 
 });

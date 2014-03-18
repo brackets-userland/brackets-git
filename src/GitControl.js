@@ -466,10 +466,13 @@ define(function (require, exports, module) {
             return this.spawnCommand(this._git, args).then(function (stdout) {
                 if (!stdout) { return []; }
 
-                var separator = "-@-BREAK-HERE-@-";
-                stdout = stdout.replace(/^\t(.*)$/gm, function (a, b) { return b + separator; });
+                var sep  = "-@-BREAK-HERE-@-",
+                    sep2 = "$$#-#$BREAK$$-$#";
+                stdout = stdout.replace(sep, sep2)
+                               .replace(/^\t(.*)$/gm, function (a, b) { return b + sep; });
 
-                return stdout.split(separator).reduce(function (arr, lineInfo) {
+                return stdout.split(sep).reduce(function (arr, lineInfo) {
+                    lineInfo = lineInfo.replace(sep2, sep).trimLeft();
                     if (!lineInfo) { return arr; }
 
                     var obj = {},
@@ -477,7 +480,7 @@ define(function (require, exports, module) {
                         firstLine = _.first(lines).split(" ");
 
                     obj.hash = firstLine[0];
-                    obj.num = firstLine[1];
+                    obj.num = firstLine[2];
                     obj.content = _.last(lines);
 
                     // process all but first and last lines

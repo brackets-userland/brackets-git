@@ -43,14 +43,24 @@ define(function (require, exports) {
         return errNew;
     };
 
+    function _reportBug(params) {
+        ExtInfo.hasLatestVersion(function (hasLatestVersion, currentVersion, latestVersion) {
+            if (hasLatestVersion) {
+                NativeApp.openURLInDefaultBrowser(params);
+            } else {
+                var err = new ExpectedError("Latest version of extension is " + latestVersion + ", yours is " + currentVersion);
+                exports.showError(err, "Outdated extension version!");
+            }
+        });
+    }
+
     exports.reportBug = function () {
         var mdReport = getMdReport({
             errorStack: errorQueue.map(function (err, index) {
                 return "#" + (index + 1) + ". " + err.toString();
             }).join("\n")
         });
-        NativeApp.openURLInDefaultBrowser(ExtInfo.getSync().homepage + "/issues/new?body=" +
-                                          encodeURIComponent(mdReport));
+        _reportBug(ExtInfo.getSync().homepage + "/issues/new?body=" + encodeURIComponent(mdReport));
     };
 
     exports.isTimeout = function (err) {
@@ -108,10 +118,10 @@ define(function (require, exports) {
                     errorBody: errorBody,
                     errorStack: errorStack
                 });
-                NativeApp.openURLInDefaultBrowser(ExtInfo.getSync().homepage + "/issues/new?title=" +
-                                                  encodeURIComponent(title) +
-                                                  "&body=" +
-                                                  encodeURIComponent(mdReport));
+                _reportBug(ExtInfo.getSync().homepage + "/issues/new?title=" +
+                           encodeURIComponent(title) +
+                           "&body=" +
+                           encodeURIComponent(mdReport));
             }
         });
 
