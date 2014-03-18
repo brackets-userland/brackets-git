@@ -755,7 +755,7 @@ define(function (require, exports) {
         }).fail(function (err) {
 
             if (typeof err !== "string") { throw err; }
-            var m = err.match(/git push --set-upstream ([-0-9a-zA-Z]+) ([-0-9a-zA-Z]+)/);
+            var m = err.match(/git push --set-upstream (\S+) (\S+)/);
             if (!m) { throw err; }
             return Main.gitControl.gitPushSetUpstream(m[1], m[2]);
 
