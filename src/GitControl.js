@@ -226,6 +226,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " checkout -b " + branchName);
         },
 
+        deleteLocalBranch: function (branchName) {
+            return this.executeCommand(this._git + " branch -d " + branchName);
+        },
+
         getRemotes: function () {
             return this.executeCommand(this._git + " remote -v").then(function (stdout) {
                 return !stdout ? [] : _.uniq(stdout.replace(/\((push|fetch)\)/g, "").split("\n")).map(function (l) {
@@ -502,6 +506,14 @@ define(function (require, exports, module) {
                 }
                 throw stderr;
             });
+        },
+
+        setUserName: function (name) {
+            return this.executeCommand(this._git + " config user.name " + escapeShellArg(name));
+        },
+
+        setUserEmail: function (email) {
+            return this.executeCommand(this._git + " config user.email " + escapeShellArg(email));
         }
 
     };

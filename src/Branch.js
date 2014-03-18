@@ -65,9 +65,9 @@ define(function (require, exports) {
                 }
             });
 
-        }).on("click", "a.git-branch-link", function (e) {
+        }).on("click", "a.git-branch-link .switch-branch", function (e) {
             e.stopPropagation();
-            var branchName = $(this).data("branch");
+            var branchName = $(this).parent().data("branch");
             Main.gitControl.checkoutBranch(branchName).fail(function (err) {
                 ErrorHandler.showError(err, "Switching branches failed");
             }).then(function () {
@@ -79,6 +79,9 @@ define(function (require, exports) {
             $(this).addClass("selected");
         }).on("mouseleave", "a", function () {
             $(this).removeClass("selected");
+        }).on("click", "a.git-branch-link .remove-branch", function () {
+            Main.gitControl.deleteLocalBranch($(this).parent().attr("data-branch"));
+            $(this).parent().remove();
         });
     }
 

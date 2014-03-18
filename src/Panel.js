@@ -1209,6 +1209,18 @@ define(function (require, exports) {
             });
     }
 
+    function changeUserName() {
+        return askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME).then(function (userName) {
+            return Main.gitControl.setUserName(userName);
+        });
+    }
+
+    function changeUserEmail() {
+        return askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL).then(function (userEmail) {
+            return Main.gitControl.setUserEmail(userEmail);
+        });
+    }
+
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
@@ -1247,7 +1259,9 @@ define(function (require, exports) {
                 setTimeout(function () {
                     Menus.getContextMenu("git-panel-context-menu").open(e);
                 }, 1);
-            });
+            })
+            .on("click", ".change-user-name", changeUserName)
+            .on("click", ".change-user-email", changeUserEmail);
 
         // Attaching table handlers
         attachDefaultTableHandlers();
