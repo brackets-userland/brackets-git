@@ -390,7 +390,7 @@ define(function (require, exports) {
     function handleGitUndo(file) {
         var compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: Strings.UNDO_CHANGES,
-            question: StringUtils.format(Strings.Q_UNDO_CHANGES, file),
+            question: StringUtils.format(Strings.Q_UNDO_CHANGES, _.escape(file)),
             Strings: Strings
         });
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
@@ -413,7 +413,7 @@ define(function (require, exports) {
     function handleGitDelete(file) {
         var compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: Strings.DELETE_FILE,
-            question: StringUtils.format(Strings.Q_DELETE_FILE, file),
+            question: StringUtils.format(Strings.Q_DELETE_FILE, _.escape(file)),
             Strings: Strings
         });
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
