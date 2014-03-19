@@ -165,7 +165,7 @@ define(function (require, exports) {
                     .append($("<span class='dropdown-arrow' />"));
                 Panel.enable();
             }).fail(function (ex) {
-                if (ex.match(/unknown revision/)) {
+                if (ErrorHandler.contains(ex, "unknown revision")) {
                     $gitBranchName
                         .off("click")
                         .text("no branch");
