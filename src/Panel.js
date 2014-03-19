@@ -617,6 +617,7 @@ define(function (require, exports) {
             question: question,
             stringInput: !options.booleanResponse && !options.password,
             passwordInput: options.password,
+            defaultValue: options.defaultValue,
             Strings: Strings
         });
         var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
@@ -1210,14 +1211,25 @@ define(function (require, exports) {
     }
 
     function changeUserName() {
-        return askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME).then(function (userName) {
-            return Main.gitControl.setUserName(userName);
+        return Main.gitControl.getGitConfig("user.name")
+        .then(function (currentUserName) {
+            console.log("username: " + currentUserName);
+            return askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, {defaultValue: currentUserName}).then(function (userName) {
+                if (!userName.length) { userName = currentUserName; }
+                return Main.gitControl.setUserName(userName).fail(function (err) { ErrorHandler.showError(err, "Impossible change username"); });
+            });
         });
     }
 
     function changeUserEmail() {
-        return askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL).then(function (userEmail) {
-            return Main.gitControl.setUserEmail(userEmail);
+        return Main.gitControl.getGitConfig("user.email")
+        .then(function (currentUserEmail) {
+            return askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, {defaultValue: currentUserEmail}).then(function (userEmail) {
+                if (!userEmail.length) { userEmail = currentUserEmail; }
+                return Main.gitControl.setUserEmail(userEmail)
+                .fail(function (err) { ErrorHandler.showError(err, "Impossible change user email"); });
+
+            });
         });
     }
 

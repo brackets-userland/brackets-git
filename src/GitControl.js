@@ -508,12 +508,12 @@ define(function (require, exports, module) {
             });
         },
 
-        setUserName: function (name) {
-            return this.executeCommand(this._git + " config user.name " + escapeShellArg(name));
+        setUserName: function (userName) {
+            return this.setGitConfig("user.name", userName);
         },
 
-        setUserEmail: function (email) {
-            return this.executeCommand(this._git + " config user.email " + escapeShellArg(email));
+        setUserEmail: function (userEmail) {
+            return this.setGitConfig("user.email", userEmail);
         }
 
     };
