@@ -13,6 +13,10 @@
 @lightRed:    #FF7CAD;
 @lighterRed:  #FFAFCF;
 
+// TODO: copy from Brackets later once imports are fixed
+@tc-control-border-radius: 3px;
+@tc-dropdown-shadow: 0 3px 9px rgba(0, 0, 0, 0.24);
+
 /* Project tree */
 .jstree-brackets {
     li.git-modified > a:before {
@@ -185,16 +189,24 @@
         }
     }
     .dropdown-menu {
+        border: none;
+        border-radius: @tc-control-border-radius;
+        box-shadow: @tc-dropdown-shadow;
+
+        // mixin
+        .both() {
+            color: @defaultText;
+            background: @slightBlue;
+        }
+
         > li {
             > a:hover, > a:focus {
-                color: @defaultText;
-                background: @slightBlue;
+                .both();
             }
         }
         .dropdown-submenu:hover, .dropdown-submenu:focus {
             > a {
-                color: @defaultText;
-                background: @slightBlue;
+                .both();
             }
         }
     }
