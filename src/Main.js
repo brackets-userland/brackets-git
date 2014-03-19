@@ -271,6 +271,10 @@ define(function (require, exports) {
 
                 opts.cwd = normalizePathForOs(opts.cwd);
 
+                if (method === "exec") {
+                    cmd = "\"" + cmd + "\"";
+                }
+
                 if (debugOn) {
                     console.log(extName + "cmd-" + method + ": " + (opts.customCwd ? opts.cwd + "\\" : "") + cmd + " " + args.join(" "));
                 }

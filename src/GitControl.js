@@ -67,7 +67,7 @@ define(function (require, exports, module) {
         if (Preferences.get("gitIsInSystemPath")) {
             this._git = "git";
         } else {
-            this._git = "\"" + Preferences.get("gitPath") + "\"";
+            this._git = Preferences.get("gitPath");
         }
     }
 
