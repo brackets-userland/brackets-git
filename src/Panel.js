@@ -146,8 +146,8 @@ define(function (require, exports) {
 
         Main.gitControl.remoteRemove(remoteName)
         .then(function () {
-            $selected.remove();
-            var newRemote = gitPanel.$panel.find(".git-remotes-dropdown li:first a").data("remote-name");
+            $selected.parent().remove();
+            var newRemote = gitPanel.$panel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
             $remoteField.data("remote-name", newRemote).html(newRemote);
         })
         .fail(function (err) {
@@ -189,7 +189,7 @@ define(function (require, exports) {
                     "data-remote-name": remoteInfo.name
                 })
                 .html("<span class=\"trash-icon remove-remote\"></span><span class=\"change-remote\">" + remoteInfo.name + "</span>")
-                .appendTo($("<li/>").appendTo($remotesDropdown));
+                .appendTo($("<li class=\"remote\"/>").appendTo($remotesDropdown));
 
                 if (remoteInfo.name === defaultRemoteName) {
                     $defaultRemote = $a;
