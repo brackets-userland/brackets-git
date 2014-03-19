@@ -247,6 +247,13 @@ define(function (require, exports) {
         return str;
     }
 
+    function normalizePathForOs(path) {
+        if (brackets.platform === "win") {
+            return path.replace(/\//g, "\\");
+        }
+        return path;
+    }
+
     function init(nodeConnection) {
         var debugOn       = Preferences.get("debugMode"),
             extName       = "[brackets-git] ",
@@ -261,6 +268,8 @@ define(function (require, exports) {
                 opts = opts || {};
                 if (opts.cwd) { opts.customCwd = true; }
                 else { opts.cwd = getProjectRoot(); }
+
+                opts.cwd = normalizePathForOs(opts.cwd);
 
                 if (debugOn) {
                     console.log(extName + "cmd-" + method + ": " + (opts.customCwd ? opts.cwd + "\\" : "") + cmd + " " + args.join(" "));
