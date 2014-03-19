@@ -80,7 +80,7 @@ define(function (require, exports) {
         }).on("mouseleave", "a", function () {
             $(this).removeClass("selected");
         }).on("click", "a.git-branch-link .remove-branch", function () {
-            Main.gitControl.deleteLocalBranch($(this).parent().attr("data-branch"))
+            Main.gitControl.deleteLocalBranch($(this).parent().data("branch"))
             .fail(function (err) { ErrorHandler.showError(err, "Branch deletion failed"); });
             $(this).parent().remove();
         });
