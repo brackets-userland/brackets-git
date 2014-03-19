@@ -271,7 +271,7 @@ define(function (require, exports) {
 
                 opts.cwd = normalizePathForOs(opts.cwd);
 
-                if (method === "exec") {
+                if (method === "execute") {
                     cmd = "\"" + cmd + "\"";
                 }
 
