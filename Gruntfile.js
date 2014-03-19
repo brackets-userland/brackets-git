@@ -8,10 +8,14 @@ module.exports = function (grunt) {
             options: {
                 jshintrc: true
             }
+        },
+        lesslint: {
+            src: ["less/**/*.less"]
         }
     });
 
     grunt.loadNpmTasks("grunt-contrib-jshint");
+    grunt.loadNpmTasks("grunt-lesslint");
     grunt.registerTask("default", ["jshint"]);
-
+    grunt.registerTask("lesslint", ["lesslint"]);
 };
