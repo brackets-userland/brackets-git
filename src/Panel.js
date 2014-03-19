@@ -829,9 +829,6 @@ define(function (require, exports) {
         // set the history panel to false and remove the class that show the button history active when refresh
         gitPanel.$panel.find(".git-history").removeClass("btn-active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
 
-        // re-attach the table handlers
-        attachDefaultTableHandlers();
-
         if (gitPanelMode === "not-repo") {
             $tableContainer.empty();
             return q();
@@ -1243,7 +1240,10 @@ define(function (require, exports) {
             .on("click", ".git-clone", handleGitClone)
             .on("click", ".git-remotes-dropdown a", handleRemotePick)
             .on("contextmenu", "tr", function (e) {
-                $(this).click();
+                var $this = $(this);
+                if ($this.hasClass("history-commit")) { return; }
+
+                $this.click();
                 setTimeout(function () {
                     Menus.getContextMenu("git-panel-context-menu").open(e);
                 }, 1);

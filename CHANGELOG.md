@@ -2,6 +2,7 @@
 
 ## 0.10.13
 * Updated Italian translation by [Pietro Albini](https://github.com/pietroalbini)
+* Fixed issue when right-clicking on history entries.
 
 ## 0.10.12
 * Added features to view authors of a file or current selection.
