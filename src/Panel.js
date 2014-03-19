@@ -119,7 +119,7 @@ define(function (require, exports) {
     }
 
     function handleRemotePick(e, $a) {
-        var $selected = e ? $(e.target) : $a,
+        var $selected = (e ? $(e.target) : $a).parent(),
             $remoteField = gitPanel.$panel.find(".git-remotes-field");
 
         if (!$selected) {
@@ -139,6 +139,36 @@ define(function (require, exports) {
             });
     }
 
+    function handleRemoteRemove(e, $a) {
+        var $selected = (e ? $(e.target) : $a).parent(),
+            $remoteField = gitPanel.$panel.find(".git-remotes-field"),
+            remoteName = $selected.data("remote-name");
+
+        Main.gitControl.remoteRemove(remoteName)
+        .then(function () {
+            $selected.remove();
+            var newRemote = gitPanel.$panel.find(".git-remotes-dropdown li:first a").data("remote-name");
+            $remoteField.data("remote-name", newRemote).html(newRemote);
+        })
+        .fail(function (err) {
+            ErrorHandler.logError(err);
+        });
+    }
+
+    function handleRemoteCreation() {
+        return askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_NAME)
+        .then(function (name) {
+            return askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_URL)
+            .then(function (url) {
+                return Main.gitControl.remoteAdd(name, url)
+                .then(function () {
+                    prepareRemotesPicker();
+                })
+                .fail(function (err) { ErrorHandler.showError(err, "Remote creation failed"); });
+            });
+        });
+    }
+
     function prepareRemotesPicker() {
         Main.gitControl.getRemotes().then(function (remotes) {
             var defaultRemoteName = _getDefaultRemote(),
@@ -148,11 +178,18 @@ define(function (require, exports) {
             gitPanel.$panel.find(".git-pull").prop("disabled", remotes.length === 0);
             gitPanel.$panel.find(".git-push").prop("disabled", remotes.length === 0);
 
+            // Add option to define new remote
+            $remotesDropdown.append("<li><a class=\"git-remote-new\"><span>" + Strings.CREATE_NEW_REMOTE + "</span></a></li>");
+            $remotesDropdown.append("<li class=\"divider\"></li>");
+
+            // Add options to change remote
             var $remotes = remotes.map(function (remoteInfo) {
                 var $a = $("<a/>").attr({
                     "href": "#",
                     "data-remote-name": remoteInfo.name
-                }).text(remoteInfo.name).appendTo($("<li/>").appendTo($remotesDropdown));
+                })
+                .html("<span class=\"trash-icon remove-remote\"></span><span class=\"change-remote\">" + remoteInfo.name + "</span>")
+                .appendTo($("<li/>").appendTo($remotesDropdown));
 
                 if (remoteInfo.name === defaultRemoteName) {
                     $defaultRemote = $a;
@@ -1228,7 +1265,6 @@ define(function (require, exports) {
                 if (!userEmail.length) { userEmail = currentUserEmail; }
                 return Main.gitControl.setUserEmail(userEmail)
                 .fail(function (err) { ErrorHandler.showError(err, "Impossible change user email"); });
-
             });
         });
     }
@@ -1265,7 +1301,9 @@ define(function (require, exports) {
             .on("click", ".git-bug", ErrorHandler.reportBug)
             .on("click", ".git-init", handleGitInit)
             .on("click", ".git-clone", handleGitClone)
-            .on("click", ".git-remotes-dropdown a", handleRemotePick)
+            .on("click", ".change-remote", handleRemotePick)
+            .on("click", ".remove-remote", handleRemoteRemove)
+            .on("click", ".git-remote-new", handleRemoteCreation)
             .on("contextmenu", "tr", function (e) {
                 $(this).click();
                 setTimeout(function () {

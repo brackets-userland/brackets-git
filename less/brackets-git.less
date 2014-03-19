@@ -197,6 +197,20 @@
             border-right: 0;
         }
     }
+    .git-remotes-dropdown a {
+        padding-left: 25px;
+        .trash-icon {
+            opacity: 0;
+            margin-top: 2px;
+        }
+        .change-remote {
+            display: inline-block;
+            width: 100%;
+        }
+        &:hover .trash-icon {
+            opacity: 1;
+        }
+    }
     .dropdown-menu {
         > li {
             > a:hover, > a:focus {

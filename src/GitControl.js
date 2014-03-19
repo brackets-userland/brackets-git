@@ -463,6 +463,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git + " remote add " + escapeShellArg(remote) + " " + escapeShellArg(url));
         },
 
+        remoteRemove: function (remote) {
+            return this.executeCommand(this._git + " remote rm " + escapeShellArg(remote));
+        },
+
         getBlame: function (file, from, to) {
             var args = ["blame", "-w", "--line-porcelain"];
             if (from || to) { args.push("-L" + from + "," + to); }
