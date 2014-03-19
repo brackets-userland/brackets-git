@@ -115,6 +115,7 @@ define({
     USE_CODE_INSPECTION:                "Use Code inspection",
     USE_GIT_GUTTER:                     "Use Git gutter marks",
     USING_GIT_VERSION:                  "Git version",
+    UNDO_LAST_LOCAL_COMMIT:             "Undo last local (not pushed) commit",
     VIEW_AUTHORS_SELECTION:             "View authors of selection",
     VIEW_AUTHORS_FILE:                  "View authors of file"
 });

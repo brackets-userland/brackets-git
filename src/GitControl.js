@@ -518,6 +518,10 @@ define(function (require, exports, module) {
 
         setUserEmail: function (userEmail) {
             return this.setGitConfig("user.email", userEmail);
+        },
+
+        undoLastLocalCommit: function () {
+            return this.executeCommand(this._git + " reset --soft HEAD~1");
         }
 
     };

@@ -1201,6 +1201,11 @@ define(function (require, exports) {
         gitPanel.$panel.find(".git-commit").prop("disabled", !enableButton);
     }
 
+    function undoLastLocalCommit() {
+        Main.gitControl.undoLastLocalCommit().fail(function (err) { ErrorHandler.showError(err, "Impossible undo last commit");  });
+        refresh();
+    }
+
     function attachDefaultTableHandlers() {
         $tableContainer = gitPanel.$panel.find(".table-container")
             .off()
@@ -1311,7 +1316,8 @@ define(function (require, exports) {
                 }, 1);
             })
             .on("click", ".change-user-name", changeUserName)
-            .on("click", ".change-user-email", changeUserEmail);
+            .on("click", ".change-user-email", changeUserEmail)
+            .on("click", ".undo-last-commit", undoLastLocalCommit);
 
         // Attaching table handlers
         attachDefaultTableHandlers();
