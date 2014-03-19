@@ -10,12 +10,19 @@ module.exports = function (grunt) {
             }
         },
         lesslint: {
-            src: ["less/**/*.less"]
+            src: ["less/**/*.less"],
+            options: {
+                csslint: {
+                    "ids": false,
+                    "important": false,
+                    "known-properties": false
+                }
+            }
         }
     });
 
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-lesslint");
     grunt.registerTask("default", ["jshint"]);
-    grunt.registerTask("lesslint", ["lesslint"]);
+    grunt.registerTask("less", ["lesslint"]);
 };
