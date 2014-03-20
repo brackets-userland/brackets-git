@@ -235,7 +235,10 @@ define(function (require, exports) {
 
         // commit message handling
         function switchCommitMessageElement() {
-            $dialog.find("[name='commit-message']").toggle();
+            var findStr = "[name='commit-message']",
+                currentValue = $dialog.find(findStr + ":visible").val();
+            $dialog.find(findStr).toggle();
+            $dialog.find(findStr + ":visible").val(currentValue);
             recalculateMessageLength();
         }
 
