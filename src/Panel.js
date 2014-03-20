@@ -962,23 +962,6 @@ define(function (require, exports) {
         }
     }
 
-    function handleCloseNotModified() {
-        Main.gitControl.getGitStatus().then(function (modifiedFiles) {
-            var openFiles = DocumentManager.getWorkingSet(),
-                projectRoot = Main.getProjectRoot();
-            openFiles.forEach(function (openFile) {
-                var removeOpenFile = true;
-                modifiedFiles.forEach(function (modifiedFile) {
-                    if (projectRoot + modifiedFile.file === openFile.fullPath) { removeOpenFile = false; }
-                });
-                if (removeOpenFile) {
-                    DocumentManager.closeFullEditor(openFile);
-                }
-            });
-            EditorManager.focus();
-        });
-    }
-
     function handleToggleUntracked() {
         showingUntracked = !showingUntracked;
 
@@ -1296,7 +1279,6 @@ define(function (require, exports) {
             .on("click", ".git-commit", handleGitCommit)
             .on("click", ".git-prev-gutter", GutterManager.goToPrev)
             .on("click", ".git-next-gutter", GutterManager.goToNext)
-            .on("click", ".git-close-notmodified", handleCloseNotModified)
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
             .on("click", ".authors-selection", handleAuthorsSelection)
             .on("click", ".authors-file", handleAuthorsFile)
