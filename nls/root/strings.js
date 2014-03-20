@@ -39,6 +39,8 @@ define({
     DEBUG:                              "Debug",
     DEBUG_MODE_SETTING:                 "DEBUG mode &mdash; Leave this OFF unless you need to find a problem with the extension. All Git communication will be forwarded to Brackets console!",
     DELETE_FILE:                        "Delete file",
+    DELETE_REMOTE:                      "Delete remote",
+    DELETE_REMOTE_NAME:                 "Do you really wish to delete remote \"{0}\"?",
     DIFF:                               "Diff",
     DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     ENTER_PASSWORD:                     "Enter password",

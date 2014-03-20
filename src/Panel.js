@@ -140,18 +140,22 @@ define(function (require, exports) {
     }
 
     function handleRemoteRemove(e, $a) {
-        var $selected = (e ? $(e.target) : $a).parent(),
+        var $selected = (e ? $(e.target) : $a).closest("*[data-remote-name]"),
             $remoteField = gitPanel.$panel.find(".git-remotes-field"),
             remoteName = $selected.data("remote-name");
 
-        Main.gitControl.remoteRemove(remoteName)
-        .then(function () {
-            $selected.parent().remove();
-            var newRemote = gitPanel.$panel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
-            $remoteField.data("remote-name", newRemote).html(newRemote);
-        })
-        .fail(function (err) {
-            ErrorHandler.logError(err);
+        return askQuestion(Strings.DELETE_REMOTE,
+                           StringUtils.format(Strings.DELETE_REMOTE_NAME, remoteName),
+                           {booleanResponse: true}).then(function (response) {
+            if (response) {
+                Main.gitControl.remoteRemove(remoteName).then(function () {
+                    $selected.parent().remove();
+                    var newRemote = gitPanel.$panel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
+                    $remoteField.data("remote-name", newRemote).html(newRemote);
+                }).fail(function (err) {
+                    ErrorHandler.logError(err);
+                });
+            }
         });
     }
 
@@ -186,12 +190,19 @@ define(function (require, exports) {
 
             // Add options to change remote
             var $remotes = remotes.map(function (remoteInfo) {
+                var canDelete = remoteInfo.name !== "origin";
+
                 var $a = $("<a/>").attr({
                     "href": "#",
                     "data-remote-name": remoteInfo.name
-                })
-                .html("<span class=\"trash-icon remove-remote\"></span><span class=\"change-remote\">" + remoteInfo.name + "</span>")
-                .appendTo($("<li class=\"remote\"/>").appendTo($remotesDropdown));
+                });
+
+                if (canDelete) {
+                    $a.append("<span class='trash-icon remove-remote'><i class='octicon octicon-remove-close'></i></span>");
+                }
+
+                $a.append("<span class='change-remote'>" + remoteInfo.name + "</span>");
+                $a.appendTo($("<li class=\"remote\"/>").appendTo($remotesDropdown));
 
                 if (remoteInfo.name === defaultRemoteName) {
                     $defaultRemote = $a;
