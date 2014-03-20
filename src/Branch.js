@@ -25,9 +25,15 @@ define(function (require, exports) {
         $dropdown;
 
     function renderList(branches) {
-        var currentBranch = _.find(branches, function (b) { return b.indexOf("* ") === 0; }),
-            templateVars  = {
-                branchList : _.without(branches, currentBranch),
+        branches = branches.map(function (name) {
+            return {
+                name: name,
+                currentBranch: name.indexOf("* ") === 0,
+                canDelete: name !== "master"
+            };
+        });
+        var templateVars  = {
+                branchList : _.filter(branches, function (o) { return !o.currentBranch; }),
                 Strings     : Strings
             };
         return Mustache.render(branchesMenuTemplate, templateVars);
@@ -79,7 +85,7 @@ define(function (require, exports) {
             $(this).addClass("selected");
         }).on("mouseleave", "a", function () {
             $(this).removeClass("selected");
-        }).on("click", "a.git-branch-link .remove-branch", function () {
+        }).on("click", "a.git-branch-link .trash-icon", function () {
             Main.gitControl.deleteLocalBranch($(this).parent().data("branch"))
             .fail(function (err) { ErrorHandler.showError(err, "Branch deletion failed"); });
             $(this).parent().remove();
