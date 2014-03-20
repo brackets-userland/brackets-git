@@ -46,7 +46,7 @@ define(function (require, exports) {
 
             var compiledTemplate = Mustache.render(questionDialogTemplate, {
                 title: Strings.CREATE_NEW_BRANCH,
-                question: Strings.BRANCH_NAME,
+                question: _.escape(Strings.BRANCH_NAME),
                 stringInput: true,
                 Strings: Strings
             });

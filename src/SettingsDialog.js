@@ -4,12 +4,13 @@
 define(function (require, exports) {
     "use strict";
 
-    var CommandManager             = brackets.getModule("command/CommandManager"),
-        Dialogs                    = brackets.getModule("widgets/Dialogs"),
-        Preferences                = require("./Preferences"),
-        ChangelogDialog            = require("../src/ChangelogDialog"),
-        Strings                    = require("../strings"),
-        settingsDialogTemplate     = require("text!htmlContent/git-settings-dialog.html");
+    var _                       = brackets.getModule("thirdparty/lodash"),
+        CommandManager          = brackets.getModule("command/CommandManager"),
+        Dialogs                 = brackets.getModule("widgets/Dialogs"),
+        Preferences             = require("./Preferences"),
+        ChangelogDialog         = require("../src/ChangelogDialog"),
+        Strings                 = require("../strings"),
+        settingsDialogTemplate  = require("text!htmlContent/git-settings-dialog.html");
 
     var dialog,
         $dialog;
@@ -86,7 +87,7 @@ define(function (require, exports) {
         var questionDialogTemplate = require("text!htmlContent/git-question-dialog.html");
         var compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: Strings.RESTART,
-            question: Strings.Q_RESTART_BRACKETS,
+            question: _.escape(Strings.Q_RESTART_BRACKETS),
             Strings: Strings
         });
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {

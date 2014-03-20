@@ -614,7 +614,7 @@ define(function (require, exports) {
         var response = q.defer();
         var compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: title,
-            question: question,
+            question: _.escape(question),
             stringInput: !options.booleanResponse && !options.password,
             passwordInput: options.password,
             Strings: Strings
@@ -733,7 +733,7 @@ define(function (require, exports) {
             var defer = q.defer();
             var compiledTemplate = Mustache.render(questionDialogTemplate, {
                 title: Strings.SET_ORIGIN_URL,
-                question: Strings.URL,
+                question: _.escape(Strings.URL),
                 stringInput: true,
                 Strings: Strings
             });
