@@ -9,7 +9,6 @@
 
 ## 0.10.12
 * Added features to view authors of a file or current selection.
-
 * Push dialog shows masked password.
 * Tabs are now properly displayed in the diffs respecting Brackets "tabSize" preference.
 

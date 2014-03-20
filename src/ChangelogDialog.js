@@ -12,6 +12,8 @@ define(function (require, exports) {
         Strings                    = require("../strings"),
         changelogDialogTemplate    = require("text!htmlContent/git-changelog-dialog.html");
 
+    var marked                     = require("../thirdparty/marked");
+
     var dialog;
 
     exports.show = function () {
@@ -21,7 +23,11 @@ define(function (require, exports) {
         dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
         FileUtils.readAsText(FileSystem.getFileForPath(Preferences.get("extensionDirectory") + "CHANGELOG.md")).done(function (content) {
-            $("#git-changelog", dialog.getElement()).text(content);
+            content = marked(content, {
+                gfm: true,
+                breaks: true
+            });
+            $("#git-changelog", dialog.getElement()).html(content);
         });
     };
 
