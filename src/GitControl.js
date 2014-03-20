@@ -263,6 +263,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
+        deleteLocalBranch: function (branchName) {
+            return this.executeCommand(this._git + " branch -d " + branchName);
+        },
+
         getRemotes: function () {
             var args = [
                 "remote",
@@ -555,6 +559,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
+        remoteRemove: function (remote) {
+            return this.executeCommand(this._git + " remote rm " + escapeShellArg(remote));
+        },
+
         getBlame: function (file, from, to) {
             var args = ["blame", "-w", "--line-porcelain"];
             if (from || to) { args.push("-L" + from + "," + to); }
@@ -598,6 +606,18 @@ define(function (require, exports, module) {
                 }
                 throw stderr;
             });
+        },
+
+        setUserName: function (userName) {
+            return this.setGitConfig("user.name", userName);
+        },
+
+        setUserEmail: function (userEmail) {
+            return this.setGitConfig("user.email", userEmail);
+        },
+
+        undoLastLocalCommit: function () {
+            return this.executeCommand(this._git + " reset --soft HEAD~1");
         }
 
     };

@@ -76,6 +76,19 @@
             color: #454545;
         }
     }
+    .git-branch-link {
+        .remove-branch{
+            opacity: 0;
+            margin-top: 2px;
+        }
+        .switch-branch {
+            display: inline-block;
+            width: 100%;
+        }
+        &:hover .remove-branch {
+            opacity: 1;
+        }
+    }
     a.selected {
         background: @slightBlue;
     }
@@ -186,6 +199,20 @@
         border-right: 0;
         &:focus {
             border-right: 0;
+        }
+    }
+    .git-remotes-dropdown a {
+        padding-left: 25px;
+        .trash-icon {
+            opacity: 0;
+            margin-top: 2px;
+        }
+        .change-remote {
+            display: inline-block;
+            width: 100%;
+        }
+        &:hover .trash-icon {
+            opacity: 1;
         }
     }
     .dropdown-menu {
@@ -406,6 +433,31 @@
     -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, .15), 0 1px 2px rgba(0, 0, 0, .05);
     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, .15), 0 1px 2px rgba(0, 0, 0, .05);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, .15), 0 1px 2px rgba(0, 0, 0, .05);
+}
+
+.git-close-not-modified {
+    position: absolute;
+    right: 30px;
+    top: 7px;
+    border: 1px solid transparent;
+    padding: 4px 6px;
+    width: 13px;
+    height: 13px;
+    background-position: center;
+    opacity: 0.8;
+    i {
+        font-size: 14px;
+        color: #798286;
+        position: relative;
+        top: -2px;
+    }
+    &:hover {
+        border-radius: 3px;
+        border: 1px solid #2d2f31;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+        text-decoration: none;
+        opacity: 1;
+    }
 }
 
 .selectable-text {

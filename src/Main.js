@@ -4,22 +4,23 @@
 define(function (require, exports) {
     "use strict";
 
-    var q               = require("../thirdparty/q"),
-        _               = brackets.getModule("thirdparty/lodash"),
-        AppInit         = brackets.getModule("utils/AppInit"),
-        CommandManager  = brackets.getModule("command/CommandManager"),
-        Menus           = brackets.getModule("command/Menus"),
-        DocumentManager = brackets.getModule("document/DocumentManager"),
-        FileSystem      = brackets.getModule("filesystem/FileSystem"),
-        FileUtils       = brackets.getModule("file/FileUtils"),
-        ProjectManager  = brackets.getModule("project/ProjectManager"),
-        Strings         = require("../strings"),
-        Preferences     = require("./Preferences"),
-        ErrorHandler    = require("./ErrorHandler"),
-        GitControl      = require("./GitControl"),
-        GutterManager   = require("./GutterManager"),
-        Panel           = require("./Panel"),
-        Branch          = require("./Branch");
+    var q                 = require("../thirdparty/q"),
+        _                 = brackets.getModule("thirdparty/lodash"),
+        AppInit           = brackets.getModule("utils/AppInit"),
+        CommandManager    = brackets.getModule("command/CommandManager"),
+        Menus             = brackets.getModule("command/Menus"),
+        DocumentManager   = brackets.getModule("document/DocumentManager"),
+        FileSystem        = brackets.getModule("filesystem/FileSystem"),
+        FileUtils         = brackets.getModule("file/FileUtils"),
+        ProjectManager    = brackets.getModule("project/ProjectManager"),
+        Strings           = require("../strings"),
+        Preferences       = require("./Preferences"),
+        ErrorHandler      = require("./ErrorHandler"),
+        GitControl        = require("./GitControl"),
+        GutterManager     = require("./GutterManager"),
+        Panel             = require("./Panel"),
+        Branch            = require("./Branch"),
+        CloseNotModified  = require("./CloseNotModified");
 
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
                                     .addClass("loading").appendTo($("#main-toolbar .buttons")),
@@ -71,6 +72,7 @@ define(function (require, exports) {
     function initUi() {
         Panel.init(gitControl);
         Branch.init(gitControl);
+        CloseNotModified.init(gitControl);
 
         // Attach events
         $icon.on("click", Panel.toggle);

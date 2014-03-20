@@ -119,7 +119,7 @@ define(function (require, exports) {
     }
 
     function handleRemotePick(e, $a) {
-        var $selected = e ? $(e.target) : $a,
+        var $selected = (e ? $(e.target) : $a).parent(),
             $remoteField = gitPanel.$panel.find(".git-remotes-field");
 
         if (!$selected) {
@@ -139,6 +139,36 @@ define(function (require, exports) {
             });
     }
 
+    function handleRemoteRemove(e, $a) {
+        var $selected = (e ? $(e.target) : $a).parent(),
+            $remoteField = gitPanel.$panel.find(".git-remotes-field"),
+            remoteName = $selected.data("remote-name");
+
+        Main.gitControl.remoteRemove(remoteName)
+        .then(function () {
+            $selected.parent().remove();
+            var newRemote = gitPanel.$panel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
+            $remoteField.data("remote-name", newRemote).html(newRemote);
+        })
+        .fail(function (err) {
+            ErrorHandler.logError(err);
+        });
+    }
+
+    function handleRemoteCreation() {
+        return askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_NAME)
+        .then(function (name) {
+            return askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_URL)
+            .then(function (url) {
+                return Main.gitControl.remoteAdd(name, url)
+                .then(function () {
+                    prepareRemotesPicker();
+                })
+                .fail(function (err) { ErrorHandler.showError(err, "Remote creation failed"); });
+            });
+        });
+    }
+
     function prepareRemotesPicker() {
         Main.gitControl.getRemotes().then(function (remotes) {
             var defaultRemoteName = _getDefaultRemote(),
@@ -148,11 +178,18 @@ define(function (require, exports) {
             gitPanel.$panel.find(".git-pull").prop("disabled", remotes.length === 0);
             gitPanel.$panel.find(".git-push").prop("disabled", remotes.length === 0);
 
+            // Add option to define new remote
+            $remotesDropdown.append("<li><a class=\"git-remote-new\"><span>" + Strings.CREATE_NEW_REMOTE + "</span></a></li>");
+            $remotesDropdown.append("<li class=\"divider\"></li>");
+
+            // Add options to change remote
             var $remotes = remotes.map(function (remoteInfo) {
                 var $a = $("<a/>").attr({
                     "href": "#",
                     "data-remote-name": remoteInfo.name
-                }).text(remoteInfo.name).appendTo($("<li/>").appendTo($remotesDropdown));
+                })
+                .html("<span class=\"trash-icon remove-remote\"></span><span class=\"change-remote\">" + remoteInfo.name + "</span>")
+                .appendTo($("<li class=\"remote\"/>").appendTo($remotesDropdown));
 
                 if (remoteInfo.name === defaultRemoteName) {
                     $defaultRemote = $a;
@@ -620,6 +657,7 @@ define(function (require, exports) {
             question: _.escape(question),
             stringInput: !options.booleanResponse && !options.password,
             passwordInput: options.password,
+            defaultValue: options.defaultValue,
             Strings: Strings
         });
         var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
@@ -924,23 +962,6 @@ define(function (require, exports) {
         }
     }
 
-    function handleCloseNotModified() {
-        Main.gitControl.getGitStatus().then(function (modifiedFiles) {
-            var openFiles = DocumentManager.getWorkingSet(),
-                projectRoot = Main.getProjectRoot();
-            openFiles.forEach(function (openFile) {
-                var removeOpenFile = true;
-                modifiedFiles.forEach(function (modifiedFile) {
-                    if (projectRoot + modifiedFile.file === openFile.fullPath) { removeOpenFile = false; }
-                });
-                if (removeOpenFile) {
-                    DocumentManager.closeFullEditor(openFile);
-                }
-            });
-            EditorManager.focus();
-        });
-    }
-
     function handleToggleUntracked() {
         showingUntracked = !showingUntracked;
 
@@ -1163,6 +1184,11 @@ define(function (require, exports) {
         gitPanel.$panel.find(".git-commit").prop("disabled", !enableButton);
     }
 
+    function undoLastLocalCommit() {
+        Main.gitControl.undoLastLocalCommit().fail(function (err) { ErrorHandler.showError(err, "Impossible undo last commit");  });
+        refresh();
+    }
+
     function attachDefaultTableHandlers() {
         $tableContainer = gitPanel.$panel.find(".table-container")
             .off()
@@ -1209,6 +1235,28 @@ define(function (require, exports) {
             });
     }
 
+    function changeUserName() {
+        return Main.gitControl.getGitConfig("user.name")
+        .then(function (currentUserName) {
+            console.log("username: " + currentUserName);
+            return askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, {defaultValue: currentUserName}).then(function (userName) {
+                if (!userName.length) { userName = currentUserName; }
+                return Main.gitControl.setUserName(userName).fail(function (err) { ErrorHandler.showError(err, "Impossible change username"); });
+            });
+        });
+    }
+
+    function changeUserEmail() {
+        return Main.gitControl.getGitConfig("user.email")
+        .then(function (currentUserEmail) {
+            return askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, {defaultValue: currentUserEmail}).then(function (userEmail) {
+                if (!userEmail.length) { userEmail = currentUserEmail; }
+                return Main.gitControl.setUserEmail(userEmail)
+                .fail(function (err) { ErrorHandler.showError(err, "Impossible change user email"); });
+            });
+        });
+    }
+
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
@@ -1231,7 +1279,6 @@ define(function (require, exports) {
             .on("click", ".git-commit", handleGitCommit)
             .on("click", ".git-prev-gutter", GutterManager.goToPrev)
             .on("click", ".git-next-gutter", GutterManager.goToNext)
-            .on("click", ".git-close-notmodified", handleCloseNotModified)
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
             .on("click", ".authors-selection", handleAuthorsSelection)
             .on("click", ".authors-file", handleAuthorsFile)
@@ -1241,7 +1288,9 @@ define(function (require, exports) {
             .on("click", ".git-bug", ErrorHandler.reportBug)
             .on("click", ".git-init", handleGitInit)
             .on("click", ".git-clone", handleGitClone)
-            .on("click", ".git-remotes-dropdown a", handleRemotePick)
+            .on("click", ".change-remote", handleRemotePick)
+            .on("click", ".remove-remote", handleRemoteRemove)
+            .on("click", ".git-remote-new", handleRemoteCreation)
             .on("contextmenu", "tr", function (e) {
                 var $this = $(this);
                 if ($this.hasClass("history-commit")) { return; }
@@ -1250,7 +1299,10 @@ define(function (require, exports) {
                 setTimeout(function () {
                     Menus.getContextMenu("git-panel-context-menu").open(e);
                 }, 1);
-            });
+            })
+            .on("click", ".change-user-name", changeUserName)
+            .on("click", ".change-user-email", changeUserEmail)
+            .on("click", ".undo-last-commit", undoLastLocalCommit);
 
         // Attaching table handlers
         attachDefaultTableHandlers();

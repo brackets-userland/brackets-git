@@ -12,7 +12,6 @@
         </div>
         <div class="btn-group git-available">
             <button title="{{TOOLTIP_REFRESH_PANEL}}" class="btn small git-reset git-icon"><i class="octicon octicon-sync"></i></button>
-            <button title="{{TOOLTIP_CLOSE_NOT_MODIFIED}}"class="btn small git-close-notmodified"><i class="octicon octicon-remove-close"></i></button>
             <button title="{{TOOLTIP_HIDE_UNTRACKED}}" class="btn small git-toggle-untracked"><i class="octicon octicon-eye-unwatch"></i></button>
             <div class="btn-group dropup">
                 <button type="button" class="git-more btn small dropdown-toggle" data-toggle="dropdown" title="{{TOOLTIP_MORE}}">
@@ -21,10 +20,11 @@
                 <ul class="dropdown-menu">
                     <li><a class="authors-selection" href="#">{{VIEW_AUTHORS_SELECTION}}</a></li>
                     <li><a class="authors-file" href="#">{{VIEW_AUTHORS_FILE}}</a></li>
-                    <!--
                     <li class="divider"></li>
-                    <li><a href="#">Something else here&hellip;</a></li>
-                    -->
+                    <li><a class="change-user-name" href="#">{{CHANGE_USER_NAME}}</a></li>
+                    <li><a class="change-user-email" href="#">{{CHANGE_USER_EMAIL}}</a></li>
+                    <li class="divider"></li>
+                    <li><a class="undo-last-commit" href="#">{{UNDO_LAST_LOCAL_COMMIT}}</a></li>
                 </ul>
             </div>
         </div>
@@ -39,7 +39,6 @@
         <!-- on right -->
         <div class="git-right-icons">
             <div class="btn-group git-available dropup">
-                <!--// TODO: Add select box to choose remote and create new ones -->
                 <button type="button" class="git-remotes btn small dropdown-toggle" data-toggle="dropdown" title="{{TOOLTIP_PICK_REMOTE}}">
                     <span class="caret"></span>
                     <span class="git-remotes-field">&hellip;</span>
