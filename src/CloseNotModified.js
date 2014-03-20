@@ -1,14 +1,14 @@
 /*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, console, define */
+/*global $, brackets, define */
 
 define(function (require, exports) {
     "use strict";
 
-    var DocumentManager     = brackets.getModule("document/DocumentManager"),
-        EditorManager       = brackets.getModule("editor/EditorManager"),
-        Main                = require("./Main");
+    var DocumentManager = brackets.getModule("document/DocumentManager"),
+        EditorManager   = brackets.getModule("editor/EditorManager");
 
-    var Strings             = require("../strings");
+    var Main    = require("./Main"),
+        Strings = require("../strings");
 
     function handleCloseNotModified() {
         Main.gitControl.getGitStatus().then(function (modifiedFiles) {
@@ -27,16 +27,16 @@ define(function (require, exports) {
         });
     }
 
-    $("#working-set-header")
-    .on("click", ".git-close-not-modified", handleCloseNotModified);
-
     function init() {
         // Add close not modified button near working files list
-        console.log("added");
-        var $closeNotModifiedIcon = "<i class=\"octicon octicon-remove-close\"></i>";
-        $("#working-set-header")
-        .append("<div title=\"" + Strings.TOOLTIP_CLOSE_NOT_MODIFIED + "\" class=\"git-close-not-modified\">" + $closeNotModifiedIcon + "</div>");
+        $("<div/>")
+            .addClass("git-close-not-modified btn-alt-quiet")
+            .attr("title", Strings.TOOLTIP_CLOSE_NOT_MODIFIED)
+            .html("<i class='octicon octicon-remove-close'></i>")
+            .on("click", handleCloseNotModified)
+            .appendTo("#working-set-header");
     }
 
-    exports.init    = init;
+    // Public API
+    exports.init = init;
 });

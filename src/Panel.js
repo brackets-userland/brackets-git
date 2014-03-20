@@ -182,6 +182,8 @@ define(function (require, exports) {
             $remotesDropdown.append("<li><a class=\"git-remote-new\"><span>" + Strings.CREATE_NEW_REMOTE + "</span></a></li>");
             $remotesDropdown.append("<li class=\"divider\"></li>");
 
+            if (remotes.length === 0) { return; }
+
             // Add options to change remote
             var $remotes = remotes.map(function (remoteInfo) {
                 var $a = $("<a/>").attr({

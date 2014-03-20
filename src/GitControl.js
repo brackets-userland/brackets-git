@@ -247,31 +247,22 @@ define(function (require, exports, module) {
         },
 
         checkoutBranch: function (branchName) {
-            var args = [
-                "checkout",
-                branchName
-            ];
+            var args = ["checkout", branchName];
             return this.executeCommand(this._git, args);
         },
 
         createBranch: function (branchName) {
-            var args = [
-                "checkout",
-                "-b",
-                branchName
-            ];
+            var args = ["checkout", "-b", branchName];
             return this.executeCommand(this._git, args);
         },
 
         deleteLocalBranch: function (branchName) {
-            return this.executeCommand(this._git + " branch -d " + branchName);
+            var args = ["branch", "-d", branchName];
+            return this.executeCommand(this._git, args);
         },
 
         getRemotes: function () {
-            var args = [
-                "remote",
-                "-v"
-            ];
+            var args = ["remote", "-v"];
             return this.executeCommand(this._git, args).then(function (stdout) {
                 return !stdout ? [] : _.uniq(stdout.replace(/\((push|fetch)\)/g, "").split("\n")).map(function (l) {
                     var s = l.trim().split("\t");
@@ -291,11 +282,7 @@ define(function (require, exports, module) {
                 return str;
             }
 
-            var args = [
-                "status",
-                "-u",
-                "--porcelain"
-            ];
+            var args = ["status", "-u", "--porcelain"];
             return this.executeCommand(this._git, args).then(function (stdout) {
                 if (!stdout) {
                     return [];
@@ -539,28 +526,18 @@ define(function (require, exports, module) {
         },
 
         getDiffOfFileFromCommit: function (hash, file) {
-            var args = [
-                "diff",
-                "--no-color",
-                escapeShellArg(hash + "^!"),
-                "--",
-                escapeShellArg(file)
-            ];
+            var args = ["diff", "--no-color", escapeShellArg(hash + "^!"), "--", escapeShellArg(file)];
             return this.executeCommand(this._git, args);
         },
 
         remoteAdd: function (remote, url) {
-            var args = [
-                "remote",
-                "add",
-                escapeShellArg(remote),
-                escapeShellArg(url)
-            ];
+            var args = ["remote", "add", escapeShellArg(remote), escapeShellArg(url)];
             return this.executeCommand(this._git, args);
         },
 
         remoteRemove: function (remote) {
-            return this.executeCommand(this._git + " remote rm " + escapeShellArg(remote));
+            var args = ["remote", "rm", escapeShellArg(remote)];
+            return this.executeCommand(this._git, args);
         },
 
         getBlame: function (file, from, to) {
@@ -617,7 +594,8 @@ define(function (require, exports, module) {
         },
 
         undoLastLocalCommit: function () {
-            return this.executeCommand(this._git + " reset --soft HEAD~1");
+            var args = ["reset", "--soft", "HEAD~1"];
+            return this.executeCommand(this._git, args);
         }
 
     };

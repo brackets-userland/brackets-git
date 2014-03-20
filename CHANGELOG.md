@@ -1,11 +1,16 @@
 # Changelog
 
 ## 0.10.13
+* Added features to change current username and email by [Fez Vrasta](https://github.com/FezVrasta)
+* Added feature to delete local branches by [Fez Vrasta](https://github.com/FezVrasta)
+* Added feature to add and remove remotes by [Fez Vrasta](https://github.com/FezVrasta)
+* Added feature to revert last commit by [Fez Vrasta](https://github.com/FezVrasta)
 * Updated Italian translation by [Pietro Albini](https://github.com/pietroalbini)
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
 * Fixed issue when right-clicking on history entries.
 * Fixed an issue with "View authors" not working for some people.
-* When toggling "Extended" commit, message is copied from the input
+* When toggling "Extended" commit, message is copied from the input.
+* Close not modified icon has been moved to the Working Files section by [Fez Vrasta](https://github.com/FezVrasta)
 
 ## 0.10.12
 * Added features to view authors of a file or current selection.

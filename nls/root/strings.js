@@ -100,7 +100,7 @@ define({
     TOOLTIP_OPEN_BASH:                  "Open Bash/Terminal console",
     TOOLTIP_PULL:                       "Git Pull",
     TOOLTIP_PUSH:                       "Git Push",
-    TOOLTIP_CLOSE_NOT_MODIFIED:         "Close not modified",
+    TOOLTIP_CLOSE_NOT_MODIFIED:         "Close files not modified in Git",
     TOOLTIP_INIT:                       "Initialize repository",
     TOOLTIP_CLONE:                      "Clone existing repository",
     TOOLTIP_COMMIT:                     "Commit the selected files",
