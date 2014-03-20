@@ -2,11 +2,13 @@
 
 ## 0.10.13
 * Updated Italian translation by [Pietro Albini](https://github.com/pietroalbini)
+* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
 * Fixed issue when right-clicking on history entries.
+* Fixed an issue with "View authors" not working for some people.
 
 ## 0.10.12
 * Added features to view authors of a file or current selection.
-* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+
 * Push dialog shows masked password.
 * Tabs are now properly displayed in the diffs respecting Brackets "tabSize" preference.
 
