@@ -1,40 +1,31 @@
-/*global brackets, define */
-
-define(function (require, exports) {
+define(function (require, exports, module) {
     "use strict";
 
     var ExtensionManager  = brackets.getModule("extensibility/ExtensionManager"),
+        ExtensionUtils    = brackets.getModule("utils/ExtensionUtils"),
         FileSystem        = brackets.getModule("filesystem/FileSystem"),
         FileUtils         = brackets.getModule("file/FileUtils");
 
-    var packageJson,
-        moduleDirectory;
+    var Promise           = require("thirdparty/bluebird");
 
-    function loadInfo(callback) {
-        // Load package.json - delay this so perf utils doesn't conflict with brackets loading the same file
-        setTimeout(function () {
-            FileUtils
-                .readAsText(FileSystem.getFileForPath(moduleDirectory + "package.json"))
-                .done(function (content) {
-                    callback(packageJson = JSON.parse(content));
-                });
-        }, 1000);
-    }
+    var moduleDirectory   = ExtensionUtils.getModulePath(module),
+        packageJsonPath   = moduleDirectory.slice(0, -1 * "src/".length) + "package.json",
+        packageJson;
 
-    exports.init = function (_moduleDirectory) {
-        moduleDirectory = _moduleDirectory;
-    };
-
-    exports.get = function (callback) {
-        if (packageJson) {
-            callback(packageJson);
-        } else {
-            loadInfo(function (json) {
-                callback(json);
+    // immediately read the package json info
+    var readPromise = FileUtils.readAsText(FileSystem.getFileForPath(packageJsonPath)),
+        jsonPromise = Promise.cast(readPromise)
+            .then(function (content) {
+                packageJson = JSON.parse(content);
+                return packageJson;
             });
-        }
+
+    // gets the promise for extension info which will be resolved once the package.json is read
+    exports.get = function () {
+        return jsonPromise;
     };
 
+    // gets the extension info from package.json, should be safe to call once extension is loaded
     exports.getSync = function () {
         if (packageJson) {
             return packageJson;
@@ -43,29 +34,29 @@ define(function (require, exports) {
         }
     };
 
-    function getLatestRegistryVersion(callback) {
-        var extName = packageJson.name,
-            registryInfo = ExtensionManager.extensions[extName].registryInfo;
-
-        var cont = function () {
-            registryInfo = ExtensionManager.extensions[extName].registryInfo;
-            callback(registryInfo.metadata.version);
-        };
-
+    // triggers the registry download if registry hasn't been downloaded yet
+    function loadRegistryInfo() {
+        var registryInfo = ExtensionManager.extensions[packageJson.name].registryInfo;
         if (!registryInfo) {
-            ExtensionManager.downloadRegistry()
-                .done(cont)
-                .fail(function () {
-                    callback(null);
-                });
+            return Promise.cast(ExtensionManager.downloadRegistry());
         } else {
-            cont();
+            return Promise.resolve();
         }
+    }
+
+    // gets the latest version that is available in the extension registry or null if something fails
+    function getLatestRegistryVersion() {
+        return loadRegistryInfo().then(function () {
+            var registryInfo = ExtensionManager.extensions[packageJson.name].registryInfo;
+            return registryInfo.metadata.version;
+        }).catch(function () {
+            return null;
+        });
     }
 
     // responds to callback with: hasLatestVersion, currentVersion, latestVersion
     exports.hasLatestVersion = function (callback) {
-        getLatestRegistryVersion(function (registryVersion) {
+        getLatestRegistryVersion().then(function (registryVersion) {
             if (registryVersion === null) {
                 callback(true, packageJson.version, "unknown");
             } else {

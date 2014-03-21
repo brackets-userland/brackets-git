@@ -31,6 +31,7 @@
     "white": true,
 
     "globals": {
+        "brackets": true,
         "define": true
     }
 }

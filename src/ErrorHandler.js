@@ -8,7 +8,7 @@ define(function (require, exports) {
         Dialogs                    = brackets.getModule("widgets/Dialogs"),
         NativeApp                  = brackets.getModule("utils/NativeApp"),
         ExpectedError              = require("./ExpectedError"),
-        ExtInfo                    = require("./ExtensionInfo"),
+        ExtensionInfo              = require("./ExtensionInfo"),
         Strings                    = require("../strings"),
         markdownReportTemplate     = require("text!htmlContent/error-report.md"),
         errorDialogTemplate        = require("text!htmlContent/git-error-dialog.html");
@@ -18,7 +18,7 @@ define(function (require, exports) {
     function getMdReport(params) {
         return Mustache.render(markdownReportTemplate, _.defaults(params || {}, {
             brackets: [brackets.metadata.name, brackets.metadata.version, "(" + brackets.platform + ")"].join(" "),
-            bracketsGit: "Brackets-Git " + ExtInfo.getSync().version,
+            bracketsGit: "Brackets-Git " + ExtensionInfo.getSync().version,
             git: Strings.GIT_VERSION
         })).trim();
     }
@@ -44,7 +44,7 @@ define(function (require, exports) {
     };
 
     function _reportBug(params) {
-        ExtInfo.hasLatestVersion(function (hasLatestVersion, currentVersion, latestVersion) {
+        ExtensionInfo.hasLatestVersion(function (hasLatestVersion, currentVersion, latestVersion) {
             if (hasLatestVersion) {
                 NativeApp.openURLInDefaultBrowser(params);
             } else {
@@ -60,7 +60,7 @@ define(function (require, exports) {
                 return "#" + (index + 1) + ". " + err.toString();
             }).join("\n")
         });
-        _reportBug(ExtInfo.getSync().homepage + "/issues/new?body=" + encodeURIComponent(mdReport));
+        _reportBug(ExtensionInfo.getSync().homepage + "/issues/new?body=" + encodeURIComponent(mdReport));
     };
 
     exports.isTimeout = function (err) {
@@ -118,7 +118,7 @@ define(function (require, exports) {
                     errorBody: errorBody,
                     errorStack: errorStack
                 });
-                _reportBug(ExtInfo.getSync().homepage + "/issues/new?title=" +
+                _reportBug(ExtensionInfo.getSync().homepage + "/issues/new?title=" +
                            encodeURIComponent(title) +
                            "&body=" +
                            encodeURIComponent(mdReport));

@@ -18,19 +18,16 @@ define(function (require, exports, module) {
         ExtensionUtils             = brackets.getModule("utils/ExtensionUtils"),
         Menus                      = brackets.getModule("command/Menus"),
         NodeConnection             = brackets.getModule("utils/NodeConnection"),
-        moduleDirectory            = ExtensionUtils.getModulePath(module),
-        ExtInfo                    = require("./src/ExtensionInfo");
+        moduleDirectory            = ExtensionUtils.getModulePath(module);
 
-    // This should be set before loading any more files that may depend on this
-    ExtInfo.init(moduleDirectory);
-
-    var Preferences                = require("./src/Preferences"),
-        ExtensionMain              = require("./src/Main"),
-        Strings                    = require("./strings"),
-        ChangelogDialog            = require("./src/ChangelogDialog"),
-        ErrorHandler               = require("./src/ErrorHandler"),
-        ExpectedError              = require("./src/ExpectedError"),
-        SettingsDialog             = require("./src/SettingsDialog"),
+    var ExtensionInfo              = require("src/ExtensionInfo"),
+        Preferences                = require("src/Preferences"),
+        ExtensionMain              = require("src/Main"),
+        Strings                    = require("strings"),
+        ChangelogDialog            = require("src/ChangelogDialog"),
+        ErrorHandler               = require("src/ErrorHandler"),
+        ExpectedError              = require("src/ExpectedError"),
+        SettingsDialog             = require("src/SettingsDialog"),
         TOP_MENU_ID                = "brackets-git.gitMenu",
         SETTINGS_COMMAND_ID        = "brackets-git.settings",
         domainModulePath           = moduleDirectory + "src/Domains/cli",
@@ -52,7 +49,7 @@ define(function (require, exports, module) {
     }
 
     // Display settings panel on first start / changelog dialog on version change
-    ExtInfo.get(function (packageJson) {
+    ExtensionInfo.get().then(function (packageJson) {
         var lastVersion    = Preferences.get("lastVersion"),
             currentVersion = packageJson.version;
 
