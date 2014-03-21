@@ -33,7 +33,7 @@ define(function (require, exports, module) {
         SettingsDialog             = require("./src/SettingsDialog"),
         TOP_MENU_ID                = "brackets-git.gitMenu",
         SETTINGS_COMMAND_ID        = "brackets-git.settings",
-        domainModulePath           = moduleDirectory + "domain",
+        domainModulePath           = moduleDirectory + "src/Domains/cli",
         nodeConnection             = new NodeConnection();
 
     // Seems just too buggy right now
