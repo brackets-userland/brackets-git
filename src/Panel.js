@@ -201,7 +201,7 @@ define(function (require, exports) {
                 });
 
                 if (canDelete) {
-                    $a.append("<span class='trash-icon remove-remote'><i class='octicon octicon-remove-close'></i></span>");
+                    $a.append("<span class='trash-icon remove-remote'></span>");
                 }
 
                 $a.append("<span class='change-remote'>" + remoteInfo.name + "</span>");
