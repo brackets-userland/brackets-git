@@ -192,7 +192,7 @@ define(function (require, exports) {
     function init() {
         // Add branch name to project tree
         $gitBranchName = $("<span id='git-branch'></span>");
-        $("<div id='git-branch-dropdown-toggle'></div>")
+        $("<div id='git-branch-dropdown-toggle' class='btn-alt-quiet'></div>")
             .append("[ ")
             .append($gitBranchName)
             .append(" ]")
