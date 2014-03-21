@@ -12,7 +12,7 @@
     "quotmark": true,
     "undef": true,
     "unused": true,
-    "strict": true,
+    "strict": false,
     "trailing": true,
     "maxparams": 5,
     "maxdepth": 5,

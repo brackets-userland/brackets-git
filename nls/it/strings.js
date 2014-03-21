@@ -1,5 +1,4 @@
 /*jshint maxlen:false */
-/*global define */
 
 define({
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Aggiungi fine riga alla fine del file",
