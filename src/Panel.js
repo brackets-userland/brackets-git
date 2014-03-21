@@ -1252,7 +1252,6 @@ define(function (require, exports) {
     function changeUserName() {
         return Main.gitControl.getGitConfig("user.name")
         .then(function (currentUserName) {
-            console.log("username: " + currentUserName);
             return askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, {defaultValue: currentUserName}).then(function (userName) {
                 if (!userName.length) { userName = currentUserName; }
                 return Main.gitControl.setUserName(userName).fail(function (err) { ErrorHandler.showError(err, "Impossible change username"); });
