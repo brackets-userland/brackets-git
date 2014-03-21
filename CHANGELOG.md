@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.11.1
+* Many UI tweaks by [Larz](https://github.com/larz0)
+
 ## 0.11.0
 * Added features to change current username and email by [Fez Vrasta](https://github.com/FezVrasta)
 * Added feature to delete local branches by [Fez Vrasta](https://github.com/FezVrasta)
