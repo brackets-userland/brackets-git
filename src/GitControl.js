@@ -596,7 +596,21 @@ define(function (require, exports, module) {
         undoLastLocalCommit: function () {
             var args = ["reset", "--soft", "HEAD~1"];
             return this.executeCommand(this._git, args);
+        },
+
+        // GIT-FTP features
+        // NOTE: to make these features work you need Git-FTP (https://github.com/git-ftp/git-ftp)
+        // FUTURE: add support for more features (see: https://github.com/git-ftp/git-ftp/blob/develop/man/git-ftp.1.md)
+        gitFtpInit: function (username, password, ftpUrl) {
+            var args = ["ftp init", "-u " + escapeShellArg(username), "-p " + escapeShellArg(password), ftpUrl];
+            return this.executeCommand(this._git, args);
+        },
+
+        gitFtpPush: function (username, password, ftpUrl) {
+            var args = ["ftp push", "-u " + escapeShellArg(username), "-p " + escapeShellArg(password), ftpUrl];
+            return this.executeCommand(this._git, args);
         }
+
 
     };
 

@@ -38,6 +38,12 @@
 
         <!-- on right -->
         <div class="git-right-icons">
+            <!-- // TODO: merge with the standard Git pull/push and add the FTP remote in the remotes picker + option to define it -->
+            <div class="btn-group git-ftp-group">
+                <button class="btn small ftp-label input-group-addon">{{FTP}}:</span>
+                <button title="{{TOOLTIP_GITFTP_INIT}}" class="btn small git-ftp-init"><i class="octicon octicon-repo-create"></i></button>
+                <button title="{{TOOLTIP_GITFTP_PUSH}}" class="btn small git-ftp-push"><i class="octicon octicon-repo-pull"></i></button>
+            </div>
             <div class="btn-group git-available dropup">
                 <button type="button" class="git-remotes btn small dropdown-toggle" data-toggle="dropdown" title="{{TOOLTIP_PICK_REMOTE}}">
                     <span class="caret"></span>

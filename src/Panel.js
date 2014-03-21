@@ -1288,6 +1288,52 @@ define(function (require, exports) {
         gitPanel.$panel.find(".git-user-email").text(email);
     });
 
+    // GIT FTP handlers
+    function handleGitFtpInit() {
+        return askQuestion(Strings.GIT_FTP_INIT, Strings.ENTER_FTP_URL).then(function (ftpUrl) {
+            if (!ftpUrl.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
+            return askQuestion(Strings.GIT_FTP_INIT, Strings.ENTER_USERNAME).then(function (ftpUsername) {
+                if (!ftpUsername.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
+                return askQuestion(Strings.GIT_FTP_INIT, Strings.ENTER_PASSWORD, {password: true}).then(function (ftpPassword) {
+                    if (!ftpPassword.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
+                    var $gitFtpInit = gitPanel.$panel.find(".git-ftp-init");
+                    $gitFtpInit.addClass("btn-loading");
+                    return Main.gitControl.gitFtpInit(ftpUsername, ftpPassword, ftpUrl)
+                    .done(function () {
+                        $gitFtpInit.removeClass("btn-loading");
+                    })
+                    .fail(function (err) {
+                        $gitFtpInit.removeClass("btn-loading");
+                        ErrorHandler.showError(err, "Impossible initialize Git FTP repository");
+                    });
+                });
+            });
+        });
+    }
+
+    function handleGitFtpPush() {
+        return askQuestion(Strings.GIT_FTP_PUSH, Strings.ENTER_FTP_URL).then(function (ftpUrl) {
+            if (!ftpUrl.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
+            return askQuestion(Strings.GIT_FTP_PUSH, Strings.ENTER_USERNAME).then(function (ftpUsername) {
+                if (!ftpUsername.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
+                return askQuestion(Strings.GIT_FTP_PUSH, Strings.ENTER_PASSWORD, {password: true}).then(function (ftpPassword) {
+                    if (!ftpPassword.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
+                    var $gitFtpPush = gitPanel.$panel.find(".git-ftp-push");
+                    $gitFtpPush.addClass("btn-loading");
+                    return Main.gitControl.gitFtpPush(ftpUsername, ftpPassword, ftpUrl)
+                    .done(function () {
+                        $gitFtpPush.removeClass("btn-loading");
+                    })
+                    .fail(function (err) {
+                        $gitFtpPush.removeClass("btn-loading");
+                        ErrorHandler.showError(err, "Impossible push to Git FTP repository");
+                    });
+                });
+            });
+        });
+    }
+    // ./GIT FTP handlers
+
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
@@ -1340,7 +1386,9 @@ define(function (require, exports) {
             })
             .on("click", ".change-user-name", changeUserName)
             .on("click", ".change-user-email", changeUserEmail)
-            .on("click", ".undo-last-commit", undoLastLocalCommit);
+            .on("click", ".undo-last-commit", undoLastLocalCommit)
+            .on("click", ".git-ftp-init", handleGitFtpInit)
+            .on("click", ".git-ftp-push", handleGitFtpPush);
 
         // Attaching table handlers
         attachDefaultTableHandlers();
