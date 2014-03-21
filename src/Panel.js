@@ -30,6 +30,7 @@ define(function (require, exports) {
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
         Utils              = require("./Utils"),
+        SettingsDialog     = require("./SettingsDialog"),
         PANEL_COMMAND_ID   = "brackets-git.panel";
 
     var gitPanelTemplate            = require("text!htmlContent/git-panel.html"),
@@ -1304,6 +1305,7 @@ define(function (require, exports) {
             .on("click", ".change-remote", handleRemotePick)
             .on("click", ".remove-remote", handleRemoteRemove)
             .on("click", ".git-remote-new", handleRemoteCreation)
+            .on("click", ".git-settings", SettingsDialog.show)
             .on("contextmenu", "tr", function (e) {
                 var $this = $(this);
                 if ($this.hasClass("history-commit")) { return; }
