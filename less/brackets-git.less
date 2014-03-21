@@ -168,15 +168,21 @@
     }
     .dropdown-toggle {
         height: 26px;
-        &:focus {
-            border: 1px solid #9c9e9e;
-            box-shadow: none;
+        &:active {
+            background-color: #d3d7d7;
+            box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
+            color: #454545;
         }
         .caret {
             margin-right: 5px;
             position: relative;
             top: -1px;
         }
+    }
+    .btn-group.open .dropdown-toggle {
+        background-color: #d3d7d7;
+        box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
+        color: #454545;        
     }
     .git-more {
         border-radius: 0 4px 4px 0;
@@ -191,6 +197,9 @@
         &:focus {
             border-right: 0;
         }
+    }
+    .git-remotes-dropdown {
+        -webkit-transform-origin: 0 100%;
     }
     .git-remotes-dropdown a {
         padding-left: 25px;
