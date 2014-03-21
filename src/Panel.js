@@ -21,6 +21,8 @@ define(function (require, exports) {
         PanelManager       = brackets.getModule("view/PanelManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         StringUtils        = brackets.getModule("utils/StringUtils"),
+        Events             = require("./Events"),
+        EventEmitter       = require("./EventEmitter"),
         Preferences        = require("./Preferences"),
         ErrorHandler       = require("./ErrorHandler"),
         ExpectedError      = require("./ExpectedError"),
@@ -1254,10 +1256,18 @@ define(function (require, exports) {
         .then(function (currentUserName) {
             return askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, {defaultValue: currentUserName}).then(function (userName) {
                 if (!userName.length) { userName = currentUserName; }
-                return Main.gitControl.setUserName(userName).fail(function (err) { ErrorHandler.showError(err, "Impossible change username"); });
+                return Main.gitControl.setUserName(userName).fail(function (err) {
+                    ErrorHandler.showError(err, "Impossible change username");
+                }).then(function () {
+                    EventEmitter.emit(Events.GIT_USERNAME_CHANGED, userName);
+                });
             });
         });
     }
+
+    EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
+        gitPanel.$panel.find(".git-user-name").text(userName);
+    });
 
     function changeUserEmail() {
         return Main.gitControl.getGitConfig("user.email")
@@ -1374,6 +1384,11 @@ define(function (require, exports) {
         menu.addMenuItem(GOTO_PREV_CHANGE, Preferences.get("gotoPrevChangeShortcut"));
         CommandManager.register(Strings.GOTO_NEXT_GIT_CHANGE, GOTO_NEXT_CHANGE, GutterManager.goToNext);
         menu.addMenuItem(GOTO_NEXT_CHANGE, Preferences.get("gotoNextChangeShortcut"));
+
+        // Add info from Git to panel
+        Main.gitControl.getGitConfig("user.name").then(function (currentUserName) {
+            EventEmitter.emit(Events.GIT_USERNAME_CHANGED, currentUserName);
+        });
     }
 
     function enable() {

@@ -31,6 +31,6 @@
     "white": true,
 
     "globals": {
-
+        "define": true
     }
 }
