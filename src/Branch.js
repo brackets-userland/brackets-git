@@ -196,6 +196,10 @@ define(function (require, exports) {
             .append("[ ")
             .append($gitBranchName)
             .append(" ]")
+            .on("click", function () {
+                $gitBranchName.click();
+                return false;
+            })
             .appendTo("#project-files-header");
         refresh();
     }
