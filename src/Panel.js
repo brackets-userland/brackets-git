@@ -574,7 +574,7 @@ define(function (require, exports) {
         // Get checked files
         var $checked = gitPanel.$panel.find(".check-one:checked");
         // Disable button (it will be enabled when selecting files after reset)
-        gitPanel.$panel.find(".git-commit").prop("disabled", true);
+        gitPanel.$panel.find(".git-commit").prop("disabled", true).addClass("btn-loading");
         // TODO: probably some user friendly message that no files are checked for commit.
         if ($checked.length === 0) { return; }
 
@@ -649,6 +649,7 @@ define(function (require, exports) {
             });
             return q.all(promises).then(function () {
                 // All files are in the index now, get the diff and show dialog.
+                gitPanel.$panel.find(".git-commit").removeClass("btn-loading");
                 return Main.gitControl.gitDiffStaged().then(function (diff) {
                     if (!diff) {
                         return Main.gitControl.gitDiffStagedFiles().then(function (filesList) {
@@ -777,7 +778,7 @@ define(function (require, exports) {
     }
 
     function handleGitPush() {
-        var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true),
+        var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true).addClass("btn-loading"),
             remoteName = gitPanel.$panel.find(".git-remotes-field").attr("data-remote-name");
         Main.gitControl.gitPush(remoteName).fail(function (err) {
 
@@ -839,13 +840,13 @@ define(function (require, exports) {
             console.warn("Pushing to remote repositories with username / password is not supported! See github page/issues for details.");
             ErrorHandler.showError(err, "Pushing to remote repository failed.");
         }).fin(function () {
-            $btn.prop("disabled", false);
+            $btn.prop("disabled", false).removeClass("btn-loading");
             refresh();
         });
     }
 
     function handleGitPull() {
-        var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true),
+        var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true).addClass("btn-loading"),
             remoteName = gitPanel.$panel.find(".git-remotes-field").attr("data-remote-name");
         Main.gitControl.gitPull(remoteName).then(function (result) {
             Dialogs.showModalDialog(
@@ -856,7 +857,7 @@ define(function (require, exports) {
         }).fail(function (err) {
             ErrorHandler.showError(err, "Pulling from remote repository failed.");
         }).fin(function () {
-            $btn.prop("disabled", false);
+            $btn.prop("disabled", false).removeClass("btn-loading");
             refresh();
         });
     }
