@@ -278,6 +278,9 @@
 }
 
 #git-settings-dialog {
+    .modal-body {
+        min-height: 350px;
+    }
     hr {
         margin: 18px 0;
         border: 0;
@@ -285,9 +288,18 @@
         border-bottom: 1px solid #eee;
     }
     .nav-tabs {
-        border-bottom: 1px solid @darkGrey;
+        border-bottom: 1px solid #c3c6c5;
         a {
             color: @defaultText;
+            border: 1px solid transparent;
+        }
+        a:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+        > .active > a {
+            background-color: #dfe2e2 !important;
+            border: 1px solid #b4b7b7;
+            border-bottom: 1px solid #dfe2e2 !important;
         }
     }
     .tab-content {
