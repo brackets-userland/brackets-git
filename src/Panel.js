@@ -1276,8 +1276,14 @@ define(function (require, exports) {
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
         var $panelHtml = $(panelHtml);
         $panelHtml.find(".git-available").hide();
-        $panelHtml.find(".git-bash").toggle(Preferences.get("showBashButton"));
-        $panelHtml.find(".git-bug").toggle(Preferences.get("showReportBugButton"));
+
+        if (!Preferences.get("showBashButton")) {
+            $panelHtml.find(".git-bash").remove();
+        }
+
+        if (!Preferences.get("showReportBugButton")) {
+            $panelHtml.find(".git-bug").remove();
+        }
 
         gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
 
