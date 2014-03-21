@@ -1274,11 +1274,18 @@ define(function (require, exports) {
         .then(function (currentUserEmail) {
             return askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, {defaultValue: currentUserEmail}).then(function (userEmail) {
                 if (!userEmail.length) { userEmail = currentUserEmail; }
-                return Main.gitControl.setUserEmail(userEmail)
-                .fail(function (err) { ErrorHandler.showError(err, "Impossible change user email"); });
+                return Main.gitControl.setUserEmail(userEmail).fail(function (err) {
+                    ErrorHandler.showError(err, "Impossible change user email");
+                }).then(function () {
+                    EventEmitter.emit(Events.GIT_EMAIL_CHANGED, userEmail);
+                });
             });
         });
     }
+
+    EventEmitter.on(Events.GIT_EMAIL_CHANGED, function (email) {
+        gitPanel.$panel.find(".git-user-email").text(email);
+    });
 
     function init() {
         // Add panel
@@ -1388,6 +1395,9 @@ define(function (require, exports) {
         // Add info from Git to panel
         Main.gitControl.getGitConfig("user.name").then(function (currentUserName) {
             EventEmitter.emit(Events.GIT_USERNAME_CHANGED, currentUserName);
+        });
+        Main.gitControl.getGitConfig("user.email").then(function (currentEmail) {
+            EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
         });
     }
 
