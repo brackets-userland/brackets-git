@@ -8,7 +8,7 @@ define(function (require, exports) {
         Dialogs                    = brackets.getModule("widgets/Dialogs"),
         NativeApp                  = brackets.getModule("utils/NativeApp"),
         ExpectedError              = require("./ExpectedError"),
-        ExtInfo                    = require("../ExtInfo"),
+        ExtInfo                    = require("./ExtensionInfo"),
         Strings                    = require("../strings"),
         markdownReportTemplate     = require("text!htmlContent/error-report.md"),
         errorDialogTemplate        = require("text!htmlContent/git-error-dialog.html");

@@ -19,7 +19,7 @@ define(function (require, exports, module) {
         Menus                      = brackets.getModule("command/Menus"),
         NodeConnection             = brackets.getModule("utils/NodeConnection"),
         moduleDirectory            = ExtensionUtils.getModulePath(module),
-        ExtInfo                    = require("./ExtInfo");
+        ExtInfo                    = require("./src/ExtensionInfo");
 
     // This should be set before loading any more files that may depend on this
     ExtInfo.init(moduleDirectory);
