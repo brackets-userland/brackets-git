@@ -1,10 +1,11 @@
 # Changelog
 
-## 0.10.13
+## 0.11.0
 * Added features to change current username and email by [Fez Vrasta](https://github.com/FezVrasta)
 * Added feature to delete local branches by [Fez Vrasta](https://github.com/FezVrasta)
 * Added feature to add and remove remotes by [Fez Vrasta](https://github.com/FezVrasta)
 * Added feature to revert last commit by [Fez Vrasta](https://github.com/FezVrasta)
+* Changelog is now shown in nice html by [Marcel Gerber](https://github.com/SAPlayer)
 * Updated Italian translation by [Pietro Albini](https://github.com/pietroalbini)
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
 * Fixed issue when right-clicking on history entries.
