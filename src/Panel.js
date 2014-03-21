@@ -136,7 +136,7 @@ define(function (require, exports) {
         _setDefaultRemote(remoteName);
 
         $remoteField
-            .text($selected.text().trim())
+            .text($selected.find(".change-remote").text().trim())
             .attr({
                 "data-remote-name": remoteName
             });
@@ -201,7 +201,7 @@ define(function (require, exports) {
                 });
 
                 if (canDelete) {
-                    $a.append("<span class='trash-icon remove-remote'><i class='octicon octicon-remove-close'></i></span>");
+                    $a.append("<span class='trash-icon remove-remote'>&times;</span>");
                 }
 
                 $a.append("<span class='change-remote'>" + remoteInfo.name + "</span>");
