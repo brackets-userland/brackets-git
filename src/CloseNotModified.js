@@ -7,8 +7,12 @@ define(function (require, exports) {
     var DocumentManager = brackets.getModule("document/DocumentManager"),
         EditorManager   = brackets.getModule("editor/EditorManager");
 
-    var Main    = require("./Main"),
-        Strings = require("../strings");
+    var Events        = require("src/Events"),
+        EventEmitter  = require("src/EventEmitter"),
+        Main          = require("src/Main"),
+        Strings       = require("strings");
+
+    var $icon = $(null);
 
     function handleCloseNotModified() {
         Main.gitControl.getGitStatus().then(function (modifiedFiles) {
@@ -29,13 +33,21 @@ define(function (require, exports) {
 
     function init() {
         // Add close not modified button near working files list
-        $("<div/>")
+        $icon = $("<div/>")
             .addClass("git-close-not-modified btn-alt-quiet")
             .attr("title", Strings.TOOLTIP_CLOSE_NOT_MODIFIED)
             .html("<i class='octicon octicon-remove-close'></i>")
             .on("click", handleCloseNotModified)
             .appendTo("#working-set-header");
     }
+
+    EventEmitter.on(Events.GIT_ENABLED, function () {
+        $icon.show();
+    });
+
+    EventEmitter.on(Events.GIT_DISABLED, function () {
+        $icon.hide();
+    });
 
     // Public API
     exports.init = init;

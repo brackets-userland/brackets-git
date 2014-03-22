@@ -1403,6 +1403,7 @@ define(function (require, exports) {
     }
 
     function enable() {
+        EventEmitter.emit(Events.GIT_ENABLED);
         // this function is called after every Branch.refresh
         gitPanelMode = null;
         prepareRemotesPicker();
@@ -1417,6 +1418,7 @@ define(function (require, exports) {
     }
 
     function disable(cause) {
+        EventEmitter.emit(Events.GIT_DISABLED, cause);
         gitPanelMode = cause;
         // causes: not-repo
         if (gitPanelMode === "not-repo") {
