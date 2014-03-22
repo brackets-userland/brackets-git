@@ -17,6 +17,7 @@ define(function (require, exports, module) {
         "showBashButton": {                 "type": "boolean",           "value": true          },
         "showReportBugButton": {            "type": "boolean",           "value": true          },
         "storePlainTextPasswords": {        "type": "boolean",           "value": false         },
+        "useGitFtp": {                      "type": "boolean",           "value": false         },
         // shortcuts
         "panelShortcut": {                  "type": "string",            "value": "Ctrl-Alt-G"  },
         "commitCurrentShortcut": {          "type": "string",            "value": null          },
