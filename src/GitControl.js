@@ -148,17 +148,20 @@ define(function (require, exports, module) {
 
         terminalOpen: function (folder, customCmd) {
             var cmd,
+                args,
                 opts = {
                 timeout: 1,
                 timeoutExpected: true
             };
             if (customCmd) {
-                cmd = customCmd.replace("$1", escapeShellArg(folder));
-                return this.executeCommand(cmd, null, opts);
+                customCmd = customCmd.replace("$1", escapeShellArg(folder));
+                args = customCmd.split(" ");
+                cmd = args.shift();
             } else {
                 cmd = Preferences.get("extensionDirectory") + "shell/" + (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
-                return this.executeCommand(cmd, [escapeShellArg(folder)], opts);
+                args = [escapeShellArg(folder)];
             }
+            return this.executeCommand(cmd, args, opts);
         },
 
         getVersion: function () {
