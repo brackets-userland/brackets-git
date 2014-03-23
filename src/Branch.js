@@ -19,7 +19,7 @@ define(function (require, exports) {
         Panel                   = require("./Panel"),
         Strings                 = require("../strings"),
         branchesMenuTemplate    = require("text!htmlContent/git-branches-menu.html"),
-        questionDialogTemplate  = require("text!htmlContent/git-question-dialog.html");
+        newBranchTemplate       = require("text!htmlContent/new-branch-dialog.html");
 
     var $gitBranchName          = $(null),
         $dropdown;
@@ -50,25 +50,36 @@ define(function (require, exports) {
         $dropdown.on("click", "a.git-branch-new", function (e) {
             e.stopPropagation();
 
-            var compiledTemplate = Mustache.render(questionDialogTemplate, {
-                title: Strings.CREATE_NEW_BRANCH,
-                question: _.escape(Strings.BRANCH_NAME),
-                stringInput: true,
-                Strings: Strings
-            });
-            var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
-            dialog.getElement().find("input").focus();
-            dialog.done(function (buttonId) {
-                if (buttonId === "ok") {
-                    var branchName = dialog.getElement().find("input").val().trim();
-                    Main.gitControl.createBranch(branchName).fail(function (err) {
-                        ErrorHandler.showError(err, "Creating new branch failed");
-                    }).then(function () {
-                        closeDropdown();
-                        // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
-                        CommandManager.execute("file.refresh");
-                    });
-                }
+            Main.gitControl.getAllBranches().catch(function (err) {
+                ErrorHandler.showError(err);
+            }).then(function (branches) {
+
+                var compiledTemplate = Mustache.render(newBranchTemplate, {
+                    branches: branches,
+                    Strings: Strings
+                });
+
+                var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+                dialog.getElement().find("input").focus();
+                dialog.done(function (buttonId) {
+                    if (buttonId === "ok") {
+
+                        var $dialog     = dialog.getElement(),
+                            branchName  = $dialog.find("input[name='branch-name']").val().trim(),
+                            $option     = $dialog.find("select[name='branch-origin']").children("option:selected"),
+                            originName  = $option.val(),
+                            isRemote    = $option.attr("remote"),
+                            track       = !!isRemote;
+
+                        Main.gitControl.createBranch(branchName, originName, track).fail(function (err) {
+                            ErrorHandler.showError(err, "Creating new branch failed");
+                        }).then(function () {
+                            closeDropdown();
+                            // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
+                            CommandManager.execute("file.refresh");
+                        });
+                    }
+                });
             });
 
         }).on("click", "a.git-branch-link .switch-branch", function (e) {

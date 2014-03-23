@@ -230,13 +230,49 @@ define(function (require, exports, module) {
             });
         },
 
+        getAllBranches: function () {
+            var args = ["branch", "-a"];
+            return this.spawnCommand(this._git, args).then(function (stdout) {
+                if (!stdout) { return []; }
+                return stdout.split("\n").map(function (l) {
+                    var name = l.trim(),
+                        currentBranch = false,
+                        remote = null;
+
+                    if (name.indexOf("* ") === 0) {
+                        name = name.substring(2);
+                        currentBranch = true;
+                    }
+
+                    if (name.indexOf("remotes/") === 0) {
+                        name = name.substring("remotes/".length);
+                        remote = name.substring(0, name.indexOf("/"));
+                    }
+
+                    return {
+                        name: name,
+                        currentBranch: currentBranch,
+                        remote: remote
+                    };
+                });
+            });
+        },
+
         checkoutBranch: function (branchName) {
             var args = ["checkout", branchName];
             return this.executeCommand(this._git, args);
         },
 
-        createBranch: function (branchName) {
+        createBranch: function (branchName, originBranch, trackOrigin) {
             var args = ["checkout", "-b", branchName];
+
+            if (originBranch) {
+                if (trackOrigin) {
+                    args.push("--track");
+                }
+                args.push(originBranch);
+            }
+
             return this.executeCommand(this._git, args);
         },
 
