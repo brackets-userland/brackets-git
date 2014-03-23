@@ -710,6 +710,33 @@ define(function (require, exports) {
                 $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
             });
         });
+
+        $dialog.find(".btn-reset-hard").on('click', function () {
+            Main.gitControl.gitResetHard('hard', hashCommit).then(function () {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITILE_DONE, "Reset to " + hashCommit + ".");
+            }, function (err) {
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
+            });
+        });
+
+        $dialog.find(".btn-reset-soft").on('click', function () {
+            Main.gitControl.gitReset('soft', hashCommit).then(function () {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITLE_DONE, "Reset to " + hashCommit + ".");
+            }, function (err) {
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
+            });
+        });
+
+        $dialog.find(".btn-reset-mixed").on('click', function () {
+            Main.gitControl.gitReset('mixed', hashCommit).then(function () {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITLE_DONE, "Reset to " + hashCommit + ".");
+            }, function (err) {
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
+            });
+        });
     }
 
     // show a commit with given hash in a dialog
