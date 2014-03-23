@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11.1
+## 0.12.0
 * Bash command is now customizable for Windows - you may need to do some adjustements (even Mac/Linux users) in the settings (you can use restore defaults command if you have any problems).
 * You can now specify origin branch when creating new one.
 * You can now merge local branches into the current branch.
