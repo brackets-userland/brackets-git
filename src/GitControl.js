@@ -119,24 +119,6 @@ define(function (require, exports, module) {
             return this._pushToQueue("spawn", cmd, args, opts);
         },
 
-        bashVersion: function () {
-            if (brackets.platform === "win") {
-                var cmd = Preferences.get("msysgitPath") + "bin\\sh.exe";
-                return this.executeCommand(cmd, ["--version"]);
-            } else {
-                return q().thenReject();
-            }
-        },
-
-        bashOpen: function (folder) {
-            if (brackets.platform === "win") {
-                var cmd = Preferences.get("msysgitPath") + "Git Bash.vbs";
-                return this.executeCommand(cmd, [normalizeUncUrls(folder)]);
-            } else {
-                return q().thenReject();
-            }
-        },
-
         chmodTerminalScript: function () {
             var file = Preferences.get("extensionDirectory") + "shell/" +
                     (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
@@ -146,7 +128,7 @@ define(function (require, exports, module) {
             ]);
         },
 
-        terminalOpen: function (folder, customCmd) {
+        terminalOpen: function (folder, customCmd, customArgs) {
             var cmd,
                 args,
                 opts = {
@@ -154,14 +136,18 @@ define(function (require, exports, module) {
                 timeoutExpected: true
             };
             if (customCmd) {
-                customCmd = customCmd.replace("$1", escapeShellArg(folder));
-                args = customCmd.split(" ");
-                cmd = args.shift();
+                cmd = customCmd;
+                args = customArgs.split(" ").map(function (arg) {
+                    return arg.replace("$1", escapeShellArg(normalizeUncUrls(folder)));
+                });
             } else {
                 cmd = Preferences.get("extensionDirectory") + "shell/" + (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
                 args = [escapeShellArg(folder)];
             }
-            return this.executeCommand(cmd, args, opts);
+            return this.executeCommand(cmd, args, opts).fail(function (err) {
+                var pathExecuted = [cmd].concat(args).join(" ");
+                throw new Error(err + ": " + pathExecuted);
+            });
         },
 
         getVersion: function () {
@@ -179,6 +165,7 @@ define(function (require, exports, module) {
                 // Check if it's a cygwin installation.
                 if (brackets.platform === "win" && output[0] === "/") {
                     // Convert to Windows path with cygpath.
+                    // TODO: rewrite
                     var cygpath = Preferences.get("msysgitPath") + "\\bin\\cygpath",
                         cygpathArgs = ["-m", escapeShellArg(output)];
                     return self.executeCommand(cygpath, cygpathArgs).then(function (output) {

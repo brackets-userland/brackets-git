@@ -1168,29 +1168,24 @@ define(function (require, exports) {
     }
 
     function openBashConsole(event) {
-        if (brackets.platform === "win") {
-            Main.gitControl.bashOpen(Main.getProjectRoot()).fail(function (err) {
-                throw ErrorHandler.showError(err);
-            });
-        } else {
-            var customTerminal = Preferences.get("terminalCommand");
-            Main.gitControl.terminalOpen(Main.getProjectRoot(), customTerminal).fail(function (err) {
-                if (event !== "retry" && ErrorHandler.contains(err, "Permission denied")) {
-                    Main.gitControl.chmodTerminalScript().fail(function (err) {
-                        throw ErrorHandler.showError(err);
-                    }).then(function () {
-                        openBashConsole("retry");
-                    });
-                    return;
-                }
-                if (ErrorHandler.isTimeout(err)) {
-                    // process is running after 1 second timeout so terminal is open
-                    return;
-                } else {
+        var customTerminal = Preferences.get("terminalCommand"),
+            customTerminalArgs = Preferences.get("terminalCommandArgs");
+        Main.gitControl.terminalOpen(Main.getProjectRoot(), customTerminal, customTerminalArgs).fail(function (err) {
+            if (event !== "retry" && ErrorHandler.contains(err, "Permission denied")) {
+                Main.gitControl.chmodTerminalScript().fail(function (err) {
                     throw ErrorHandler.showError(err);
-                }
-            });
-        }
+                }).then(function () {
+                    openBashConsole("retry");
+                });
+                return;
+            }
+            if (ErrorHandler.isTimeout(err)) {
+                // process is running after 1 second timeout so terminal is opened
+                return;
+            } else {
+                throw ErrorHandler.showError(err);
+            }
+        });
     }
 
     // Disable "commit" button if there aren't selected files and vice versa
@@ -1340,22 +1335,11 @@ define(function (require, exports) {
             })
             .on("click", ".change-user-name", changeUserName)
             .on("click", ".change-user-email", changeUserEmail)
-            .on("click", ".undo-last-commit", undoLastLocalCommit);
+            .on("click", ".undo-last-commit", undoLastLocalCommit)
+            .on("click", ".git-bash", openBashConsole);
 
         // Attaching table handlers
         attachDefaultTableHandlers();
-
-        // Try to get Bash version, if succeeds then Bash is available, hide otherwise
-        if (brackets.platform === "win") {
-            Main.gitControl.bashVersion().fail(function (e) {
-                gitPanel.$panel.find(".git-bash").prop("disabled", true).attr("title", Strings.BASH_NOT_AVAILABLE);
-                ErrorHandler.logError(e);
-            }).then(function () {
-                gitPanel.$panel.find(".git-bash").on("click", openBashConsole);
-            });
-        } else {
-            gitPanel.$panel.find(".git-bash").on("click", openBashConsole);
-        }
 
         // Register command for opening bottom panel.
         CommandManager.register(Strings.PANEL_COMMAND, PANEL_COMMAND_ID, toggle);

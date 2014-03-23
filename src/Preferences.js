@@ -31,7 +31,6 @@ define(function (require, exports, module) {
         "lastVersion": {                    "type": "string",            "value": null          },
         "panelEnabled": {                   "type": "boolean",           "value": true          },
         "TIMEOUT_VALUE": {                  "type": "number",            "value": 30000         },
-        "terminalCommand": {                "type": "string",            "value": null          },
         "extensionDirectory": {             "type": "string",            "value": undefined     },
         "gitIsInSystemPath": {              "type": "boolean",           "value": false         },
         "defaultRemotes": {                 "type": "object",            "value": {}            },
@@ -44,10 +43,18 @@ define(function (require, exports, module) {
                 "linux":    { "value": "/usr/bin/git" }
             }
         },
-        "msysgitPath": {
+        "terminalCommand": {
             "type": "string",
             "os": {
-                "win":      { "value": "C:\\Program Files (x86)\\Git\\" },
+                "win":      { "value": "C:\\Program Files (x86)\\Git\\Git Bash.vbs" },
+                "mac":      { "value": null },
+                "linux":    { "value": null }
+            }
+        },
+        "terminalCommandArgs": {
+            "type": "string",
+            "os": {
+                "win":      { "value": "$1" },
                 "mac":      { "value": null },
                 "linux":    { "value": null }
             }

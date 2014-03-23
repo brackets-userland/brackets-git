@@ -27,8 +27,6 @@ define(function (require, exports) {
             }
         });
         $("#git-settings-gitPath", $dialog).prop("disabled", values.gitIsInSystemPath);
-        $("#git-settings-msysgitPath", $dialog).prop("disabled", brackets.platform !== "win");
-        $("#git-settings-terminalCommand", $dialog).prop("disabled", brackets.platform === "win");
     }
 
     function collectValues() {
@@ -42,13 +40,6 @@ define(function (require, exports) {
                 Preferences.set(property, $this.val().trim() || null);
             }
         });
-
-        // We need trailing slash for folders.
-        var msysgitPath = Preferences.get("msysgitPath");
-        if (msysgitPath && msysgitPath[msysgitPath.length - 1] !== "\\") {
-            Preferences.set("msysgitPath", msysgitPath + "\\");
-        }
-
         Preferences.save();
     }
 
@@ -75,8 +66,6 @@ define(function (require, exports) {
     function init() {
         setValues(Preferences.getAll());
         assignActions();
-        $(".windows-only", $dialog).toggle(brackets.platform === "win");
-        $(".non-windows-only", $dialog).toggle(brackets.platform !== "win");
         $("#git-settings-tabs a", $dialog).click(function (e) {
             e.preventDefault();
             $(this).tab("show");
