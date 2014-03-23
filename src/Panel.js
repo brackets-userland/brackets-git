@@ -1008,11 +1008,14 @@ define(function (require, exports) {
         }
 
         $dialog.find(".commit-files a").on("click", function () {
+            $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
             var self = $(this);
             Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).text().trim()).then(function (diff) {
                 $dialog.find(".commit-files a").removeClass("active");
                 self.addClass("active");
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
+                $(this).scrollTop($(this).scrollPos || 0);
+                $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
             });
         });
     }
