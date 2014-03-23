@@ -5,6 +5,7 @@
 * Many UI tweaks by [Larz](https://github.com/larz0)
 * Some more UI tweaks by [Fez Vrasta](https://github.com/FezVrasta)
 * Fixed custom terminal not working in Linux/Mac.
+* Better .gitignore parsing by [Marcel Gerber](https://github.com/SAPlayer)
 
 ## 0.11.0
 * Added features to change current username and email by [Fez Vrasta](https://github.com/FezVrasta)
