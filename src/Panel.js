@@ -1014,7 +1014,6 @@ define(function (require, exports) {
                 $dialog.find(".commit-files a").removeClass("active");
                 self.addClass("active");
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
-                $(this).scrollTop($(this).scrollPos || 0);
                 $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
             });
         });
