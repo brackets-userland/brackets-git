@@ -5,6 +5,7 @@ define(function (require, exports) {
     "use strict";
 
     var q                  = require("../thirdparty/q"),
+        moment             = require("moment"),
         _                  = brackets.getModule("thirdparty/lodash"),
         CodeInspection     = brackets.getModule("language/CodeInspection"),
         CommandManager     = brackets.getModule("command/CommandManager"),
@@ -1037,6 +1038,10 @@ define(function (require, exports) {
         return Main.gitControl.getBranchName().then(function (branchName) {
             // Get the history commit of the current branch
             return Main.gitControl.gitHistory(branchName).then(function (commits) {
+                if (commits.length > 0) {
+                    commits = convertCommitDates(commits);
+                }
+
                 $tableContainer.append(Mustache.render(gitPanelHistoryTemplate, {
                     files: commits,
                     Strings: Strings
@@ -1056,6 +1061,7 @@ define(function (require, exports) {
                         if (commits.length === 0) {
                             return;
                         }
+                        commits = convertCommitDates(commits);
 
                         var template = "{{#.}}";
                         template += "<tr class=\"history-commit\" data-hash=\"{{hash}}\">";
@@ -1077,6 +1083,21 @@ define(function (require, exports) {
                 });
             }
         }
+    }
+    
+    function convertCommitDates(commits) { // relative, format
+        var relative    = Preferences.get("showRelativeCommitDate"),
+            format      = Strings.DATE_FORMAT;
+        _.forEach(commits, function (commit) {
+            var date = moment(commit.date);
+            if (relative) {
+                date = date.fromNow();
+            } else {
+                date = date.format(format)
+            }
+            commit.date = date;
+        });
+        return commits;
     }
 
     // Show or hide the history list on click of .history button
@@ -1376,7 +1397,7 @@ define(function (require, exports) {
         menu.addMenuItem(GOTO_PREV_CHANGE, Preferences.get("gotoPrevChangeShortcut"));
         CommandManager.register(Strings.GOTO_NEXT_GIT_CHANGE, GOTO_NEXT_CHANGE, GutterManager.goToNext);
         menu.addMenuItem(GOTO_NEXT_CHANGE, Preferences.get("gotoNextChangeShortcut"));
-
+        
         // Add info from Git to panel
         Main.gitControl.getGitConfig("user.name").then(function (currentUserName) {
             EventEmitter.emit(Events.GIT_USERNAME_CHANGED, currentUserName);
@@ -1384,6 +1405,9 @@ define(function (require, exports) {
         Main.gitControl.getGitConfig("user.email").then(function (currentEmail) {
             EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
         });
+        
+        // Init moment - use the correct language
+        moment.lang(brackets.getLocale());
     }
 
     function enable() {
