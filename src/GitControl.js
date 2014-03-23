@@ -247,12 +247,6 @@ define(function (require, exports, module) {
                     };
                 });
             });
-
-            return this.executeCommand(this._git, args).then(function (stdout) {
-                return stdout.split("\n").map(function (l) {
-                    return l.trim();
-                });
-            });
         },
 
         getAllBranches: function () {

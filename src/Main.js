@@ -216,7 +216,7 @@ define(function (require, exports) {
                 if (line.indexOf("/") === 0) {
                     line = line.substring(1);
                     path = projectRoot + line;
-                } else if (line.indexOf("!") === 0){
+                } else if (line.indexOf("!") === 0) {
                     type = "include";
                     line = line.substring(1);
                     path = projectRoot + line;
