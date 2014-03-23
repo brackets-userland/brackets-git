@@ -81,7 +81,7 @@
                 minor: 1
             });
         }
-        
+
         DomainManager.registerCommand(
             domainName,
             "execute", // command name
@@ -134,5 +134,5 @@
             }]
         );
     };
-    
+
 }());

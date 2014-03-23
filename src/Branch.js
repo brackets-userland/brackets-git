@@ -3,7 +3,7 @@
 
 define(function (require, exports) {
     "use strict";
-    
+
     var _                       = brackets.getModule("thirdparty/lodash"),
         CommandManager          = brackets.getModule("command/CommandManager"),
         Dialogs                 = brackets.getModule("widgets/Dialogs"),
@@ -12,7 +12,7 @@ define(function (require, exports) {
         Menus                   = brackets.getModule("command/Menus"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         SidebarView             = brackets.getModule("project/SidebarView");
-    
+
     var q                       = require("../thirdparty/q"),
         ErrorHandler            = require("./ErrorHandler"),
         Main                    = require("./Main"),
@@ -140,7 +140,7 @@ define(function (require, exports) {
             handleEvents();
         });
     }
-    
+
     function _isRepositoryRoot() {
         var gitFolder = Main.getProjectRoot() + "/.git",
             defer = q.defer();
@@ -167,7 +167,7 @@ define(function (require, exports) {
                 Panel.disable("not-repo");
                 return;
             }
-            
+
             return Main.gitControl.getBranchName().then(function (branchName) {
                 $gitBranchName.text(branchName)
                     .off("click")
@@ -188,7 +188,7 @@ define(function (require, exports) {
             throw ErrorHandler.showError(err);
         });
     }
-    
+
     function init() {
         // Add branch name to project tree
         $gitBranchName = $("<span id='git-branch'></span>");
@@ -203,7 +203,7 @@ define(function (require, exports) {
             .appendTo("#project-files-header");
         refresh();
     }
-    
+
     exports.init    = init;
     exports.refresh = refresh;
 });

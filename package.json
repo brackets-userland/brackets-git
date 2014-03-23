@@ -27,7 +27,7 @@
         "brackets": ">=0.37.0"
     },
     "dependencies": {
-        
+
     },
     "devDependencies": {
         "q": "0.9.7",

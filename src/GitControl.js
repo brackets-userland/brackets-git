@@ -170,25 +170,6 @@ define(function (require, exports, module) {
             });
         },
 
-        getRepositoryRoot: function () {
-            var self = this;
-            return this.executeCommand(this._git, ["rev-parse", "--show-toplevel"]).then(function (output) {
-                // Git returns directory name without trailing slash
-                if (output.length > 0) { output = output.trim() + "/"; }
-                // Check if it's a cygwin installation.
-                if (brackets.platform === "win" && output[0] === "/") {
-                    // Convert to Windows path with cygpath.
-                    var gitPath = Preferences.get("msysgitPath"),
-                    var cygpath = gitPath.substr(0, gitPath.lastIndexOf("\\")) + "\\bin\\cygpath",
-                        cygpathArgs = ["-m", escapeShellArg(output)];
-                    return self.executeCommand(cygpath, cygpathArgs).then(function (output) {
-                        return output;
-                    });
-                }
-                return output;
-            });
-        },
-
         getCommitsAhead: function () {
             var args = [
                 "rev-list",

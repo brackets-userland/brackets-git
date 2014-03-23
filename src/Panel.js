@@ -1349,7 +1349,7 @@ define(function (require, exports) {
             PULL_CMD           = "brackets-git.pull",
             GOTO_PREV_CHANGE   = "brackets-git.gotoPrevChange",
             GOTO_NEXT_CHANGE   = "brackets-git.gotoNextChange";
-        
+
          // Add command to menu.
         var menu = Menus.getMenu(GIT_MENU);
 
