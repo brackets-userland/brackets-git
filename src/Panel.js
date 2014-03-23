@@ -1085,7 +1085,7 @@ define(function (require, exports) {
         }
     }
     
-    function convertCommitDates(commits) { // relative, format
+    function convertCommitDates(commits) {
         var relative    = Preferences.get("showRelativeCommitDate"),
             format      = Strings.DATE_FORMAT;
         _.forEach(commits, function (commit) {
@@ -1397,7 +1397,7 @@ define(function (require, exports) {
         menu.addMenuItem(GOTO_PREV_CHANGE, Preferences.get("gotoPrevChangeShortcut"));
         CommandManager.register(Strings.GOTO_NEXT_GIT_CHANGE, GOTO_NEXT_CHANGE, GutterManager.goToNext);
         menu.addMenuItem(GOTO_NEXT_CHANGE, Preferences.get("gotoNextChangeShortcut"));
-        
+
         // Add info from Git to panel
         Main.gitControl.getGitConfig("user.name").then(function (currentUserName) {
             EventEmitter.emit(Events.GIT_USERNAME_CHANGED, currentUserName);
