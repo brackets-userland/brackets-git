@@ -170,8 +170,8 @@ define(function (require, exports, module) {
                 // Check if it's a cygwin installation.
                 if (brackets.platform === "win" && output[0] === "/") {
                     // Convert to Windows path with cygpath.
-                    // TODO: rewrite
-                    var cygpath = Preferences.get("msysgitPath") + "\\bin\\cygpath",
+                    var gitPath = Preferences.get("msysgitPath"),
+                    var cygpath = gitPath.substr(0, gitPath.lastIndexOf("\\")) + "\\bin\\cygpath",
                         cygpathArgs = ["-m", escapeShellArg(output)];
                     return self.executeCommand(cygpath, cygpathArgs).then(function (output) {
                         return output;
