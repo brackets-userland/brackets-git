@@ -122,7 +122,7 @@ define(function (require, exports, module) {
 
         chmodTerminalScript: function () {
             var file = Preferences.get("extensionDirectory") + "shell/" +
-                (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
+                    (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
             return this.executeCommand("chmod", [
                 "+x",
                 escapeShellArg(file)
@@ -133,9 +133,9 @@ define(function (require, exports, module) {
             var cmd,
                 args,
                 opts = {
-                    timeout: 1, // 1 second
-                    timeoutExpected: true
-                };
+                timeout: 1, // 1 second
+                timeoutExpected: true
+            };
             if (customCmd) {
                 cmd = customCmd;
                 args = customArgs.split(" ").map(function (arg) {
@@ -280,47 +280,47 @@ define(function (require, exports, module) {
                         file = unquote(line.substring(3));
 
                     switch (statusStaged) {
-                        case " ":
-                            break;
-                        case "?":
-                            status.push(FILE_STATUS.UNTRACKED);
-                            break;
-                        case "A":
-                            status.push(FILE_STATUS.STAGED, FILE_STATUS.NEWFILE);
-                            break;
-                        case "D":
-                            status.push(FILE_STATUS.STAGED, FILE_STATUS.DELETED);
-                            break;
-                        case "M":
-                            status.push(FILE_STATUS.STAGED, FILE_STATUS.MODIFIED);
-                            break;
-                        case "R":
-                            status.push(FILE_STATUS.STAGED, FILE_STATUS.RENAMED);
-                            break;
-                        case "U":
-                            status.push(FILE_STATUS.UNMERGED);
-                            break;
-                        default:
-                            throw new Error("Unexpected status: " + statusStaged);
+                    case " ":
+                        break;
+                    case "?":
+                        status.push(FILE_STATUS.UNTRACKED);
+                        break;
+                    case "A":
+                        status.push(FILE_STATUS.STAGED, FILE_STATUS.NEWFILE);
+                        break;
+                    case "D":
+                        status.push(FILE_STATUS.STAGED, FILE_STATUS.DELETED);
+                        break;
+                    case "M":
+                        status.push(FILE_STATUS.STAGED, FILE_STATUS.MODIFIED);
+                        break;
+                    case "R":
+                        status.push(FILE_STATUS.STAGED, FILE_STATUS.RENAMED);
+                        break;
+                    case "U":
+                        status.push(FILE_STATUS.UNMERGED);
+                        break;
+                    default:
+                        throw new Error("Unexpected status: " + statusStaged);
                     }
 
                     switch (statusUnstaged) {
-                        case " ":
-                            break;
-                        case "?":
-                            status.push(FILE_STATUS.UNTRACKED);
-                            break;
-                        case "D":
-                            status.push(FILE_STATUS.DELETED);
-                            break;
-                        case "M":
-                            status.push(FILE_STATUS.MODIFIED);
-                            break;
-                        case "U":
-                            status.push(FILE_STATUS.UNMERGED);
-                            break;
-                        default:
-                            throw new Error("Unexpected status: " + statusStaged);
+                    case " ":
+                        break;
+                    case "?":
+                        status.push(FILE_STATUS.UNTRACKED);
+                        break;
+                    case "D":
+                        status.push(FILE_STATUS.DELETED);
+                        break;
+                    case "M":
+                        status.push(FILE_STATUS.MODIFIED);
+                        break;
+                    case "U":
+                        status.push(FILE_STATUS.UNMERGED);
+                        break;
+                    default:
+                        throw new Error("Unexpected status: " + statusStaged);
                     }
 
                     results.push({
@@ -503,7 +503,7 @@ define(function (require, exports, module) {
                 var sep  = "-@-BREAK-HERE-@-",
                     sep2 = "$$#-#$BREAK$$-$#";
                 stdout = stdout.replace(sep, sep2)
-                .replace(/^\t(.*)$/gm, function (a, b) { return b + sep; });
+                               .replace(/^\t(.*)$/gm, function (a, b) { return b + sep; });
 
                 return stdout.split(sep).reduce(function (arr, lineInfo) {
                     lineInfo = lineInfo.replace(sep2, sep).trimLeft();
