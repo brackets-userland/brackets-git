@@ -1038,9 +1038,7 @@ define(function (require, exports) {
         return Main.gitControl.getBranchName().then(function (branchName) {
             // Get the history commit of the current branch
             return Main.gitControl.gitHistory(branchName).then(function (commits) {
-                if (commits.length > 0) {
-                    commits = convertCommitDates(commits);
-                }
+                commits = convertCommitDates(commits);
 
                 $tableContainer.append(Mustache.render(gitPanelHistoryTemplate, {
                     files: commits,
@@ -1068,7 +1066,7 @@ define(function (require, exports) {
                         template += "<td>{{hashShort}}</td>";
                         template += "<td>{{message}}</td>";
                         template += "<td>{{author}}</td>";
-                        template += "<td>{{date}}</td>";
+                        template += "<td title='{{date.title}}'>{{date.shown}}</td>";
                         template += "</tr>";
                         template += "{{/.}}";
 
@@ -1090,12 +1088,14 @@ define(function (require, exports) {
             format      = Strings.DATE_FORMAT;
         _.forEach(commits, function (commit) {
             var date = moment(commit.date);
+            commit.date = {};
             if (relative) {
-                date = date.fromNow();
-            } else {
-                date = date.format(format)
+                commit.date.relative = date.fromNow();
             }
-            commit.date = date;
+            commit.date.formatted = date.format(format);
+
+            commit.date.shown = relative ? commit.date.relative : commit.date.formatted;
+            commit.date.title = relative ? commit.date.formatted : "";
         });
         return commits;
     }

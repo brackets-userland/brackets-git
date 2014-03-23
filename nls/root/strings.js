@@ -37,7 +37,7 @@ define({
     CREATE_NEW_REMOTE:                  "Create new remote\u2026",
     CUSTOM_TERMINAL_COMMAND:            "Custom terminal command (sample: gnome-terminal or complete path to executable)",
     CUSTOM_TERMINAL_COMMAND_HINT:       "Sample arguments: --window --working-directory=$1<br>$1 in arguments will be replaced by current project directory.",
-    DATE_FORMAT:                        "MM/DD/YYYY hh:mm:ss A",
+    DATE_FORMAT:                        "YYYY-MM-DD HH:mm:ss",
     DEBUG:                              "Debug",
     DEBUG_MODE_SETTING:                 "DEBUG mode &mdash; Leave this OFF unless you need to find a problem with the extension. All Git communication will be forwarded to Brackets console!",
     DELETE_FILE:                        "Delete file",
