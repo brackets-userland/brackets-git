@@ -5,6 +5,7 @@ define(function (require, exports) {
     "use strict";
 
     var q                  = require("../thirdparty/q"),
+        moment             = require("moment"),
         _                  = brackets.getModule("thirdparty/lodash"),
         CodeInspection     = brackets.getModule("language/CodeInspection"),
         CommandManager     = brackets.getModule("command/CommandManager"),
@@ -1037,6 +1038,8 @@ define(function (require, exports) {
         return Main.gitControl.getBranchName().then(function (branchName) {
             // Get the history commit of the current branch
             return Main.gitControl.gitHistory(branchName).then(function (commits) {
+                commits = convertCommitDates(commits);
+
                 $tableContainer.append(Mustache.render(gitPanelHistoryTemplate, {
                     files: commits,
                     Strings: Strings
@@ -1056,13 +1059,14 @@ define(function (require, exports) {
                         if (commits.length === 0) {
                             return;
                         }
+                        commits = convertCommitDates(commits);
 
                         var template = "{{#.}}";
                         template += "<tr class=\"history-commit\" data-hash=\"{{hash}}\">";
                         template += "<td>{{hashShort}}</td>";
                         template += "<td>{{message}}</td>";
                         template += "<td>{{author}}</td>";
-                        template += "<td>{{date}}</td>";
+                        template += "<td title='{{date.title}}'>{{date.shown}}</td>";
                         template += "</tr>";
                         template += "{{/.}}";
 
@@ -1077,6 +1081,23 @@ define(function (require, exports) {
                 });
             }
         }
+    }
+    
+    function convertCommitDates(commits) {
+        var relative    = Preferences.get("showRelativeCommitDate"),
+            format      = Strings.DATE_FORMAT;
+        _.forEach(commits, function (commit) {
+            var date = moment(commit.date);
+            commit.date = {};
+            if (relative) {
+                commit.date.relative = date.fromNow();
+            }
+            commit.date.formatted = date.format(format);
+
+            commit.date.shown = relative ? commit.date.relative : commit.date.formatted;
+            commit.date.title = relative ? commit.date.formatted : "";
+        });
+        return commits;
     }
 
     // Show or hide the history list on click of .history button
@@ -1379,6 +1400,9 @@ define(function (require, exports) {
         Main.gitControl.getGitConfig("user.email").then(function (currentEmail) {
             EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
         });
+        
+        // Init moment - use the correct language
+        moment.lang(brackets.getLocale());
     }
 
     function enable() {

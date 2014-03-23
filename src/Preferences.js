@@ -15,6 +15,7 @@ define(function (require, exports, module) {
         "markModifiedInTree": {             "type": "boolean",           "value": true          },
         "useCodeInspection": {              "type": "boolean",           "value": true          },
         "showBashButton": {                 "type": "boolean",           "value": true          },
+        "showRelativeCommitDate": {         "type": "boolean",           "value": true          },
         "showReportBugButton": {            "type": "boolean",           "value": true          },
         "storePlainTextPasswords": {        "type": "boolean",           "value": false         },
         // shortcuts
