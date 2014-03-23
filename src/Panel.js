@@ -1179,12 +1179,7 @@ define(function (require, exports) {
                 });
                 return;
             }
-            if (ErrorHandler.isTimeout(err)) {
-                // process is running after 1 second timeout so terminal is opened
-                return;
-            } else {
-                throw ErrorHandler.showError(err);
-            }
+            throw ErrorHandler.showError(err);
         });
     }
 

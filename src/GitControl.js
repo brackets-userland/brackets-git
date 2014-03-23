@@ -8,6 +8,7 @@ define(function (require, exports, module) {
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
+        ErrorHandler    = require("./ErrorHandler"),
         q               = require("../thirdparty/q"),
         ExpectedError   = require("./ExpectedError"),
         Preferences     = require("./Preferences");
@@ -132,7 +133,7 @@ define(function (require, exports, module) {
             var cmd,
                 args,
                 opts = {
-                timeout: 1,
+                timeout: 1, // 1 second
                 timeoutExpected: true
             };
             if (customCmd) {
@@ -145,6 +146,10 @@ define(function (require, exports, module) {
                 args = [escapeShellArg(folder)];
             }
             return this.executeCommand(cmd, args, opts).fail(function (err) {
+                if (ErrorHandler.isTimeout(err)) {
+                    // process is running after 1 second timeout so terminal is opened
+                    return;
+                }
                 var pathExecuted = [cmd].concat(args).join(" ");
                 throw new Error(err + ": " + pathExecuted);
             });
