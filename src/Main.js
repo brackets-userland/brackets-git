@@ -236,7 +236,6 @@ define(function (require, exports) {
                         return "[^/]*";
                     }
                 });
-                console.log(path, type);
 
                 return {regexp: new RegExp(path), type: type};
             }));
