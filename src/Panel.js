@@ -44,7 +44,7 @@ define(function (require, exports) {
         gitCommitDiffDialogTemplate = require("text!htmlContent/git-commit-diff-dialog.html"),
         questionDialogTemplate      = require("text!htmlContent/git-question-dialog.html");
 
-    var showFileWhiteList = /^.gitignore$/;
+    var showFileWhiteList = /^\.gitignore$/;
 
     var gitPanel = null,
         gitPanelDisabled = null,
