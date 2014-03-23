@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.11.1
-* Bash command is now customizable for Windows - you may need to do some adjustements in the settings (you can use restore defaults command if you have any problems).
+* Bash command is now customizable for Windows - you may need to do some adjustements (even Mac/Linux users) in the settings (you can use restore defaults command if you have any problems).
 * Many UI tweaks by [Larz](https://github.com/larz0)
 * Some more UI tweaks by [Fez Vrasta](https://github.com/FezVrasta)
 * Fixed custom terminal not working in Linux/Mac.
