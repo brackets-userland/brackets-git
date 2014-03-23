@@ -1,0 +1,10 @@
+{
+    "paths": {
+        "moment": "./thirdparty/moment"
+    },
+    "config": {
+        "moment": {
+            "noGlobal": true
+        }
+    }
+}
