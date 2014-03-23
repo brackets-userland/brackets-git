@@ -97,8 +97,20 @@
                 font-weight: bold;
             }
         }
-        &:hover .trash-icon {
-            opacity: 1;
+        &:hover {
+            .trash-icon, .merge-branch {
+                opacity: 1;
+            }
+        }
+        .merge-branch {
+            position: absolute;
+            right: 5px;
+            color: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            &:hover {
+                color: rgba(0, 0, 0, 1);
+                font-weight: bold;
+            }
         }
     }
     a.selected {

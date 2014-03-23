@@ -219,19 +219,10 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
-        getBranches: function () {
-            var args = [
-                "branch"
-            ];
-            return this.executeCommand(this._git, args).then(function (stdout) {
-                return stdout.split("\n").map(function (l) {
-                    return l.trim();
-                });
-            });
-        },
+        getBranches: function (moreArgs) {
+            var args = ["branch"];
+            if (moreArgs) { args = args.concat(moreArgs); }
 
-        getAllBranches: function () {
-            var args = ["branch", "-a"];
             return this.spawnCommand(this._git, args).then(function (stdout) {
                 if (!stdout) { return []; }
                 return stdout.split("\n").map(function (l) {
@@ -256,6 +247,21 @@ define(function (require, exports, module) {
                     };
                 });
             });
+
+            return this.executeCommand(this._git, args).then(function (stdout) {
+                return stdout.split("\n").map(function (l) {
+                    return l.trim();
+                });
+            });
+        },
+
+        getAllBranches: function () {
+            return this.getBranches(["-a"]);
+        },
+
+        mergeBranch: function (branchName) {
+            var args = ["merge", branchName];
+            return this.spawnCommand(this._git, args);
         },
 
         checkoutBranch: function (branchName) {

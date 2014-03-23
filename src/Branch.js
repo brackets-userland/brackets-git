@@ -19,7 +19,8 @@ define(function (require, exports) {
         Panel                   = require("./Panel"),
         Strings                 = require("../strings"),
         branchesMenuTemplate    = require("text!htmlContent/git-branches-menu.html"),
-        newBranchTemplate       = require("text!htmlContent/new-branch-dialog.html");
+        newBranchTemplate       = require("text!htmlContent/branch-new-dialog.html"),
+        mergeBranchTemplate     = require("text!htmlContent/branch-merge-dialog.html");
 
     var $gitBranchName          = $(null),
         $dropdown;
@@ -44,6 +45,33 @@ define(function (require, exports) {
             PopUpManager.removePopUp($dropdown);
         }
         detachCloseEvents();
+    }
+
+    function doMerge(fromBranch) {
+        Main.gitControl.getBranches().then(function (branches) {
+
+            var compiledTemplate = Mustache.render(mergeBranchTemplate, {
+                fromBranch: fromBranch,
+                branches: branches,
+                Strings: Strings
+            });
+
+            var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+            dialog.getElement().find("input").focus();
+            dialog.done(function (buttonId) {
+                if (buttonId === "ok") {
+                    // right now only merge to current branch without any configuration
+                    // later delete merge branch and so ...
+                    Main.gitControl.mergeBranch(fromBranch).catch(function (err) {
+                        throw ErrorHandler.showError(err, "Merge failed");
+                    }).then(function (stdout) {
+                        debugger;
+                        // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
+                        CommandManager.execute("file.refresh");
+                    });
+                }
+            });
+        });
     }
 
     function handleEvents() {
@@ -100,6 +128,9 @@ define(function (require, exports) {
             Main.gitControl.deleteLocalBranch($(this).parent().data("branch"))
             .fail(function (err) { ErrorHandler.showError(err, "Branch deletion failed"); });
             $(this).parent().remove();
+        }).on("click", ".merge-branch", function () {
+            var fromBranch = $(this).parent().data("branch");
+            doMerge(fromBranch);
         });
     }
 
@@ -136,6 +167,13 @@ define(function (require, exports) {
         Main.gitControl.getBranches().fail(function (err) {
             ErrorHandler.showError(err, "Getting branch list failed");
         }).then(function (branches) {
+            branches = branches.reduce(function (arr, branch) {
+                if (!branch.currentBranch && !branch.remote) {
+                    arr.push(branch.name);
+                }
+                return arr;
+            }, []);
+
             $dropdown = $(renderList(branches));
 
             var toggleOffset = $gitBranchName.offset();
