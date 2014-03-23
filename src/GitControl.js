@@ -142,7 +142,15 @@ define(function (require, exports, module) {
                     return arg.replace("$1", escapeShellArg(normalizeUncUrls(folder)));
                 });
             } else {
-                cmd = Preferences.get("extensionDirectory") + "shell/" + (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
+                if (brackets.platform === "win") {
+                    var msysgitFolder = Preferences.get("gitPath").split("\\");
+                    msysgitFolder.splice(-2, 2, "Git Bash.vbs");
+                    cmd = msysgitFolder.join("\\");
+                } else if (brackets.platform === "mac") {
+                    cmd = Preferences.get("extensionDirectory") + "shell/terminal.osa";
+                } else {
+                    cmd = Preferences.get("extensionDirectory") + "shell/terminal.sh";
+                }
                 args = [escapeShellArg(folder)];
             }
             return this.executeCommand(cmd, args, opts).fail(function (err) {
