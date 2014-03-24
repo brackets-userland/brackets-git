@@ -98,7 +98,6 @@ define({
     SHORTCUTS:                          "Tastenkürzel",
     SHORTCUTS_HINT:                     "Trennen Sie Tasten mit Strichen, zum Beispiel: Ctrl-Alt-G<br>Sie können die englischen Bezeichnungen Ctrl (-> Strg), Cmd (Mac -> Command), Alt und Shift (-> Umschalt) nutzen.",
     SHOW_BASH_TERMINAL_BUTTON:          "Den Bash-Button im Panel anzeigen",
-    SHOW_RELATIVE_COMMIT_DATE:          "Im Verlauf relatives Commit-Datum anzeigen",
     SHOW_REPORT_BUG_BUTTON:             "Den \"Bug melden\"-Button im Panel anzeigen",
     STRIP_WHITESPACE_FROM_COMMITS:      "Anhängende Leerzeichen von Commits entfernen",
     TOOLTIP_BUG:                        "Bug melden",
