@@ -8,6 +8,7 @@ define(function (require, exports, module) {
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
+        ErrorHandler    = require("./ErrorHandler"),
         q               = require("../thirdparty/q"),
         ExpectedError   = require("./ExpectedError"),
         Preferences     = require("./Preferences");
@@ -119,24 +120,6 @@ define(function (require, exports, module) {
             return this._pushToQueue("spawn", cmd, args, opts);
         },
 
-        bashVersion: function () {
-            if (brackets.platform === "win") {
-                var cmd = Preferences.get("msysgitPath") + "bin\\sh.exe";
-                return this.executeCommand(cmd, ["--version"]);
-            } else {
-                return q().thenReject();
-            }
-        },
-
-        bashOpen: function (folder) {
-            if (brackets.platform === "win") {
-                var cmd = Preferences.get("msysgitPath") + "Git Bash.vbs";
-                return this.executeCommand(cmd, [normalizeUncUrls(folder)]);
-            } else {
-                return q().thenReject();
-            }
-        },
-
         chmodTerminalScript: function () {
             var file = Preferences.get("extensionDirectory") + "shell/" +
                     (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
@@ -146,43 +129,44 @@ define(function (require, exports, module) {
             ]);
         },
 
-        terminalOpen: function (folder, customCmd) {
+        terminalOpen: function (folder, customCmd, customArgs) {
             var cmd,
+                args,
                 opts = {
-                timeout: 1,
+                timeout: 1, // 1 second
                 timeoutExpected: true
             };
             if (customCmd) {
-                cmd = customCmd.replace("$1", escapeShellArg(folder));
-                return this.executeCommand(cmd, null, opts);
+                cmd = customCmd;
+                args = customArgs.split(" ").map(function (arg) {
+                    return arg.replace("$1", escapeShellArg(normalizeUncUrls(folder)));
+                });
             } else {
-                cmd = Preferences.get("extensionDirectory") + "shell/" + (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
-                return this.executeCommand(cmd, [escapeShellArg(folder)], opts);
+                if (brackets.platform === "win") {
+                    var msysgitFolder = Preferences.get("gitPath").split("\\");
+                    msysgitFolder.splice(-2, 2, "Git Bash.vbs");
+                    cmd = msysgitFolder.join("\\");
+                } else if (brackets.platform === "mac") {
+                    cmd = Preferences.get("extensionDirectory") + "shell/terminal.osa";
+                } else {
+                    cmd = Preferences.get("extensionDirectory") + "shell/terminal.sh";
+                }
+                args = [escapeShellArg(folder)];
             }
+            return this.executeCommand(cmd, args, opts).fail(function (err) {
+                if (ErrorHandler.isTimeout(err)) {
+                    // process is running after 1 second timeout so terminal is opened
+                    return;
+                }
+                var pathExecuted = [cmd].concat(args).join(" ");
+                throw new Error(err + ": " + pathExecuted);
+            });
         },
 
         getVersion: function () {
             return this.executeCommand(this._git, "--version").then(function (output) {
                 var io = output.indexOf("git version");
                 return output.substring(io !== -1 ? io + "git version".length : 0).trim();
-            });
-        },
-
-        getRepositoryRoot: function () {
-            var self = this;
-            return this.executeCommand(this._git, ["rev-parse", "--show-toplevel"]).then(function (output) {
-                // Git returns directory name without trailing slash
-                if (output.length > 0) { output = output.trim() + "/"; }
-                // Check if it's a cygwin installation.
-                if (brackets.platform === "win" && output[0] === "/") {
-                    // Convert to Windows path with cygpath.
-                    var cygpath = Preferences.get("msysgitPath") + "\\bin\\cygpath",
-                        cygpathArgs = ["-m", escapeShellArg(output)];
-                    return self.executeCommand(cygpath, cygpathArgs).then(function (output) {
-                        return output;
-                    });
-                }
-                return output;
             });
         },
 
@@ -235,15 +219,43 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
-        getBranches: function () {
-            var args = [
-                "branch"
-            ];
-            return this.executeCommand(this._git, args).then(function (stdout) {
+        getBranches: function (moreArgs) {
+            var args = ["branch"];
+            if (moreArgs) { args = args.concat(moreArgs); }
+
+            return this.spawnCommand(this._git, args).then(function (stdout) {
+                if (!stdout) { return []; }
                 return stdout.split("\n").map(function (l) {
-                    return l.trim();
+                    var name = l.trim(),
+                        currentBranch = false,
+                        remote = null;
+
+                    if (name.indexOf("* ") === 0) {
+                        name = name.substring(2);
+                        currentBranch = true;
+                    }
+
+                    if (name.indexOf("remotes/") === 0) {
+                        name = name.substring("remotes/".length);
+                        remote = name.substring(0, name.indexOf("/"));
+                    }
+
+                    return {
+                        name: name,
+                        currentBranch: currentBranch,
+                        remote: remote
+                    };
                 });
             });
+        },
+
+        getAllBranches: function () {
+            return this.getBranches(["-a"]);
+        },
+
+        mergeBranch: function (branchName) {
+            var args = ["merge", branchName];
+            return this.spawnCommand(this._git, args);
         },
 
         checkoutBranch: function (branchName) {
@@ -251,8 +263,16 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
-        createBranch: function (branchName) {
+        createBranch: function (branchName, originBranch, trackOrigin) {
             var args = ["checkout", "-b", branchName];
+
+            if (originBranch) {
+                if (trackOrigin) {
+                    args.push("--track");
+                }
+                args.push(originBranch);
+            }
+
             return this.executeCommand(this._git, args);
         },
 
@@ -283,7 +303,7 @@ define(function (require, exports, module) {
             }
 
             var args = ["status", "-u", "--porcelain"];
-            return this.executeCommand(this._git, args).then(function (stdout) {
+            return this.spawnCommand(this._git, args).then(function (stdout) {
                 if (!stdout) {
                     return [];
                 }
@@ -599,16 +619,22 @@ define(function (require, exports, module) {
         },
 
         // GIT-FTP features
-        // NOTE: to make these features work you need Git-FTP (https://github.com/git-ftp/git-ftp)
-        // FUTURE: add support for more features (see: https://github.com/git-ftp/git-ftp/blob/develop/man/git-ftp.1.md)
+        getGitFtpVersion: function () {
+            var args = ["ftp", "--version"];
+            return this.spawnCommand(this._git, args).then(function (output) {
+                var io = output.indexOf("git-ftp version");
+                return output.substring(io !== -1 ? io + "git-ftp version".length : 0).trim();
+            });
+        },
+
         gitFtpInit: function (username, password, ftpUrl) {
-            var args = ["ftp init", "-u " + escapeShellArg(username), "-p " + escapeShellArg(password), ftpUrl];
-            return this.executeCommand(this._git, args);
+            var args = ["ftp", "init", "-user", username, "-passwd", password, ftpUrl];
+            return this.spawnCommand(this._git, args);
         },
 
         gitFtpPush: function (username, password, ftpUrl) {
-            var args = ["ftp push", "-u " + escapeShellArg(username), "-p " + escapeShellArg(password), ftpUrl];
-            return this.executeCommand(this._git, args);
+            var args = ["ftp", "push", "-user", username, "-passwd", password, ftpUrl];
+            return this.spawnCommand(this._git, args);
         }
 
 

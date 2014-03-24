@@ -5,6 +5,7 @@ define(function (require, exports) {
     "use strict";
 
     var q                  = require("../thirdparty/q"),
+        moment             = require("moment"),
         _                  = brackets.getModule("thirdparty/lodash"),
         CodeInspection     = brackets.getModule("language/CodeInspection"),
         CommandManager     = brackets.getModule("command/CommandManager"),
@@ -35,7 +36,8 @@ define(function (require, exports) {
         SettingsDialog     = require("./SettingsDialog"),
         PANEL_COMMAND_ID   = "brackets-git.panel";
 
-    var gitPanelTemplate            = require("text!htmlContent/git-panel.html"),
+    var gitignoreTemplate           = require("text!htmlContent/default-gitignore"),
+        gitPanelTemplate            = require("text!htmlContent/git-panel.html"),
         gitPanelResultsTemplate     = require("text!htmlContent/git-panel-results.html"),
         gitPanelHistoryTemplate     = require("text!htmlContent/git-panel-history.html"),
         gitAuthorsDialogTemplate    = require("text!htmlContent/authors-dialog.html"),
@@ -44,7 +46,7 @@ define(function (require, exports) {
         gitCommitDiffDialogTemplate = require("text!htmlContent/git-commit-diff-dialog.html"),
         questionDialogTemplate      = require("text!htmlContent/git-question-dialog.html");
 
-    var showFileWhiteList = /^.gitignore$/;
+    var showFileWhiteList = /^\.gitignore$/;
 
     var gitPanel = null,
         gitPanelDisabled = null,
@@ -121,6 +123,12 @@ define(function (require, exports) {
         Preferences.persist(key, remoteName);
     }
 
+    function clearRemotePicker() {
+        gitPanel.$panel.find(".git-remotes-field")
+            .html("&hellip;")
+            .data("remote-name", "");
+    }
+
     function handleRemotePick(e, $a) {
         var $selected = (e ? $(e.target) : $a).parent(),
             $remoteField = gitPanel.$panel.find(".git-remotes-field");
@@ -137,9 +145,7 @@ define(function (require, exports) {
 
         $remoteField
             .text($selected.find(".change-remote").text().trim())
-            .attr({
-                "data-remote-name": remoteName
-            });
+            .data("remote-name", remoteName);
     }
 
     function handleRemoteRemove(e, $a) {
@@ -189,7 +195,10 @@ define(function (require, exports) {
             $remotesDropdown.append("<li><a class=\"git-remote-new\"><span>" + Strings.CREATE_NEW_REMOTE + "</span></a></li>");
             $remotesDropdown.append("<li class=\"divider\"></li>");
 
-            if (remotes.length === 0) { return; }
+            if (remotes.length === 0) {
+                clearRemotePicker();
+                return;
+            }
 
             // Add options to change remote
             var $remotes = remotes.map(function (remoteInfo) {
@@ -1008,11 +1017,13 @@ define(function (require, exports) {
         }
 
         $dialog.find(".commit-files a").on("click", function () {
+            $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
             var self = $(this);
             Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).text().trim()).then(function (diff) {
                 $dialog.find(".commit-files a").removeClass("active");
                 self.addClass("active");
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
+                $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
             });
         });
     }
@@ -1037,6 +1048,8 @@ define(function (require, exports) {
         return Main.gitControl.getBranchName().then(function (branchName) {
             // Get the history commit of the current branch
             return Main.gitControl.gitHistory(branchName).then(function (commits) {
+                commits = convertCommitDates(commits);
+
                 $tableContainer.append(Mustache.render(gitPanelHistoryTemplate, {
                     files: commits,
                     Strings: Strings
@@ -1056,13 +1069,14 @@ define(function (require, exports) {
                         if (commits.length === 0) {
                             return;
                         }
+                        commits = convertCommitDates(commits);
 
                         var template = "{{#.}}";
                         template += "<tr class=\"history-commit\" data-hash=\"{{hash}}\">";
                         template += "<td>{{hashShort}}</td>";
                         template += "<td>{{message}}</td>";
                         template += "<td>{{author}}</td>";
-                        template += "<td>{{date}}</td>";
+                        template += "<td title='{{date.title}}'>{{date.shown}}</td>";
                         template += "</tr>";
                         template += "{{/.}}";
 
@@ -1077,6 +1091,23 @@ define(function (require, exports) {
                 });
             }
         }
+    }
+
+    function convertCommitDates(commits) {
+        var relative    = Preferences.get("showRelativeCommitDate"),
+            format      = Strings.DATE_FORMAT;
+        _.forEach(commits, function (commit) {
+            var date = moment(commit.date);
+            commit.date = {};
+            if (relative) {
+                commit.date.relative = date.fromNow();
+            }
+            commit.date.formatted = date.format(format);
+
+            commit.date.shown = relative ? commit.date.relative : commit.date.formatted;
+            commit.date.title = relative ? commit.date.formatted : "";
+        });
+        return commits;
     }
 
     // Show or hide the history list on click of .history button
@@ -1107,7 +1138,7 @@ define(function (require, exports) {
             }
             return Main.gitControl.gitInit();
         }).then(function () {
-            return q.when(FileUtils.writeText(FileSystem.getFileForPath(Main.getProjectRoot() + ".gitignore"), ""));
+            return q.when(FileUtils.writeText(FileSystem.getFileForPath(Main.getProjectRoot() + ".gitignore"), gitignoreTemplate));
         }).then(function () {
             return Main.gitControl.gitAdd(".gitignore");
         }).then(function () {
@@ -1168,29 +1199,19 @@ define(function (require, exports) {
     }
 
     function openBashConsole(event) {
-        if (brackets.platform === "win") {
-            Main.gitControl.bashOpen(Main.getProjectRoot()).fail(function (err) {
-                throw ErrorHandler.showError(err);
-            });
-        } else {
-            var customTerminal = Preferences.get("terminalCommand");
-            Main.gitControl.terminalOpen(Main.getProjectRoot(), customTerminal).fail(function (err) {
-                if (event !== "retry" && ErrorHandler.contains(err, "Permission denied")) {
-                    Main.gitControl.chmodTerminalScript().fail(function (err) {
-                        throw ErrorHandler.showError(err);
-                    }).then(function () {
-                        openBashConsole("retry");
-                    });
-                    return;
-                }
-                if (ErrorHandler.isTimeout(err)) {
-                    // process is running after 1 second timeout so terminal is open
-                    return;
-                } else {
+        var customTerminal = Preferences.get("terminalCommand"),
+            customTerminalArgs = Preferences.get("terminalCommandArgs");
+        Main.gitControl.terminalOpen(Main.getProjectRoot(), customTerminal, customTerminalArgs).fail(function (err) {
+            if (event !== "retry" && ErrorHandler.contains(err, "Permission denied")) {
+                Main.gitControl.chmodTerminalScript().fail(function (err) {
                     throw ErrorHandler.showError(err);
-                }
-            });
-        }
+                }).then(function () {
+                    openBashConsole("retry");
+                });
+                return;
+            }
+            throw ErrorHandler.showError(err);
+        });
     }
 
     // Disable "commit" button if there aren't selected files and vice versa
@@ -1290,21 +1311,19 @@ define(function (require, exports) {
 
     // GIT FTP handlers
     function handleGitFtpInit() {
+        var $gitFtpInit = gitPanel.$panel.find(".git-ftp-init");
+        $gitFtpInit.addClass("btn-loading").prop("disabled", true);
         return askQuestion(Strings.GIT_FTP_INIT, Strings.ENTER_FTP_URL).then(function (ftpUrl) {
             if (!ftpUrl.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
             return askQuestion(Strings.GIT_FTP_INIT, Strings.ENTER_USERNAME).then(function (ftpUsername) {
                 if (!ftpUsername.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
                 return askQuestion(Strings.GIT_FTP_INIT, Strings.ENTER_PASSWORD, {password: true}).then(function (ftpPassword) {
                     if (!ftpPassword.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
-                    var $gitFtpInit = gitPanel.$panel.find(".git-ftp-init");
-                    $gitFtpInit.addClass("btn-loading");
-                    return Main.gitControl.gitFtpInit(ftpUsername, ftpPassword, ftpUrl)
-                    .done(function () {
-                        $gitFtpInit.removeClass("btn-loading");
-                    })
-                    .fail(function (err) {
-                        $gitFtpInit.removeClass("btn-loading");
-                        ErrorHandler.showError(err, "Impossible initialize Git FTP repository");
+                    return Main.gitControl.gitFtpInit(ftpUsername, ftpPassword, ftpUrl).done(function () {
+                        $gitFtpInit.removeClass("btn-loading").prop("disabled", false);
+                    }).fail(function (err) {
+                        $gitFtpInit.removeClass("btn-loading").prop("disabled", false);
+                        ErrorHandler.showError(err, "Impossible initialize Git-FTP repository");
                     });
                 });
             });
@@ -1312,27 +1331,25 @@ define(function (require, exports) {
     }
 
     function handleGitFtpPush() {
+        var $gitFtpPush = gitPanel.$panel.find(".git-ftp-push");
+        $gitFtpPush.addClass("btn-loading").prop("disabled", true);
         return askQuestion(Strings.GIT_FTP_PUSH, Strings.ENTER_FTP_URL).then(function (ftpUrl) {
             if (!ftpUrl.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
             return askQuestion(Strings.GIT_FTP_PUSH, Strings.ENTER_USERNAME).then(function (ftpUsername) {
                 if (!ftpUsername.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
                 return askQuestion(Strings.GIT_FTP_PUSH, Strings.ENTER_PASSWORD, {password: true}).then(function (ftpPassword) {
                     if (!ftpPassword.length) { ErrorHandler.showError(new ExpectedError(Strings.EMPTY_INPUT)); return; }
-                    var $gitFtpPush = gitPanel.$panel.find(".git-ftp-push");
-                    $gitFtpPush.addClass("btn-loading");
-                    return Main.gitControl.gitFtpPush(ftpUsername, ftpPassword, ftpUrl)
-                    .done(function () {
-                        $gitFtpPush.removeClass("btn-loading");
-                    })
-                    .fail(function (err) {
-                        $gitFtpPush.removeClass("btn-loading");
-                        ErrorHandler.showError(err, "Impossible push to Git FTP repository");
+                    return Main.gitControl.gitFtpPush(ftpUsername, ftpPassword, ftpUrl).done(function () {
+                        $gitFtpPush.removeClass("btn-loading").prop("disabled", false);
+                    }).fail(function (err) {
+                        $gitFtpPush.removeClass("btn-loading").prop("disabled", false);
+                        ErrorHandler.showError(err, "Impossible push to Git-FTP repository");
                     });
                 });
             });
         });
     }
-    // ./GIT FTP handlers
+    // /GIT FTP handlers
 
     function init() {
         // Add panel
@@ -1387,23 +1404,18 @@ define(function (require, exports) {
             .on("click", ".change-user-name", changeUserName)
             .on("click", ".change-user-email", changeUserEmail)
             .on("click", ".undo-last-commit", undoLastLocalCommit)
-            .on("click", ".git-ftp-init", handleGitFtpInit)
-            .on("click", ".git-ftp-push", handleGitFtpPush);
+            .on("click", ".git-bash", openBashConsole);
+
+        // Assign Git-FTP handlers only if is enabled and is available
+        console.log("git-ftp version: " + Main.gitControl.getGitFtpVersion());
+        if (Preferences.get("useGitFtp") && Main.gitControl.getGitFtpVersion() !== undefined) {
+            gitPanel.$panel
+                .on("click", ".git-ftp-init", handleGitFtpInit)
+                .on("click", ".git-ftp-push", handleGitFtpPush);
+        }
 
         // Attaching table handlers
         attachDefaultTableHandlers();
-
-        // Try to get Bash version, if succeeds then Bash is available, hide otherwise
-        if (brackets.platform === "win") {
-            Main.gitControl.bashVersion().fail(function (e) {
-                gitPanel.$panel.find(".git-bash").prop("disabled", true).attr("title", Strings.BASH_NOT_AVAILABLE);
-                ErrorHandler.logError(e);
-            }).then(function () {
-                gitPanel.$panel.find(".git-bash").on("click", openBashConsole);
-            });
-        } else {
-            gitPanel.$panel.find(".git-bash").on("click", openBashConsole);
-        }
 
         // Register command for opening bottom panel.
         CommandManager.register(Strings.PANEL_COMMAND, PANEL_COMMAND_ID, toggle);
@@ -1418,7 +1430,7 @@ define(function (require, exports) {
             PULL_CMD           = "brackets-git.pull",
             GOTO_PREV_CHANGE   = "brackets-git.gotoPrevChange",
             GOTO_NEXT_CHANGE   = "brackets-git.gotoNextChange";
-        
+
          // Add command to menu.
         var menu = Menus.getMenu(GIT_MENU);
 
@@ -1448,9 +1460,13 @@ define(function (require, exports) {
         Main.gitControl.getGitConfig("user.email").then(function (currentEmail) {
             EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
         });
+
+        // Init moment - use the correct language
+        moment.lang(brackets.getLocale());
     }
 
     function enable() {
+        EventEmitter.emit(Events.GIT_ENABLED);
         // this function is called after every Branch.refresh
         gitPanelMode = null;
         prepareRemotesPicker();
@@ -1465,6 +1481,7 @@ define(function (require, exports) {
     }
 
     function disable(cause) {
+        EventEmitter.emit(Events.GIT_DISABLED, cause);
         gitPanelMode = cause;
         // causes: not-repo
         if (gitPanelMode === "not-repo") {

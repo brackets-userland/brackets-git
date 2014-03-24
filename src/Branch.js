@@ -3,7 +3,7 @@
 
 define(function (require, exports) {
     "use strict";
-    
+
     var _                       = brackets.getModule("thirdparty/lodash"),
         CommandManager          = brackets.getModule("command/CommandManager"),
         Dialogs                 = brackets.getModule("widgets/Dialogs"),
@@ -12,14 +12,16 @@ define(function (require, exports) {
         Menus                   = brackets.getModule("command/Menus"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         SidebarView             = brackets.getModule("project/SidebarView");
-    
+
     var q                       = require("../thirdparty/q"),
         ErrorHandler            = require("./ErrorHandler"),
         Main                    = require("./Main"),
         Panel                   = require("./Panel"),
         Strings                 = require("../strings"),
         branchesMenuTemplate    = require("text!htmlContent/git-branches-menu.html"),
-        questionDialogTemplate  = require("text!htmlContent/git-question-dialog.html");
+        newBranchTemplate       = require("text!htmlContent/branch-new-dialog.html"),
+        mergeBranchTemplate     = require("text!htmlContent/branch-merge-dialog.html"),
+        outputDialogTemplate    = require("text!htmlContent/git-output.html");
 
     var $gitBranchName          = $(null),
         $dropdown;
@@ -46,29 +48,78 @@ define(function (require, exports) {
         detachCloseEvents();
     }
 
-    function handleEvents() {
-        $dropdown.on("click", "a.git-branch-new", function (e) {
-            e.stopPropagation();
+    function showOutput(output, title) {
+        var compiledTemplate = Mustache.render(outputDialogTemplate, {
+            title: title,
+            output: output,
+            Strings: Strings
+        });
+        var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+        dialog.getElement().find("input").focus();
+    }
 
-            var compiledTemplate = Mustache.render(questionDialogTemplate, {
-                title: Strings.CREATE_NEW_BRANCH,
-                question: _.escape(Strings.BRANCH_NAME),
-                stringInput: true,
+    function doMerge(fromBranch) {
+        Main.gitControl.getBranches().then(function (branches) {
+
+            var compiledTemplate = Mustache.render(mergeBranchTemplate, {
+                fromBranch: fromBranch,
+                branches: branches,
                 Strings: Strings
             });
+
             var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
             dialog.getElement().find("input").focus();
             dialog.done(function (buttonId) {
                 if (buttonId === "ok") {
-                    var branchName = dialog.getElement().find("input").val().trim();
-                    Main.gitControl.createBranch(branchName).fail(function (err) {
-                        ErrorHandler.showError(err, "Creating new branch failed");
-                    }).then(function () {
-                        closeDropdown();
+                    // right now only merge to current branch without any configuration
+                    // later delete merge branch and so ...
+                    Main.gitControl.mergeBranch(fromBranch).catch(function (err) {
+                        throw ErrorHandler.showError(err, "Merge failed");
+                    }).then(function (stdout) {
                         // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
                         CommandManager.execute("file.refresh");
+                        // show merge output
+                        showOutput(stdout, Strings.MERGE_RESULT);
                     });
                 }
+            });
+        });
+    }
+
+    function handleEvents() {
+        $dropdown.on("click", "a.git-branch-new", function (e) {
+            e.stopPropagation();
+
+            Main.gitControl.getAllBranches().catch(function (err) {
+                ErrorHandler.showError(err);
+            }).then(function (branches) {
+
+                var compiledTemplate = Mustache.render(newBranchTemplate, {
+                    branches: branches,
+                    Strings: Strings
+                });
+
+                var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+                dialog.getElement().find("input").focus();
+                dialog.done(function (buttonId) {
+                    if (buttonId === "ok") {
+
+                        var $dialog     = dialog.getElement(),
+                            branchName  = $dialog.find("input[name='branch-name']").val().trim(),
+                            $option     = $dialog.find("select[name='branch-origin']").children("option:selected"),
+                            originName  = $option.val(),
+                            isRemote    = $option.attr("remote"),
+                            track       = !!isRemote;
+
+                        Main.gitControl.createBranch(branchName, originName, track).fail(function (err) {
+                            ErrorHandler.showError(err, "Creating new branch failed");
+                        }).then(function () {
+                            closeDropdown();
+                            // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
+                            CommandManager.execute("file.refresh");
+                        });
+                    }
+                });
             });
 
         }).on("click", "a.git-branch-link .switch-branch", function (e) {
@@ -89,6 +140,9 @@ define(function (require, exports) {
             Main.gitControl.deleteLocalBranch($(this).parent().data("branch"))
             .fail(function (err) { ErrorHandler.showError(err, "Branch deletion failed"); });
             $(this).parent().remove();
+        }).on("click", ".merge-branch", function () {
+            var fromBranch = $(this).parent().data("branch");
+            doMerge(fromBranch);
         });
     }
 
@@ -125,6 +179,13 @@ define(function (require, exports) {
         Main.gitControl.getBranches().fail(function (err) {
             ErrorHandler.showError(err, "Getting branch list failed");
         }).then(function (branches) {
+            branches = branches.reduce(function (arr, branch) {
+                if (!branch.currentBranch && !branch.remote) {
+                    arr.push(branch.name);
+                }
+                return arr;
+            }, []);
+
             $dropdown = $(renderList(branches));
 
             var toggleOffset = $gitBranchName.offset();
@@ -140,7 +201,7 @@ define(function (require, exports) {
             handleEvents();
         });
     }
-    
+
     function _isRepositoryRoot() {
         var gitFolder = Main.getProjectRoot() + "/.git",
             defer = q.defer();
@@ -167,7 +228,7 @@ define(function (require, exports) {
                 Panel.disable("not-repo");
                 return;
             }
-            
+
             return Main.gitControl.getBranchName().then(function (branchName) {
                 $gitBranchName.text(branchName)
                     .off("click")
@@ -188,7 +249,7 @@ define(function (require, exports) {
             throw ErrorHandler.showError(err);
         });
     }
-    
+
     function init() {
         // Add branch name to project tree
         $gitBranchName = $("<span id='git-branch'></span>");
@@ -203,7 +264,7 @@ define(function (require, exports) {
             .appendTo("#project-files-header");
         refresh();
     }
-    
+
     exports.init    = init;
     exports.refresh = refresh;
 });

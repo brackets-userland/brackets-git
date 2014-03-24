@@ -1,7 +1,14 @@
 # Changelog
 
-## 0.11.1
+## 0.12.0
+* Bash command is now customizable for Windows - you may need to do some adjustements (even Mac/Linux users) in the settings (you can use restore defaults command if you have any problems).
+* You can now specify origin branch when creating new one.
+* You can now merge local branches into the current branch.
 * Many UI tweaks by [Larz](https://github.com/larz0)
+* Some more UI tweaks by [Fez Vrasta](https://github.com/FezVrasta)
+* Fixed custom terminal not working in Linux/Mac.
+* Better .gitignore parsing by [Marcel Gerber](https://github.com/SAPlayer)
+* Updated translations by [Marcel Gerber](https://github.com/SAPlayer) & [Pietro Albini](https://github.com/pietroalbini)
 
 ## 0.11.0
 * Added features to change current username and email by [Fez Vrasta](https://github.com/FezVrasta)

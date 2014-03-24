@@ -97,8 +97,20 @@
                 font-weight: bold;
             }
         }
-        &:hover .trash-icon {
-            opacity: 1;
+        &:hover {
+            .trash-icon, .merge-branch {
+                opacity: 1;
+            }
+        }
+        .merge-branch {
+            position: absolute;
+            right: 5px;
+            color: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            &:hover {
+                color: rgba(0, 0, 0, 1);
+                font-weight: bold;
+            }
         }
     }
     a.selected {
@@ -203,7 +215,7 @@
     .btn-group.open .dropdown-toggle {
         background-color: #d3d7d7;
         box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
-        color: #454545;        
+        color: #454545;
     }
     .git-more {
         border-radius: 0 4px 4px 0;
@@ -556,10 +568,11 @@
     opacity: 0.8;
     text-shadow: 0 1px 0 rgba(0,0,0,.69);
     i {
-        font-size: 14px;
+        font-size: 13px;
         color: #798286;
         position: relative;
         top: -2px;
+        text-shadow: none;
     }
     &:hover {
         opacity: 1;

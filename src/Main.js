@@ -173,9 +173,13 @@ define(function (require, exports) {
         }
 
         function isIgnored(path) {
-            return _.any(_ignoreEntries, function (regExp) {
-                return regExp.test(path);
+            var ignored = false;
+            _.forEach(_ignoreEntries, function (entry) {
+                if (entry.regexp.test(path)) {
+                    ignored = (entry.type === "ignore");
+                }
             });
+            return ignored;
         }
 
         $("#project-files-container").find("li").each(function () {
@@ -207,13 +211,20 @@ define(function (require, exports) {
                     return;
                 }
 
-                var path;
+                var path,
+                    type = "ignore";
                 if (line.indexOf("/") === 0) {
+                    line = line.substring(1);
+                    path = projectRoot + line;
+                } else if (line.indexOf("!") === 0) {
+                    type = "include";
                     line = line.substring(1);
                     path = projectRoot + line;
                 } else {
                     path = projectRoot + "(**/)?" + line;
                 }
+                path = path.replace(/\\/, "");
+                path = path.replace(/\./, "\\.");
 
                 path = "^" + path + "/?$";
 
@@ -226,7 +237,7 @@ define(function (require, exports) {
                     }
                 });
 
-                return new RegExp(path);
+                return {regexp: new RegExp(path), type: type};
             }));
             p.resolve();
         });
