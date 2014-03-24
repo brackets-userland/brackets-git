@@ -23,6 +23,7 @@ define({
     BUTTON_RESET_MIXED:                 "Reset mixed",
     BUTTON_SAVE:                        "Save",
     BUTTON_COMMIT:                      "Commit",
+    BUTTON_CHECKOUT:                    "Checkout",
     BUTTON_INIT:                        "Init",
     BUTTON_CLONE:                       "Clone",
     CHANGELOG:                          "Changelog",

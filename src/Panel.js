@@ -711,29 +711,42 @@ define(function (require, exports) {
             });
         });
 
-        $dialog.find(".btn-reset-hard").on('click', function () {
+        $dialog.find(".btn-reset-hard").on("click", function () {
             Main.gitControl.gitResetHard('hard', hashCommit).then(function () {
                 dialog.close();
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITILE_DONE, "Reset to " + hashCommit + ".");
             }, function (err) {
+                dialog.close();
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
             });
         });
 
-        $dialog.find(".btn-reset-soft").on('click', function () {
+        $dialog.find(".btn-reset-soft").on("click", function () {
             Main.gitControl.gitReset('soft', hashCommit).then(function () {
                 dialog.close();
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITLE_DONE, "Reset to " + hashCommit + ".");
             }, function (err) {
+                dialog.close();
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
             });
         });
 
-        $dialog.find(".btn-reset-mixed").on('click', function () {
+        $dialog.find(".btn-reset-mixed").on("click", function () {
             Main.gitControl.gitReset('mixed', hashCommit).then(function () {
                 dialog.close();
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITLE_DONE, "Reset to " + hashCommit + ".");
             }, function (err) {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
+            });
+        });
+
+        $dialog.find(".btn-checkout").on("click", function () {
+            Main.gitControl.gitCheckout(hashCommit).then(function () {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITLE_DONE, "Check out to " + hashCommit + ".");
+            }, function (err) {
+                dialog.close();
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
             });
         });

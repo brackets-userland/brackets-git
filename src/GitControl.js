@@ -391,6 +391,10 @@ define(function (require, exports, module) {
             }
         },
 
+        gitCheckout: function (commit) {
+            return this.executeCommand(this._git, ["checkout", commit]);
+        },
+
         gitReset: function (type, hash) {
             if (type) {
                 return this.executeCommand(this._git, ["reset", "--" + type, hash]);
