@@ -123,6 +123,12 @@ define(function (require, exports) {
         Preferences.persist(key, remoteName);
     }
 
+    function clearRemotePicker() {
+        gitPanel.$panel.find(".git-remotes-field")
+            .html("&hellip;")
+            .data("remote-name", "");
+    }
+
     function handleRemotePick(e, $a) {
         var $selected = (e ? $(e.target) : $a).parent(),
             $remoteField = gitPanel.$panel.find(".git-remotes-field");
@@ -139,9 +145,7 @@ define(function (require, exports) {
 
         $remoteField
             .text($selected.find(".change-remote").text().trim())
-            .attr({
-                "data-remote-name": remoteName
-            });
+            .data("remote-name", remoteName);
     }
 
     function handleRemoteRemove(e, $a) {
@@ -191,7 +195,10 @@ define(function (require, exports) {
             $remotesDropdown.append("<li><a class=\"git-remote-new\"><span>" + Strings.CREATE_NEW_REMOTE + "</span></a></li>");
             $remotesDropdown.append("<li class=\"divider\"></li>");
 
-            if (remotes.length === 0) { return; }
+            if (remotes.length === 0) {
+                clearRemotePicker();
+                return;
+            }
 
             // Add options to change remote
             var $remotes = remotes.map(function (remoteInfo) {
