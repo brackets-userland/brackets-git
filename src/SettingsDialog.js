@@ -19,23 +19,30 @@ define(function (require, exports) {
         $("*[settingsProperty]", $dialog).each(function () {
             var $this = $(this),
                 type = $this.attr("type"),
+                tag = $this.prop("tagName").toLowerCase(),
                 property = $this.attr("settingsProperty");
             if (type === "checkbox") {
                 $this.prop("checked", values[property]);
+            } else if (tag === "select") {
+                $("option[value=" + values[property] + "]", $this).prop("selected", true);
             } else {
                 $this.val(values[property]);
             }
         });
         $("#git-settings-gitPath", $dialog).prop("disabled", values.gitIsInSystemPath);
+        $("#git-settings-dateFormat-container", $dialog).toggle(values.dateMode === 3);
     }
 
     function collectValues() {
         $("*[settingsProperty]", $dialog).each(function () {
             var $this = $(this),
                 type = $this.attr("type"),
-                property = $this.attr("settingsProperty");
+                property = $this.attr("settingsProperty"),
+                prefType = Preferences.getType(property);
             if (type === "checkbox") {
                 Preferences.set(property, $this.prop("checked"));
+            } else if (prefType === "number") {
+                Preferences.set(property, parseInt($this.val().trim(), 10));
             } else {
                 Preferences.set(property, $this.val().trim() || null);
             }
@@ -52,6 +59,9 @@ define(function (require, exports) {
             $("#git-settings-addEndlineToTheEndOfFile", $dialog)
                 .prop("checked", on)
                 .prop("disabled", !on);
+        });
+        $("#git-settings-dateMode", $dialog).on("change", function (e) {
+            $("#git-settings-dateFormat-container", $dialog).toggle($("option:selected", this).prop("value") === "3");
         });
         $("button[data-button-id='defaults']", $dialog).on("click", function (e) {
             e.stopPropagation();

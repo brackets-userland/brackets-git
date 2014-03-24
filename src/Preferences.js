@@ -15,7 +15,8 @@ define(function (require, exports, module) {
         "markModifiedInTree": {             "type": "boolean",           "value": true          },
         "useCodeInspection": {              "type": "boolean",           "value": true          },
         "showBashButton": {                 "type": "boolean",           "value": true          },
-        "showRelativeCommitDate": {         "type": "boolean",           "value": true          },
+        "dateMode": {                       "type": "number",            "value": 1             },
+        "dateFormat": {                     "type": "string",            "value": null          },
         "showReportBugButton": {            "type": "boolean",           "value": true          },
         "storePlainTextPasswords": {        "type": "boolean",           "value": false         },
         // shortcuts
@@ -91,6 +92,10 @@ define(function (require, exports, module) {
             obj[key] = defaultValue;
         }, this);
         return obj;
+    };
+
+    prefs.getType = function (key) {
+        return defaultPreferences[key].type;
     };
 
     prefs.getGlobal = function (key) {
