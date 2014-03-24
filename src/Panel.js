@@ -1062,9 +1062,14 @@ define(function (require, exports) {
             return Main.gitControl.gitHistory(branchName).then(function (commits) {
                 commits = convertCommitDates(commits);
 
-                $tableContainer.append(Mustache.render(gitPanelHistoryTemplate, {
-                    files: commits,
-                    Strings: Strings
+                var template = "<table class='git-history-list bottom-panel-table table table-striped table-condensed row-highlight'>";
+                template += "<tbody>";
+                template += gitPanelHistoryTemplate;
+                template += "</tbody>";
+                template += "</table>";
+
+                $tableContainer.append(Mustache.render(template, {
+                    commits: commits
                 }));
             });
         }).fail(function (err) {
@@ -1083,16 +1088,7 @@ define(function (require, exports) {
                         }
                         commits = convertCommitDates(commits);
 
-                        var template = "{{#.}}";
-                        template += "<tr class=\"history-commit\" data-hash=\"{{hash}}\">";
-                        template += "<td>{{hashShort}}</td>";
-                        template += "<td>{{message}}</td>";
-                        template += "<td>{{author}}</td>";
-                        template += "<td title='{{date.title}}'>{{date.shown}}</td>";
-                        template += "</tr>";
-                        template += "{{/.}}";
-
-                        $tableContainer.find(".git-history-list > tbody").append(Mustache.render(template, commits));
+                        $tableContainer.find(".git-history-list > tbody").append(Mustache.render(gitPanelHistoryTemplate, {commits: commits}));
                     })
                     .fail(function (err) {
                         ErrorHandler.showError(err, "Failed to load more history rows");
