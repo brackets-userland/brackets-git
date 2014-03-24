@@ -1,10 +1,14 @@
 define(function (require, exports, module) {
     "use strict";
 
+    // Local modules
     var EventEmitter2 = require("eventemitter2"),
-        Preferences   = require("src/Preferences"),
-        debugOn       = Preferences.get("debugMode");
+        Preferences   = require("src/Preferences");
 
+    // Module variables
+    var debugOn = Preferences.get("debugMode");
+
+    // Implementation
     var emInstance = new EventEmitter2({
         wildcard: false
     });
@@ -20,7 +24,8 @@ define(function (require, exports, module) {
     emInstance.emitFactory = function (eventName) {
         var self = this;
         return function () {
-            self.emit.apply(self, [eventName].concat(arguments));
+            Array.prototype.unshift.call(arguments, eventName);
+            self.emit.apply(self, arguments);
         };
     };
 

@@ -1,7 +1,8 @@
 define(function (require, exports, module) {
 
     // Brackets modules
-    var DefaultDialogs = brackets.getModule("widgets/DefaultDialogs");
+    var _               = brackets.getModule("thirdparty/lodash"),
+        DefaultDialogs  = brackets.getModule("widgets/DefaultDialogs");
 
     // Local modules
     var ErrorHandler  = require("src/ErrorHandler"),
@@ -9,87 +10,20 @@ define(function (require, exports, module) {
         EventEmitter  = require("src/EventEmitter"),
         Git           = require("src/Git/Git"),
         Main          = require("src/Main"),
-        Preferences   = require("src/Preferences");
+        Preferences   = require("src/Preferences"),
+        Strings       = require("../strings");
 
     // Module variables
-    var $selectedRemote = null;
+    var $selectedRemote = null,
+        $remotesDropdown = null;
 
     // Implementation
-    function prepareRemotesPicker() {
-        Git.getRemotes().then(function (remotes) {
-            var defaultRemoteName = _getDefaultRemote(),
-                $defaultRemote,
-                $remotesDropdown = gitPanel.$panel.find(".git-remotes-dropdown").empty();
-
-            gitPanel.$panel.find(".git-pull").prop("disabled", remotes.length === 0);
-            gitPanel.$panel.find(".git-push").prop("disabled", remotes.length === 0);
-
-            // Add option to define new remote
-            $remotesDropdown.append("<li><a class=\"git-remote-new\"><span>" + Strings.CREATE_NEW_REMOTE + "</span></a></li>");
-            $remotesDropdown.append("<li class=\"divider\"></li>");
-
-            if (remotes.length === 0) {
-                clearRemotePicker();
-                return;
-            }
-
-            // Add options to change remote
-            var $remotes = remotes.map(function (remoteInfo) {
-                var canDelete = remoteInfo.name !== "origin";
-
-                var $a = $("<a/>")
-                    .attr("href", "#")
-                    .addClass("remote-name")
-                    .data("remote-name", remoteInfo.name);
-
-                if (canDelete) {
-                    $a.append("<span class='trash-icon remove-remote'>&times;</span>");
-                }
-
-                $a.append("<span class='change-remote'>" + remoteInfo.name + "</span>");
-                $a.appendTo($("<li class=\"remote\"/>").appendTo($remotesDropdown));
-
-                if (remoteInfo.name === defaultRemoteName) {
-                    $defaultRemote = $a;
-                }
-
-                return $a;
-            });
-
-            if ($defaultRemote) {
-                handleRemotePick(null, $defaultRemote);
-            } else {
-                handleRemotePick(null, _.first($remotes));
-            }
-        }).fail(function (err) {
-            ErrorHandler.showError(err, "Preparing remotes picker failed");
-        });
-    }
-
-    function initVariables() {
-        var $gitPanel = $("#git-panel");
-        $selectedRemote = $gitPanel.find(".git-selected-remote");
-    }
-
-    // Event subscriptions
-    EventEmitter.on(Events.GIT_ENABLED, function () {
-        initVariables();
-        prepareRemotesPicker();
-    });
-
-    /////-------------------------------------------------------------------------------
 
     function getDefaultRemote() {
         // TODO: refactor after Sprint 38 is published
         var key = ["defaultRemotes", Main.getProjectRoot()].join(".");
         var defaultRemote = Preferences.get(key);
         return defaultRemote || "origin";
-    }
-
-    function setDefaultRemote(remoteName) {
-        // TODO: refactor after Sprint 38 is published
-        var key = ["defaultRemotes", Main.getProjectRoot()].join(".");
-        Preferences.persist(key, remoteName);
     }
 
     function clearRemotePicker() {
@@ -107,14 +41,80 @@ define(function (require, exports, module) {
             .data("remote", remoteName);
     }
 
-    function handleRemotePick(e, $a) {
-        var $selected = (e ? $(e.target) : $a).closest(".remote-name");
-        if ($selected.length === 0) {
-            clearRemotePicker();
-        }
-        var remoteName = $selected.data("remote-name");
-        _setDefaultRemote(remoteName);
+    EventEmitter.on(Events.HANDLE_REMOTE_PICK, function (event) {
+        var remoteName = $(event.target).closest(".remote-name").data("remote-name");
         selectRemote(remoteName);
+    });
+
+    function prepareRemotesPicker() {
+        Git.getRemotes().then(function (remotes) {
+            var defaultRemoteName = getDefaultRemote(),
+                defaultRemote;
+
+            // empty the list first
+            $remotesDropdown.empty();
+
+            // Add option to define new remote
+            $remotesDropdown.append("<li><a class=\"git-remote-new\"><span>" + Strings.CREATE_NEW_REMOTE + "</span></a></li>");
+            $remotesDropdown.append("<li class=\"divider\"></li>");
+
+            if (remotes.length > 0) {
+                EventEmitter.emit(Events.GIT_REMOTE_AVAILABLE);
+            } else {
+                EventEmitter.emit(Events.GIT_REMOTE_NOT_AVAILABLE);
+                clearRemotePicker();
+                return;
+            }
+
+            // Add options to change remote
+            remotes.forEach(function (remoteInfo) {
+                var canDelete = remoteInfo.name !== "origin";
+
+                var $a = $("<a/>")
+                    .attr("href", "#")
+                    .addClass("remote-name")
+                    .data("remote-name", remoteInfo.name);
+
+                if (canDelete) {
+                    $a.append("<span class='trash-icon remove-remote'>&times;</span>");
+                }
+
+                $a.append("<span class='change-remote'>" + remoteInfo.name + "</span>");
+                $a.appendTo($("<li class=\"remote\"/>").appendTo($remotesDropdown));
+
+                if (remoteInfo.name === defaultRemoteName) {
+                    defaultRemote = remoteInfo.name;
+                }
+
+                return $a;
+            });
+
+            selectRemote(defaultRemote || _.first(remotes).name);
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Preparing remotes picker failed");
+        });
+    }
+
+    function initVariables() {
+        var $gitPanel = $("#git-panel");
+        $selectedRemote = $gitPanel.find(".git-selected-remote");
+        $remotesDropdown = $gitPanel.find(".git-remotes-dropdown");
+    }
+
+    // Event subscriptions
+    EventEmitter.on(Events.GIT_ENABLED, function () {
+        initVariables();
+        prepareRemotesPicker();
+    });
+
+    /////-------------------------------------------------------------------------------
+
+
+
+    function setDefaultRemote(remoteName) {
+        // TODO: refactor after Sprint 38 is published
+        var key = ["defaultRemotes", Main.getProjectRoot()].join(".");
+        Preferences.persist(key, remoteName);
     }
 
     function handleRemoteRemove(e, $a) {

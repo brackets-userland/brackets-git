@@ -1018,6 +1018,16 @@ define(function (require, exports) {
         gitPanel.$panel.find(".git-user-email").text(email);
     });
 
+    EventEmitter.on(Events.GIT_REMOTE_AVAILABLE, function () {
+        gitPanel.$panel.find(".git-pull").prop("disabled", false);
+        gitPanel.$panel.find(".git-push").prop("disabled", false);
+    });
+
+    EventEmitter.on(Events.GIT_REMOTE_NOT_AVAILABLE, function () {
+        gitPanel.$panel.find(".git-pull").prop("disabled", true);
+        gitPanel.$panel.find(".git-push").prop("disabled", true);
+    });
+
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
