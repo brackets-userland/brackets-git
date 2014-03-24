@@ -1102,18 +1102,52 @@ define(function (require, exports) {
     }
     
     function convertCommitDates(commits) {
-        var relative    = Preferences.get("showRelativeCommitDate"),
-            format      = Strings.DATE_FORMAT;
-        _.forEach(commits, function (commit) {
-            var date = moment(commit.date);
-            commit.date = {};
-            if (relative) {
-                commit.date.relative = date.fromNow();
-            }
-            commit.date.formatted = date.format(format);
+        var mode        = Preferences.get("dateMode"),
+            format      = Strings.DATE_FORMAT,
+            now         = moment(),
+            yesterday   = moment().subtract("d", 1).startOf("d"),
+            ownFormat   = Preferences.get("dateFormat") || Strings.DATE_FORMAT;
 
-            commit.date.shown = relative ? commit.date.relative : commit.date.formatted;
-            commit.date.title = relative ? commit.date.formatted : "";
+        _.forEach(commits, function (commit) {
+            if (mode === 4) {
+                // mode 4: Original Git date
+                commit.date = {
+                    shown: commit.date
+                };
+                return;
+            }
+
+            var date = moment(commit.date);
+            commit.date = {
+                title: ""
+            };
+            switch (mode) {
+                // mode 0 (default): formatted with Strings.DATE_FORMAT
+                default:
+                case 0:
+                    commit.date.shown = date.format(format);
+                    break;
+                // mode 1: always relative
+                case 1:
+                    commit.date.shown = date.fromNow();
+                    commit.date.title = date.format(format);
+                    break;
+                // mode 2: intelligent relative/formatted
+                case 2:
+                    if(date.diff(yesterday) > 0) {
+                        commit.date.shown = moment.duration(Math.max(date.diff(now), -24*60*60*1000), "ms").humanize(true);
+                        commit.date.title = date.format(format);
+                    } else {
+                        commit.date.shown = date.format(format);
+                    }
+                    break;
+                // mode 3: formatted with own format (as pref)
+                case 3:
+                    commit.date.shown = date.format(ownFormat);
+                    commit.date.title = date.format(format);
+                    break;
+                /* mode 4 (Original Git date) is handled above */
+            }
         });
         return commits;
     }
