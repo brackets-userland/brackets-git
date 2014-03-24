@@ -20,15 +20,17 @@ define(function (require, exports) {
         GutterManager     = require("./GutterManager"),
         Panel             = require("./Panel"),
         Branch            = require("./Branch"),
-        CloseNotModified  = require("./CloseNotModified");
+        CloseNotModified  = require("./CloseNotModified"),
+        Events            = require("src/Events"),
+        EventEmitter      = require("src/EventEmitter"),
+        Cli               = require("src/Cli"),
+        Utils             = require("src/Utils");
 
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
                                     .addClass("loading").appendTo($("#main-toolbar .buttons")),
         gitControl              = null;
 
-    function getProjectRoot() {
-        return ProjectManager.getProjectRoot().fullPath;
-    }
+    var getProjectRoot = Utils.getProjectRoot;
 
     var writeTestResults = {};
     function isProjectRootWritable() {
@@ -245,93 +247,14 @@ define(function (require, exports) {
         return p.promise;
     }
 
-    function sanitizeOutput(str) {
-        if (typeof str === "string") {
-            str = str.replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
-                return protocol + user + ":***@";
-            });
-        } else {
-            if (str != null) { // checks for both null & undefined
-                str = str.toString();
-            } else {
-                str = "";
-            }
-        }
-        return str;
-    }
-
-    function normalizePathForOs(path) {
-        if (brackets.platform === "win") {
-            return path.replace(/\//g, "\\");
-        }
-        return path;
-    }
-
     function init(nodeConnection) {
-        var debugOn       = Preferences.get("debugMode"),
-            extName       = "[brackets-git] ",
-            TIMEOUT_VALUE = Preferences.get("TIMEOUT_VALUE");
+        EventEmitter.emit(Events.NODE_CONNECTION_READY, nodeConnection);
 
         // Creates an GitControl Instance
         gitControl = exports.gitControl = new GitControl({
-            handler: function (method, cmd, args, opts) {
-                var rv = q.defer(),
-                    resolved = false;
-
-                opts = opts || {};
-                if (opts.cwd) { opts.customCwd = true; }
-                else { opts.cwd = getProjectRoot(); }
-
-                opts.cwd = normalizePathForOs(opts.cwd);
-
-                if (method === "execute") {
-                    cmd = "\"" + cmd + "\"";
-                }
-
-                if (debugOn) {
-                    console.log(extName + "cmd-" + method + ": " + (opts.customCwd ? opts.cwd + "\\" : "") + cmd + " " + args.join(" "));
-                }
-
-                // nodeConnection returns jQuery deffered, not Q
-                nodeConnection.domains["brackets-git"][method](opts.cwd, cmd, args)
-                    .fail(function (err) {
-                        if (!resolved) {
-                            err = sanitizeOutput(err);
-                            if (debugOn) { console.log(extName + "cmd-" + method + "-fail: \"" + err + "\""); }
-                            rv.reject(err);
-                        }
-                    })
-                    .then(function (out) {
-                        if (!resolved) {
-                            out = sanitizeOutput(out);
-                            if (debugOn) { console.log(extName + "cmd-" + method + "-out: \"" + out + "\""); }
-                            rv.resolve(out);
-                        }
-                    })
-                    .always(function () {
-                        resolved = true;
-                    })
-                    .done();
-
-                setTimeout(function () {
-                    if (!resolved) {
-                        var err = new Error("cmd-" + method + "-timeout: " + cmd + " " + args.join(" "));
-                        if (opts.timeoutExpected) {
-                            if (debugOn) {
-                                console.log(extName + "cmd-" + method + "-timeout: \"" + err + "\"");
-                            }
-                        } else {
-                            ErrorHandler.logError(err);
-                        }
-
-                        rv.reject(err);
-                        resolved = true;
-                    }
-                }, opts.timeout ? (opts.timeout * 1000) : TIMEOUT_VALUE);
-
-                return rv.promise;
-            }
+            handler: Cli.cliHandler
         });
+
         // Initialize items dependent on HTML DOM
         AppInit.htmlReady(function () {
             $icon.removeClass("loading").removeAttr("title");

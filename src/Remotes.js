@@ -4,13 +4,80 @@ define(function (require, exports, module) {
     var DefaultDialogs = brackets.getModule("widgets/DefaultDialogs");
 
     // Local modules
-    var Events        = require("src/Events"),
+    var ErrorHandler  = require("src/ErrorHandler"),
+        Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
+        Git           = require("src/Git/Git"),
         Main          = require("src/Main"),
         Preferences   = require("src/Preferences");
 
     // Module variables
-    var $selectedRemote = null; // TODO: gitPanel.$panel.find(".git-selected-remote")
+    var $selectedRemote = null;
+
+    // Implementation
+    function prepareRemotesPicker() {
+        Git.getRemotes().then(function (remotes) {
+            var defaultRemoteName = _getDefaultRemote(),
+                $defaultRemote,
+                $remotesDropdown = gitPanel.$panel.find(".git-remotes-dropdown").empty();
+
+            gitPanel.$panel.find(".git-pull").prop("disabled", remotes.length === 0);
+            gitPanel.$panel.find(".git-push").prop("disabled", remotes.length === 0);
+
+            // Add option to define new remote
+            $remotesDropdown.append("<li><a class=\"git-remote-new\"><span>" + Strings.CREATE_NEW_REMOTE + "</span></a></li>");
+            $remotesDropdown.append("<li class=\"divider\"></li>");
+
+            if (remotes.length === 0) {
+                clearRemotePicker();
+                return;
+            }
+
+            // Add options to change remote
+            var $remotes = remotes.map(function (remoteInfo) {
+                var canDelete = remoteInfo.name !== "origin";
+
+                var $a = $("<a/>")
+                    .attr("href", "#")
+                    .addClass("remote-name")
+                    .data("remote-name", remoteInfo.name);
+
+                if (canDelete) {
+                    $a.append("<span class='trash-icon remove-remote'>&times;</span>");
+                }
+
+                $a.append("<span class='change-remote'>" + remoteInfo.name + "</span>");
+                $a.appendTo($("<li class=\"remote\"/>").appendTo($remotesDropdown));
+
+                if (remoteInfo.name === defaultRemoteName) {
+                    $defaultRemote = $a;
+                }
+
+                return $a;
+            });
+
+            if ($defaultRemote) {
+                handleRemotePick(null, $defaultRemote);
+            } else {
+                handleRemotePick(null, _.first($remotes));
+            }
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Preparing remotes picker failed");
+        });
+    }
+
+    function initVariables() {
+        var $gitPanel = $("#git-panel");
+        $selectedRemote = $gitPanel.find(".git-selected-remote");
+    }
+
+    // Event subscriptions
+    EventEmitter.on(Events.GIT_ENABLED, function () {
+        initVariables();
+        prepareRemotesPicker();
+    });
+
+    /////-------------------------------------------------------------------------------
 
     function getDefaultRemote() {
         // TODO: refactor after Sprint 38 is published
@@ -84,56 +151,7 @@ define(function (require, exports, module) {
         });
     }
 
-    function prepareRemotesPicker() {
-        Main.gitControl.getRemotes().then(function (remotes) {
-            var defaultRemoteName = _getDefaultRemote(),
-                $defaultRemote,
-                $remotesDropdown = gitPanel.$panel.find(".git-remotes-dropdown").empty();
 
-            gitPanel.$panel.find(".git-pull").prop("disabled", remotes.length === 0);
-            gitPanel.$panel.find(".git-push").prop("disabled", remotes.length === 0);
-
-            // Add option to define new remote
-            $remotesDropdown.append("<li><a class=\"git-remote-new\"><span>" + Strings.CREATE_NEW_REMOTE + "</span></a></li>");
-            $remotesDropdown.append("<li class=\"divider\"></li>");
-
-            if (remotes.length === 0) {
-                clearRemotePicker();
-                return;
-            }
-
-            // Add options to change remote
-            var $remotes = remotes.map(function (remoteInfo) {
-                var canDelete = remoteInfo.name !== "origin";
-
-                var $a = $("<a/>")
-                    .attr("href", "#")
-                    .addClass("remote-name")
-                    .data("remote-name", remoteInfo.name);
-
-                if (canDelete) {
-                    $a.append("<span class='trash-icon remove-remote'>&times;</span>");
-                }
-
-                $a.append("<span class='change-remote'>" + remoteInfo.name + "</span>");
-                $a.appendTo($("<li class=\"remote\"/>").appendTo($remotesDropdown));
-
-                if (remoteInfo.name === defaultRemoteName) {
-                    $defaultRemote = $a;
-                }
-
-                return $a;
-            });
-
-            if ($defaultRemote) {
-                handleRemotePick(null, $defaultRemote);
-            } else {
-                handleRemotePick(null, _.first($remotes));
-            }
-        }).fail(function (err) {
-            throw ErrorHandler.showError(err, "Failed to get a list of remotes.");
-        });
-    }
 
     function handleGitPushWithPassword(originalPushError, remoteName) {
         return Main.gitControl.getBranchName().then(function (branchName) {
@@ -314,9 +332,6 @@ define(function (require, exports, module) {
         });
     }
 
-    // Event subscriptions
-    EventEmitter.on(Events.GIT_ENABLED, function () {
-        prepareRemotesPicker();
-    });
+
 
 });

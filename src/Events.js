@@ -5,6 +5,9 @@ define(function (require, exports) {
      * List of Events to be used in the extension
      */
 
+    // Setup Events
+    exports.NODE_CONNECTION_READY = "node.connection.ready";
+
     // Git Events
     exports.GIT_ENABLED = "git.enabled";
     exports.GIT_DISABLED = "git.disabled";

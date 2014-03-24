@@ -4,8 +4,13 @@
 define(function (require, exports) {
     "use strict";
 
-    var _           = brackets.getModule("thirdparty/lodash"),
-        Preferences = require("./Preferences");
+    var _               = brackets.getModule("thirdparty/lodash"),
+        Preferences     = require("./Preferences"),
+        ProjectManager  = brackets.getModule("project/ProjectManager");
+
+    function getProjectRoot() {
+        return ProjectManager.getProjectRoot().fullPath;
+    }
 
     function formatDiff(diff) {
         var rv      = [],
@@ -38,5 +43,7 @@ define(function (require, exports) {
         return rv;
     }
 
-    exports.formatDiff = formatDiff;
+    // Public API
+    exports.formatDiff      = formatDiff;
+    exports.getProjectRoot  = getProjectRoot;
 });

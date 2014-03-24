@@ -33,6 +33,9 @@ define(function (require, exports, module) {
         domainModulePath           = moduleDirectory + "src/Domains/cli",
         nodeConnection             = new NodeConnection();
 
+    // Load extension sources
+    require("src/Remotes");
+
     // Seems just too buggy right now
     q.stopUnhandledRejectionTracking();
 
