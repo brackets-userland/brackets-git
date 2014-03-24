@@ -18,7 +18,15 @@ define(function (require, exports) {
         return GitCli.getRemotes();
     }
 
+    /*
+        no return output - just returns true on success
+    */
+    function createRemote(name, url) {
+        return GitCli.createRemote(name, url);
+    }
+
     // Public API
-    exports.getRemotes = getRemotes;
+    exports.getRemotes    = getRemotes;
+    exports.createRemote  = createRemote;
 
 });

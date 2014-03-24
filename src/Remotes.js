@@ -9,21 +9,33 @@ define(function (require, exports, module) {
         Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
         Git           = require("src/Git/Git"),
-        Main          = require("src/Main"),
         Preferences   = require("src/Preferences"),
-        Strings       = require("../strings");
+        Strings       = require("strings"),
+        Utils         = require("src/Utils");
 
     // Module variables
     var $selectedRemote = null,
         $remotesDropdown = null;
 
+    function initVariables() {
+        var $gitPanel = $("#git-panel");
+        $selectedRemote = $gitPanel.find(".git-selected-remote");
+        $remotesDropdown = $gitPanel.find(".git-remotes-dropdown");
+    }
+
     // Implementation
 
     function getDefaultRemote() {
         // TODO: refactor after Sprint 38 is published
-        var key = ["defaultRemotes", Main.getProjectRoot()].join(".");
+        var key = ["defaultRemotes", Utils.getProjectRoot()].join(".");
         var defaultRemote = Preferences.get(key);
         return defaultRemote || "origin";
+    }
+
+    function setDefaultRemote(remoteName) {
+        // TODO: refactor after Sprint 38 is published
+        var key = ["defaultRemotes", Utils.getProjectRoot()].join(".");
+        Preferences.persist(key, remoteName);
     }
 
     function clearRemotePicker() {
@@ -36,17 +48,13 @@ define(function (require, exports, module) {
         if (!remoteName) {
             return clearRemotePicker();
         }
+        setDefaultRemote(remoteName);
         $selectedRemote
             .text(remoteName)
             .data("remote", remoteName);
     }
 
-    EventEmitter.on(Events.HANDLE_REMOTE_PICK, function (event) {
-        var remoteName = $(event.target).closest(".remote-name").data("remote-name");
-        selectRemote(remoteName);
-    });
-
-    function prepareRemotesPicker() {
+    function refreshRemotesPicker() {
         Git.getRemotes().then(function (remotes) {
             var defaultRemoteName = getDefaultRemote(),
                 defaultRemote;
@@ -95,27 +103,34 @@ define(function (require, exports, module) {
         });
     }
 
-    function initVariables() {
-        var $gitPanel = $("#git-panel");
-        $selectedRemote = $gitPanel.find(".git-selected-remote");
-        $remotesDropdown = $gitPanel.find(".git-remotes-dropdown");
+    function handleRemoteCreation() {
+        return Utils.askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_NAME).then(function (name) {
+            return Utils.askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_URL).then(function (url) {
+                return Git.createRemote(name, url).then(function () {
+                    refreshRemotesPicker();
+                });
+            });
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Remote creation failed");
+        });
     }
 
     // Event subscriptions
     EventEmitter.on(Events.GIT_ENABLED, function () {
         initVariables();
-        prepareRemotesPicker();
+        refreshRemotesPicker();
+    });
+
+    EventEmitter.on(Events.HANDLE_REMOTE_PICK, function (event) {
+        var remoteName = $(event.target).closest(".remote-name").data("remote-name");
+        selectRemote(remoteName);
+    });
+
+    EventEmitter.on(Events.HANDLE_REMOTE_CREATE, function () {
+        handleRemoteCreation();
     });
 
     /////-------------------------------------------------------------------------------
-
-
-
-    function setDefaultRemote(remoteName) {
-        // TODO: refactor after Sprint 38 is published
-        var key = ["defaultRemotes", Main.getProjectRoot()].join(".");
-        Preferences.persist(key, remoteName);
-    }
 
     function handleRemoteRemove(e, $a) {
         var $selected = (e ? $(e.target) : $a).closest(".remote-name"),
@@ -137,19 +152,7 @@ define(function (require, exports, module) {
         });
     }
 
-    function handleRemoteCreation() {
-        return askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_NAME)
-        .then(function (name) {
-            return askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_URL)
-            .then(function (url) {
-                return Main.gitControl.remoteAdd(name, url)
-                .then(function () {
-                    prepareRemotesPicker();
-                })
-                .fail(function (err) { ErrorHandler.showError(err, "Remote creation failed"); });
-            });
-        });
-    }
+
 
 
 

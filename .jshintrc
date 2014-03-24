@@ -32,6 +32,7 @@
 
     "globals": {
         "brackets": true,
-        "define": true
+        "define": true,
+        "Mustache": true
     }
 }

@@ -26,8 +26,7 @@ define(function (require, exports) {
     }
 
     function getRemotes() {
-        var args = ["remote", "-v"];
-        return git(args)
+        return git(["remote", "-v"])
             .then(function (stdout) {
                 return !stdout ? [] : _.uniq(stdout.replace(/\((push|fetch)\)/g, "").split("\n")).map(function (l) {
                     var s = l.trim().split("\t");
@@ -39,7 +38,16 @@ define(function (require, exports) {
             });
     }
 
+    function createRemote(name, url) {
+        return git(["remote", "add", name, url])
+            .then(function () {
+                // stdout is empty so just return success
+                return true;
+            });
+    }
+
     // Public API
-    exports.getRemotes = getRemotes;
+    exports.getRemotes    = getRemotes;
+    exports.createRemote  = createRemote;
 
 });

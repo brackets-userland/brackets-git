@@ -550,36 +550,6 @@ define(function (require, exports) {
         });
     }
 
-    function askQuestion(title, question, options) {
-        options = options || {};
-
-        var response = q.defer();
-        var compiledTemplate = Mustache.render(questionDialogTemplate, {
-            title: title,
-            question: _.escape(question),
-            stringInput: !options.booleanResponse && !options.password,
-            passwordInput: options.password,
-            defaultValue: options.defaultValue,
-            Strings: Strings
-        });
-        var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
-        if (!options.booleanResponse) {
-            dialog.getElement().find("input").focus();
-        }
-        dialog.done(function (buttonId) {
-            if (options.booleanResponse) {
-                response.resolve(buttonId === "ok");
-                return;
-            }
-            if (buttonId === "ok") {
-                response.resolve(dialog.getElement().find("input").val().trim());
-            } else {
-                response.reject("User aborted!");
-            }
-        });
-        return response.promise;
-    }
-
     function refreshCurrentFile() {
         var currentProjectRoot = Main.getProjectRoot();
         var currentDoc = DocumentManager.getCurrentDocument();
@@ -831,8 +801,8 @@ define(function (require, exports) {
                     break;
                 // mode 2: intelligent relative/formatted
                 case 2:
-                    if(date.diff(yesterday) > 0) {
-                        commit.date.shown = moment.duration(Math.max(date.diff(now), -24*60*60*1000), "ms").humanize(true);
+                    if (date.diff(yesterday) > 0) {
+                        commit.date.shown = moment.duration(Math.max(date.diff(now), -24 * 60 * 60 * 1000), "ms").humanize(true);
                         commit.date.title = date.format(format);
                     } else {
                         commit.date.shown = date.format(format);
@@ -893,7 +863,7 @@ define(function (require, exports) {
         Main.isProjectRootEmpty()
         .then(function (isEmpty) {
             if (isEmpty) {
-                return askQuestion(Strings.CLONE_REPOSITORY, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
+                return Utils.askQuestion(Strings.CLONE_REPOSITORY, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
                     gitPanel.$panel.find(".git-clone").prop("disabled", true);
                     return Main.gitControl.gitClone(remoteGitUrl, ".")
                     .then(function () {
@@ -1015,14 +985,15 @@ define(function (require, exports) {
     function changeUserName() {
         return Main.gitControl.getGitConfig("user.name")
         .then(function (currentUserName) {
-            return askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, {defaultValue: currentUserName}).then(function (userName) {
-                if (!userName.length) { userName = currentUserName; }
-                return Main.gitControl.setUserName(userName).fail(function (err) {
-                    ErrorHandler.showError(err, "Impossible change username");
-                }).then(function () {
-                    EventEmitter.emit(Events.GIT_USERNAME_CHANGED, userName);
+            return Utils.askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, {defaultValue: currentUserName})
+                .then(function (userName) {
+                    if (!userName.length) { userName = currentUserName; }
+                    return Main.gitControl.setUserName(userName).fail(function (err) {
+                        ErrorHandler.showError(err, "Impossible change username");
+                    }).then(function () {
+                        EventEmitter.emit(Events.GIT_USERNAME_CHANGED, userName);
+                    });
                 });
-            });
         });
     }
 
@@ -1033,14 +1004,15 @@ define(function (require, exports) {
     function changeUserEmail() {
         return Main.gitControl.getGitConfig("user.email")
         .then(function (currentUserEmail) {
-            return askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, {defaultValue: currentUserEmail}).then(function (userEmail) {
-                if (!userEmail.length) { userEmail = currentUserEmail; }
-                return Main.gitControl.setUserEmail(userEmail).fail(function (err) {
-                    ErrorHandler.showError(err, "Impossible change user email");
-                }).then(function () {
-                    EventEmitter.emit(Events.GIT_EMAIL_CHANGED, userEmail);
+            return Utils.askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, {defaultValue: currentUserEmail})
+                .then(function (userEmail) {
+                    if (!userEmail.length) { userEmail = currentUserEmail; }
+                    return Main.gitControl.setUserEmail(userEmail).fail(function (err) {
+                        ErrorHandler.showError(err, "Impossible change user email");
+                    }).then(function () {
+                        EventEmitter.emit(Events.GIT_EMAIL_CHANGED, userEmail);
+                    });
                 });
-            });
         });
     }
 

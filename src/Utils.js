@@ -1,12 +1,20 @@
-/*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, define */
-
 define(function (require, exports) {
     "use strict";
 
+    // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),
-        Preferences     = require("./Preferences"),
+        Dialogs         = brackets.getModule("widgets/Dialogs"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
+
+    // Local modules
+    var Preferences     = require("src/Preferences"),
+        Promise         = require("bluebird"),
+        Strings         = require("strings");
+
+    // Module variables
+    var questionDialogTemplate = require("text!htmlContent/git-question-dialog.html");
+
+    // Implementation
 
     function getProjectRoot() {
         return ProjectManager.getProjectRoot().fullPath;
@@ -43,7 +51,39 @@ define(function (require, exports) {
         return rv;
     }
 
+    function askQuestion(title, question, options) {
+        return new Promise(function (resolve, reject) {
+            options = options || {};
+
+            var compiledTemplate = Mustache.render(questionDialogTemplate, {
+                title: title,
+                question: _.escape(question),
+                stringInput: !options.booleanResponse && !options.password,
+                passwordInput: options.password,
+                defaultValue: options.defaultValue,
+                Strings: Strings
+            });
+
+            var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+            if (!options.booleanResponse) {
+                dialog.getElement().find("input").focus();
+            }
+
+            dialog.done(function (buttonId) {
+                if (options.booleanResponse) {
+                    return resolve(buttonId === "ok");
+                }
+                if (buttonId === "ok") {
+                    return resolve(dialog.getElement().find("input").val().trim());
+                } else {
+                    return reject("User aborted!");
+                }
+            });
+        });
+    }
+
     // Public API
     exports.formatDiff      = formatDiff;
     exports.getProjectRoot  = getProjectRoot;
+    exports.askQuestion     = askQuestion;
 });

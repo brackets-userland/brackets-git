@@ -550,11 +550,6 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
-        remoteAdd: function (remote, url) {
-            var args = ["remote", "add", escapeShellArg(remote), escapeShellArg(url)];
-            return this.executeCommand(this._git, args);
-        },
-
         remoteRemove: function (remote) {
             var args = ["remote", "rm", escapeShellArg(remote)];
             return this.executeCommand(this._git, args);
