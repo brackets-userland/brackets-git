@@ -303,7 +303,7 @@ define(function (require, exports, module) {
             }
 
             var args = ["status", "-u", "--porcelain"];
-            return this.executeCommand(this._git, args).then(function (stdout) {
+            return this.spawnCommand(this._git, args).then(function (stdout) {
                 if (!stdout) {
                     return [];
                 }

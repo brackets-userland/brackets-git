@@ -36,7 +36,8 @@ define(function (require, exports) {
         SettingsDialog     = require("./SettingsDialog"),
         PANEL_COMMAND_ID   = "brackets-git.panel";
 
-    var gitPanelTemplate            = require("text!htmlContent/git-panel.html"),
+    var gitignoreTemplate           = require("text!htmlContent/default-gitignore"),
+        gitPanelTemplate            = require("text!htmlContent/git-panel.html"),
         gitPanelResultsTemplate     = require("text!htmlContent/git-panel-results.html"),
         gitPanelHistoryTemplate     = require("text!htmlContent/git-panel-history.html"),
         gitAuthorsDialogTemplate    = require("text!htmlContent/authors-dialog.html"),
@@ -1130,7 +1131,7 @@ define(function (require, exports) {
             }
             return Main.gitControl.gitInit();
         }).then(function () {
-            return q.when(FileUtils.writeText(FileSystem.getFileForPath(Main.getProjectRoot() + ".gitignore"), ""));
+            return q.when(FileUtils.writeText(FileSystem.getFileForPath(Main.getProjectRoot() + ".gitignore"), gitignoreTemplate));
         }).then(function () {
             return Main.gitControl.gitAdd(".gitignore");
         }).then(function () {
