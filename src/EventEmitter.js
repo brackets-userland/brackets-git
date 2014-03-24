@@ -9,13 +9,13 @@ define(function (require, exports, module) {
         wildcard: false
     });
 
-    emInstance._emit = emInstance.emit;
-    emInstance.emit = function () {
-        if (debugOn) {
+    if (debugOn) {
+        emInstance._emit = emInstance.emit;
+        emInstance.emit = function () {
             console.log("[brackets-git] Event invoked: " + arguments[0]);
-        }
-        return this._emit.apply(this, arguments);
-    };
+            return this._emit.apply(this, arguments);
+        };
+    }
 
     emInstance.emitFactory = function (eventName) {
         var self = this;
