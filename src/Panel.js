@@ -124,43 +124,43 @@ define(function (require, exports) {
     }
 
     function clearRemotePicker() {
-        gitPanel.$panel.find(".git-remotes-field")
-            .html("&hellip;")
-            .data("remote-name", "");
+        gitPanel.$panel.find(".git-selected-remote")
+            .html("&mdash;")
+            .data("selected-remote", null);
+    }
+
+    function selectRemote(remoteName) {
+        if (!remoteName) {
+            return clearRemotePicker();
+        }
+        gitPanel.$panel.find(".git-selected-remote")
+            .text(remoteName)
+            .data("selected-remote", remoteName);
     }
 
     function handleRemotePick(e, $a) {
-        var $selected = (e ? $(e.target) : $a).parent(),
-            $remoteField = gitPanel.$panel.find(".git-remotes-field");
-
-        if (!$selected) {
-            $remoteField.html("&mdash;").attr({
-                "data-remote-name": null
-            });
-            return;
+        var $selected = (e ? $(e.target) : $a).closest(".remote-name");
+        if ($selected.length === 0) {
+            clearRemotePicker();
         }
-
-        var remoteName = $selected.attr("data-remote-name");
+        var remoteName = $selected.data("remote-name");
         _setDefaultRemote(remoteName);
-
-        $remoteField
-            .text($selected.find(".change-remote").text().trim())
-            .data("remote-name", remoteName);
+        selectRemote(remoteName);
     }
 
     function handleRemoteRemove(e, $a) {
-        var $selected = (e ? $(e.target) : $a).closest("*[data-remote-name]"),
-            $remoteField = gitPanel.$panel.find(".git-remotes-field"),
+        var $selected = (e ? $(e.target) : $a).closest(".remote-name"),
             remoteName = $selected.data("remote-name");
 
         return askQuestion(Strings.DELETE_REMOTE,
                            StringUtils.format(Strings.DELETE_REMOTE_NAME, remoteName),
                            {booleanResponse: true}).then(function (response) {
-            if (response) {
+            if (response === true) {
                 Main.gitControl.remoteRemove(remoteName).then(function () {
                     $selected.parent().remove();
-                    var newRemote = gitPanel.$panel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
-                    $remoteField.data("remote-name", newRemote).html(newRemote);
+                    // TODO: rather refresh
+                    var newRemote = gitPanel.$panel.find(".git-remotes-dropdown .remote-name").first().data("remote-name");
+                    selectRemote(newRemote);
                 }).fail(function (err) {
                     ErrorHandler.logError(err);
                 });
@@ -204,10 +204,10 @@ define(function (require, exports) {
             var $remotes = remotes.map(function (remoteInfo) {
                 var canDelete = remoteInfo.name !== "origin";
 
-                var $a = $("<a/>").attr({
-                    "href": "#",
-                    "data-remote-name": remoteInfo.name
-                });
+                var $a = $("<a/>")
+                    .attr("href", "#")
+                    .addClass("remote-name")
+                    .data("remote-name", remoteInfo.name);
 
                 if (canDelete) {
                     $a.append("<span class='trash-icon remove-remote'>&times;</span>");
@@ -788,7 +788,13 @@ define(function (require, exports) {
 
     function handleGitPush() {
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true).addClass("btn-loading"),
-            remoteName = gitPanel.$panel.find(".git-remotes-field").attr("data-remote-name");
+            remoteName = gitPanel.$panel.find(".git-selected-remote").data("selected-remote");
+
+        if (!remoteName) {
+            ErrorHandler.showError("No remote has been selected for push!");
+            return;
+        }
+
         Main.gitControl.gitPush(remoteName).fail(function (err) {
 
             if (!ErrorHandler.contains(err, "git remote add <name> <url>")) {
@@ -856,7 +862,13 @@ define(function (require, exports) {
 
     function handleGitPull() {
         var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true).addClass("btn-loading"),
-            remoteName = gitPanel.$panel.find(".git-remotes-field").attr("data-remote-name");
+            remoteName = gitPanel.$panel.find(".git-selected-remote").data("selected-remote");
+
+        if (!remoteName) {
+            ErrorHandler.showError("No remote has been selected for pull!");
+            return;
+        }
+
         Main.gitControl.gitPull(remoteName).then(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
