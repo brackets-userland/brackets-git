@@ -65,13 +65,28 @@ define(function (require, exports) {
         return GitCli.setUpstreamBranch(remoteName, remoteBranch);
     }
 
+    function getCurrentBranchName() {
+        return GitCli.getCurrentBranchName();
+    }
+
+    function getConfig(key) {
+        return GitCli.getConfig(key);
+    }
+
+    function setConfig(key, value) {
+        return GitCli.setConfig(key, value);
+    }
+
     // Public API
-    exports.getRemotes        = getRemotes;
-    exports.createRemote      = createRemote;
-    exports.deleteRemote      = deleteRemote;
-    exports.pull              = pull;
-    exports.push              = push;
-    exports.setUpstreamBranch = setUpstreamBranch;
-    exports.pushToNewUpstream = pushToNewUpstream;
+    exports.getRemotes            = getRemotes;
+    exports.createRemote          = createRemote;
+    exports.deleteRemote          = deleteRemote;
+    exports.pull                  = pull;
+    exports.push                  = push;
+    exports.setUpstreamBranch     = setUpstreamBranch;
+    exports.pushToNewUpstream     = pushToNewUpstream;
+    exports.getCurrentBranchName  = getCurrentBranchName;
+    exports.getConfig             = getConfig;
+    exports.setConfig             = setConfig;
 
 });

@@ -121,12 +121,27 @@ define(function (require, exports) {
         return git(["branch", "-u", remoteName + "/" + remoteBranch]);
     }
 
+    function getCurrentBranchName() {
+        return git(["rev-parse", "--abbrev-ref", "HEAD"]);
+    }
+
+    function getConfig(key) {
+        return git(["config", key.replace(/\s/g, "")]);
+    }
+
+    function setConfig(key, value) {
+        return git(["config", key.replace(/\s/g, ""), value]);
+    }
+
     // Public API
-    exports.getRemotes        = getRemotes;
-    exports.createRemote      = createRemote;
-    exports.deleteRemote      = deleteRemote;
-    exports.pull              = pull;
-    exports.push              = push;
-    exports.setUpstreamBranch = setUpstreamBranch;
+    exports.getRemotes            = getRemotes;
+    exports.createRemote          = createRemote;
+    exports.deleteRemote          = deleteRemote;
+    exports.pull                  = pull;
+    exports.push                  = push;
+    exports.setUpstreamBranch     = setUpstreamBranch;
+    exports.getCurrentBranchName  = getCurrentBranchName;
+    exports.getConfig             = getConfig;
+    exports.setConfig             = setConfig;
 
 });
