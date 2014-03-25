@@ -1,11 +1,12 @@
-define(function (require, exports, module) {
+define(function (require, exports) {
 
     var Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
         Preferences   = require("src/Preferences"),
         Utils         = require("src/Utils");
 
-    var q                 = require("../thirdparty/q");
+    var q             = require("../thirdparty/q"),
+        ErrorHandler  = require("src/ErrorHandler");
 
     var debugOn         = Preferences.get("debugMode"),
         extName         = "[brackets-git] ",
