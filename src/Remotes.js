@@ -1,8 +1,10 @@
-define(function (require, exports, module) {
+define(function (require) {
 
     // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),
-        DefaultDialogs  = brackets.getModule("widgets/DefaultDialogs");
+        DefaultDialogs  = brackets.getModule("widgets/DefaultDialogs"),
+        Dialogs         = brackets.getModule("widgets/Dialogs"),
+        StringUtils     = brackets.getModule("utils/StringUtils");
 
     // Local modules
     var ErrorHandler  = require("src/ErrorHandler"),
@@ -14,7 +16,7 @@ define(function (require, exports, module) {
         Utils         = require("src/Utils");
 
     // Module variables
-    var $selectedRemote = null,
+    var $selectedRemote  = null,
         $remotesDropdown = null;
 
     function initVariables() {
@@ -98,20 +100,58 @@ define(function (require, exports, module) {
             });
 
             selectRemote(defaultRemote || _.first(remotes).name);
-        }).fail(function (err) {
+        }).catch(function (err) {
             ErrorHandler.showError(err, "Preparing remotes picker failed");
         });
     }
 
     function handleRemoteCreation() {
-        return Utils.askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_NAME).then(function (name) {
-            return Utils.askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_URL).then(function (url) {
-                return Git.createRemote(name, url).then(function () {
-                    refreshRemotesPicker();
+        return Utils.askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_NAME)
+            .then(function (name) {
+                return Utils.askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_URL).then(function (url) {
+                    return [name, url];
                 });
+            })
+            .spread(function (name, url) {
+                return Git.createRemote(name, url).then(function () {
+                    return refreshRemotesPicker();
+                });
+            })
+            .catch(function (err) {
+                ErrorHandler.showError(err, "Remote creation failed");
             });
-        }).fail(function (err) {
-            ErrorHandler.showError(err, "Remote creation failed");
+    }
+
+    function deleteRemote(remoteName) {
+        return Utils.askQuestion(Strings.DELETE_REMOTE,
+                                 StringUtils.format(Strings.DELETE_REMOTE_NAME, remoteName),
+                                 { booleanResponse: true })
+                .then(function (response) {
+                    if (response === true) {
+                        return Git.deleteRemote(remoteName).then(function () {
+                            return refreshRemotesPicker();
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    ErrorHandler.logError(err);
+                });
+    }
+
+    function pullFromRemote(remoteName) {
+        if (!remoteName) {
+            ErrorHandler.showError("No remote has been selected for pull!");
+            return;
+        }
+
+        EventEmitter.emit(Events.PULL_STARTED);
+
+        Git.pull(remoteName).then(function (result) {
+            Utils.showOutput(result, Strings.GIT_PULL_RESPONSE);
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Pulling from remote repository failed.");
+        }).finally(function () {
+            EventEmitter.emit(Events.PULL_FINISHED);
         });
     }
 
@@ -130,27 +170,19 @@ define(function (require, exports, module) {
         handleRemoteCreation();
     });
 
+    EventEmitter.on(Events.HANDLE_REMOTE_DELETE, function (event) {
+        var remoteName = $(event.target).closest(".remote-name").data("remote-name");
+        deleteRemote(remoteName);
+    });
+
+    EventEmitter.on(Events.HANDLE_PULL, function () {
+        var remoteName = $selectedRemote.data("remote");
+        pullFromRemote(remoteName);
+    });
+
     /////-------------------------------------------------------------------------------
 
-    function handleRemoteRemove(e, $a) {
-        var $selected = (e ? $(e.target) : $a).closest(".remote-name"),
-            remoteName = $selected.data("remote-name");
 
-        return askQuestion(Strings.DELETE_REMOTE,
-                           StringUtils.format(Strings.DELETE_REMOTE_NAME, remoteName),
-                           {booleanResponse: true}).then(function (response) {
-            if (response === true) {
-                Main.gitControl.remoteRemove(remoteName).then(function () {
-                    $selected.parent().remove();
-                    // TODO: rather refresh
-                    var newRemote = gitPanel.$panel.find(".git-remotes-dropdown .remote-name").first().data("remote-name");
-                    selectRemote(newRemote);
-                }).fail(function (err) {
-                    ErrorHandler.logError(err);
-                });
-            }
-        });
-    }
 
 
 
@@ -247,7 +279,7 @@ define(function (require, exports, module) {
             return;
         }
 
-        Main.gitControl.gitPush(remoteName).fail(function (err) {
+        Main.gitControl.gitPush(remoteName).catch(function (err) {
 
             if (!ErrorHandler.contains(err, "git remote add <name> <url>")) {
                 throw err;
@@ -272,19 +304,19 @@ define(function (require, exports, module) {
                             return Main.gitControl.gitPush("origin");
                         })
                         .then(defer.resolve)
-                        .fail(defer.reject);
+                        .catch(defer.reject);
                 }
             });
             return defer.promise;
 
-        }).fail(function (err) {
+        }).catch(function (err) {
 
             if (typeof err !== "string") { throw err; }
             var m = err.match(/git push --set-upstream (\S+) (\S+)/);
             if (!m) { throw err; }
             return Main.gitControl.gitPushSetUpstream(m[1], m[2]);
 
-        }).fail(function (err) {
+        }).catch(function (err) {
 
             var validFail = false;
             if (ErrorHandler.contains(err, "rejected because")) {
@@ -303,37 +335,16 @@ define(function (require, exports, module) {
                 Strings.GIT_PUSH_RESPONSE, // title
                 result // message
             );
-        }).fail(function (err) {
+        }).catch(function (err) {
             console.warn("Pushing to remote repositories with username / password is not supported! See github page/issues for details.");
             ErrorHandler.showError(err, "Pushing to remote repository failed.");
-        }).fin(function () {
+        }).finally(function () {
             $btn.prop("disabled", false).removeClass("btn-loading");
             refresh();
         });
     }
 
-    function handleGitPull() {
-        var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true).addClass("btn-loading"),
-            remoteName = gitPanel.$panel.find(".git-selected-remote").data("selected-remote");
 
-        if (!remoteName) {
-            ErrorHandler.showError("No remote has been selected for pull!");
-            return;
-        }
-
-        Main.gitControl.gitPull(remoteName).then(function (result) {
-            Dialogs.showModalDialog(
-                DefaultDialogs.DIALOG_ID_INFO,
-                Strings.GIT_PULL_RESPONSE, // title
-                result // message
-            );
-        }).fail(function (err) {
-            ErrorHandler.showError(err, "Pulling from remote repository failed.");
-        }).fin(function () {
-            $btn.prop("disabled", false).removeClass("btn-loading");
-            refresh();
-        });
-    }
 
 
 

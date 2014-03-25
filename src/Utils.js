@@ -12,7 +12,8 @@ define(function (require, exports) {
         Strings         = require("strings");
 
     // Module variables
-    var questionDialogTemplate = require("text!htmlContent/git-question-dialog.html");
+    var questionDialogTemplate = require("text!htmlContent/git-question-dialog.html"),
+        outputDialogTemplate = require("text!htmlContent/git-output.html");
 
     // Implementation
 
@@ -82,8 +83,19 @@ define(function (require, exports) {
         });
     }
 
+    function showOutput(output, title) {
+        var compiledTemplate = Mustache.render(outputDialogTemplate, {
+            title: title,
+            output: output,
+            Strings: Strings
+        });
+        Dialogs.showModalDialogUsingTemplate(compiledTemplate)
+            .getElement().find("button").focus();
+    }
+
     // Public API
     exports.formatDiff      = formatDiff;
     exports.getProjectRoot  = getProjectRoot;
     exports.askQuestion     = askQuestion;
+    exports.showOutput      = showOutput;
 });

@@ -997,10 +997,6 @@ define(function (require, exports) {
         });
     }
 
-    EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
-        gitPanel.$panel.find(".git-user-name").text(userName);
-    });
-
     function changeUserEmail() {
         return Main.gitControl.getGitConfig("user.email")
         .then(function (currentUserEmail) {
@@ -1016,6 +1012,10 @@ define(function (require, exports) {
         });
     }
 
+    EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
+        gitPanel.$panel.find(".git-user-name").text(userName);
+    });
+
     EventEmitter.on(Events.GIT_EMAIL_CHANGED, function (email) {
         gitPanel.$panel.find(".git-user-email").text(email);
     });
@@ -1028,6 +1028,15 @@ define(function (require, exports) {
     EventEmitter.on(Events.GIT_REMOTE_NOT_AVAILABLE, function () {
         gitPanel.$panel.find(".git-pull").prop("disabled", true);
         gitPanel.$panel.find(".git-push").prop("disabled", true);
+    });
+
+    EventEmitter.on(Events.PULL_STARTED, function () {
+        gitPanel.$panel.find(".git-pull").prop("disabled", true).addClass("btn-loading");
+    });
+
+    EventEmitter.on(Events.PULL_FINISHED, function () {
+        gitPanel.$panel.find(".git-pull").prop("disabled", false).removeClass("btn-loading");
+        refresh();
     });
 
     function init() {

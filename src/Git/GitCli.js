@@ -46,8 +46,26 @@ define(function (require, exports) {
             });
     }
 
+    function deleteRemote(name) {
+        return git(["remote", "rm", name])
+            .then(function () {
+                // stdout is empty so just return success
+                return true;
+            });
+    }
+
+    function pull(remoteName) {
+        return git(["pull", "--ff-only", remoteName])
+            .then(function (stdout) {
+                // stdout contains currently non-parseable message
+                return stdout;
+            });
+    }
+
     // Public API
     exports.getRemotes    = getRemotes;
     exports.createRemote  = createRemote;
+    exports.deleteRemote  = deleteRemote;
+    exports.pull          = pull;
 
 });

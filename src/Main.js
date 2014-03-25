@@ -89,7 +89,7 @@ define(function (require, exports) {
     function attachEventsToBrackets() {
         $(ProjectManager).on("projectOpen projectRefresh", function () {
             // use .fin in case there's no .gitignore file
-            refreshIgnoreEntries().fin(function () {
+            refreshIgnoreEntries().finally(function () {
                 // Branch.refresh will refresh also Panel
                 Branch.refresh();
             });

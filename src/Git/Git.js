@@ -25,8 +25,24 @@ define(function (require, exports) {
         return GitCli.createRemote(name, url);
     }
 
+    /*
+        no return output - just returns true on success
+    */
+    function deleteRemote(name) {
+        return GitCli.deleteRemote(name);
+    }
+
+    /*
+        returns string message from command line
+    */
+    function pull(remoteName) {
+        return GitCli.pull(remoteName);
+    }
+
     // Public API
     exports.getRemotes    = getRemotes;
     exports.createRemote  = createRemote;
+    exports.deleteRemote  = deleteRemote;
+    exports.pull          = pull;
 
 });

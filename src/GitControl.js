@@ -491,14 +491,6 @@ define(function (require, exports, module) {
             return this.gitPush(remote, branch, ["--set-upstream"]);
         },
 
-        gitPull: function (remote) {
-            var args = ["pull", "--ff-only"];
-            if (remote) {
-                args.push(escapeShellArg(remote));
-            }
-            return this.executeCommand(this._git, args);
-        },
-
         gitInit: function () {
             return this.executeCommand(this._git, ["init"]);
         },
@@ -547,11 +539,6 @@ define(function (require, exports, module) {
 
         getDiffOfFileFromCommit: function (hash, file) {
             var args = ["diff", "--no-color", escapeShellArg(hash + "^!"), "--", escapeShellArg(file)];
-            return this.executeCommand(this._git, args);
-        },
-
-        remoteRemove: function (remote) {
-            var args = ["remote", "rm", escapeShellArg(remote)];
             return this.executeCommand(this._git, args);
         },
 
