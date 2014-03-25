@@ -51,8 +51,11 @@ define(function (require, exports) {
             to: "refs/heads/rewrite-remotes"
         }
     */
-    function push(remoteName) {
-        return GitCli.push(remoteName);
+    function push(remoteName, remoteBranch) {
+        return GitCli.push(remoteName, remoteBranch);
+    }
+    function pushToNewUpstream(remoteName, remoteBranch) {
+        return GitCli.push(remoteName, remoteBranch, ["--set-upstream"]);
     }
 
     /*
@@ -69,5 +72,6 @@ define(function (require, exports) {
     exports.pull              = pull;
     exports.push              = push;
     exports.setUpstreamBranch = setUpstreamBranch;
+    exports.pushToNewUpstream = pushToNewUpstream;
 
 });

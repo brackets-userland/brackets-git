@@ -192,10 +192,7 @@ define(function (require) {
             if (typeof err !== "string") { throw err; }
             var m = err.match(/git push --set-upstream (\S+) (\S+)/);
             if (!m) { throw err; }
-
-            return Git.setUpstreamBranch(m[1], m[2]).then(function () {
-                return Git.push(m[1]);
-            });
+            return Git.pushToNewUpstream(m[1], m[2]);
 
         }).catch(function (err) {
 
@@ -219,7 +216,7 @@ define(function (require) {
                 "Local branch - {{from}}",
                 "Remote branch - {{to}}",
                 "Summary - {{summary}}",
-                "Status - {{status}}"
+                "<h4>Status - {{status}}</h4>"
             ].join("<br>");
 
             Dialogs.showModalDialog(
@@ -229,7 +226,7 @@ define(function (require) {
             );
 
         }).catch(function (err) {
-            console.warn("Pushing to remote repositories with username / password is not supported! See github page/issues for details.");
+            console.warn("Pushing to remote repositories with username / password is not fully supported! See github page/issues for details.");
             ErrorHandler.showError(err, "Pushing to remote repository failed.");
         }).finally(function () {
             EventEmitter.emit(Events.PUSH_FINISHED);
@@ -267,12 +264,6 @@ define(function (require) {
     });
 
     /////-------------------------------------------------------------------------------
-
-
-
-
-
-
 
     function handleGitPushWithPassword(originalPushError, remoteName) {
         return Main.gitControl.getBranchName().then(function (branchName) {
@@ -355,13 +346,5 @@ define(function (require) {
             });
         });
     }
-
-    function handleGitPush() {
-
-    }
-
-
-
-
 
 });
