@@ -62,6 +62,18 @@ define(function (require, exports) {
             });
     }
 
+    /*
+        returns parsed push response in this format:
+        {
+            flag: "="
+            flagDescription: "Ref was up to date and did not need pushing"
+            from: "refs/heads/rewrite-remotes"
+            remoteUrl: "http://github.com/zaggino/brackets-git.git"
+            status: "Done"
+            summary: "[up to date]"
+            to: "refs/heads/rewrite-remotes"
+        }
+    */
     function push(remoteName, remoteBranch, additionalArgs) {
         if (!remoteName) { throw new TypeError("remoteName argument is missing!"); }
 
@@ -125,6 +137,13 @@ define(function (require, exports) {
         return git(["rev-parse", "--abbrev-ref", "HEAD"]);
     }
 
+    function getCurrentUpstreamBranch() {
+        return git(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
+            .catch(function () {
+                return null;
+            });
+    }
+
     function getConfig(key) {
         return git(["config", key.replace(/\s/g, "")]);
     }
@@ -134,14 +153,15 @@ define(function (require, exports) {
     }
 
     // Public API
-    exports.getRemotes            = getRemotes;
-    exports.createRemote          = createRemote;
-    exports.deleteRemote          = deleteRemote;
-    exports.pull                  = pull;
-    exports.push                  = push;
-    exports.setUpstreamBranch     = setUpstreamBranch;
-    exports.getCurrentBranchName  = getCurrentBranchName;
-    exports.getConfig             = getConfig;
-    exports.setConfig             = setConfig;
+    exports.getRemotes                = getRemotes;
+    exports.createRemote              = createRemote;
+    exports.deleteRemote              = deleteRemote;
+    exports.pull                      = pull;
+    exports.push                      = push;
+    exports.setUpstreamBranch         = setUpstreamBranch;
+    exports.getCurrentBranchName      = getCurrentBranchName;
+    exports.getCurrentUpstreamBranch  = getCurrentUpstreamBranch;
+    exports.getConfig                 = getConfig;
+    exports.setConfig                 = setConfig;
 
 });
