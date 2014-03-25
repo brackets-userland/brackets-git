@@ -25,5 +25,8 @@ define(function (require, exports) {
     exports.getCurrentUpstreamBranch  = GitCli.getCurrentUpstreamBranch;
     exports.getConfig                 = GitCli.getConfig;
     exports.setConfig                 = GitCli.setConfig;
+    exports.fetchAllRemotes           = GitCli.fetchAllRemotes;
+    exports.getBranches               = GitCli.getBranches;
+    exports.getAllBranches            = GitCli.getAllBranches;
 
 });

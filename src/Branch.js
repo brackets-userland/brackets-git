@@ -13,7 +13,8 @@ define(function (require, exports) {
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         SidebarView             = brackets.getModule("project/SidebarView");
 
-    var q                       = require("../thirdparty/q"),
+    var Git                     = require("src/Git/Git"),
+        q                       = require("../thirdparty/q"),
         ErrorHandler            = require("./ErrorHandler"),
         Main                    = require("./Main"),
         Panel                   = require("./Panel"),
@@ -49,7 +50,7 @@ define(function (require, exports) {
     }
 
     function doMerge(fromBranch) {
-        Main.gitControl.getBranches().then(function (branches) {
+        Git.getBranches().then(function (branches) {
 
             var compiledTemplate = Mustache.render(mergeBranchTemplate, {
                 fromBranch: fromBranch,
@@ -76,11 +77,18 @@ define(function (require, exports) {
         });
     }
 
+    function _reloadBranchSelect($el, branches) {
+        var template = "{{#branches}}<option value='{{name}}' remote='{{remote}}' " +
+            "{{#currentBranch}}selected{{/currentBranch}}>{{name}}</option>{{/branches}}";
+        var html = Mustache.render(template, { branches: branches });
+        $el.html(html);
+    }
+
     function handleEvents() {
         $dropdown.on("click", "a.git-branch-new", function (e) {
             e.stopPropagation();
 
-            Main.gitControl.getAllBranches().catch(function (err) {
+            Git.getAllBranches().catch(function (err) {
                 ErrorHandler.showError(err);
             }).then(function (branches) {
 
@@ -90,6 +98,20 @@ define(function (require, exports) {
                 });
 
                 var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+
+                _reloadBranchSelect(dialog.getElement().find(".branchSelect"), branches);
+                dialog.getElement().find(".fetchBranches").on("click", function () {
+                    var $this = $(this);
+                    Git.fetchAllRemotes().then(function () {
+                        return Git.getAllBranches().then(function (branches) {
+                            $this.prop("disabled", true).attr("title", "Already fetched");
+                            _reloadBranchSelect($this.siblings("select"), branches);
+                        });
+                    }).fail(function (err) {
+                        throw ErrorHandler.showError(err, "Fetching remote information failed");
+                    });
+                });
+
                 dialog.getElement().find("input").focus();
                 dialog.done(function (buttonId) {
                     if (buttonId === "ok") {
@@ -166,7 +188,7 @@ define(function (require, exports) {
 
         Menus.closeAll();
 
-        Main.gitControl.getBranches().fail(function (err) {
+        Git.getBranches().fail(function (err) {
             ErrorHandler.showError(err, "Getting branch list failed");
         }).then(function (branches) {
             branches = branches.reduce(function (arr, branch) {

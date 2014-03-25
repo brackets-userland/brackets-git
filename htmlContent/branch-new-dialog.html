@@ -14,13 +14,12 @@
             <div class="control-group">
                 <label class="control-label">{{Strings.ORIGIN_BRANCH}}:</label>
                 <div class="controls">
-                    <select class="span12" name="branch-origin">
-                        {{#branches}}
-                            <option value="{{name}}" remote="{{remote}}" {{#currentBranch}}selected{{/currentBranch}}>
-                                {{name}}
-                            </option>
-                        {{/branches}}
-                    </select>
+                    <div class="span12 input-append">
+                        <select class="span10 branchSelect" name="branch-origin"></select>
+                        <button class="btn fetchBranches" type="button">
+                            <i class="octicon octicon-sync"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>

@@ -219,40 +219,6 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
-        getBranches: function (moreArgs) {
-            var args = ["branch"];
-            if (moreArgs) { args = args.concat(moreArgs); }
-
-            return this.spawnCommand(this._git, args).then(function (stdout) {
-                if (!stdout) { return []; }
-                return stdout.split("\n").map(function (l) {
-                    var name = l.trim(),
-                        currentBranch = false,
-                        remote = null;
-
-                    if (name.indexOf("* ") === 0) {
-                        name = name.substring(2);
-                        currentBranch = true;
-                    }
-
-                    if (name.indexOf("remotes/") === 0) {
-                        name = name.substring("remotes/".length);
-                        remote = name.substring(0, name.indexOf("/"));
-                    }
-
-                    return {
-                        name: name,
-                        currentBranch: currentBranch,
-                        remote: remote
-                    };
-                });
-            });
-        },
-
-        getAllBranches: function () {
-            return this.getBranches(["-a"]);
-        },
-
         mergeBranch: function (branchName) {
             var args = ["merge", branchName];
             return this.spawnCommand(this._git, args);

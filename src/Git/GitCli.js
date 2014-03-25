@@ -25,6 +25,13 @@ define(function (require, exports) {
         return Cli.spawnCommand(getGitPath(), args);
     }
 
+    function fetchAllRemotes() {
+        return git(["fetch", "--all"]).then(function (stdout) {
+            // TODO: parse?
+            return stdout;
+        });
+    }
+
     function getRemotes() {
         return git(["remote", "-v"])
             .then(function (stdout) {
@@ -137,6 +144,40 @@ define(function (require, exports) {
         return git(["rev-parse", "--abbrev-ref", "HEAD"]);
     }
 
+    function getBranches(moreArgs) {
+        var args = ["branch"];
+        if (moreArgs) { args = args.concat(moreArgs); }
+
+        return git(args).then(function (stdout) {
+            if (!stdout) { return []; }
+            return stdout.split("\n").map(function (l) {
+                var name = l.trim(),
+                    currentBranch = false,
+                    remote = null;
+
+                if (name.indexOf("* ") === 0) {
+                    name = name.substring(2);
+                    currentBranch = true;
+                }
+
+                if (name.indexOf("remotes/") === 0) {
+                    name = name.substring("remotes/".length);
+                    remote = name.substring(0, name.indexOf("/"));
+                }
+
+                return {
+                    name: name,
+                    currentBranch: currentBranch,
+                    remote: remote
+                };
+            });
+        });
+    }
+
+    function getAllBranches() {
+        return getBranches(["-a"]);
+    }
+
     function getCurrentUpstreamBranch() {
         return git(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
             .catch(function () {
@@ -153,6 +194,7 @@ define(function (require, exports) {
     }
 
     // Public API
+    exports.fetchAllRemotes           = fetchAllRemotes;
     exports.getRemotes                = getRemotes;
     exports.createRemote              = createRemote;
     exports.deleteRemote              = deleteRemote;
@@ -163,5 +205,7 @@ define(function (require, exports) {
     exports.getCurrentUpstreamBranch  = getCurrentUpstreamBranch;
     exports.getConfig                 = getConfig;
     exports.setConfig                 = setConfig;
+    exports.getBranches               = getBranches;
+    exports.getAllBranches            = getAllBranches;
 
 });
