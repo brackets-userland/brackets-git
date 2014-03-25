@@ -1039,6 +1039,15 @@ define(function (require, exports) {
         refresh();
     });
 
+    EventEmitter.on(Events.PUSH_STARTED, function () {
+        gitPanel.$panel.find(".git-push").prop("disabled", true).addClass("btn-loading");
+    });
+
+    EventEmitter.on(Events.PUSH_FINISHED, function () {
+        gitPanel.$panel.find(".git-push").prop("disabled", false).removeClass("btn-loading");
+        refresh();
+    });
+
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);

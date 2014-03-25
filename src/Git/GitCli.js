@@ -62,10 +62,71 @@ define(function (require, exports) {
             });
     }
 
+    function push(remoteName, remoteBranch, additionalArgs) {
+        if (!remoteName) { throw new TypeError("remoteName argument is missing!"); }
+
+        var args = ["push", "--porcelain"];
+        if (Array.isArray(additionalArgs)) {
+            args = args.concat(additionalArgs);
+        }
+        args.push(remoteName);
+
+        if (remoteBranch) {
+            args.push(remoteBranch);
+        }
+
+        return git(args)
+            .then(function (stdout) {
+                var retObj = {},
+                    lines = stdout.split("\n"),
+                    lineTwo = lines[1].split("\t");
+
+                retObj.remoteUrl = lines[0].trim().split(" ")[1];
+                retObj.flag = lineTwo[0];
+                retObj.from = lineTwo[1].split(":")[0];
+                retObj.to = lineTwo[1].split(":")[1];
+                retObj.summary = lineTwo[2];
+                retObj.status = lines[2];
+
+                switch (retObj.flag) {
+                    case " ":
+                        retObj.flagDescription = "Successfully pushed fast-forward";
+                        break;
+                    case "+":
+                        retObj.flagDescription = "Successful forced update";
+                        break;
+                    case "-":
+                        retObj.flagDescription = "Successfully deleted ref";
+                        break;
+                    case "*":
+                        retObj.flagDescription = "Successfully pushed new ref";
+                        break;
+                    case "!":
+                        retObj.flagDescription = "Ref was rejected or failed to push";
+                        break;
+                    case "=":
+                        retObj.flagDescription = "Ref was up to date and did not need pushing";
+                        break;
+                    default:
+                        retObj.flagDescription = "Unknown push flag received: " + retObj.flag;
+                }
+
+                return retObj;
+            });
+    }
+
+    function setUpstreamBranch(remoteName, remoteBranch) {
+        if (!remoteName) { throw new TypeError("remoteName argument is missing!"); }
+        if (!remoteBranch) { throw new TypeError("remoteBranch argument is missing!"); }
+        return git(["branch", "-u", remoteName + "/" + remoteBranch]);
+    }
+
     // Public API
-    exports.getRemotes    = getRemotes;
-    exports.createRemote  = createRemote;
-    exports.deleteRemote  = deleteRemote;
-    exports.pull          = pull;
+    exports.getRemotes        = getRemotes;
+    exports.createRemote      = createRemote;
+    exports.deleteRemote      = deleteRemote;
+    exports.pull              = pull;
+    exports.push              = push;
+    exports.setUpstreamBranch = setUpstreamBranch;
 
 });

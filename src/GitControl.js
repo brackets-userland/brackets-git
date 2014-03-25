@@ -467,30 +467,6 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
-        gitPush: function (remote, branch, options) {
-            remote = remote || "";
-            branch = branch || "";
-
-            var args = ["push", "--porcelain"];
-
-            if (Array.isArray(options)) {
-                args = args.concat(options);
-            }
-
-            if (remote) {
-                args.push(escapeShellArg(remote));
-                if (branch) {
-                    args.push(escapeShellArg(branch));
-                }
-            }
-
-            return this.executeCommand(this._git, args);
-        },
-
-        gitPushSetUpstream: function (remote, branch) {
-            return this.gitPush(remote, branch, ["--set-upstream"]);
-        },
-
         gitInit: function () {
             return this.executeCommand(this._git, ["init"]);
         },
