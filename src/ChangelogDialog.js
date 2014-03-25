@@ -10,9 +10,8 @@ define(function (require, exports) {
         StringUtils                = brackets.getModule("utils/StringUtils"),
         Preferences                = require("./Preferences"),
         Strings                    = require("../strings"),
-        changelogDialogTemplate    = require("text!htmlContent/git-changelog-dialog.html");
-
-    var marked                     = require("../thirdparty/marked");
+        changelogDialogTemplate    = require("text!htmlContent/git-changelog-dialog.html"),
+        marked                     = require("marked");
 
     var dialog;
 

@@ -1,11 +1,25 @@
-/*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, define */
-
 define(function (require, exports) {
     "use strict";
 
-    var _           = brackets.getModule("thirdparty/lodash"),
-        Preferences = require("./Preferences");
+    // Brackets modules
+    var _               = brackets.getModule("thirdparty/lodash"),
+        Dialogs         = brackets.getModule("widgets/Dialogs"),
+        ProjectManager  = brackets.getModule("project/ProjectManager");
+
+    // Local modules
+    var Preferences     = require("src/Preferences"),
+        Promise         = require("bluebird"),
+        Strings         = require("strings");
+
+    // Module variables
+    var questionDialogTemplate = require("text!htmlContent/git-question-dialog.html"),
+        outputDialogTemplate = require("text!htmlContent/git-output.html");
+
+    // Implementation
+
+    function getProjectRoot() {
+        return ProjectManager.getProjectRoot().fullPath;
+    }
 
     function formatDiff(diff) {
         var rv      = [],
@@ -38,5 +52,50 @@ define(function (require, exports) {
         return rv;
     }
 
-    exports.formatDiff = formatDiff;
+    function askQuestion(title, question, options) {
+        return new Promise(function (resolve, reject) {
+            options = options || {};
+
+            var compiledTemplate = Mustache.render(questionDialogTemplate, {
+                title: title,
+                question: _.escape(question),
+                stringInput: !options.booleanResponse && !options.password,
+                passwordInput: options.password,
+                defaultValue: options.defaultValue,
+                Strings: Strings
+            });
+
+            var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+            if (!options.booleanResponse) {
+                dialog.getElement().find("input").focus();
+            }
+
+            dialog.done(function (buttonId) {
+                if (options.booleanResponse) {
+                    return resolve(buttonId === "ok");
+                }
+                if (buttonId === "ok") {
+                    return resolve(dialog.getElement().find("input").val().trim());
+                } else {
+                    return reject("User aborted!");
+                }
+            });
+        });
+    }
+
+    function showOutput(output, title) {
+        var compiledTemplate = Mustache.render(outputDialogTemplate, {
+            title: title,
+            output: output,
+            Strings: Strings
+        });
+        Dialogs.showModalDialogUsingTemplate(compiledTemplate)
+            .getElement().find("button").focus();
+    }
+
+    // Public API
+    exports.formatDiff      = formatDiff;
+    exports.getProjectRoot  = getProjectRoot;
+    exports.askQuestion     = askQuestion;
+    exports.showOutput      = showOutput;
 });

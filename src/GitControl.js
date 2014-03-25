@@ -467,38 +467,6 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
-        gitPush: function (remote, branch, options) {
-            remote = remote || "";
-            branch = branch || "";
-
-            var args = ["push", "--porcelain"];
-
-            if (Array.isArray(options)) {
-                args = args.concat(options);
-            }
-
-            if (remote) {
-                args.push(escapeShellArg(remote));
-                if (branch) {
-                    args.push(escapeShellArg(branch));
-                }
-            }
-
-            return this.executeCommand(this._git, args);
-        },
-
-        gitPushSetUpstream: function (remote, branch) {
-            return this.gitPush(remote, branch, ["--set-upstream"]);
-        },
-
-        gitPull: function (remote) {
-            var args = ["pull", "--ff-only"];
-            if (remote) {
-                args.push(escapeShellArg(remote));
-            }
-            return this.executeCommand(this._git, args);
-        },
-
         gitInit: function () {
             return this.executeCommand(this._git, ["init"]);
         },
@@ -547,16 +515,6 @@ define(function (require, exports, module) {
 
         getDiffOfFileFromCommit: function (hash, file) {
             var args = ["diff", "--no-color", escapeShellArg(hash + "^!"), "--", escapeShellArg(file)];
-            return this.executeCommand(this._git, args);
-        },
-
-        remoteAdd: function (remote, url) {
-            var args = ["remote", "add", escapeShellArg(remote), escapeShellArg(url)];
-            return this.executeCommand(this._git, args);
-        },
-
-        remoteRemove: function (remote) {
-            var args = ["remote", "rm", escapeShellArg(remote)];
             return this.executeCommand(this._git, args);
         },
 

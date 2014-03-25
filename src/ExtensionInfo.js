@@ -6,7 +6,7 @@ define(function (require, exports, module) {
         FileSystem        = brackets.getModule("filesystem/FileSystem"),
         FileUtils         = brackets.getModule("file/FileUtils");
 
-    var Promise           = require("thirdparty/bluebird");
+    var Promise           = require("bluebird");
 
     var moduleDirectory   = ExtensionUtils.getModulePath(module),
         packageJsonPath   = moduleDirectory.slice(0, -1 * "src/".length) + "package.json",

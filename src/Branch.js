@@ -18,10 +18,10 @@ define(function (require, exports) {
         Main                    = require("./Main"),
         Panel                   = require("./Panel"),
         Strings                 = require("../strings"),
+        Utils                   = require("./Utils"),
         branchesMenuTemplate    = require("text!htmlContent/git-branches-menu.html"),
         newBranchTemplate       = require("text!htmlContent/branch-new-dialog.html"),
-        mergeBranchTemplate     = require("text!htmlContent/branch-merge-dialog.html"),
-        outputDialogTemplate    = require("text!htmlContent/git-output.html");
+        mergeBranchTemplate     = require("text!htmlContent/branch-merge-dialog.html");
 
     var $gitBranchName          = $(null),
         $dropdown;
@@ -48,16 +48,6 @@ define(function (require, exports) {
         detachCloseEvents();
     }
 
-    function showOutput(output, title) {
-        var compiledTemplate = Mustache.render(outputDialogTemplate, {
-            title: title,
-            output: output,
-            Strings: Strings
-        });
-        var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
-        dialog.getElement().find("input").focus();
-    }
-
     function doMerge(fromBranch) {
         Main.gitControl.getBranches().then(function (branches) {
 
@@ -79,7 +69,7 @@ define(function (require, exports) {
                         // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
                         CommandManager.execute("file.refresh");
                         // show merge output
-                        showOutput(stdout, Strings.MERGE_RESULT);
+                        Utils.showOutput(stdout, Strings.MERGE_RESULT);
                     });
                 }
             });

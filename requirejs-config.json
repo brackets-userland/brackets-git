@@ -1,5 +1,8 @@
 {
     "paths": {
+        "bluebird": "./thirdparty/bluebird",
+        "eventemitter2": "./thirdparty/eventemitter2",
+        "marked": "./thirdparty/marked",
         "moment": "./thirdparty/moment"
     },
     "config": {
