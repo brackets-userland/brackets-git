@@ -20,6 +20,7 @@ define(function (require, exports) {
         GutterManager     = require("./GutterManager"),
         Panel             = require("./Panel"),
         Branch            = require("./Branch"),
+        Remotes           = require("./Remotes"),
         CloseNotModified  = require("./CloseNotModified");
 
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
@@ -73,6 +74,7 @@ define(function (require, exports) {
         Panel.init(gitControl);
         Branch.init(gitControl);
         CloseNotModified.init(gitControl);
+        Remotes.init(gitControl);
 
         // Attach events
         $icon.on("click", Panel.toggle);

@@ -11,7 +11,8 @@ define(function (require, exports, module) {
         ErrorHandler    = require("./ErrorHandler"),
         q               = require("../thirdparty/q"),
         ExpectedError   = require("./ExpectedError"),
-        Preferences     = require("./Preferences");
+        Preferences     = require("./Preferences"),
+        URI             = require("../thirdparty/URI");
 
     var FILE_STATUS = {
         STAGED: "FILE_STAGED",
@@ -616,9 +617,64 @@ define(function (require, exports, module) {
         undoLastLocalCommit: function () {
             var args = ["reset", "--soft", "HEAD~1"];
             return this.executeCommand(this._git, args);
+        },
+
+        // Git-FTP features
+        // NOTE: to make these features work you need Git-FTP (https://github.com/git-ftp/git-ftp)
+        gitFtpInit: function (scope) {
+            var args = ["ftp", "init", "--scope", scope];
+            return this.spawnCommand(this._git, args);
+        },
+
+        gitFtpPush: function (scope) {
+            var args = ["ftp", "push", "--scope", scope];
+            return this.spawnCommand(this._git, args);
+        },
+
+        getFtpRemotes: function () {
+            var args = ["config", "--list"];
+            return this.executeCommand(this._git, args).then(function (ftpRemotes) {
+                ftpRemotes = ftpRemotes.split("\n");
+                return $.map(ftpRemotes, function (row) {
+                    var io = row.indexOf(".url");
+                    if (row.substring(0, 8) === "git-ftp." && row.substring(io, io + 4) === ".url") {
+                        return {"name": row.split(".")[1], "url": row.split("=")[1]};
+                    }
+                });
+            });
+        },
+
+        gitFtpAddScope: function (scope, url) {
+
+            var uri = new URI(url);
+
+            var username = uri.username();
+            var password = uri.password();
+            uri.username("");
+            uri.password("");
+            url = uri.toString();
+
+            var scopeArgs    = ["config", "--add", "git-ftp." + scope + ".url", url],
+                usernameArgs = ["config", "--add", "git-ftp." + scope + ".user", username],
+                passwordArgs = ["config", "--add", "git-ftp." + scope + ".password", password];
+
+            return q.all([
+                this.spawnCommand(this._git, scopeArgs),
+                this.spawnCommand(this._git, usernameArgs),
+                this.spawnCommand(this._git, passwordArgs)
+            ]).fail(function () {
+                throw new Error("There was a problem editing Git configuration file. Operation aborted.");
+            });
+        },
+
+        gitFtpRemoveScope: function (scope) {
+
+            var scopeArgs = ["ftp", "remove-scope", scope];
+            return this.spawnCommand(this._git, scopeArgs);
         }
 
     };
 
     module.exports = GitControl;
 });
+

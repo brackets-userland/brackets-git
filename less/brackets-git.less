@@ -258,6 +258,21 @@
             opacity: 1;
         }
     }
+
+    [data-is-gitftp=true] .change-remote:before {
+        content: "FTP:";
+        padding-right: 5px;
+        opacity: 0.5;
+    }
+    .ftp-prefix {
+        display: none;
+        padding-right: 5px;
+        opacity: 0.5;
+        &[data-is-gitftp=true] {
+            display: inline;
+        }
+    }
+
     .dropdown-menu {
         border: none;
         border-radius: @tc-control-border-radius;
@@ -278,6 +293,22 @@
             > a {
                 .both();
             }
+        }
+
+        .dropdown-header {
+            display: block;
+            padding: 3px 20px;
+            font-size: 12px;
+            line-height: 1.42857143;
+            color: #999;
+        }
+
+        li > a {
+            cursor: default;
+        }
+
+        .gitftp-remote-new, .git-remote-new {
+            font-style: italic;
         }
     }
 

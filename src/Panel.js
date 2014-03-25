@@ -30,6 +30,7 @@ define(function (require, exports) {
         Main               = require("./Main"),
         GutterManager      = require("./GutterManager"),
         Branch             = require("./Branch"),
+        Remotes            = require("./Remotes"),
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
         Utils              = require("./Utils"),
@@ -107,129 +108,6 @@ define(function (require, exports) {
         }).fail(function (err) {
             // reset is executed too often so just log this error, but do not display a dialog
             ErrorHandler.logError(err);
-        });
-    }
-
-    function _getDefaultRemote() {
-        // refactor later when Preferences are fixed
-        var key = ["defaultRemotes", Main.getProjectRoot()].join(".");
-        var defaultRemote = Preferences.get(key);
-        return defaultRemote || "origin";
-    }
-
-    function _setDefaultRemote(remoteName) {
-        // refactor later when Preferences are fixed
-        var key = ["defaultRemotes", Main.getProjectRoot()].join(".");
-        Preferences.persist(key, remoteName);
-    }
-
-    function clearRemotePicker() {
-        gitPanel.$panel.find(".git-remotes-field")
-            .html("&hellip;")
-            .data("remote-name", "");
-    }
-
-    function handleRemotePick(e, $a) {
-        var $selected = (e ? $(e.target) : $a).parent(),
-            $remoteField = gitPanel.$panel.find(".git-remotes-field");
-
-        if (!$selected) {
-            $remoteField.html("&mdash;").attr({
-                "data-remote-name": null
-            });
-            return;
-        }
-
-        var remoteName = $selected.attr("data-remote-name");
-        _setDefaultRemote(remoteName);
-
-        $remoteField
-            .text($selected.find(".change-remote").text().trim())
-            .data("remote-name", remoteName);
-    }
-
-    function handleRemoteRemove(e, $a) {
-        var $selected = (e ? $(e.target) : $a).closest("*[data-remote-name]"),
-            $remoteField = gitPanel.$panel.find(".git-remotes-field"),
-            remoteName = $selected.data("remote-name");
-
-        return askQuestion(Strings.DELETE_REMOTE,
-                           StringUtils.format(Strings.DELETE_REMOTE_NAME, remoteName),
-                           {booleanResponse: true}).then(function (response) {
-            if (response) {
-                Main.gitControl.remoteRemove(remoteName).then(function () {
-                    $selected.parent().remove();
-                    var newRemote = gitPanel.$panel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
-                    $remoteField.data("remote-name", newRemote).html(newRemote);
-                }).fail(function (err) {
-                    ErrorHandler.logError(err);
-                });
-            }
-        });
-    }
-
-    function handleRemoteCreation() {
-        return askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_NAME)
-        .then(function (name) {
-            return askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_URL)
-            .then(function (url) {
-                return Main.gitControl.remoteAdd(name, url)
-                .then(function () {
-                    prepareRemotesPicker();
-                })
-                .fail(function (err) { ErrorHandler.showError(err, "Remote creation failed"); });
-            });
-        });
-    }
-
-    function prepareRemotesPicker() {
-        Main.gitControl.getRemotes().then(function (remotes) {
-            var defaultRemoteName = _getDefaultRemote(),
-                $defaultRemote,
-                $remotesDropdown = gitPanel.$panel.find(".git-remotes-dropdown").empty();
-
-            gitPanel.$panel.find(".git-pull").prop("disabled", remotes.length === 0);
-            gitPanel.$panel.find(".git-push").prop("disabled", remotes.length === 0);
-
-            // Add option to define new remote
-            $remotesDropdown.append("<li><a class=\"git-remote-new\"><span>" + Strings.CREATE_NEW_REMOTE + "</span></a></li>");
-            $remotesDropdown.append("<li class=\"divider\"></li>");
-
-            if (remotes.length === 0) {
-                clearRemotePicker();
-                return;
-            }
-
-            // Add options to change remote
-            var $remotes = remotes.map(function (remoteInfo) {
-                var canDelete = remoteInfo.name !== "origin";
-
-                var $a = $("<a/>").attr({
-                    "href": "#",
-                    "data-remote-name": remoteInfo.name
-                });
-
-                if (canDelete) {
-                    $a.append("<span class='trash-icon remove-remote'>&times;</span>");
-                }
-
-                $a.append("<span class='change-remote'>" + remoteInfo.name + "</span>");
-                $a.appendTo($("<li class=\"remote\"/>").appendTo($remotesDropdown));
-
-                if (remoteInfo.name === defaultRemoteName) {
-                    $defaultRemote = $a;
-                }
-
-                return $a;
-            });
-
-            if ($defaultRemote) {
-                handleRemotePick(null, $defaultRemote);
-            } else {
-                handleRemotePick(null, _.first($remotes));
-            }
-        }).fail(function (err) {
-            throw ErrorHandler.showError(err, "Failed to get a list of remotes.");
         });
     }
 
@@ -788,7 +666,7 @@ define(function (require, exports) {
 
     function handleGitPush() {
         var $btn = gitPanel.$panel.find(".git-push").prop("disabled", true).addClass("btn-loading"),
-            remoteName = gitPanel.$panel.find(".git-remotes-field").attr("data-remote-name");
+            remoteName = gitPanel.$panel.find(".git-remote-selected").attr("data-remote-name");
         Main.gitControl.gitPush(remoteName).fail(function (err) {
 
             if (!ErrorHandler.contains(err, "git remote add <name> <url>")) {
@@ -856,7 +734,7 @@ define(function (require, exports) {
 
     function handleGitPull() {
         var $btn = gitPanel.$panel.find(".git-pull").prop("disabled", true).addClass("btn-loading"),
-            remoteName = gitPanel.$panel.find(".git-remotes-field").attr("data-remote-name");
+            remoteName = gitPanel.$panel.find(".git-remote-selected").attr("data-remote-name");
         Main.gitControl.gitPull(remoteName).then(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
@@ -1309,6 +1187,29 @@ define(function (require, exports) {
         gitPanel.$panel.find(".git-user-email").text(email);
     });
 
+
+    // Git-FTP FEATURES {
+
+    function handleGitFtpPush() {
+        var gitFtpRemote = gitPanel.$panel.find(".git-remote-selected").text().trim();
+        gitPanel.$panel.find(".gitftp-push").prop("disabled", true).addClass("btn-loading");
+
+        Main.gitControl.gitFtpPush(gitFtpRemote).done(function (result) {
+            Dialogs.showModalDialog(
+                DefaultDialogs.DIALOG_ID_INFO,
+                Strings.GITFTP_PUSH_RESPONSE, // title
+                result // message
+            );
+            gitPanel.$panel.find(".gitftp-push").prop("disabled", false).removeClass("btn-loading");
+        }).fail(function (err) {
+            ErrorHandler.showError(err, "Impossible push to Git-FTP remote.");
+            gitPanel.$panel.find(".gitftp-push").prop("disabled", false).removeClass("btn-loading");
+        });
+    }
+
+    // } Git-FTP FEATURES
+
+
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
@@ -1346,9 +1247,6 @@ define(function (require, exports) {
             .on("click", ".git-bug", ErrorHandler.reportBug)
             .on("click", ".git-init", handleGitInit)
             .on("click", ".git-clone", handleGitClone)
-            .on("click", ".change-remote", handleRemotePick)
-            .on("click", ".remove-remote", handleRemoteRemove)
-            .on("click", ".git-remote-new", handleRemoteCreation)
             .on("click", ".git-settings", SettingsDialog.show)
             .on("contextmenu", "tr", function (e) {
                 var $this = $(this);
@@ -1363,6 +1261,11 @@ define(function (require, exports) {
             .on("click", ".change-user-email", changeUserEmail)
             .on("click", ".undo-last-commit", undoLastLocalCommit)
             .on("click", ".git-bash", openBashConsole);
+
+        if (Preferences.get("useGitFtp")) {
+            gitPanel.$panel
+                .on("click", ".gitftp-push", handleGitFtpPush);
+        }
 
         // Attaching table handlers
         attachDefaultTableHandlers();
@@ -1419,7 +1322,7 @@ define(function (require, exports) {
         EventEmitter.emit(Events.GIT_ENABLED);
         // this function is called after every Branch.refresh
         gitPanelMode = null;
-        prepareRemotesPicker();
+        Remotes.prepareRemotesPicker();
         //
         gitPanel.$panel.find(".git-available").show();
         gitPanel.$panel.find(".git-not-available").hide();
@@ -1456,4 +1359,5 @@ define(function (require, exports) {
     exports.disable = disable;
     exports.refreshCurrentFile = refreshCurrentFile;
     exports.getPanel = getPanel;
+    exports.askQuestion = askQuestion;
 });
