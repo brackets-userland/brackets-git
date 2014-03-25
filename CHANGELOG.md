@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.1
+* Fixed a bug that extension won't even start on some machines.
+* Fixed some issues with pushing to remote repositories.
+* Improvements to the commit history by [Marcel Gerber](https://github.com/SAPlayer)
+
 ## 0.12.0
 * Bash command is now customizable for Windows - you may need to do some adjustements (even Mac/Linux users) in the settings (you can use restore defaults command if you have any problems).
 * You can now specify origin branch when creating new one.
