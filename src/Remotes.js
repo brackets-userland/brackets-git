@@ -22,14 +22,12 @@ define(function (require) {
     // Module variables
     var $selectedRemote  = null,
         $remotesDropdown = null,
-        $gitPanel = null,
-        gitFtpEnabled = false;
+        $gitPanel = null;
 
     function initVariables() {
         $gitPanel = $("#git-panel");
         $selectedRemote = $gitPanel.find(".git-selected-remote");
         $remotesDropdown = $gitPanel.find(".git-remotes-dropdown");
-        gitFtpEnabled = Preferences.get("useGitFtp");
     }
 
     // Implementation
@@ -49,28 +47,25 @@ define(function (require) {
 
     function clearRemotePicker() {
         $selectedRemote
-          .html("&mdash;")
-          .data("remote", null);
+            .html("&mdash;")
+            .data("remote", null);
     }
 
-    function selectRemote(remoteName) {
+    function selectRemote(remoteName, type) {
         if (!remoteName) {
             return clearRemotePicker();
         }
-        // Check if the selected remote is a FTP remote
-        var isGitFtp = ($remotesDropdown.find(".remote-name[data-type=ftp][data-remote-name=\"" + remoteName + "\"]").length) ? true : false;
+        // Set as default remote only if is a normal git remote
+        if (type === "git") { setDefaultRemote(remoteName); }
 
-        // Set as default remote only if is not an FTP remote
-        if (!isGitFtp) { setDefaultRemote(remoteName); }
-
-        // If is an FTP remote, disable the "pull" button, if not, enable it
-        $gitPanel.find("git-pull").prop("disabled", isGitFtp);
-
-        // Enable the Git-FTP prefix if needed (or disable it)
-        $selectedRemote.attr("data-type", isGitFtp ? "ftp" : "git");
+        // Disable pull if it is not a normal git remote
+        $gitPanel.find("git-pull").prop("disabled", type !== "git");
 
         // Update remote name of $selectedRemote
-        $selectedRemote.text(remoteName).data("remote", remoteName);
+        $selectedRemote
+            .text(remoteName)
+            .attr("data-type", type) // use attr to apply CSS styles
+            .data("remote", remoteName);
     }
 
     function refreshRemotesPicker() {
@@ -105,7 +100,7 @@ define(function (require) {
             // we need to adjust that something other may be put as default
             // low priority
             if (remotes.length > 0) {
-                selectRemote(defaultRemoteName);
+                selectRemote(defaultRemoteName, "git");
             } else {
                 clearRemotePicker();
             }
@@ -362,8 +357,10 @@ define(function (require) {
     });
 
     EventEmitter.on(Events.HANDLE_REMOTE_PICK, function (event) {
-        var remoteName = $(event.target).closest(".remote-name").data("remote-name");
-        selectRemote(remoteName);
+        var $remote     = $(event.target).closest(".remote-name"),
+            remoteName  = $remote.data("remote-name"),
+            type        = $remote.data("type");
+        selectRemote(remoteName, type);
     });
 
     EventEmitter.on(Events.HANDLE_REMOTE_CREATE, function () {
