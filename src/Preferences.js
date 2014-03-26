@@ -14,6 +14,7 @@ define(function (require, exports, module) {
         "useGitGutter": {                   "type": "boolean",           "value": true          },
         "markModifiedInTree": {             "type": "boolean",           "value": true          },
         "useCodeInspection": {              "type": "boolean",           "value": true          },
+        "useGitFtp": {                      "type": "boolean",           "value": true          },
         "showBashButton": {                 "type": "boolean",           "value": true          },
         "dateMode": {                       "type": "number",            "value": 1             },
         "dateFormat": {                     "type": "string",            "value": null          },

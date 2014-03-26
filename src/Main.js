@@ -75,6 +75,7 @@ define(function (require, exports) {
         Panel.init(gitControl);
         Branch.init(gitControl);
         CloseNotModified.init(gitControl);
+        Remotes.init(gitControl);
 
         // Attach events
         $icon.on("click", Panel.toggle);

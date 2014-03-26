@@ -194,6 +194,7 @@ define(function (require, exports) {
     }
 
     // Public API
+    exports.git                       = git;
     exports.fetchAllRemotes           = fetchAllRemotes;
     exports.getRemotes                = getRemotes;
     exports.createRemote              = createRemote;

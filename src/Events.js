@@ -19,6 +19,7 @@ define(function (require, exports) {
     exports.HANDLE_REMOTE_PICK = "handle.remote.pick";
     exports.HANDLE_REMOTE_DELETE = "handle.remote.delete";
     exports.HANDLE_REMOTE_CREATE = "handle.remote.create";
+    exports.HANDLE_FTP_PUSH = "handle.ftp.push";
 
     // Remotes.js
     exports.GIT_REMOTE_AVAILABLE = "git.remote.available";

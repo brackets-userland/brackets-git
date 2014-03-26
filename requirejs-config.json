@@ -3,7 +3,8 @@
         "bluebird": "./thirdparty/bluebird",
         "eventemitter2": "./thirdparty/eventemitter2",
         "marked": "./thirdparty/marked",
-        "moment": "./thirdparty/moment"
+        "moment": "./thirdparty/moment",
+        "URI": "./thirdparty/URI"
     },
     "config": {
         "moment": {

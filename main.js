@@ -35,6 +35,7 @@ define(function (require, exports, module) {
 
     // Load extension sources
     require("src/Remotes");
+    require("src/Ftp"); // TODO: maybe only if FTP is enabled?
 
     // Seems just too buggy right now
     q.stopUnhandledRejectionTracking();

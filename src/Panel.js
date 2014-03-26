@@ -29,6 +29,7 @@ define(function (require, exports) {
         Main               = require("./Main"),
         GutterManager      = require("./GutterManager"),
         Branch             = require("./Branch"),
+        Remotes            = require("./Remotes"),
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
         Utils              = require("./Utils"),
@@ -1103,6 +1104,10 @@ define(function (require, exports) {
             .on("click", ".undo-last-commit", undoLastLocalCommit)
             .on("click", ".git-bash", openBashConsole);
 
+        if (Preferences.get("useGitFtp")) {
+            gitPanel.$panel.on("click", ".gitftp-push", EventEmitter.emitFactory(Events.HANDLE_FTP_PUSH));
+        }
+
         // Attaching table handlers
         attachDefaultTableHandlers();
 
@@ -1158,7 +1163,6 @@ define(function (require, exports) {
         EventEmitter.emit(Events.GIT_ENABLED);
         // this function is called after every Branch.refresh
         gitPanelMode = null;
-
         //
         gitPanel.$panel.find(".git-available").show();
         gitPanel.$panel.find(".git-not-available").hide();
@@ -1195,4 +1199,5 @@ define(function (require, exports) {
     exports.disable = disable;
     exports.refreshCurrentFile = refreshCurrentFile;
     exports.getPanel = getPanel;
+    exports.askQuestion = askQuestion;
 });
