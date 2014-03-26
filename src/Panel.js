@@ -15,6 +15,7 @@ define(function (require, exports) {
         EditorManager      = brackets.getModule("editor/EditorManager"),
         FileUtils          = brackets.getModule("file/FileUtils"),
         FileViewController = brackets.getModule("project/FileViewController"),
+        KeyBindingManager  = brackets.getModule("command/KeyBindingManager"),
         LanguageManager    = brackets.getModule("language/LanguageManager"),
         FileSystem         = brackets.getModule("filesystem/FileSystem"),
         Menus              = brackets.getModule("command/Menus"),
@@ -1107,12 +1108,8 @@ define(function (require, exports) {
         // Attaching table handlers
         attachDefaultTableHandlers();
 
-        // Register command for opening bottom panel.
-        CommandManager.register(Strings.PANEL_COMMAND, PANEL_COMMAND_ID, toggle);
-
         // Commit current and all shortcuts
-        var GIT_MENU           = "brackets-git.gitMenu",
-            COMMIT_CURRENT_CMD = "brackets-git.commitCurrent",
+        var COMMIT_CURRENT_CMD = "brackets-git.commitCurrent",
             COMMIT_ALL_CMD     = "brackets-git.commitAll",
             BASH_CMD           = "brackets-git.launchBash",
             PUSH_CMD           = "brackets-git.push",
@@ -1120,27 +1117,31 @@ define(function (require, exports) {
             GOTO_PREV_CHANGE   = "brackets-git.gotoPrevChange",
             GOTO_NEXT_CHANGE   = "brackets-git.gotoNextChange";
 
-         // Add command to menu.
-        var menu = Menus.getMenu(GIT_MENU);
+        // Add command to menu.
+        // Register command for opening bottom panel.
+        CommandManager.register(Strings.PANEL_COMMAND, PANEL_COMMAND_ID, toggle);
+        KeyBindingManager.addBinding(PANEL_COMMAND_ID, Preferences.get("panelShortcut"));
 
-        menu.addMenuDivider();
-        menu.addMenuItem(PANEL_COMMAND_ID, Preferences.get("panelShortcut"));
-
-        menu.addMenuDivider();
         CommandManager.register(Strings.COMMIT_CURRENT_SHORTCUT, COMMIT_CURRENT_CMD, commitCurrentFile);
-        menu.addMenuItem(COMMIT_CURRENT_CMD, Preferences.get("commitCurrentShortcut"));
+        KeyBindingManager.addBinding(COMMIT_CURRENT_CMD, Preferences.get("commitCurrentShortcut"));
+
         CommandManager.register(Strings.COMMIT_ALL_SHORTCUT, COMMIT_ALL_CMD, commitAllFiles);
-        menu.addMenuItem(COMMIT_ALL_CMD, Preferences.get("commitAllShortcut"));
+        KeyBindingManager.addBinding(COMMIT_ALL_CMD, Preferences.get("commitAllShortcut"));
+
         CommandManager.register(Strings.LAUNCH_BASH_SHORTCUT, BASH_CMD, openBashConsole);
-        menu.addMenuItem(BASH_CMD, Preferences.get("bashShortcut"));
+        KeyBindingManager.addBinding(BASH_CMD, Preferences.get("bashShortcut"));
+
         CommandManager.register(Strings.PUSH_SHORTCUT, PUSH_CMD, EventEmitter.emitFactory(Events.HANDLE_PUSH));
-        menu.addMenuItem(PUSH_CMD, Preferences.get("pushShortcut"));
+        KeyBindingManager.addBinding(PUSH_CMD, Preferences.get("pushShortcut"));
+
         CommandManager.register(Strings.PULL_SHORTCUT, PULL_CMD, EventEmitter.emitFactory(Events.HANDLE_PULL));
-        menu.addMenuItem(PULL_CMD, Preferences.get("pullShortcut"));
+        KeyBindingManager.addBinding(PULL_CMD, Preferences.get("pullShortcut"));
+
         CommandManager.register(Strings.GOTO_PREVIOUS_GIT_CHANGE, GOTO_PREV_CHANGE, GutterManager.goToPrev);
-        menu.addMenuItem(GOTO_PREV_CHANGE, Preferences.get("gotoPrevChangeShortcut"));
+        KeyBindingManager.addBinding(GOTO_PREV_CHANGE, Preferences.get("gotoPrevChangeShortcut"));
+
         CommandManager.register(Strings.GOTO_NEXT_GIT_CHANGE, GOTO_NEXT_CHANGE, GutterManager.goToNext);
-        menu.addMenuItem(GOTO_NEXT_CHANGE, Preferences.get("gotoNextChangeShortcut"));
+        KeyBindingManager.addBinding(GOTO_NEXT_CHANGE, Preferences.get("gotoNextChangeShortcut"));
 
         // Add info from Git to panel
         Main.gitControl.getGitConfig("user.name").then(function (currentUserName) {
