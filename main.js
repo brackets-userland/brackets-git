@@ -32,9 +32,12 @@ define(function (require, exports, module) {
         domainModulePath           = moduleDirectory + "src/Domains/cli",
         nodeConnection             = new NodeConnection();
 
-    // Load extension sources
-    require("src/Remotes");
-    require("src/Ftp"); // TODO: maybe only if FTP is enabled?
+    // Load extension modules that are not included by core
+    var modules = ["src/Remotes"];
+    if (Preferences.get("useGitFtp")) {
+        modules.push("src/Ftp/Ftp");
+    }
+    require(modules);
 
     // Seems just too buggy right now
     q.stopUnhandledRejectionTracking();

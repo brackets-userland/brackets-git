@@ -122,7 +122,7 @@ define(function (require, exports) {
                             $this.prop("disabled", true).attr("title", "Already fetched");
                             _reloadBranchSelect($select, branches);
                         });
-                    }).fail(function (err) {
+                    }).catch(function (err) {
                         throw ErrorHandler.showError(err, "Fetching remote information failed");
                     });
                 });
@@ -138,7 +138,7 @@ define(function (require, exports) {
                             isRemote    = $option.attr("remote"),
                             track       = !!isRemote;
 
-                        Main.gitControl.createBranch(branchName, originName, track).fail(function (err) {
+                        Main.gitControl.createBranch(branchName, originName, track).catch(function (err) {
                             ErrorHandler.showError(err, "Creating new branch failed");
                         }).then(function () {
                             closeDropdown();
@@ -152,7 +152,7 @@ define(function (require, exports) {
         }).on("click", "a.git-branch-link .switch-branch", function (e) {
             e.stopPropagation();
             var branchName = $(this).parent().data("branch");
-            Main.gitControl.checkoutBranch(branchName).fail(function (err) {
+            Main.gitControl.checkoutBranch(branchName).catch(function (err) {
                 ErrorHandler.showError(err, "Switching branches failed");
             }).then(function () {
                 closeDropdown();
@@ -164,9 +164,9 @@ define(function (require, exports) {
         }).on("mouseleave", "a", function () {
             $(this).removeClass("selected");
         }).on("click", "a.git-branch-link .trash-icon", function () {
-            Main.gitControl.deleteLocalBranch($(this).parent().data("branch"))
-            .fail(function (err) { ErrorHandler.showError(err, "Branch deletion failed"); });
-            $(this).parent().remove();
+            Main.gitControl.deleteLocalBranch($(this).parent().data("branch")).catch(function (err) {
+                ErrorHandler.showError(err, "Branch deletion failed");
+            });
         }).on("click", ".merge-branch", function () {
             var fromBranch = $(this).parent().data("branch");
             doMerge(fromBranch);
@@ -203,7 +203,7 @@ define(function (require, exports) {
 
         Menus.closeAll();
 
-        Git.getBranches().fail(function (err) {
+        Git.getBranches().catch(function (err) {
             ErrorHandler.showError(err, "Getting branch list failed");
         }).then(function (branches) {
             branches = branches.reduce(function (arr, branch) {
@@ -262,7 +262,7 @@ define(function (require, exports) {
                     .on("click", toggleDropdown)
                     .append($("<span class='dropdown-arrow' />"));
                 Panel.enable();
-            }).fail(function (ex) {
+            }).catch(function (ex) {
                 if (ErrorHandler.contains(ex, "unknown revision")) {
                     $gitBranchName
                         .off("click")
@@ -272,7 +272,7 @@ define(function (require, exports) {
                     throw ex;
                 }
             });
-        }).fail(function (err) {
+        }).catch(function (err) {
             throw ErrorHandler.showError(err);
         });
     }

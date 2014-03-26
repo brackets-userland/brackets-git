@@ -70,6 +70,10 @@ define(function (require, exports) {
         );
     };
 
+    exports.equals = function (err, what) {
+        return err.toString().toLowerCase() === what.toLowerCase();
+    };
+
     exports.contains = function (err, what) {
         return err.toString().toLowerCase().indexOf(what.toLowerCase()) !== -1;
     };

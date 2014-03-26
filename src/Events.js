@@ -28,5 +28,6 @@ define(function (require, exports) {
     exports.PULL_FINISHED = "pull.finished";
     exports.PUSH_STARTED = "push.started";
     exports.PUSH_FINISHED = "push.finished";
+    exports.REMOTES_REFRESH_PICKER = "remotes.refresh.picker";
 
 });
