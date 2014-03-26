@@ -68,7 +68,7 @@ define(function (require) {
         $gitPanel.find("git-pull").prop("disabled", isGitFtp);
 
         // Enable the Git-FTP prefix if needed (or disable it)
-        $selectedRemote.prev(".ftp-prefix").prop("hidden", !isGitFtp);
+        $selectedRemote.attr("data-type", isGitFtp ? "ftp" : "git");
 
         // Update remote name of $selectedRemote
         $selectedRemote.text(remoteName).data("remote", remoteName);
