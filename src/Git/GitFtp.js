@@ -14,15 +14,15 @@ define(function (require, exports) {
     
     // Implementation
     
-    function gitFtpInit(scope) {
+    function init(scope) {
         return git(["ftp", "init", "--scope", scope]);
     }
 
-    function gitFtpPush(scope) {
+    function push(scope) {
         return git(["ftp", "push", "--scope", scope]);
     }
 
-    function getFtpRemotes() {
+    function getRemotes() {
         return git(["config", "--list"]).then(function (stdout) {
             return stdout.split("\n").reduce(function (result, row) {
                 var io = row.indexOf(".url");
@@ -37,7 +37,7 @@ define(function (require, exports) {
         });
     }
 
-    function gitFtpAddScope(scope, url) {
+    function addScope(scope, url) {
         var uri = new URI(url),
             username = uri.username(),
             password = uri.password();
@@ -54,20 +54,20 @@ define(function (require, exports) {
             git(scopeArgs),
             git(usernameArgs),
             git(passwordArgs)
-        ]).fail(function (err) {
+        ]).catch(function (err) {
             throw ErrorHandler.rewrapError(err, "There was a problem editing Git configuration file. Operation aborted.");
         });
     }
 
-    function gitFtpRemoveScope(scope) {
+    function removeScope(scope) {
         return git(["ftp", "remove-scope", scope]);
     }
 
     // Public API
-    exports.gitFtpInit = gitFtpInit;
-    exports.gitFtpPush = gitFtpPush;
-    exports.getFtpRemotes = getFtpRemotes;
-    exports.gitFtpAddScope = gitFtpAddScope;
-    exports.gitFtpRemoveScope = gitFtpRemoveScope;
+    exports.init = init;
+    exports.push = push;
+    exports.getRemotes = getRemotes;
+    exports.addScope = addScope;
+    exports.removeScope = removeScope;
 
 });
