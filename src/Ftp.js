@@ -10,10 +10,8 @@ define(function (require) {
     var ErrorHandler  = require("src/ErrorHandler"),
         Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
-        Git           = require("src/Git/Git"),
         GitFtp        = require("src/Git/GitFtp"),
         Preferences   = require("src/Preferences"),
-        Promise       = require("bluebird"),
         Strings       = require("strings"),
         Utils         = require("src/Utils");
 
@@ -66,7 +64,7 @@ define(function (require) {
                                      {defaultValue: "ftp://user:passwd@example.org/folder"}).then(function (url) {
                 
                 return GitFtp.gitFtpAddScope(name, url).then(function () {
-                    return handleGitFtpRemoteInit();
+                    // return handleGitFtpRemoteInit();
                 }).fail(function (err) {
                     ErrorHandler.showError(err, "Git-FTP remote creation failed");
                 });

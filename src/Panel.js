@@ -29,7 +29,6 @@ define(function (require, exports) {
         Main               = require("./Main"),
         GutterManager      = require("./GutterManager"),
         Branch             = require("./Branch"),
-        Remotes            = require("./Remotes"),
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
         Utils              = require("./Utils"),
@@ -1199,5 +1198,4 @@ define(function (require, exports) {
     exports.disable = disable;
     exports.refreshCurrentFile = refreshCurrentFile;
     exports.getPanel = getPanel;
-    exports.askQuestion = askQuestion;
 });

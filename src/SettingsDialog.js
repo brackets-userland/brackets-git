@@ -60,7 +60,7 @@ define(function (require, exports) {
                 .prop("checked", on)
                 .prop("disabled", !on);
         });
-        $("#git-settings-dateMode", $dialog).on("change", function (e) {
+        $("#git-settings-dateMode", $dialog).on("change", function () {
             $("#git-settings-dateFormat-container", $dialog).toggle($("option:selected", this).prop("value") === "3");
         });
         $("button[data-button-id='defaults']", $dialog).on("click", function (e) {

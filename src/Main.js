@@ -1,6 +1,3 @@
-/*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, define, setTimeout */
-
 define(function (require, exports) {
     "use strict";
 
@@ -75,8 +72,7 @@ define(function (require, exports) {
         Panel.init(gitControl);
         Branch.init(gitControl);
         CloseNotModified.init(gitControl);
-        Remotes.init(gitControl);
-
+        
         // Attach events
         $icon.on("click", Panel.toggle);
 
