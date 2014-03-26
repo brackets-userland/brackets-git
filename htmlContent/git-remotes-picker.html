@@ -3,7 +3,7 @@
 {{#hasRemotes}}
 {{#remotes}}
 <li class="remote">
-    <a href="#" data-remote-name="{{name}}" data-is-gitftp="false">
+    <a href="#" data-remote-name="{{name}}" data-is-gitftp="false" class="remote-name">
         {{#deletable}}<span class="trash-icon remove-remote">&times;</span>{{/deletable}}
         <span class="change-remote">{{name}}</span>
     </a>
@@ -19,7 +19,7 @@
 {{#hasFtpRemotes}}
 {{#ftpRemotes}}
 <li class="gitftp-remote">
-    <a href="#" data-remote-name="{{name}}" data-is-gitftp="true">
+    <a href="#" data-remote-name="{{name}}" data-is-gitftp="true" class="remote-name">
         <span class="trash-icon gitftp-remove-remote">&times;</span>
         <span class="change-remote">{{name}}</span>
     </a>

@@ -94,6 +94,7 @@ define(function (require) {
             if (response) {
                 return GitFtp.gitFtpRemoveScope(remoteName).then(function () {
                     $selectedElement.parent().remove();
+                    console.log("find", $gitPanel.find(".git-remotes-dropdown .remote").first().find("a"));
                     var newRemote = $gitPanel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
                     $currentRemote.data("remote-name", newRemote).html(newRemote);
                 }).fail(function (err) {
