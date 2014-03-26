@@ -43,7 +43,7 @@ define(function (require) {
                 Strings.GITFTP_PUSH_RESPONSE, // title
                 result // message
             );
-        }).fail(function (err) {
+        }).catch(function (err) {
             ErrorHandler.showError(err, "Failed push to Git-FTP remote.");
         }).finally(function () {
             $gitPanel.find(".gitftp-push")
@@ -89,7 +89,7 @@ define(function (require) {
 
                             $gitPanel.find(".git-remotes-dropdown .ftp-remotes-header").after($newRemote);
 
-                        }).fail(function (err) {
+                        }).catch(function (err) {
                             ErrorHandler.showError(err, "Git-FTP remote creation failed");
                         });
                     });
@@ -120,7 +120,7 @@ define(function (require) {
                     $selectedElement.parent().remove();
                     var newRemote = $gitPanel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
                     $currentRemote.data("remote-name", newRemote).html(newRemote);
-                }).fail(function (err) {
+                }).catch(function (err) {
                     ErrorHandler.showError(err, "Remove scope failed");
                 });
             }
