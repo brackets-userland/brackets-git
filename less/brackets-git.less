@@ -259,18 +259,14 @@
         }
     }
 
-    [data-is-gitftp=true] .change-remote:before {
+    [data-type=ftp] .change-remote:before {
         content: "FTP:";
         padding-right: 5px;
         opacity: 0.5;
     }
     .ftp-prefix {
-        display: none;
         padding-right: 5px;
         opacity: 0.5;
-        &[data-is-gitftp=true] {
-            display: inline;
-        }
     }
 
     .dropdown-menu {

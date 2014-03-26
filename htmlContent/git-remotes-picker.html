@@ -1,9 +1,9 @@
 <!-- List of remotes defined for the current local repository -->
-<li class="dropdown-header">{{Strings.GIT_REMOTES}}</li>
+{{#gitFtpEnabled}}<li class="dropdown-header git-remotes-header">{{Strings.GIT_REMOTES}}</li>{{/gitFtpEnabled}}
 {{#hasRemotes}}
 {{#remotes}}
 <li class="remote">
-    <a href="#" data-remote-name="{{name}}" data-is-gitftp="false">
+    <a href="#" data-remote-name="{{name}}" data-type="git" class="remote-name">
         {{#deletable}}<span class="trash-icon remove-remote">&times;</span>{{/deletable}}
         <span class="change-remote">{{name}}</span>
     </a>
@@ -12,14 +12,14 @@
 {{/hasRemotes}}
 <li><a class="git-remote-new"><span>{{Strings.CREATE_NEW_REMOTE}}</span></a></li>
 
-<!-- List of Git-FTP remotes, used only if Git-FTP is available and enabled -->
 {{#gitFtpEnabled}}
+<!-- List of Git-FTP remotes defined for the current local repository -->
 <li class="divider"></li>
-<li class="dropdown-header">{{Strings.GITFTP_REMOTES}}</li>
+<li class="dropdown-header ftp-remotes-header">{{Strings.GITFTP_REMOTES}}</li>
 {{#hasFtpRemotes}}
 {{#ftpRemotes}}
 <li class="gitftp-remote">
-    <a href="#" data-remote-name="{{name}}" data-is-gitftp="true">
+    <a href="#" data-remote-name="{{name}}" data-type="ftp" class="remote-name">
         <span class="trash-icon gitftp-remove-remote">&times;</span>
         <span class="change-remote">{{name}}</span>
     </a>
