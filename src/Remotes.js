@@ -15,8 +15,7 @@ define(function (require) {
         Preferences   = require("src/Preferences"),
         Promise       = require("bluebird"),
         Strings       = require("strings"),
-        Utils         = require("src/Utils"),
-        q             = require("../thirdparty/q");
+        Utils         = require("src/Utils");
 
     // Templates
     var gitRemotesPickerTemplate = require("text!htmlContent/git-remotes-picker.html");
@@ -51,8 +50,8 @@ define(function (require) {
 
     function clearRemotePicker() {
         $selectedRemote
-        .html("&mdash;")
-        .data("remote", null);
+          .html("&mdash;")
+          .data("remote", null);
     }
 
     function selectRemote(remoteName) {
@@ -60,7 +59,7 @@ define(function (require) {
             return clearRemotePicker();
         }
         // Check if the selected remote is a FTP remote
-        var isGitFtp = ($remotesDropdown.find(".remote-name[data-is-gitftp=true][data-remote-name=\"" + remoteName + "\"]").length) ? true : false;
+        var isGitFtp = ($remotesDropdown.find(".remote-name[data-type=ftp][data-remote-name=\"" + remoteName + "\"]").length) ? true : false;
 
         // Set as default remote only if is not an FTP remote
         if (!isGitFtp) { setDefaultRemote(remoteName); }
@@ -69,7 +68,7 @@ define(function (require) {
         $gitPanel.find("git-pull").prop("disabled", isGitFtp);
 
         // Enable the Git-FTP prefix if needed (or disable it)
-        $selectedRemote.prev(".ftp-prefix").attr("data-is-gitftp", isGitFtp);
+        $selectedRemote.prev(".ftp-prefix").prop("hidden", !isGitFtp);
 
         // Update remote name of $selectedRemote
         $selectedRemote.text(remoteName).data("remote", remoteName);
@@ -77,93 +76,75 @@ define(function (require) {
 
     function refreshRemotesPicker() {
         // Run both getRemotes and getFtpRemotes and render with Mustache the template
-        q.allSettled([Git.getRemotes(), GitFtp.getFtpRemotes()]).spread(function (remotes, ftpRemotes) {
+        Promise.all([Git.getRemotes(), GitFtp.getFtpRemotes()]).spread(function (remotes, ftpRemotes) {
 
-            // If both promises are fullfilled then render the template
-            if (remotes.state === "fulfilled" && (ftpRemotes.state === "fulfilled" || gitFtpEnabled === false)) {
+            // Set default remote name and cache the remotes dropdown menu
+            var defaultRemoteName    = getDefaultRemote(),
+                $remotesDropdown     = $gitPanel.find(".git-remotes-dropdown"),
+                $remotesDropdownList = "";
 
-                // Set default remote name and cache the remotes dropdown menu
-                var defaultRemoteName    = getDefaultRemote(),
-                    $remotesDropdown     = $gitPanel.find(".git-remotes-dropdown"),
-                    $remotesDropdownList = "";
+            // Disable Git-push and Git-pull if there are not remotes defined
+            $gitPanel.find(".git-pull, .git-push").prop("disabled", (remotes.length === 0 && ftpRemotes.length === 0));
 
-                // Disable Git-push and Git-pull if there are not remotes defined
-                $gitPanel.find(".git-pull, .git-push").prop("disabled", (remotes.value.length === 0 && ftpRemotes.value.length === 0));
+            // Add options to change remote
+            remotes = $.map(remotes, function (remote) {
+                return {
+                    "name": remote.name,
+                    "deletable": (remote.name !== "origin") ? true : false
+                };
+            });
 
-                // Add options to change remote
-                remotes.value = $.map(remotes.value, function (remote) {
-                    return {
-                        "name": remote.name,
-                        "deletable": (remote.name !== "origin") ? true : false
-                    };
-                });
+            // Pass to Mustache the needed data
+            $remotesDropdownList = Mustache.render(gitRemotesPickerTemplate, {
+                Strings: Strings,
+                remotes: remotes,
+                ftpRemotes: ftpRemotes,
+                hasRemotes: remotes.length ? true : false,
+                hasFtpRemotes: ftpRemotes.length ? true : false,
+                gitFtpEnabled: gitFtpEnabled
+            });
 
-                // Pass to Mustache the needed data
-                $remotesDropdownList = Mustache.render(gitRemotesPickerTemplate, {
-                    Strings: Strings,
-                    remotes: remotes.value,
-                    ftpRemotes: ftpRemotes.value,
-                    hasRemotes: remotes.value.length ? true : false,
-                    hasFtpRemotes: ftpRemotes.value.length ? true : false,
-                    gitFtpEnabled: gitFtpEnabled
-                });
+            // Inject the rendered template inside the $remotesDropdown
+            $remotesDropdown.html($remotesDropdownList);
 
-                // Inject the rendered template inside the $remotesDropdown
-                $remotesDropdown.html($remotesDropdownList);
-
-                if (remotes.value.length !== 0) {
-                    selectRemote(defaultRemoteName);
-                } else {
-                    clearRemotePicker();
-                }
-
-                if (ftpRemotes.state === "rejected" && gitFtpEnabled === true) {
-                    throw ErrorHandler.showError(
-                        ftpRemotes.reason,
-                        "Failed to get a list of Git-FTP remotes, Git remotes was successfully initalized and are usable."
-                    );
-                }
-
+            if (remotes.length !== 0) {
+                selectRemote(defaultRemoteName);
             } else {
-                if (remotes.state === "rejected") {
-                    throw ErrorHandler.showError(remotes.reason, "Failed to get a list of remotes.");
-                }
-                if (ftpRemotes.state === "rejected" && gitFtpEnabled === true) {
-                    throw ErrorHandler.showError(ftpRemotes.reason, "Failed to get a list of Git-FTP remotes.");
-                }
+                clearRemotePicker();
             }
+
         });
     }
 
     function handleRemoteCreation() {
         return Utils.askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_NAME)
-        .then(function (name) {
-            return Utils.askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_URL).then(function (url) {
-                return [name, url];
+            .then(function (name) {
+                return Utils.askQuestion(Strings.CREATE_NEW_REMOTE, Strings.ENTER_REMOTE_URL).then(function (url) {
+                    return [name, url];
+                });
+            })
+            .spread(function (name, url) {
+                return Git.createRemote(name, url).then(function () {
+                    return refreshRemotesPicker();
+                });
+            })
+            .catch(function (err) {
+                ErrorHandler.showError(err, "Remote creation failed");
             });
-        })
-        .spread(function (name, url) {
-            return Git.createRemote(name, url).then(function () {
-                return refreshRemotesPicker();
-            });
-        })
-        .catch(function (err) {
-            ErrorHandler.showError(err, "Remote creation failed");
-        });
     }
 
     function deleteRemote(remoteName) {
         return Utils.askQuestion(Strings.DELETE_REMOTE, StringUtils.format(Strings.DELETE_REMOTE_NAME, remoteName), { booleanResponse: true })
-        .then(function (response) {
-            if (response === true) {
-                return Git.deleteRemote(remoteName).then(function () {
-                    return refreshRemotesPicker();
-                });
-            }
-        })
-        .catch(function (err) {
-            ErrorHandler.logError(err);
-        });
+            .then(function (response) {
+                if (response === true) {
+                    return Git.deleteRemote(remoteName).then(function () {
+                        return refreshRemotesPicker();
+                    });
+                }
+            })
+            .catch(function (err) {
+                ErrorHandler.logError(err);
+            });
     }
 
     function pullFromRemote(remoteName) {
@@ -232,11 +213,11 @@ define(function (require) {
                 return new Promise(function (resolve, reject) {
                     Utils.askQuestion(Strings.SET_ORIGIN_URL, _.escape(Strings.URL)).then(function (url) {
                         Git.createRemote("origin", url)
-                        .then(function () {
-                            return Git.push("origin");
-                        })
-                        .then(resolve)
-                        .catch(reject);
+                            .then(function () {
+                                return Git.push("origin");
+                            })
+                            .then(resolve)
+                            .catch(reject);
                     });
                 });
 

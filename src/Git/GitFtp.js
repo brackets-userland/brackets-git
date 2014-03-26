@@ -50,12 +50,11 @@ define(function (require, exports) {
             usernameArgs = ["config", "--add", "git-ftp." + scope + ".user", username],
             passwordArgs = ["config", "--add", "git-ftp." + scope + ".password", password];
 
-        // FIXME: `Possibly unhandled TypeError: Object [object Object] has no method 'fail'`
         return Promise.all([
             git(scopeArgs),
             git(usernameArgs),
             git(passwordArgs)
-        ]).fail(function (err) {
+        ]).catch(function (err) {
             throw ErrorHandler.rewrapError(err, "There was a problem editing Git configuration file. Operation aborted.");
         });
     }

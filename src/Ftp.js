@@ -82,7 +82,7 @@ define(function (require) {
             .addClass("btn-loading")
             .prop("disabled", true);
         
-        var $selectedElement = $this.closest("a[.remote-name]"),
+        var $selectedElement = $this.closest(".remote-name"),
             $currentRemote = $gitPanel.find(".git-remote-selected"),
             remoteName = $selectedElement.data("remote-name");
 
@@ -94,7 +94,6 @@ define(function (require) {
             if (response) {
                 return GitFtp.gitFtpRemoveScope(remoteName).then(function () {
                     $selectedElement.parent().remove();
-                    console.log("find", $gitPanel.find(".git-remotes-dropdown .remote").first().find("a"));
                     var newRemote = $gitPanel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
                     $currentRemote.data("remote-name", newRemote).html(newRemote);
                 }).fail(function (err) {
