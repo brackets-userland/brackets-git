@@ -11,7 +11,6 @@ define(function (require) {
         Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
         Git           = require("src/Git/Git"),
-        GitFtp        = require("src/Git/GitFtp"),
         Preferences   = require("src/Preferences"),
         Promise       = require("bluebird"),
         Strings       = require("strings"),
@@ -75,59 +74,43 @@ define(function (require) {
     }
 
     function refreshRemotesPicker() {
+        Git.getRemotes().then(function (remotes) {
+            // Set default remote name and cache the remotes dropdown menu
+            var defaultRemoteName    = getDefaultRemote();
 
-        // TODO: replace `settle` with `all` applying [this](https://github.com/zaggino/brackets-git/pull/288#issuecomment-38674930)
-        // Run both getRemotes and getFtpRemotes and render with Mustache the template
-        Promise.settle([Git.getRemotes(), GitFtp.getRemotes()]).spread(function (remotes, ftpRemotes) {
+            // Disable Git-push and Git-pull if there are not remotes defined
+            $gitPanel
+                .find(".git-pull, .git-push")
+                .prop("disabled", remotes.length === 0);
 
-            // If Git.getRemotes was fulfilled and (GitFtp.getRemotes was fulfilled or disabled)...
-            if (remotes.isFulfilled() && (ftpRemotes.isFulfilled() || !gitFtpEnabled)) {
+            // Add options to change remote
+            remotes.forEach(function (remote) {
+                remote.deletable = remote.name !== "origin";
+            });
 
-                // Set default remote name and cache the remotes dropdown menu
-                var defaultRemoteName    = getDefaultRemote(),
-                    $remotesDropdown     = $gitPanel.find(".git-remotes-dropdown"),
-                    $remotesDropdownList = "";
+            // Pass to Mustache the needed data
+            var compiledTemplate = Mustache.render(gitRemotesPickerTemplate, {
+                Strings: Strings,
+                remotes: remotes
+            });
 
-                // Disable Git-push and Git-pull if there are not remotes defined
-                $gitPanel
-                    .find(".git-pull, .git-push")
-                    .prop("disabled", (remotes._settledValue.length === 0 && ftpRemotes._settledValue.length === 0));
+            // Inject the rendered template inside the $remotesDropdown
+            $remotesDropdown.html(compiledTemplate);
 
-                // Add options to change remote
-                remotes._settledValue = $.map(remotes._settledValue, function (remote) {
-                    return {
-                        "name": remote.name,
-                        "deletable": (remote.name !== "origin") ? true : false
-                    };
-                });
+            // Notify others that they may add more stuff to this dropdown
+            EventEmitter.emit(Events.REMOTES_REFRESH_PICKER);
+            // TODO: is it possible to wait for listeners to finish?
 
-                // Pass to Mustache the needed data
-                $remotesDropdownList = Mustache.render(gitRemotesPickerTemplate, {
-                    Strings: Strings,
-                    remotes: remotes._settledValue,
-                    ftpRemotes: ftpRemotes._settledValue,
-                    hasRemotes: remotes._settledValue.length ? true : false,
-                    hasFtpRemotes: ftpRemotes._settledValue.length ? true : false,
-                    gitFtpEnabled: gitFtpEnabled
-                });
-
-                // Inject the rendered template inside the $remotesDropdown
-                $remotesDropdown.html($remotesDropdownList);
-
-                if (remotes._settledValue.length !== 0) {
-                    selectRemote(defaultRemoteName);
-                } else {
-                    clearRemotePicker();
-                }
+            // TODO: if there're no remotes but there are some ftp remotes
+            // we need to adjust that something other may be put as default
+            // low priority
+            if (remotes.length > 0) {
+                selectRemote(defaultRemoteName);
+            } else {
+                clearRemotePicker();
             }
-            // Git.getRemotes was not fulfilled or (GitFtp.getRemotes was not fulfilled and enabled)...
-            else {
-                ErrorHandler.showError(remotes.error(), "Git remotes fetching failed.");
-                if (ftpRemotes.isRejected() && gitFtpEnabled) {
-                    ErrorHandler.showError(ftpRemotes.error(), "Git-FTP remotes fetching failed.");
-                }
-            }
-
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Getting remotes failed!");
         });
     }
 

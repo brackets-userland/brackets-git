@@ -16,7 +16,9 @@ define(function (require) {
         Utils         = require("src/Utils");
 
     // Module variables
-    var $gitPanel = null;
+    var ftpRemotesTemplate = require("text!src/Ftp/templates/remotes-picker.html"),
+        $gitPanel = null,
+        $remotesDropdown = null;
     
     // Implementation
     
@@ -28,6 +30,7 @@ define(function (require) {
     
     function initVariables() {
         $gitPanel = $("#git-panel");
+        $remotesDropdown = $gitPanel.find(".git-remotes-dropdown");
         if (Preferences.get("useGitFtp")) {
             attachEvents();
         }
@@ -131,6 +134,23 @@ define(function (require) {
         });
     }
     
+    function addFtpRemotesToPicker() {
+        GitFtp.getRemotes().then(function (ftpRemotes) {
+
+            // Pass to Mustache the needed data
+            var compiledTemplate = Mustache.render(ftpRemotesTemplate, {
+                Strings: Strings,
+                ftpRemotes: ftpRemotes,
+                hasFtpRemotes: ftpRemotes.length > 0
+            });
+
+            $remotesDropdown.prepend(compiledTemplate);
+
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Getting FTP remotes failed!");
+        });
+    }
+
     // Event subscriptions
     EventEmitter.on(Events.GIT_ENABLED, function () {
         initVariables();
@@ -140,4 +160,8 @@ define(function (require) {
         handleGitFtpPush();
     });
     
+    EventEmitter.on(Events.REMOTES_REFRESH_PICKER, function () {
+        addFtpRemotesToPicker();
+    });
+
 });
