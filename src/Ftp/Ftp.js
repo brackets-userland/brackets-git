@@ -10,10 +10,10 @@ define(function (require) {
     var ErrorHandler  = require("src/ErrorHandler"),
         Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
-        GitFtp        = require("src/Git/GitFtp"),
         Preferences   = require("src/Preferences"),
         Strings       = require("strings"),
-        Utils         = require("src/Utils");
+        Utils         = require("src/Utils"),
+        GitFtp        = require("./GitFtp");
 
     // Module variables
     var ftpRemotesTemplate = require("text!src/Ftp/templates/remotes-picker.html"),
@@ -25,7 +25,8 @@ define(function (require) {
     var attachEvents = _.once(function () {
         $gitPanel
             .on("click", ".gitftp-remote-new", handleGitFtpRemoteCreation)
-            .on("click", ".gitftp-remove-remote", function () { handleGitFtpRemoteRemove($(this)); });
+            .on("click", ".gitftp-remove-remote", function () { handleGitFtpRemoteRemove($(this)); })
+            .on("click", ".gitftp-push", handleGitFtpPush);
     });
     
     function initVariables() {
@@ -155,11 +156,7 @@ define(function (require) {
     EventEmitter.on(Events.GIT_ENABLED, function () {
         initVariables();
     });
-    
-    EventEmitter.on(Events.HANDLE_FTP_PUSH, function () {
-        handleGitFtpPush();
-    });
-    
+
     EventEmitter.on(Events.REMOTES_REFRESH_PICKER, function () {
         addFtpRemotesToPicker();
     });

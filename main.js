@@ -35,7 +35,7 @@ define(function (require, exports, module) {
     // Load extension modules that are not included by core
     var modules = ["src/Remotes"];
     if (Preferences.get("useGitFtp")) {
-        modules.push("src/Ftp");
+        modules.push("src/Ftp/Ftp");
     }
     require(modules);
 

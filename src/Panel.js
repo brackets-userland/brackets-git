@@ -1102,8 +1102,7 @@ define(function (require, exports) {
             .on("click", ".change-user-name", changeUserName)
             .on("click", ".change-user-email", changeUserEmail)
             .on("click", ".undo-last-commit", undoLastLocalCommit)
-            .on("click", ".git-bash", openBashConsole)
-            .on("click", ".gitftp-push", EventEmitter.emitFactory(Events.HANDLE_FTP_PUSH));
+            .on("click", ".git-bash", openBashConsole);
 
         // Attaching table handlers
         attachDefaultTableHandlers();
