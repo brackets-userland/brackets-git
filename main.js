@@ -69,7 +69,7 @@ define(function (require, exports, module) {
     // Register command and add it to the menu.
 	CommandManager.register(Strings.GIT_SETTINGS, SETTINGS_COMMAND_ID, openSettingsPanel);
 	Menus
-        .addMenu("Git", TOP_MENU_ID)
+        .addMenu("Git", TOP_MENU_ID, Menus.AFTER, Menus.AppMenuBar.NAVIGATE_MENU )
         .addMenuItem(SETTINGS_COMMAND_ID);
 
     AppInit.appReady(function () {
