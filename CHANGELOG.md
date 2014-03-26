@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.12.2
+* Top menu has been removed - you can access settings through panel or File > Git settings...
+
 ## 0.12.1
 * Fixed a bug that extension won't even start on some machines.
 * Fixed some issues with pushing to remote repositories.

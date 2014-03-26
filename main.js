@@ -14,7 +14,10 @@ define(function (require, exports, module) {
     // Get module dependencies.
     var q                          = require("./thirdparty/q"),
         AppInit                    = brackets.getModule("utils/AppInit"),
+        CommandManager             = brackets.getModule("command/CommandManager"),
+        Commands                   = brackets.getModule("command/Commands"),
         ExtensionUtils             = brackets.getModule("utils/ExtensionUtils"),
+        Menus                      = brackets.getModule("command/Menus"),
         NodeConnection             = brackets.getModule("utils/NodeConnection"),
         moduleDirectory            = ExtensionUtils.getModulePath(module);
 
@@ -25,6 +28,7 @@ define(function (require, exports, module) {
         ErrorHandler               = require("src/ErrorHandler"),
         ExpectedError              = require("src/ExpectedError"),
         SettingsDialog             = require("src/SettingsDialog"),
+        Strings                    = require("strings"),
         domainModulePath           = moduleDirectory + "src/Domains/cli",
         nodeConnection             = new NodeConnection();
 
@@ -60,6 +64,11 @@ define(function (require, exports, module) {
             ChangelogDialog.show();
         }
     });
+
+    // Register command and add it to the menu.
+    var SETTINGS_COMMAND_ID = "brackets-git.settings";
+    CommandManager.register(Strings.GIT_SETTINGS, SETTINGS_COMMAND_ID, openSettingsPanel);
+    Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(SETTINGS_COMMAND_ID, "", Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
 
     AppInit.appReady(function () {
         // Connects to Node
