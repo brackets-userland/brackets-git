@@ -1101,18 +1101,14 @@ define(function (require, exports) {
             .on("click", ".change-user-name", changeUserName)
             .on("click", ".change-user-email", changeUserEmail)
             .on("click", ".undo-last-commit", undoLastLocalCommit)
-            .on("click", ".git-bash", openBashConsole);
-
-        if (Preferences.get("useGitFtp")) {
-            gitPanel.$panel.on("click", ".gitftp-push", EventEmitter.emitFactory(Events.HANDLE_FTP_PUSH));
-        }
+            .on("click", ".git-bash", openBashConsole)
+            .on("click", ".gitftp-push", EventEmitter.emitFactory(Events.HANDLE_FTP_PUSH));
 
         // Attaching table handlers
         attachDefaultTableHandlers();
 
         // Register command for opening bottom panel.
         CommandManager.register(Strings.PANEL_COMMAND, PANEL_COMMAND_ID, toggle);
-
 
         // Commit current and all shortcuts
         var GIT_MENU           = "brackets-git.gitMenu",
