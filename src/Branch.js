@@ -99,13 +99,28 @@ define(function (require, exports) {
 
                 var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
-                _reloadBranchSelect(dialog.getElement().find(".branchSelect"), branches);
+                var $input  = dialog.getElement().find("[name='branch-name']"),
+                    $select = dialog.getElement().find(".branchSelect");
+
+                $select.on("change", function () {
+                    if (!$input.val()) {
+                        var $opt = $select.find(":selected"),
+                            remote = $opt.attr("remote"),
+                            newVal = $opt.val();
+                        if (remote) {
+                            newVal = newVal.substring(remote.length + 1);
+                        }
+                        $input.val(newVal);
+                    }
+                });
+
+                _reloadBranchSelect($select, branches);
                 dialog.getElement().find(".fetchBranches").on("click", function () {
                     var $this = $(this);
                     Git.fetchAllRemotes().then(function () {
                         return Git.getAllBranches().then(function (branches) {
                             $this.prop("disabled", true).attr("title", "Already fetched");
-                            _reloadBranchSelect($this.siblings("select"), branches);
+                            _reloadBranchSelect($select, branches);
                         });
                     }).fail(function (err) {
                         throw ErrorHandler.showError(err, "Fetching remote information failed");
