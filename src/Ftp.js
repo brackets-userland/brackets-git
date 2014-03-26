@@ -57,24 +57,48 @@ define(function (require) {
             .addClass("btn-loading")
             .prop("disabled", true);
         
-        return Utils.askQuestion(Strings.CREATE_GITFTP_NEW_REMOTE,
-                                 Strings.ENTER_GITFTP_REMOTE_NAME).then(function (name) {
-            return Utils.askQuestion(Strings.CREATE_GITFTP_NEW_REMOTE,
-                                     Strings.ENTER_GITFTP_REMOTE_URL,
-                                     {defaultValue: "ftp://user:passwd@example.org/folder"}).then(function (url) {
-                
-                return GitFtp.addScope(name, url).then(function () {
-                    // return handleGitFtpRemoteInit();
-                }).fail(function (err) {
-                    ErrorHandler.showError(err, "Git-FTP remote creation failed");
-                });
-                
+        return Utils.askQuestion(Strings.CREATE_GITFTP_NEW_REMOTE, Strings.ENTER_GITFTP_REMOTE_NAME)
+            .then(function (name) {
+                return Utils.askQuestion(
+                    Strings.CREATE_GITFTP_NEW_REMOTE,
+                    Strings.ENTER_GITFTP_REMOTE_URL,
+                    {defaultValue: "ftp://user:passwd@example.org/folder"}
+                )
+                    .then(function (url) {
+                        return GitFtp.addScope(name, url).then(function () {
+
+                            // Render the list element of the new remote
+                            // TODO: replace this part with a way to call `Remotes.refreshRemotesPicker()`
+                            var $newRemote =   $("<li/>")
+                                                    .addClass("gitftp-remote")
+                                                    .append("<a/>")
+                                                    .find("a")
+                                                        .attr({href: "#", "data-remote-name": name, "data-type": "ftp"})
+                                                        .addClass("remote-name")
+                                                        .append("<span/>")
+                                                        .find("span")
+                                                            .addClass("trash-icon gitftp-remove-remote")
+                                                            .html("&times;")
+                                                        .end()
+                                                        .append("<span/>")
+                                                        .find("span:nth-child(2)")
+                                                            .addClass("change-remote")
+                                                            .text(name)
+                                                        .end()
+                                                    .end();
+
+                            $gitPanel.find(".git-remotes-dropdown .ftp-remotes-header").after($newRemote);
+
+                        }).fail(function (err) {
+                            ErrorHandler.showError(err, "Git-FTP remote creation failed");
+                        });
+                    });
+            })
+            .finally(function () {
+                $gitPanel.find(".git-remotes")
+                    .removeClass("btn-loading")
+                    .prop("disabled", false);
             });
-        }).finally(function () {
-            $gitPanel.find(".git-remotes")
-                .removeClass("btn-loading")
-                .prop("disabled", false);
-        });
     }
     
     function handleGitFtpRemoteRemove($this) {

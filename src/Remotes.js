@@ -75,6 +75,8 @@ define(function (require) {
     }
 
     function refreshRemotesPicker() {
+
+        // TODO: replace `settle` with `all` applying [this](https://github.com/zaggino/brackets-git/pull/288#issuecomment-38674930)
         // Run both getRemotes and getFtpRemotes and render with Mustache the template
         Promise.settle([Git.getRemotes(), GitFtp.getRemotes()]).spread(function (remotes, ftpRemotes) {
 

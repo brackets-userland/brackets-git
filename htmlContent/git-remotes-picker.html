@@ -1,5 +1,5 @@
 <!-- List of remotes defined for the current local repository -->
-{{#gitFtpEnabled}}<li class="dropdown-header">{{Strings.GIT_REMOTES}}</li>{{/gitFtpEnabled}}
+{{#gitFtpEnabled}}<li class="dropdown-header git-remotes-header">{{Strings.GIT_REMOTES}}</li>{{/gitFtpEnabled}}
 {{#hasRemotes}}
 {{#remotes}}
 <li class="remote">
@@ -15,7 +15,7 @@
 {{#gitFtpEnabled}}
 <!-- List of Git-FTP remotes defined for the current local repository -->
 <li class="divider"></li>
-<li class="dropdown-header">{{Strings.GITFTP_REMOTES}}</li>
+<li class="dropdown-header ftp-remotes-header">{{Strings.GITFTP_REMOTES}}</li>
 {{#hasFtpRemotes}}
 {{#ftpRemotes}}
 <li class="gitftp-remote">
