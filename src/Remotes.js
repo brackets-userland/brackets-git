@@ -144,7 +144,9 @@ define(function (require) {
                 });
             })
             .catch(function (err) {
-                ErrorHandler.showError(err, "Remote creation failed");
+                if (!ErrorHandler.equals(err, Strings.USER_ABORTED)) {
+                    ErrorHandler.showError(err, "Remote creation failed");
+                }
             });
     }
 

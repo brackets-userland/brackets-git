@@ -133,6 +133,7 @@ define({
     TOOLTIP_SHOW_HISTORY:               "Show history",
     TOOLTIP_PICK_REMOTE:                "Pick preferred remote",
     TOOLTIP_MORE:                       "More actions\u2026",
+    USER_ABORTED:                       "User aborted!",
     UNDO_CHANGES:                       "Discard changes",
     UNDO_LAST_LOCAL_COMMIT:             "Undo last local (not pushed) commit",
     URL:                                "URL",

@@ -77,7 +77,7 @@ define(function (require, exports) {
                 if (buttonId === "ok") {
                     return resolve(dialog.getElement().find("input").val().trim());
                 } else {
-                    return reject("User aborted!");
+                    return reject(Strings.USER_ABORTED);
                 }
             });
         });
