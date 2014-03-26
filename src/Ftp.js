@@ -37,7 +37,7 @@ define(function (require) {
         var gitFtpRemote = $gitPanel.find(".git-remote-selected").text().trim();
         $gitPanel.find(".gitftp-push").prop("disabled", true).addClass("btn-loading");
 
-        GitFtp.gitFtpPush(gitFtpRemote).done(function (result) {
+        GitFtp.push(gitFtpRemote).done(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GITFTP_PUSH_RESPONSE, // title
@@ -63,7 +63,7 @@ define(function (require) {
                                      Strings.ENTER_GITFTP_REMOTE_URL,
                                      {defaultValue: "ftp://user:passwd@example.org/folder"}).then(function (url) {
                 
-                return GitFtp.gitFtpAddScope(name, url).then(function () {
+                return GitFtp.addScope(name, url).then(function () {
                     // return handleGitFtpRemoteInit();
                 }).fail(function (err) {
                     ErrorHandler.showError(err, "Git-FTP remote creation failed");
@@ -92,7 +92,7 @@ define(function (require) {
             {booleanResponse: true}
         ).then(function (response) {
             if (response) {
-                return GitFtp.gitFtpRemoveScope(remoteName).then(function () {
+                return GitFtp.removeScope(remoteName).then(function () {
                     $selectedElement.parent().remove();
                     var newRemote = $gitPanel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
                     $currentRemote.data("remote-name", newRemote).html(newRemote);
