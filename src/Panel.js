@@ -505,7 +505,7 @@ define(function (require, exports) {
                 if (stripWhitespace && updateIndex === false) {
                     // strip whitespace only for recognized languages so binary files won't get corrupted
                     var langId = LanguageManager.getLanguageForPath(fileObj.filename).getId();
-                    if (["unknown", "binary", "image"].indexOf(langId) === -1) {
+                    if (["unknown", "binary", "image", "markdown"].indexOf(langId) === -1) {
                         queue = queue.then(function () {
                             var clearWholeFile = fileObj.status.indexOf(GitControl.FILE_STATUS.UNTRACKED) !== -1;
                             return stripWhitespaceFromFile(fileObj.filename, clearWholeFile);
