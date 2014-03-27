@@ -1,0 +1,6 @@
+{
+    "search": {
+        "scope": "project",        
+        "excludeFolders": [ "thirdparty" ]
+    }
+}
