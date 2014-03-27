@@ -1,28 +1,29 @@
 # Brackets-Git
 
-Brackets-Git it's an extension for [Brackets](http://brackets.io/) editor, it adds Git integration inside Brackets.  
+Brackets-Git is an extension for [Brackets](http://brackets.io/) editor - it provides Git integration for Brackets.  
 It's tested and works on any platform supported by Brackets (Windows, Mac OSx, GNU/Linux).
 
 ## Installation
 
 #### Dependencies:
-To make **Brackets-Git** works you need Git installed in your system:
+To make **Brackets-Git** work you'll need Git installed in your system:
 
-- **Windows**: [MsysGit](https://code.google.com/p/msysgit/) is reccomanded ([reccomanded settings](https://raw.github.com/zaggino/brackets-git/master/screenshots/gitInstall.png))
-- **Mac OS X**: [Git for OS X](https://code.google.com/p/git-osx-installer/) is reccomanded.
+- **Windows**: [MsysGit](https://code.google.com/p/msysgit/) is reccomended with these ([settings](https://raw.github.com/zaggino/brackets-git/master/screenshots/gitInstall.png))
+- **Mac OS X**: [Git for OS X](https://code.google.com/p/git-osx-installer/) is reccomended.
 - **GNU/Linux**: Install the package `git`:  
    \- Debian/Ubuntu: `sudo apt-get install git`  
    \- RedHat/CentOS/Fedora: `sudo yum install git`
 
 #### Extension installation:
-To install **Brackets-Git** in your Brackets you can use Brackets built-in Extension Manager or the [extension registry](https://brackets-registry.aboutweb.com/).
+To install latest release of **Brackets-Git** use the built-in Brackets Extension Manager which downloads the extension from the [extension registry](https://brackets-registry.aboutweb.com/).
 
 #### Configuration:
-Extension can be configured opening the Git Panel and clicking the ![settings...][settingsIcon] button.
+Extension can be configured by opening the Git Panel and clicking the ![settings...][settingsIcon] button.  
+Alternatively you can use "File > Git Settings..." in the Brackets menu.
 
 ## Features and limitations
 
-Currently **Brackets-Git** supports these features (this list could be incomplete):
+Currently **Brackets-Git** supports these features (this list may be incomplete as we add new features regularely):
 
 - `init` / `clone` / `push` / `pull`
 - `create` / `delete` / `merge` branches
