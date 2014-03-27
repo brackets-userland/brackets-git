@@ -745,7 +745,8 @@ define(function (require, exports) {
             Main.gitControl.gitCheckout(hashCommit).then(function () {
                 dialog.close();
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITLE_DONE, "Check out to " + hashCommit + ".");
-            }, function (err) {
+                return Branch.refresh();
+            }).fail(function (err) {
                 dialog.close();
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
             });
