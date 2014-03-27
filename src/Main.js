@@ -18,8 +18,6 @@ define(function (require, exports) {
         Panel             = require("./Panel"),
         Branch            = require("./Branch"),
         CloseNotModified  = require("./CloseNotModified"),
-        Events            = require("src/Events"),
-        EventEmitter      = require("src/EventEmitter"),
         Cli               = require("src/Cli"),
         Utils             = require("src/Utils");
 
@@ -244,9 +242,7 @@ define(function (require, exports) {
         return p.promise;
     }
 
-    function init(nodeConnection) {
-        EventEmitter.emit(Events.NODE_CONNECTION_READY, nodeConnection);
-
+    function init() {
         // Creates an GitControl Instance
         gitControl = exports.gitControl = new GitControl({
             handler: Cli.cliHandler

@@ -18,19 +18,14 @@ define(function (require, exports, module) {
         Commands                   = brackets.getModule("command/Commands"),
         ExtensionUtils             = brackets.getModule("utils/ExtensionUtils"),
         Menus                      = brackets.getModule("command/Menus"),
-        NodeConnection             = brackets.getModule("utils/NodeConnection"),
         moduleDirectory            = ExtensionUtils.getModulePath(module);
 
     var ExtensionInfo              = require("src/ExtensionInfo"),
         Preferences                = require("src/Preferences"),
         ExtensionMain              = require("src/Main"),
         ChangelogDialog            = require("src/ChangelogDialog"),
-        ErrorHandler               = require("src/ErrorHandler"),
-        ExpectedError              = require("src/ExpectedError"),
         SettingsDialog             = require("src/SettingsDialog"),
-        Strings                    = require("strings"),
-        domainModulePath           = moduleDirectory + "src/Domains/cli",
-        nodeConnection             = new NodeConnection();
+        Strings                    = require("strings");
 
     // Load extension modules that are not included by core
     var modules = ["src/Remotes"];
@@ -74,17 +69,7 @@ define(function (require, exports, module) {
     Menus.getMenu(Menus.AppMenuBar.FILE_MENU).addMenuItem(SETTINGS_COMMAND_ID, "", Menus.AFTER, Commands.FILE_PROJECT_SETTINGS);
 
     AppInit.appReady(function () {
-        // Connects to Node
-        nodeConnection.connect(true).fail(function (err) {
-            ErrorHandler.showError(new ExpectedError(err), "Failed to connect to Node.js, extension requires Node.js installed");
-        }).then(function () {
-            // Register the domain.
-            return nodeConnection.loadDomains([domainModulePath], true).fail(function (err) {
-                ErrorHandler.showError(new ExpectedError(err), "Failed to register Node.js domain, extension requires Node.js installed");
-            });
-        }).then(function () {
-            ExtensionMain.init(nodeConnection);
-        }).done();
+        ExtensionMain.init();
     });
 
 });

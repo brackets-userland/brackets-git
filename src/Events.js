@@ -6,9 +6,6 @@ define(function (require, exports) {
      * Events should be structured by file who emits them.
      */
 
-    // Main.js
-    exports.NODE_CONNECTION_READY = "node.connection.ready";
-
     // Panel.js
     exports.GIT_ENABLED = "git.enabled";
     exports.GIT_DISABLED = "git.disabled";

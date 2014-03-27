@@ -94,7 +94,7 @@ define(function (require, exports, module) {
                 promise.resolve(result);
                 self._isHandlerRunning = false;
                 self._processQueue();
-            }).fail(function (ex) {
+            }).catch(function (ex) {
                 promise.reject(ex);
                 self._isHandlerRunning = false;
                 self._processQueue();
@@ -153,7 +153,7 @@ define(function (require, exports, module) {
                 }
                 args = [escapeShellArg(folder)];
             }
-            return this.executeCommand(cmd, args, opts).fail(function (err) {
+            return this.executeCommand(cmd, args, opts).catch(function (err) {
                 if (ErrorHandler.isTimeout(err)) {
                     // process is running after 1 second timeout so terminal is opened
                     return;
@@ -515,7 +515,7 @@ define(function (require, exports, module) {
                     arr.push(obj);
                     return arr;
                 }, []);
-            }).fail(function (stderr) {
+            }).catch(function (stderr) {
                 var m = stderr.match(/no such path (\S+)/);
                 if (m) {
                     throw new ExpectedError("File is not tracked by Git: " + m[1]);
