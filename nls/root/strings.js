@@ -49,6 +49,8 @@ define({
     DELETE_FILE:                        "Delete file",
     DELETE_REMOTE:                      "Delete remote",
     DELETE_REMOTE_NAME:                 "Do you really wish to delete remote \"{0}\"?",
+    DELETE_LOCAL_BRANCH:                "Delete local branch",
+    DELETE_LOCAL_BRANCH_NAME:           "Do you really wish to delete local branch \"{0}\"?",
     DIFF:                               "Diff",
     DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     ENTER_PASSWORD:                     "Enter password:",

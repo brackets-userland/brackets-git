@@ -11,6 +11,7 @@ define(function (require, exports) {
         FileSystem              = brackets.getModule("filesystem/FileSystem"),
         Menus                   = brackets.getModule("command/Menus"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
+        StringUtils             = brackets.getModule("utils/StringUtils"),
         SidebarView             = brackets.getModule("project/SidebarView");
 
     var Git                     = require("src/Git/Git"),
@@ -164,9 +165,24 @@ define(function (require, exports) {
         }).on("mouseleave", "a", function () {
             $(this).removeClass("selected");
         }).on("click", "a.git-branch-link .trash-icon", function () {
-            Main.gitControl.deleteLocalBranch($(this).parent().data("branch")).catch(function (err) {
-                ErrorHandler.showError(err, "Branch deletion failed");
+            var branchName = $(this).parent().data("branch");
+            Utils.askQuestion(
+                Strings.DELETE_LOCAL_BRANCH,
+                StringUtils.format(Strings.DELETE_LOCAL_BRANCH_NAME, branchName),
+                { booleanResponse: true }
+            )
+            .then(function (response) {
+                if (response === true) {
+                    return Main.gitControl.deleteLocalBranch(branchName).catch(function (err) {
+                        ErrorHandler.showError(err, "Branch deletion failed");
+                    });
+                }
+            })
+            .catch(function (err) {
+                ErrorHandler.logError(err);
             });
+
+
         }).on("click", ".merge-branch", function () {
             var fromBranch = $(this).parent().data("branch");
             doMerge(fromBranch);
