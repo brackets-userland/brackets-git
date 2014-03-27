@@ -2,6 +2,10 @@
 
 ## 0.12.2
 * Top menu has been removed - you can access settings through panel or File > Git settings...
+* Branch deletion handling has been improved and now you can delete also not fully merged branches.
+* README has been updated after a long time (thanks [Fez Vrasta](https://github.com/FezVrasta))
+* [Fez Vrasta](https://github.com/FezVrasta) started to add support for [Git-FTP](https://github.com/git-ftp/git-ftp)
+* Updated translations by [Marcel Gerber](https://github.com/SAPlayer)
 
 ## 0.12.1
 * Fixed a bug that extension won't even start on some machines.
