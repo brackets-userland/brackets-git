@@ -1,8 +1,7 @@
 define(function (require, exports) {
     "use strict";
 
-    var q                 = require("../thirdparty/q"),
-        _                 = brackets.getModule("thirdparty/lodash"),
+    var _                 = brackets.getModule("thirdparty/lodash"),
         AppInit           = brackets.getModule("utils/AppInit"),
         CommandManager    = brackets.getModule("command/CommandManager"),
         Menus             = brackets.getModule("command/Menus"),

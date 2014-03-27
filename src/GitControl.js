@@ -9,7 +9,6 @@ define(function (require, exports, module) {
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
         ErrorHandler    = require("./ErrorHandler"),
-        q               = require("../thirdparty/q"),
         ExpectedError   = require("./ExpectedError"),
         Preferences     = require("./Preferences");
 

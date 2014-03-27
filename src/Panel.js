@@ -4,8 +4,7 @@
 define(function (require, exports) {
     "use strict";
 
-    var q                  = require("../thirdparty/q"),
-        moment             = require("moment"),
+    var moment             = require("moment"),
         _                  = brackets.getModule("thirdparty/lodash"),
         CodeInspection     = brackets.getModule("language/CodeInspection"),
         CommandManager     = brackets.getModule("command/CommandManager"),

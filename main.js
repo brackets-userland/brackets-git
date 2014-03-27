@@ -12,8 +12,7 @@ define(function (require, exports, module) {
     "use strict";
 
     // Get module dependencies.
-    var q                          = require("./thirdparty/q"),
-        AppInit                    = brackets.getModule("utils/AppInit"),
+    var AppInit                    = brackets.getModule("utils/AppInit"),
         CommandManager             = brackets.getModule("command/CommandManager"),
         Commands                   = brackets.getModule("command/Commands"),
         ExtensionUtils             = brackets.getModule("utils/ExtensionUtils"),
@@ -33,9 +32,6 @@ define(function (require, exports, module) {
         modules.push("src/Ftp/Ftp");
     }
     require(modules);
-
-    // Seems just too buggy right now
-    q.stopUnhandledRejectionTracking();
 
     // Load CSS
     ExtensionUtils.loadStyleSheet(module, "less/brackets-git.less");

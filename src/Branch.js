@@ -15,7 +15,6 @@ define(function (require, exports) {
         SidebarView             = brackets.getModule("project/SidebarView");
 
     var Git                     = require("src/Git/Git"),
-        q                       = require("../thirdparty/q"),
         ErrorHandler            = require("./ErrorHandler"),
         Main                    = require("./Main"),
         Panel                   = require("./Panel"),
