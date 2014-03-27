@@ -15,18 +15,13 @@ define(function (require, exports) {
 
     // Public API
     exports.pushToNewUpstream         = pushToNewUpstream;
-    exports.pull                      = GitCli.pull;
-    exports.push                      = GitCli.push;
-    exports.getRemotes                = GitCli.getRemotes;
-    exports.createRemote              = GitCli.createRemote;
-    exports.deleteRemote              = GitCli.deleteRemote;
-    exports.setUpstreamBranch         = GitCli.setUpstreamBranch;
-    exports.getCurrentBranchName      = GitCli.getCurrentBranchName;
-    exports.getCurrentUpstreamBranch  = GitCli.getCurrentUpstreamBranch;
-    exports.getConfig                 = GitCli.getConfig;
-    exports.setConfig                 = GitCli.setConfig;
-    exports.fetchAllRemotes           = GitCli.fetchAllRemotes;
-    exports.getBranches               = GitCli.getBranches;
-    exports.getAllBranches            = GitCli.getAllBranches;
+
+    Object.keys(GitCli).forEach(function (method) {
+        if (!exports[method]) {
+            exports[method] = GitCli[method];
+        } else {
+            console.log("[brackets-git] Method " + method + " already exists in Git");
+        }
+    });
 
 });

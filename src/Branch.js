@@ -165,23 +165,33 @@ define(function (require, exports) {
         }).on("mouseleave", "a", function () {
             $(this).removeClass("selected");
         }).on("click", "a.git-branch-link .trash-icon", function () {
-            var branchName = $(this).parent().data("branch");
-            Utils.askQuestion(
-                Strings.DELETE_LOCAL_BRANCH,
-                StringUtils.format(Strings.DELETE_LOCAL_BRANCH_NAME, branchName),
-                { booleanResponse: true }
-            )
-            .then(function (response) {
-                if (response === true) {
-                    return Main.gitControl.deleteLocalBranch(branchName).catch(function (err) {
-                        ErrorHandler.showError(err, "Branch deletion failed");
-                    });
-                }
-            })
-            .catch(function (err) {
-                ErrorHandler.logError(err);
-            });
 
+            var branchName = $(this).parent().data("branch");
+            Utils.askQuestion(Strings.DELETE_LOCAL_BRANCH,
+                              StringUtils.format(Strings.DELETE_LOCAL_BRANCH_NAME, branchName),
+                              { booleanResponse: true })
+                .then(function (response) {
+                    if (response === true) {
+                        return Git.branchDelete(branchName).catch(function (err) {
+
+                            return Utils.showOutput(err, "Branch deletion failed", {
+                                question: "Do you wish to force branch deletion?"
+                            }).then(function (response) {
+                                if (response === true) {
+                                    return Git.forceBranchDelete(branchName).then(function (output) {
+                                        return Utils.showOutput(output);
+                                    }).catch(function (err) {
+                                        ErrorHandler.showError(err, "Forced branch deletion failed");
+                                    });
+                                }
+                            });
+
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    ErrorHandler.showError(err);
+                });
 
         }).on("click", ".merge-branch", function () {
             var fromBranch = $(this).parent().data("branch");

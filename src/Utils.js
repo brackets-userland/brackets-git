@@ -83,14 +83,21 @@ define(function (require, exports) {
         });
     }
 
-    function showOutput(output, title) {
-        var compiledTemplate = Mustache.render(outputDialogTemplate, {
-            title: title,
-            output: output,
-            Strings: Strings
+    function showOutput(output, title, options) {
+        return new Promise(function (resolve) {
+            options = options || {};
+            var compiledTemplate = Mustache.render(outputDialogTemplate, {
+                title: title,
+                output: output,
+                Strings: Strings,
+                question: options.question
+            });
+            var dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+            dialog.getElement().focus();
+            dialog.done(function (buttonId) {
+                resolve(buttonId === "ok");
+            });
         });
-        Dialogs.showModalDialogUsingTemplate(compiledTemplate)
-            .getElement().find("button").focus();
     }
 
     // Public API

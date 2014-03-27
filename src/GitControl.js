@@ -242,11 +242,6 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
-        deleteLocalBranch: function (branchName) {
-            var args = ["branch", "-d", branchName];
-            return this.executeCommand(this._git, args);
-        },
-
         getRemotes: function () {
             var args = ["remote", "-v"];
             return this.executeCommand(this._git, args).then(function (stdout) {

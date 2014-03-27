@@ -193,6 +193,14 @@ define(function (require, exports) {
         return git(["config", key.replace(/\s/g, ""), value]);
     }
 
+    function branchDelete(branchName) {
+        return git(["branch", "-d", branchName]);
+    }
+
+    function forceBranchDelete(branchName) {
+        return git(["branch", "-D", branchName]);
+    }
+
     // Public API
     exports.git                       = git;
     exports.fetchAllRemotes           = fetchAllRemotes;
@@ -208,5 +216,7 @@ define(function (require, exports) {
     exports.setConfig                 = setConfig;
     exports.getBranches               = getBranches;
     exports.getAllBranches            = getAllBranches;
+    exports.branchDelete              = branchDelete;
+    exports.forceBranchDelete         = forceBranchDelete;
 
 });
