@@ -12,8 +12,8 @@ define(function (require, exports) {
         Strings         = require("strings");
 
     // Module variables
-    var questionDialogTemplate = require("text!htmlContent/git-question-dialog.html"),
-        outputDialogTemplate = require("text!htmlContent/git-output.html");
+    var questionDialogTemplate = require("text!templates/git-question-dialog.html"),
+        outputDialogTemplate = require("text!templates/git-output.html");
 
     // Implementation
 

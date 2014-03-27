@@ -36,15 +36,15 @@ define(function (require, exports) {
         SettingsDialog     = require("./SettingsDialog"),
         PANEL_COMMAND_ID   = "brackets-git.panel";
 
-    var gitignoreTemplate           = require("text!htmlContent/default-gitignore"),
-        gitPanelTemplate            = require("text!htmlContent/git-panel.html"),
-        gitPanelResultsTemplate     = require("text!htmlContent/git-panel-results.html"),
-        gitPanelHistoryTemplate     = require("text!htmlContent/git-panel-history.html"),
-        gitAuthorsDialogTemplate    = require("text!htmlContent/authors-dialog.html"),
-        gitCommitDialogTemplate     = require("text!htmlContent/git-commit-dialog.html"),
-        gitDiffDialogTemplate       = require("text!htmlContent/git-diff-dialog.html"),
-        gitCommitDiffDialogTemplate = require("text!htmlContent/git-commit-diff-dialog.html"),
-        questionDialogTemplate      = require("text!htmlContent/git-question-dialog.html");
+    var gitignoreTemplate           = require("text!templates/default-gitignore"),
+        gitPanelTemplate            = require("text!templates/git-panel.html"),
+        gitPanelResultsTemplate     = require("text!templates/git-panel-results.html"),
+        gitPanelHistoryTemplate     = require("text!templates/git-panel-history.html"),
+        gitAuthorsDialogTemplate    = require("text!templates/authors-dialog.html"),
+        gitCommitDialogTemplate     = require("text!templates/git-commit-dialog.html"),
+        gitDiffDialogTemplate       = require("text!templates/git-diff-dialog.html"),
+        gitCommitDiffDialogTemplate = require("text!templates/git-commit-diff-dialog.html"),
+        questionDialogTemplate      = require("text!templates/git-question-dialog.html");
 
     var showFileWhiteList = /^\.gitignore$/;
 
