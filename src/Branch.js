@@ -165,7 +165,6 @@ define(function (require, exports) {
         }).on("mouseleave", "a", function () {
             $(this).removeClass("selected");
         }).on("click", "a.git-branch-link .trash-icon", function () {
-
             var branchName = $(this).parent().data("branch");
             Utils.askQuestion(Strings.DELETE_LOCAL_BRANCH,
                               StringUtils.format(Strings.DELETE_LOCAL_BRANCH_NAME, branchName),
@@ -192,7 +191,6 @@ define(function (require, exports) {
                 .catch(function (err) {
                     ErrorHandler.showError(err);
                 });
-
         }).on("click", ".merge-branch", function () {
             var fromBranch = $(this).parent().data("branch");
             doMerge(fromBranch);

@@ -125,6 +125,7 @@ define({
     TARGET_BRANCH:                      "Target branch",
     TITLE_DONE:                         "Done!",
     TITLE_ERROR:                        "Error!",
+    TARGET_BRANCH:                      "Target branch",
     TOOLTIP_BUG:                        "Report bug",
     TOOLTIP_OPEN_BASH:                  "Open Bash/Terminal console",
     TOOLTIP_PULL:                       "Git Pull",

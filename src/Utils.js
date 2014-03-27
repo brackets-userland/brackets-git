@@ -14,7 +14,7 @@ define(function (require, exports) {
     // Module variables
     var questionDialogTemplate = require("text!templates/git-question-dialog.html"),
         outputDialogTemplate = require("text!templates/git-output.html");
-
+    
     // Implementation
 
     function getProjectRoot() {
