@@ -21,9 +21,9 @@ define(function (require, exports) {
         Panel                   = require("./Panel"),
         Strings                 = require("../strings"),
         Utils                   = require("./Utils"),
-        branchesMenuTemplate    = require("text!htmlContent/git-branches-menu.html"),
-        newBranchTemplate       = require("text!htmlContent/branch-new-dialog.html"),
-        mergeBranchTemplate     = require("text!htmlContent/branch-merge-dialog.html");
+        branchesMenuTemplate    = require("text!templates/git-branches-menu.html"),
+        newBranchTemplate       = require("text!templates/branch-new-dialog.html"),
+        mergeBranchTemplate     = require("text!templates/branch-merge-dialog.html");
 
     var $gitBranchName          = $(null),
         $dropdown;

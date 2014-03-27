@@ -10,7 +10,7 @@ define(function (require, exports) {
         StringUtils                = brackets.getModule("utils/StringUtils"),
         Preferences                = require("./Preferences"),
         Strings                    = require("../strings"),
-        changelogDialogTemplate    = require("text!htmlContent/git-changelog-dialog.html"),
+        changelogDialogTemplate    = require("text!templates/git-changelog-dialog.html"),
         marked                     = require("marked");
 
     var dialog;

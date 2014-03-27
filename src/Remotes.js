@@ -17,7 +17,7 @@ define(function (require) {
         Utils         = require("src/Utils");
 
     // Templates
-    var gitRemotesPickerTemplate = require("text!htmlContent/git-remotes-picker.html");
+    var gitRemotesPickerTemplate = require("text!templates/git-remotes-picker.html");
 
     // Module variables
     var $selectedRemote  = null,

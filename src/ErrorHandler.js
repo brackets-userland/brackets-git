@@ -10,8 +10,8 @@ define(function (require, exports) {
         ExpectedError              = require("./ExpectedError"),
         ExtensionInfo              = require("./ExtensionInfo"),
         Strings                    = require("../strings"),
-        markdownReportTemplate     = require("text!htmlContent/error-report.md"),
-        errorDialogTemplate        = require("text!htmlContent/git-error-dialog.html");
+        markdownReportTemplate     = require("text!templates/error-report.md"),
+        errorDialogTemplate        = require("text!templates/git-error-dialog.html");
 
     var errorQueue = [];
 
