@@ -10,6 +10,7 @@ define(function (require, exports) {
     var Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
         Main          = require("src/Main"),
+        Utils         = require("src/Utils"),
         Strings       = require("strings");
 
     var $icon = $(null);
@@ -17,7 +18,7 @@ define(function (require, exports) {
     function handleCloseNotModified() {
         Main.gitControl.getGitStatus().then(function (modifiedFiles) {
             var openFiles = DocumentManager.getWorkingSet(),
-                projectRoot = Main.getProjectRoot();
+                projectRoot = Utils.getProjectRoot();
             openFiles.forEach(function (openFile) {
                 var removeOpenFile = true;
                 modifiedFiles.forEach(function (modifiedFile) {

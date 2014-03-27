@@ -14,7 +14,8 @@ define(function (require, exports) {
         StringUtils             = brackets.getModule("utils/StringUtils"),
         SidebarView             = brackets.getModule("project/SidebarView");
 
-    var Git                     = require("src/Git/Git"),
+    var Promise                 = require("bluebird"),
+        Git                     = require("src/Git/Git"),
         ErrorHandler            = require("./ErrorHandler"),
         Main                    = require("./Main"),
         Panel                   = require("./Panel"),
@@ -255,12 +256,12 @@ define(function (require, exports) {
     }
 
     function _isRepositoryRoot() {
-        var gitFolder = Main.getProjectRoot() + "/.git",
-            defer = q.defer();
-        FileSystem.resolve(gitFolder, function (err, directory) {
-            defer.resolve(directory && !err ? true : false);
+        return new Promise(function (resolve) {
+            var gitFolder = Utils.getProjectRoot() + "/.git";
+            FileSystem.resolve(gitFolder, function (err, directory) {
+                resolve(!err && directory ? true : false);
+            });
         });
-        return defer.promise;
     }
 
     function refresh() {

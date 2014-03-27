@@ -5,6 +5,7 @@ define(function (require, exports) {
     "use strict";
 
     var moment             = require("moment"),
+        Promise            = require("bluebird"),
         _                  = brackets.getModule("thirdparty/lodash"),
         CodeInspection     = brackets.getModule("language/CodeInspection"),
         CommandManager     = brackets.getModule("command/CommandManager"),
@@ -61,18 +62,18 @@ define(function (require, exports) {
      *      file's new content. Errors are logged but no UI is shown.
      */
     function _reloadDoc(doc) {
-        var promise = FileUtils.readAsText(doc.file);
-        promise.done(function (text, readTimestamp) {
-            doc.refreshText(text, readTimestamp);
-        });
-        promise.fail(function (error) {
-            console.log("Error reloading contents of " + doc.file.fullPath, error);
-        });
-        return promise;
+        return Promise.cast(FileUtils.readAsText(doc.file))
+            .then(function (text, readTimestamp) {
+                doc.refreshText(text, readTimestamp);
+            })
+            .catch(function (err) {
+                ErrorHandler.logError("Error reloading contents of " + doc.file.fullPath);
+                ErrorHandler.logError(err);
+            });
     }
 
     function lintFile(filename) {
-        return CodeInspection.inspectFile(FileSystem.getFileForPath(Main.getProjectRoot() + filename));
+        return CodeInspection.inspectFile(FileSystem.getFileForPath(Utils.getProjectRoot() + filename));
     }
 
     function _makeDialogBig($dialog) {
@@ -103,7 +104,7 @@ define(function (require, exports) {
         return Main.gitControl.gitReset().then(function () {
             // Branch.refresh will refresh also Panel
             return Branch.refresh();
-        }).fail(function (err) {
+        }).catch(function (err) {
             // reset is executed too often so just log this error, but do not display a dialog
             ErrorHandler.logError(err);
         });
@@ -232,7 +233,7 @@ define(function (require, exports) {
 
                 Main.gitControl.gitCommit(commitMessage, amendCommit).then(function () {
                     return refresh();
-                }).fail(function (err) {
+                }).catch(function (err) {
                     ErrorHandler.showError(err, "Git Commit failed");
                 });
 
@@ -276,7 +277,7 @@ define(function (require, exports) {
     }
 
     function _getCurrentFilePath(editor) {
-        var projectRoot = Main.getProjectRoot(),
+        var projectRoot = Utils.getProjectRoot(),
             document = editor ? editor.document : DocumentManager.getCurrentDocument(),
             filePath = document.file.fullPath;
         if (filePath.indexOf(projectRoot) === 0) {
@@ -301,7 +302,7 @@ define(function (require, exports) {
 
         Main.gitControl.getBlame(filePath, fromLine, toLine).then(function (blame) {
             return _showAuthors(filePath, blame, fromLine, toLine);
-        }).fail(function (err) {
+        }).catch(function (err) {
             ErrorHandler.showError(err, "Git Blame failed");
         });
     }
@@ -310,7 +311,7 @@ define(function (require, exports) {
         var filePath = _getCurrentFilePath();
         Main.gitControl.getBlame(filePath).then(function (blame) {
             return _showAuthors(filePath, blame);
-        }).fail(function (err) {
+        }).catch(function (err) {
             ErrorHandler.showError(err, "Git Blame failed");
         });
     }
@@ -323,7 +324,7 @@ define(function (require, exports) {
                 $dialog          = dialog.getElement();
             _makeDialogBig($dialog);
             $dialog.find(".commit-diff").append(Utils.formatDiff(diff));
-        }).fail(function (err) {
+        }).catch(function (err) {
             ErrorHandler.showError(err, "Git Diff failed");
         });
     }
@@ -337,14 +338,14 @@ define(function (require, exports) {
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
             if (buttonId === "ok") {
                 Main.gitControl.gitUndoFile(file).then(function () {
-                    var currentProjectRoot = Main.getProjectRoot();
+                    var currentProjectRoot = Utils.getProjectRoot();
                     DocumentManager.getAllOpenDocuments().forEach(function (doc) {
                         if (doc.file.fullPath === currentProjectRoot + file) {
                             _reloadDoc(doc);
                         }
                     });
                     refresh();
-                }).fail(function (err) {
+                }).catch(function (err) {
                     ErrorHandler.showError(err, "Git Checkout failed");
                 });
             }
@@ -359,16 +360,18 @@ define(function (require, exports) {
         });
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
             if (buttonId === "ok") {
-                FileSystem.resolve(Main.getProjectRoot() + file, function (err, fileEntry) {
+                FileSystem.resolve(Utils.getProjectRoot() + file, function (err, fileEntry) {
                     if (err) {
                         ErrorHandler.showError(err, "Could not resolve file");
                         return;
                     }
-                    ProjectManager.deleteItem(fileEntry).done(function () {
-                        refresh();
-                    }).fail(function (err) {
-                        ErrorHandler.showError(err, "File deletion failed");
-                    });
+                    Promise.cast(ProjectManager.deleteItem(fileEntry))
+                        .then(function () {
+                            refresh();
+                        })
+                        .catch(function (err) {
+                            ErrorHandler.showError(err, "File deletion failed");
+                        });
                 });
             }
         });
@@ -378,79 +381,81 @@ define(function (require, exports) {
      *  strips trailing whitespace from all the diffs and adds \n to the end
      */
     function stripWhitespaceFromFile(filename, clearWholeFile) {
-        var rv = q.defer(),
-            fullPath = Main.getProjectRoot() + filename;
+        return new Promise(function (resolve, reject) {
 
-        var _cleanLines = function (lineNumbers) {
-            // clean the file
-            var fileEntry = FileSystem.getFileForPath(fullPath);
-            return FileUtils.readAsText(fileEntry).then(function (text) {
-                var lines = text.split("\n");
+            var fullPath = Utils.getProjectRoot() + filename;
 
-                if (lineNumbers) {
-                    lineNumbers.forEach(function (lineNumber) {
-                        lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
-                    });
-                } else {
-                    lines.forEach(function (ln, lineNumber) {
-                        lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
-                    });
-                }
+            var _cleanLines = function (lineNumbers) {
+                // clean the file
+                var fileEntry = FileSystem.getFileForPath(fullPath);
+                return FileUtils.readAsText(fileEntry).then(function (text) {
+                    var lines = text.split("\n");
 
-                // add empty line to the end, i've heard that git likes that for some reason
-                if (Preferences.get("addEndlineToTheEndOfFile")) {
-                    var lastLineNumber = lines.length - 1;
-                    if (lines[lastLineNumber].length > 0) {
-                        lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
+                    if (lineNumbers) {
+                        lineNumbers.forEach(function (lineNumber) {
+                            lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                        });
+                    } else {
+                        lines.forEach(function (ln, lineNumber) {
+                            lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                        });
                     }
-                    if (lines[lastLineNumber].length > 0) {
-                        lines.push("");
-                    }
-                }
-                //-
-                text = lines.join("\n");
-                return FileUtils.writeText(fileEntry, text).fail(function (err) {
-                    ErrorHandler.logError("Wasn't able to clean whitespace from file: " + fullPath);
-                    rv.resolve();
-                    throw err;
-                }).then(function () {
-                    // refresh the file if it's open in the background
-                    DocumentManager.getAllOpenDocuments().forEach(function (doc) {
-                        if (doc.file.fullPath === fullPath) {
-                            _reloadDoc(doc);
+
+                    // add empty line to the end, i've heard that git likes that for some reason
+                    if (Preferences.get("addEndlineToTheEndOfFile")) {
+                        var lastLineNumber = lines.length - 1;
+                        if (lines[lastLineNumber].length > 0) {
+                            lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
                         }
+                        if (lines[lastLineNumber].length > 0) {
+                            lines.push("");
+                        }
+                    }
+                    //-
+                    text = lines.join("\n");
+                    return Promise.cast(FileUtils.writeText(fileEntry, text))
+                        .catch(function (err) {
+                            ErrorHandler.logError("Wasn't able to clean whitespace from file: " + fullPath);
+                            resolve();
+                            throw err;
+                        })
+                        .then(function () {
+                            // refresh the file if it's open in the background
+                            DocumentManager.getAllOpenDocuments().forEach(function (doc) {
+                                if (doc.file.fullPath === fullPath) {
+                                    _reloadDoc(doc);
+                                }
+                            });
+                            // diffs were cleaned in this file
+                            resolve();
+                        });
+                });
+            };
+
+            if (clearWholeFile) {
+                _cleanLines(null);
+            } else {
+                Main.gitControl.gitDiff(filename).then(function (diff) {
+                    if (!diff) { return resolve(); }
+                    var modified = [],
+                        changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
+                    // collect line numbers to clean
+                    changesets.forEach(function (line) {
+                        var i,
+                            m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/),
+                            s = m[2].split(","),
+                            from = parseInt(s[0], 10),
+                            to = from - 1 + (parseInt(s[1], 10) || 1);
+                        for (i = from; i <= to; i++) { modified.push(i > 0 ? i - 1 : 0); }
                     });
-                    // diffs were cleaned in this file
-                    rv.resolve();
+                    _cleanLines(modified);
+                }).catch(function (ex) {
+                    // This error will bubble up to preparing commit dialog so just log here
+                    ErrorHandler.logError(ex);
+                    reject(ex);
                 });
-            });
-        };
-
-        if (clearWholeFile) {
-            _cleanLines(null);
-        } else {
-            Main.gitControl.gitDiff(filename).then(function (diff) {
-                if (!diff) { return rv.resolve(); }
-                var modified = [],
-                    changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
-                // collect line numbers to clean
-                changesets.forEach(function (line) {
-                    var i,
-                        m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/),
-                        s = m[2].split(","),
-                        from = parseInt(s[0], 10),
-                        to = from - 1 + (parseInt(s[1], 10) || 1);
-                    for (i = from; i <= to; i++) { modified.push(i > 0 ? i - 1 : 0); }
-                });
-                _cleanLines(modified);
-            }).fail(function (ex) {
-                // This error will bubble up to preparing commit dialog so just log here
-                ErrorHandler.logError(ex);
-                rv.reject(ex);
-            });
-        }
-
-        return rv.promise;
+            }
+        });
     }
 
     function handleGitCommit() {
@@ -493,7 +498,7 @@ define(function (require, exports) {
             var lintResults = [],
                 promises = [];
             files.forEach(function (fileObj) {
-                var queue = q();
+                var queue = Promise.resolve();
 
                 var updateIndex = false;
                 if (fileObj.status.indexOf(GitControl.FILE_STATUS.DELETED) !== -1) {
@@ -532,7 +537,7 @@ define(function (require, exports) {
 
                 promises.push(queue);
             });
-            return q.all(promises).then(function () {
+            return Promise.all(promises).then(function () {
                 // All files are in the index now, get the diff and show dialog.
                 gitPanel.$panel.find(".git-commit").removeClass("btn-loading");
                 return Main.gitControl.gitDiffStaged().then(function (diff) {
@@ -545,13 +550,13 @@ define(function (require, exports) {
                     return _showCommitDialog(diff, lintResults);
                 });
             });
-        }).fail(function (err) {
+        }).catch(function (err) {
             ErrorHandler.showError(err, "Preparing commit dialog failed");
         });
     }
 
     function refreshCurrentFile() {
-        var currentProjectRoot = Main.getProjectRoot();
+        var currentProjectRoot = Utils.getProjectRoot();
         var currentDoc = DocumentManager.getCurrentDocument();
         if (currentDoc) {
             gitPanel.$panel.find("tr").each(function () {
@@ -577,12 +582,12 @@ define(function (require, exports) {
 
         if (gitPanelMode === "not-repo") {
             $tableContainer.empty();
-            return q();
+            return Promise.resolve();
         }
 
         var p1 = Main.gitControl.getGitStatus().then(function (files) {
             // mark files in the project tree
-            var projectRoot = Main.getProjectRoot();
+            var projectRoot = Utils.getProjectRoot();
             Main.refreshProjectFiles(files.map(function (entry) { return projectRoot + entry.file; }));
 
             if (!gitPanel.isVisible()) {
@@ -626,7 +631,7 @@ define(function (require, exports) {
 
                 refreshCurrentFile();
             }
-        }).fail(function (err) {
+        }).catch(function (err) {
             // Status is executed very often, so just log this error
             ErrorHandler.logError(err);
         });
@@ -638,14 +643,14 @@ define(function (require, exports) {
             if (commits.length > 0) {
                 $pushBtn.append($("<span/>").text(" (" + commits.length + ")"));
             }
-        }).fail(function () {
+        }).catch(function () {
             $pushBtn.children("span").remove();
         });
 
         //- Clone button
         gitPanel.$panel.find(".git-clone").prop("disabled", false);
 
-        return q.all([p1, p2]);
+        return Promise.all([p1, p2]);
     }
 
     function toggle(bool) {
@@ -717,7 +722,7 @@ define(function (require, exports) {
                 return {name: fileName, extension: fileExtension};
             });
             _showCommitDiffDialog(hash, list);
-        }).fail(function (err) {
+        }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to load list of diff files");
         });
     }
@@ -739,7 +744,7 @@ define(function (require, exports) {
                     commits: commits
                 }));
             });
-        }).fail(function (err) {
+        }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to get history");
         });
     }
@@ -757,11 +762,11 @@ define(function (require, exports) {
 
                         $tableContainer.find(".git-history-list > tbody").append(Mustache.render(gitPanelHistoryTemplate, {commits: commits}));
                     })
-                    .fail(function (err) {
+                    .catch(function (err) {
                         ErrorHandler.showError(err, "Failed to load more history rows");
                     });
                 })
-                .fail(function (err) {
+                .catch(function (err) {
                     ErrorHandler.showError(err, "Failed to get branch name");
                 });
             }
@@ -843,18 +848,18 @@ define(function (require, exports) {
     function handleGitInit() {
         Main.isProjectRootWritable().then(function (writable) {
             if (!writable) {
-                throw new ExpectedError("Folder " + Main.getProjectRoot() + " is not writable!");
+                throw new ExpectedError("Folder " + Utils.getProjectRoot() + " is not writable!");
             }
             return Main.gitControl.gitInit();
         }).then(function () {
-            return q.when(FileUtils.writeText(FileSystem.getFileForPath(Main.getProjectRoot() + ".gitignore"), gitignoreTemplate));
+            return Promise.cast(FileUtils.writeText(FileSystem.getFileForPath(Utils.getProjectRoot() + ".gitignore"), gitignoreTemplate));
         }).then(function () {
             return Main.gitControl.gitAdd(".gitignore");
         }).then(function () {
             return Main.gitControl.gitCommit("Initial commit");
         }).then(function () {
             return $(ProjectManager).triggerHandler("projectRefresh");
-        }).fail(function (err) {
+        }).catch(function (err) {
             ErrorHandler.showError(err, "Initializing new repository failed");
         });
     }
@@ -876,16 +881,16 @@ define(function (require, exports) {
                 ErrorHandler.showError(err, "Cloning remote repository failed!");
             }
         })
-        .fail(function (err) {
+        .catch(function (err) {
             ErrorHandler.showError(err);
         });
     }
 
     function commitCurrentFile() {
-        return q.when(CommandManager.execute("file.save")).then(function () {
+        return Promise.cast(CommandManager.execute("file.save")).then(function () {
             return handleGitReset();
         }).then(function () {
-            var currentProjectRoot = Main.getProjectRoot();
+            var currentProjectRoot = Utils.getProjectRoot();
             var currentDoc = DocumentManager.getCurrentDocument();
             if (currentDoc) {
                 gitPanel.$panel.find("tr").each(function () {
@@ -899,7 +904,7 @@ define(function (require, exports) {
     }
 
     function commitAllFiles() {
-        return q.when(CommandManager.execute("file.saveAll")).then(function () {
+        return Promise.cast(CommandManager.execute("file.saveAll")).then(function () {
             return handleGitReset();
         }).then(function () {
             gitPanel.$panel.find("tr .check-one").prop("checked", true);
@@ -910,9 +915,9 @@ define(function (require, exports) {
     function openBashConsole(event) {
         var customTerminal = Preferences.get("terminalCommand"),
             customTerminalArgs = Preferences.get("terminalCommandArgs");
-        Main.gitControl.terminalOpen(Main.getProjectRoot(), customTerminal, customTerminalArgs).fail(function (err) {
+        Main.gitControl.terminalOpen(Utils.getProjectRoot(), customTerminal, customTerminalArgs).catch(function (err) {
             if (event !== "retry" && ErrorHandler.contains(err, "Permission denied")) {
-                Main.gitControl.chmodTerminalScript().fail(function (err) {
+                Main.gitControl.chmodTerminalScript().catch(function (err) {
                     throw ErrorHandler.showError(err);
                 }).then(function () {
                     openBashConsole("retry");
@@ -932,7 +937,7 @@ define(function (require, exports) {
     }
 
     function undoLastLocalCommit() {
-        Main.gitControl.undoLastLocalCommit().fail(function (err) { ErrorHandler.showError(err, "Impossible undo last commit");  });
+        Main.gitControl.undoLastLocalCommit().catch(function (err) { ErrorHandler.showError(err, "Impossible undo last commit");  });
         refresh();
     }
 
@@ -964,7 +969,7 @@ define(function (require, exports) {
                     return;
                 }
                 CommandManager.execute(Commands.FILE_OPEN, {
-                    fullPath: Main.getProjectRoot() + $this.data("file")
+                    fullPath: Utils.getProjectRoot() + $this.data("file")
                 });
             })
             .on("dblclick", ".modified-file", function (e) {
@@ -972,7 +977,7 @@ define(function (require, exports) {
                 if ($this.data("status") === GitControl.FILE_STATUS.DELETED) {
                     return;
                 }
-                FileViewController.addToWorkingSetAndSelect(Main.getProjectRoot() + $this.data("file"));
+                FileViewController.addToWorkingSetAndSelect(Utils.getProjectRoot() + $this.data("file"));
             })
             .on("click", ".history-commit", function () {
                 showHistoryCommitDialog($(this).attr("data-hash"));
@@ -988,7 +993,7 @@ define(function (require, exports) {
             return Utils.askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, {defaultValue: currentUserName})
                 .then(function (userName) {
                     if (!userName.length) { userName = currentUserName; }
-                    return Main.gitControl.setUserName(userName).fail(function (err) {
+                    return Main.gitControl.setUserName(userName).catch(function (err) {
                         ErrorHandler.showError(err, "Impossible change username");
                     }).then(function () {
                         EventEmitter.emit(Events.GIT_USERNAME_CHANGED, userName);
@@ -1003,7 +1008,7 @@ define(function (require, exports) {
             return Utils.askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, {defaultValue: currentUserEmail})
                 .then(function (userEmail) {
                     if (!userEmail.length) { userEmail = currentUserEmail; }
-                    return Main.gitControl.setUserEmail(userEmail).fail(function (err) {
+                    return Main.gitControl.setUserEmail(userEmail).catch(function (err) {
                         ErrorHandler.showError(err, "Impossible change user email");
                     }).then(function () {
                         EventEmitter.emit(Events.GIT_EMAIL_CHANGED, userEmail);

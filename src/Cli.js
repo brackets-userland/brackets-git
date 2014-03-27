@@ -24,10 +24,10 @@ define(function (require, exports, module) {
             nodeConnection.connect(false).then(function () {
                 nodeConnection.loadDomains([domainModulePath], false).then(function () {
                     resolve();
-                }).fail(function (err) {
+                }).fail(function (err) { // jQuery promise - .fail is fine
                     reject(err);
                 });
-            }).fail(function (err) {
+            }).fail(function (err) { // jQuery promise - .fail is fine
                 reject(err);
             });
         });
@@ -84,7 +84,7 @@ define(function (require, exports, module) {
                 var resolved = false;
                 // nodeConnection returns jQuery deffered
                 nodeConnection.domains["brackets-git"][method](opts.cwd, cmd, args)
-                    .fail(function (err) {
+                    .fail(function (err) { // jQuery promise - .fail is fine
                         if (!resolved) {
                             err = sanitizeOutput(err);
                             if (debugOn) { console.log(extName + "cmd-" + method + "-fail: \"" + err + "\""); }

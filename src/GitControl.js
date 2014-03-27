@@ -8,6 +8,7 @@ define(function (require, exports, module) {
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
+        Promise         = require("bluebird"),
         ErrorHandler    = require("./ErrorHandler"),
         ExpectedError   = require("./ExpectedError"),
         Preferences     = require("./Preferences");
@@ -105,7 +106,7 @@ define(function (require, exports, module) {
             if (!opts) { opts = {}; }
             if (typeof args === "string") { args = [args]; }
 
-            var rv = q.defer();
+            var rv = Promise.defer();
             this._queue.push([method, rv, cmd, args, opts]);
             this._processQueue();
             return rv.promise;
@@ -366,22 +367,25 @@ define(function (require, exports, module) {
                 args.push("-m", escapeShellArg(message));
                 return self.executeCommand(self._git, args);
             } else {
-                // TODO: maybe use git commit --file=-
-                var result = q.defer(),
-                    fileEntry = FileSystem.getFileForPath(ProjectManager.getProjectRoot().fullPath + ".bracketsGitTemp");
-                q.when(FileUtils.writeText(fileEntry, message)).then(function () {
-                    args.push("-F", ".bracketsGitTemp");
-                    return self.executeCommand(self._git, args);
-                }).then(function (res) {
-                    fileEntry.unlink(function () {
-                        result.resolve(res);
-                    });
-                }).fail(function (err) {
-                    fileEntry.unlink(function () {
-                        result.reject(err);
-                    });
+                return new Promise(function (resolve, reject) {
+                    // TODO: maybe use git commit --file=-
+                    var fileEntry = FileSystem.getFileForPath(ProjectManager.getProjectRoot().fullPath + ".bracketsGitTemp");
+                    Promise.cast(FileUtils.writeText(fileEntry, message))
+                        .then(function () {
+                            args.push("-F", ".bracketsGitTemp");
+                            return self.executeCommand(self._git, args);
+                        })
+                        .then(function (res) {
+                            fileEntry.unlink(function () {
+                                resolve(res);
+                            });
+                        })
+                        .catch(function (err) {
+                            fileEntry.unlink(function () {
+                                reject(err);
+                            });
+                        });
                 });
-                return result.promise;
             }
         },
 

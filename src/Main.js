@@ -8,7 +8,9 @@ define(function (require, exports) {
         DocumentManager   = brackets.getModule("document/DocumentManager"),
         FileSystem        = brackets.getModule("filesystem/FileSystem"),
         FileUtils         = brackets.getModule("file/FileUtils"),
-        ProjectManager    = brackets.getModule("project/ProjectManager"),
+        ProjectManager    = brackets.getModule("project/ProjectManager");
+
+    var Promise           = require("bluebird"),
         Strings           = require("../strings"),
         Preferences       = require("./Preferences"),
         ErrorHandler      = require("./ErrorHandler"),
@@ -24,44 +26,48 @@ define(function (require, exports) {
                                     .addClass("loading").appendTo($("#main-toolbar .buttons")),
         gitControl              = null;
 
-    var getProjectRoot = Utils.getProjectRoot;
-
     var writeTestResults = {};
     function isProjectRootWritable() {
-        var folder = getProjectRoot();
+        return new Promise(function (resolve) {
 
-        if (writeTestResults[folder]) {
-            return q(writeTestResults[folder]);
-        }
+            var folder = Utils.getProjectRoot();
 
-        var result = q.defer(),
-            fileEntry = FileSystem.getFileForPath(folder + ".bracketsGitTemp");
+            // if we previously tried, assume nothing has changed
+            if (writeTestResults[folder]) {
+                return resolve(writeTestResults[folder]);
+            }
 
-        function finish(bool) {
-            fileEntry.unlink(function () {
-                result.resolve(writeTestResults[folder] = bool);
-            });
-        }
+            // create entry for temporary file
+            var fileEntry = FileSystem.getFileForPath(folder + ".bracketsGitTemp");
 
-        FileUtils.writeText(fileEntry, "").done(function () {
-            finish(true);
-        }).fail(function () {
-            finish(false);
+            function finish(bool) {
+                // delete the temp file and resolve
+                fileEntry.unlink(function () {
+                    resolve(writeTestResults[folder] = bool);
+                });
+            }
+
+            // try writing some text into the temp file
+            Promise.cast(FileUtils.writeText(fileEntry, ""))
+                .then(function () {
+                    finish(true);
+                })
+                .catch(function () {
+                    finish(false);
+                });
         });
-
-        return result.promise;
     }
 
     // This checks if the project root is empty (to let Git clone repositories)
     function isProjectRootEmpty() {
-        var defer = q.defer();
-        ProjectManager.getProjectRoot().getContents(function (err, entries) {
-            if (err) {
-                return defer.reject(err);
-            }
-            defer.resolve(entries.length === 0);
+        return new Promise(function (resolve, reject) {
+            ProjectManager.getProjectRoot().getContents(function (err, entries) {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(entries.length === 0);
+            });
         });
-        return defer.promise;
     }
 
     // This only launches when Git is available
@@ -106,7 +112,7 @@ define(function (require, exports) {
     }
 
     function _addRemoveItemInGitignore(selectedEntry, method) {
-        var projectRoot = getProjectRoot(),
+        var projectRoot = Utils.getProjectRoot(),
             entryPath = "/" + selectedEntry.fullPath.substring(projectRoot.length),
             gitignoreEntry = FileSystem.getFileForPath(projectRoot + ".gitignore");
 
@@ -151,13 +157,13 @@ define(function (require, exports) {
 
     function addItemToGitingoreFromPanel() {
         var filePath = Panel.getPanel().find("tr.selected").data("file"),
-            fileEntry = FileSystem.getFileForPath(getProjectRoot() + filePath);
+            fileEntry = FileSystem.getFileForPath(Utils.getProjectRoot() + filePath);
         return _addRemoveItemInGitignore(fileEntry, "add");
     }
 
     function removeItemFromGitingoreFromPanel() {
         var filePath = Panel.getPanel().find("tr.selected").data("file"),
-            fileEntry = FileSystem.getFileForPath(getProjectRoot() + filePath);
+            fileEntry = FileSystem.getFileForPath(Utils.getProjectRoot() + filePath);
         return _addRemoveItemInGitignore(fileEntry, "remove");
     }
 
@@ -188,57 +194,58 @@ define(function (require, exports) {
     }
 
     function refreshIgnoreEntries() {
-        if (!Preferences.get("markModifiedInTree")) {
-            return q();
-        }
+        return new Promise(function (resolve, reject) {
 
-        var p = q.defer(),
-            projectRoot = getProjectRoot();
-
-        FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
-            if (err) {
-                _ignoreEntries = [];
-                p.reject(err);
-                return;
+            if (!Preferences.get("markModifiedInTree")) {
+                return resolve();
             }
-            _ignoreEntries = _.compact(_.map(content.split("\n"), function (line) {
-                line = line.trim();
-                if (!line || line.indexOf("#") === 0) {
-                    return;
+
+            var projectRoot = Utils.getProjectRoot();
+
+            FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
+                if (err) {
+                    _ignoreEntries = [];
+                    return reject(err);
                 }
 
-                var path,
-                    type = "ignore";
-                if (line.indexOf("/") === 0) {
-                    line = line.substring(1);
-                    path = projectRoot + line;
-                } else if (line.indexOf("!") === 0) {
-                    type = "include";
-                    line = line.substring(1);
-                    path = projectRoot + line;
-                } else {
-                    path = projectRoot + "(**/)?" + line;
-                }
-                path = path.replace(/\\/, "");
-                path = path.replace(/\./, "\\.");
-
-                path = "^" + path + "/?$";
-
-                path = path.replace(/\*+/g, function (match) {
-                    if (match.length === 2) {
-                        return ".*";
+                _ignoreEntries = _.compact(_.map(content.split("\n"), function (line) {
+                    line = line.trim();
+                    if (!line || line.indexOf("#") === 0) {
+                        return;
                     }
-                    if (match.length === 1) {
-                        return "[^/]*";
-                    }
-                });
 
-                return {regexp: new RegExp(path), type: type};
-            }));
-            p.resolve();
+                    var path,
+                        type = "ignore";
+                    if (line.indexOf("/") === 0) {
+                        line = line.substring(1);
+                        path = projectRoot + line;
+                    } else if (line.indexOf("!") === 0) {
+                        type = "include";
+                        line = line.substring(1);
+                        path = projectRoot + line;
+                    } else {
+                        path = projectRoot + "(**/)?" + line;
+                    }
+                    path = path.replace(/\\/, "");
+                    path = path.replace(/\./, "\\.");
+
+                    path = "^" + path + "/?$";
+
+                    path = path.replace(/\*+/g, function (match) {
+                        if (match.length === 2) {
+                            return ".*";
+                        }
+                        if (match.length === 1) {
+                            return "[^/]*";
+                        }
+                    });
+
+                    return {regexp: new RegExp(path), type: type};
+                }));
+
+                return resolve();
+            });
         });
-
-        return p.promise;
     }
 
     function init() {
@@ -256,7 +263,7 @@ define(function (require, exports) {
                 Strings.GIT_VERSION = version;
                 initUi();
                 attachEventsToBrackets();
-            }).fail(function (err) {
+            }).catch(function (err) {
                 var errText = Strings.CHECK_GIT_SETTINGS + ": " + err.toString();
                 $icon.addClass("error").attr("title", errText);
                 throw err;
@@ -287,7 +294,6 @@ define(function (require, exports) {
 
     // API
     exports.$icon = $icon;
-    exports.getProjectRoot = getProjectRoot;
     exports.isProjectRootEmpty = isProjectRootEmpty;
     exports.isProjectRootWritable = isProjectRootWritable;
     exports.refreshProjectFiles = refreshProjectFiles;

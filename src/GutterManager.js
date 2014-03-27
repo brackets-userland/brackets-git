@@ -7,11 +7,12 @@
 define(function (require, exports) {
     "use strict";
 
-    var _                   = brackets.getModule("thirdparty/lodash"),
-        DocumentManager     = brackets.getModule("document/DocumentManager"),
-        EditorManager       = brackets.getModule("editor/EditorManager"),
-        Main                = require("./Main"),
-        Preferences         = require("./Preferences");
+    var _               = brackets.getModule("thirdparty/lodash"),
+        DocumentManager = brackets.getModule("document/DocumentManager"),
+        EditorManager   = brackets.getModule("editor/EditorManager"),
+        Main            = require("./Main"),
+        Preferences     = require("./Preferences"),
+        Utils           = require("src/Utils");
 
     var cm = null,
         results = null,
@@ -135,7 +136,7 @@ define(function (require, exports) {
         }
         prepareGutter(editor._codeMirror);
 
-        var filename = currentDoc.file.fullPath.substring(Main.getProjectRoot().length);
+        var filename = currentDoc.file.fullPath.substring(Utils.getProjectRoot().length);
         Main.gitControl.gitDiff(filename).then(function (diff) {
             var added = [],
                 removed = [],
