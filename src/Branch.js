@@ -12,7 +12,8 @@ define(function (require, exports) {
         Menus                   = brackets.getModule("command/Menus"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         StringUtils             = brackets.getModule("utils/StringUtils"),
-        SidebarView             = brackets.getModule("project/SidebarView");
+        SidebarView             = brackets.getModule("project/SidebarView"),
+        DocumentManager         = brackets.getModule("document/DocumentManager");
 
     var Promise                 = require("bluebird"),
         Git                     = require("src/Git/Git"),
@@ -37,9 +38,9 @@ define(function (require, exports) {
             };
         });
         var templateVars  = {
-                branchList : _.filter(branches, function (o) { return !o.currentBranch; }),
-                Strings     : Strings
-            };
+            branchList : _.filter(branches, function (o) { return !o.currentBranch; }),
+            Strings     : Strings
+        };
         return Mustache.render(branchesMenuTemplate, templateVars);
     }
 
@@ -155,14 +156,27 @@ define(function (require, exports) {
 
         }).on("click", "a.git-branch-link .switch-branch", function (e) {
             e.stopPropagation();
-            var branchName = $(this).parent().data("branch");
-            Main.gitControl.checkoutBranch(branchName).catch(function (err) {
-                ErrorHandler.showError(err, "Switching branches failed");
-            }).then(function () {
-                closeDropdown();
-                // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
-                CommandManager.execute("file.refresh");
-            });
+            var newBranchName = $(this).parent().data("branch");
+            return Git.getCurrentBranchName()
+            .then(function (oldBranchName) {
+                Main.gitControl.checkoutBranch(newBranchName)
+                .then(function () {
+                    closeDropdown();
+                    return Git.getDeletedFiles(oldBranchName, newBranchName)
+                    .then(function (deletedFiles) {
+                        // Close files that does not exists anymore in the new selected branch
+                        deletedFiles.forEach(function (file) {
+                            // FIXME: This TypeError is thrown: `Uncaught TypeError: Cannot read property 'fullPath' of undefined`
+                            DocumentManager.closeFullEditor(file);
+                        });
+                        // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
+                        CommandManager.execute("file.refresh");
+                    })
+                    .catch(function (err) { ErrorHandler.showError(err, "Getting list of deleted files failed."); });
+                })
+                .catch(function (err) { ErrorHandler.showError(err, "Switching branches failed."); });
+            })
+            .catch(function (err) { ErrorHandler.showError(err, "Getting current branch name failed."); });
         }).on("mouseenter", "a", function () {
             $(this).addClass("selected");
         }).on("mouseleave", "a", function () {
@@ -173,28 +187,28 @@ define(function (require, exports) {
             Utils.askQuestion(Strings.DELETE_LOCAL_BRANCH,
                               StringUtils.format(Strings.DELETE_LOCAL_BRANCH_NAME, branchName),
                               { booleanResponse: true })
-                .then(function (response) {
-                    if (response === true) {
-                        return Git.branchDelete(branchName).catch(function (err) {
+            .then(function (response) {
+                if (response === true) {
+                    return Git.branchDelete(branchName).catch(function (err) {
 
-                            return Utils.showOutput(err, "Branch deletion failed", {
-                                question: "Do you wish to force branch deletion?"
-                            }).then(function (response) {
-                                if (response === true) {
-                                    return Git.forceBranchDelete(branchName).then(function (output) {
-                                        return Utils.showOutput(output);
-                                    }).catch(function (err) {
-                                        ErrorHandler.showError(err, "Forced branch deletion failed");
-                                    });
-                                }
-                            });
-
+                        return Utils.showOutput(err, "Branch deletion failed", {
+                            question: "Do you wish to force branch deletion?"
+                        }).then(function (response) {
+                            if (response === true) {
+                                return Git.forceBranchDelete(branchName).then(function (output) {
+                                    return Utils.showOutput(output);
+                                }).catch(function (err) {
+                                    ErrorHandler.showError(err, "Forced branch deletion failed");
+                                });
+                            }
                         });
-                    }
-                })
-                .catch(function (err) {
-                    ErrorHandler.showError(err);
-                });
+
+                    });
+                }
+            })
+            .catch(function (err) {
+                ErrorHandler.showError(err);
+            });
 
         }).on("click", ".merge-branch", function () {
             var fromBranch = $(this).parent().data("branch");
@@ -246,11 +260,11 @@ define(function (require, exports) {
 
             var toggleOffset = $gitBranchName.offset();
             $dropdown
-                .css({
-                    left: toggleOffset.left,
-                    top: toggleOffset.top + $gitBranchName.outerHeight()
-                })
-                .appendTo($("body"));
+            .css({
+                left: toggleOffset.left,
+                top: toggleOffset.top + $gitBranchName.outerHeight()
+            })
+            .appendTo($("body"));
 
             PopUpManager.addPopUp($dropdown, detachCloseEvents, true);
             attachCloseEvents();
@@ -270,32 +284,32 @@ define(function (require, exports) {
     function refresh() {
         // show info that branch is refreshing currently
         $gitBranchName
-            .text("\u2026")
-            .parent()
-                .show();
+        .text("\u2026")
+        .parent()
+        .show();
 
         return _isRepositoryRoot().then(function (isRepositoryRoot) {
             $gitBranchName.parent().toggle(isRepositoryRoot);
 
             if (!isRepositoryRoot) {
                 $gitBranchName
-                    .off("click")
-                    .text("not a git repo");
+                .off("click")
+                .text("not a git repo");
                 Panel.disable("not-repo");
                 return;
             }
 
             return Main.gitControl.getBranchName().then(function (branchName) {
                 $gitBranchName.text(branchName)
-                    .off("click")
-                    .on("click", toggleDropdown)
-                    .append($("<span class='dropdown-arrow' />"));
+                .off("click")
+                .on("click", toggleDropdown)
+                .append($("<span class='dropdown-arrow' />"));
                 Panel.enable();
             }).catch(function (ex) {
                 if (ErrorHandler.contains(ex, "unknown revision")) {
                     $gitBranchName
-                        .off("click")
-                        .text("no branch");
+                    .off("click")
+                    .text("no branch");
                     Panel.enable();
                 } else {
                     throw ex;
@@ -310,14 +324,14 @@ define(function (require, exports) {
         // Add branch name to project tree
         $gitBranchName = $("<span id='git-branch'></span>");
         $("<div id='git-branch-dropdown-toggle' class='btn-alt-quiet'></div>")
-            .append("[ ")
-            .append($gitBranchName)
-            .append(" ]")
-            .on("click", function () {
-                $gitBranchName.click();
-                return false;
-            })
-            .appendTo("#project-files-header");
+        .append("[ ")
+        .append($gitBranchName)
+        .append(" ]")
+        .on("click", function () {
+            $gitBranchName.click();
+            return false;
+        })
+        .appendTo("#project-files-header");
         refresh();
     }
 
