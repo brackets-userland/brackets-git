@@ -1,9 +1,10 @@
-define(function (require, exports) {
+define(function (require, exports, module) {
     "use strict";
 
     // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),
         Dialogs         = brackets.getModule("widgets/Dialogs"),
+        ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
     // Local modules
@@ -19,6 +20,12 @@ define(function (require, exports) {
 
     function getProjectRoot() {
         return ProjectManager.getProjectRoot().fullPath;
+    }
+
+    // returns "C:/Users/Zaggi/AppData/Roaming/Brackets/extensions/user/zaggino.brackets-git/"
+    function getExtensionDirectory() {
+        var modulePath = ExtensionUtils.getModulePath(module);
+        return modulePath.slice(0, -1 * "src/".length);
     }
 
     function formatDiff(diff) {
@@ -101,8 +108,9 @@ define(function (require, exports) {
     }
 
     // Public API
-    exports.formatDiff      = formatDiff;
-    exports.getProjectRoot  = getProjectRoot;
-    exports.askQuestion     = askQuestion;
-    exports.showOutput      = showOutput;
+    exports.formatDiff            = formatDiff;
+    exports.getProjectRoot        = getProjectRoot;
+    exports.getExtensionDirectory = getExtensionDirectory;
+    exports.askQuestion           = askQuestion;
+    exports.showOutput            = showOutput;
 });

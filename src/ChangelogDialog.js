@@ -8,6 +8,7 @@ define(function (require, exports) {
         FileSystem                 = brackets.getModule("filesystem/FileSystem"),
         FileUtils                  = brackets.getModule("file/FileUtils"),
         StringUtils                = brackets.getModule("utils/StringUtils"),
+        Utils                      = require("src/Utils"),
         Preferences                = require("./Preferences"),
         Strings                    = require("../strings"),
         changelogDialogTemplate    = require("text!templates/git-changelog-dialog.html"),
@@ -21,7 +22,7 @@ define(function (require, exports) {
         var compiledTemplate = Mustache.render(changelogDialogTemplate, {Strings: Strings, TITLE: title});
         dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
-        FileUtils.readAsText(FileSystem.getFileForPath(Preferences.get("extensionDirectory") + "CHANGELOG.md")).done(function (content) {
+        FileUtils.readAsText(FileSystem.getFileForPath(Utils.getExtensionDirectory() + "CHANGELOG.md")).done(function (content) {
             content = marked(content, {
                 gfm: true,
                 breaks: true

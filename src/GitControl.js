@@ -9,6 +9,7 @@ define(function (require, exports, module) {
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
         Promise         = require("bluebird"),
+        Utils           = require("src/Utils"),
         ErrorHandler    = require("./ErrorHandler"),
         ExpectedError   = require("./ExpectedError"),
         Preferences     = require("./Preferences");
@@ -121,7 +122,7 @@ define(function (require, exports, module) {
         },
 
         chmodTerminalScript: function () {
-            var file = Preferences.get("extensionDirectory") + "shell/" +
+            var file = Utils.getExtensionDirectory() + "shell/" +
                     (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
             return this.executeCommand("chmod", [
                 "+x",
@@ -147,9 +148,9 @@ define(function (require, exports, module) {
                     msysgitFolder.splice(-2, 2, "Git Bash.vbs");
                     cmd = msysgitFolder.join("\\");
                 } else if (brackets.platform === "mac") {
-                    cmd = Preferences.get("extensionDirectory") + "shell/terminal.osa";
+                    cmd = Utils.getExtensionDirectory() + "shell/terminal.osa";
                 } else {
-                    cmd = Preferences.get("extensionDirectory") + "shell/terminal.sh";
+                    cmd = Utils.getExtensionDirectory() + "shell/terminal.sh";
                 }
                 args = [escapeShellArg(folder)];
             }

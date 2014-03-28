@@ -32,7 +32,7 @@ define(function (require, exports) {
         Branch             = require("./Branch"),
         GitControl         = require("./GitControl"),
         Strings            = require("../strings"),
-        Utils              = require("./Utils"),
+        Utils              = require("src/Utils"),
         SettingsDialog     = require("./SettingsDialog"),
         PANEL_COMMAND_ID   = "brackets-git.panel";
 

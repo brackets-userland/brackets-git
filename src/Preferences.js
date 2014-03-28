@@ -34,7 +34,6 @@ define(function (require, exports, module) {
         "lastVersion": {                    "type": "string",            "value": null          },
         "panelEnabled": {                   "type": "boolean",           "value": true          },
         "TIMEOUT_VALUE": {                  "type": "number",            "value": 30000         },
-        "extensionDirectory": {             "type": "string",            "value": undefined     },
         "gitIsInSystemPath": {              "type": "boolean",           "value": false         },
         "defaultRemotes": {                 "type": "object",            "value": {}            },
         // platform specific

@@ -16,8 +16,7 @@ define(function (require, exports, module) {
         CommandManager             = brackets.getModule("command/CommandManager"),
         Commands                   = brackets.getModule("command/Commands"),
         ExtensionUtils             = brackets.getModule("utils/ExtensionUtils"),
-        Menus                      = brackets.getModule("command/Menus"),
-        moduleDirectory            = ExtensionUtils.getModulePath(module);
+        Menus                      = brackets.getModule("command/Menus");
 
     var ExtensionInfo              = require("src/ExtensionInfo"),
         Preferences                = require("src/Preferences"),
@@ -36,9 +35,6 @@ define(function (require, exports, module) {
     // Load CSS
     ExtensionUtils.loadStyleSheet(module, "less/brackets-git.less");
     ExtensionUtils.loadStyleSheet(module, "less/fonts/octicon.less");
-
-    // Initialize PreferenceStorage.
-    Preferences.persist("extensionDirectory", moduleDirectory);
 
     // Handle settings dialog
     function openSettingsPanel() {
