@@ -2,6 +2,7 @@
 
 ## 0.13.0
 * `Q` library has been completely removed and replaced by `bluebird`
+* Added French translation by [rainje](https://github.com/rainje)
 
 ## 0.12.2
 * Top menu has been removed - you can access settings through panel or File > Git settings...
