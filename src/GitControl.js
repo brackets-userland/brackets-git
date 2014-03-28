@@ -226,7 +226,9 @@ define(function (require, exports, module) {
 
         checkoutBranch: function (branchName) {
             var args = ["checkout", branchName];
-            return this.executeCommand(this._git, args);
+            return this.executeCommand(this._git, args, {
+                timeout: false // never timeout this
+            });
         },
 
         createBranch: function (branchName, originBranch, trackOrigin) {

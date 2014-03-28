@@ -155,7 +155,11 @@ define(function (require, exports, module) {
                         }
                     }, opts.timeout ? (opts.timeout * 1000) : TIMEOUT_VALUE);
                 }
-                timeoutCall();
+
+                // when opts.timeout === false then never timeout the process
+                if (opts.timeout !== false) {
+                    timeoutCall();
+                }
 
             }).catch(function (err) {
                 // failed to connect to node for some reason
