@@ -240,7 +240,7 @@
             display: inline-block;
             width: 100%;
         }
-        .trash-icon {
+        .trash-icon, .gitftp-init-remote {
             opacity: 0;
             background-image: none !important;
             width: 16px;
@@ -254,7 +254,12 @@
                 font-weight: bold;
             }
         }
-        &:hover .trash-icon {
+        .gitftp-init-remote {
+            position: relative;
+            top: 2px;
+            right: 4px;
+        }
+        &:hover .trash-icon, &:hover .gitftp-init-remote {
             opacity: 1;
         }
     }
