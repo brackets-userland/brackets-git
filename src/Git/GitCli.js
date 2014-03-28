@@ -201,6 +201,19 @@ define(function (require, exports) {
             });
     }
 
+    // Get list of deleted files between two branches
+    function getDeletedFiles(oldBranch, newBranch) {
+        return git(["diff", "--name-status", oldBranch, newBranch])
+            .done(function (response) {
+                return response.split("\n").map(function (row) {
+                    row.substring(1).trim();
+                });
+            })
+            .catch(function () {
+                return null;
+            });
+    }
+
     function getConfig(key) {
         return git(["config", key.replace(/\s/g, "")]);
     }
@@ -234,5 +247,6 @@ define(function (require, exports) {
     exports.getAllBranches            = getAllBranches;
     exports.branchDelete              = branchDelete;
     exports.forceBranchDelete         = forceBranchDelete;
+    exports.getDeletedFiles           = getDeletedFiles;
 
 });
