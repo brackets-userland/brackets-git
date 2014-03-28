@@ -14,6 +14,6 @@ define(function (require, exports, module) {
         "pt-br": true,
         "zh-cn": true,
         "it": true,
-        "fr": true
+		"fr": true
     };
 });
