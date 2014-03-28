@@ -24,7 +24,7 @@ define(function (require) {
     
     var attachEvents = _.once(function () {
         $gitPanel
-            .on("click", ".gitftp-remote-new", handleGitFtpScopeCreation)
+            .on("click", ".gitftp-remote-new", function () { handleGitFtpScopeCreation(); })
             .on("click", ".gitftp-remove-remote", function () { handleGitFtpScopeRemove($(this)); })
             .on("click", ".gitftp-init-remote", function () { handleGitFtpInitScope($(this)); })
             .on("click", ".gitftp-push", handleGitFtpPush);
@@ -150,8 +150,7 @@ define(function (require) {
             {booleanResponse: true}
         ).then(function (response) {
             if (response) {
-                return GitFtp.init(scopeName).then(function () {
-                }).catch(function (err) {
+                return GitFtp.init(scopeName).catch(function (err) {
                     ErrorHandler.showError(err, "Init scope failed");
                 });
             }
