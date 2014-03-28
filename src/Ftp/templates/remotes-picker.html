@@ -1,15 +1,16 @@
 <!-- List of Git-FTP remotes defined for the current local repository -->
-<li class="dropdown-header ftp-remotes-header">{{Strings.GITFTP_REMOTES}}</li>
-{{#hasFtpRemotes}}
-{{#ftpRemotes}}
+<li class="dropdown-header ftp-remotes-header">{{Strings.GITFTP_SCOPES}}</li>
+{{#hasFtpScopes}}
+{{#ftpScopes}}
 <li class="gitftp-remote">
     <a href="#" data-remote-name="{{name}}" data-type="ftp" class="remote-name">
         <span class="trash-icon gitftp-remove-remote">&times;</span>
         <span class="change-remote">{{name}}</span>
+        <span class="octicon octicon-arrow-up gitftp-init-remote" title="{{Strings.INIT_GITFTP_SCOPE}}"></span>
     </a>
 </li>
-{{/ftpRemotes}}
-{{/hasFtpRemotes}}
-<li><a class="gitftp-remote-new"><span>{{Strings.CREATE_NEW_GITFTP_REMOTE}}</span></a></li>
+{{/ftpScopes}}
+{{/hasFtpScopes}}
+<li><a class="gitftp-remote-new"><span>{{Strings.CREATE_NEW_GITFTP_SCOPE}}</span></a></li>
 <li class="divider"></li>
 <li class="dropdown-header git-remotes-header">{{Strings.GIT_REMOTES}}</li>

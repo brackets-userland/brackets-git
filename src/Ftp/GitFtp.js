@@ -22,7 +22,7 @@ define(function (require, exports) {
         return git(["ftp", "push", "--scope", scope]);
     }
 
-    function getRemotes() {
+    function getScopes() {
         return git(["config", "--list"]).then(function (stdout) {
             return stdout.split("\n").reduce(function (result, row) {
                 var io = row.indexOf(".url");
@@ -64,10 +64,10 @@ define(function (require, exports) {
     }
 
     // Public API
-    exports.init = init;
-    exports.push = push;
-    exports.getRemotes = getRemotes;
-    exports.addScope = addScope;
+    exports.init        = init;
+    exports.push        = push;
+    exports.getScopes   = getScopes;
+    exports.addScope    = addScope;
     exports.removeScope = removeScope;
 
 });
