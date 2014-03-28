@@ -13,7 +13,8 @@ define(function (require, exports) {
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         StringUtils             = brackets.getModule("utils/StringUtils"),
         SidebarView             = brackets.getModule("project/SidebarView"),
-        DocumentManager         = brackets.getModule("document/DocumentManager");
+        DocumentManager         = brackets.getModule("document/DocumentManager"),
+        ProjectManager          = brackets.getModule("project/ProjectManager");
 
     var Promise                 = require("bluebird"),
         Git                     = require("src/Git/Git"),
@@ -86,6 +87,25 @@ define(function (require, exports) {
         $el.html(html);
     }
 
+    function closeNotExistingFiles(oldBranchName, newBranchName, oFiles) {
+
+        var projectRootPath = ProjectManager.getProjectRoot()._path;
+
+        return Git.getDeletedFiles(oldBranchName, newBranchName).then(function (deletedFiles) {
+            // Close files that does not exists anymore in the new selected branch
+            deletedFiles.forEach(function (dFile) {
+                var oFile = oFiles.filter(function (oFile) { return oFile._path.replace(projectRootPath, "") == dFile; });
+                if (oFile.length !== 0) {
+                    DocumentManager.closeFullEditor(oFile);
+                }
+            });
+            // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
+            CommandManager.execute("file.refresh");
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Getting list of deleted files failed.");
+        });
+    }
+
     function handleEvents() {
         $dropdown.on("click", "a.git-branch-new", function (e) {
             e.stopPropagation();
@@ -156,27 +176,17 @@ define(function (require, exports) {
 
         }).on("click", "a.git-branch-link .switch-branch", function (e) {
             e.stopPropagation();
-            var newBranchName = $(this).parent().data("branch");
+            var newBranchName = $(this).parent().data("branch"),
+                openedFiles   = DocumentManager.getWorkingSet();
             return Git.getCurrentBranchName()
             .then(function (oldBranchName) {
-                Main.gitControl.checkoutBranch(newBranchName)
-                .then(function () {
+                Main.gitControl.checkoutBranch(newBranchName).then(function () {
                     closeDropdown();
-                    return Git.getDeletedFiles(oldBranchName, newBranchName)
-                    .then(function (deletedFiles) {
-                        // Close files that does not exists anymore in the new selected branch
-                        deletedFiles.forEach(function (file) {
-                            // FIXME: This TypeError is thrown: `Uncaught TypeError: Cannot read property 'fullPath' of undefined`
-                            DocumentManager.closeFullEditor(file);
-                        });
-                        // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
-                        CommandManager.execute("file.refresh");
-                    })
-                    .catch(function (err) { ErrorHandler.showError(err, "Getting list of deleted files failed."); });
-                })
-                .catch(function (err) { ErrorHandler.showError(err, "Switching branches failed."); });
-            })
-            .catch(function (err) { ErrorHandler.showError(err, "Getting current branch name failed."); });
+                    return closeNotExistingFiles(oldBranchName, newBranchName, openedFiles);
+
+                }).catch(function (err) { ErrorHandler.showError(err, "Switching branches failed."); });
+            }).catch(function (err) { ErrorHandler.showError(err, "Getting current branch name failed."); });
+
         }).on("mouseenter", "a", function () {
             $(this).addClass("selected");
         }).on("mouseleave", "a", function () {
