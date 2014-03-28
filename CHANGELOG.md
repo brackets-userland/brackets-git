@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.13.0
+* `Q` library has been completely removed and replaced by `bluebird`
+
 ## 0.12.2
 * Top menu has been removed - you can access settings through panel or File > Git settings...
 * Branch deletion handling has been improved and now you can delete also not fully merged branches.

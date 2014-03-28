@@ -15,15 +15,16 @@ define(function (require, exports, module) {
         extName           = "[brackets-git] ",
         nodeConnection    = new NodeConnection();
 
+    // return true/false to state if wasConnected before
     function connectToNode() {
         return new Promise(function (resolve, reject) {
             if (nodeConnection.connected()) {
-                return resolve();
+                return resolve(true);
             }
             // we don't want automatic reconnections as we handle the reconnect manually
             nodeConnection.connect(false).then(function () {
                 nodeConnection.loadDomains([domainModulePath], false).then(function () {
-                    resolve();
+                    resolve(false);
                 }).fail(function (err) { // jQuery promise - .fail is fine
                     reject(err);
                 });
@@ -56,6 +57,14 @@ define(function (require, exports, module) {
         return str;
     }
 
+    function logDebug(startTime, wasConnected, method, type, out) {
+        var duration = ((new Date()).getTime() - startTime) + "ms";
+        if (!wasConnected) { duration += "+conn"; }
+        var msg = extName + "cmd-" + method + "-" + type + " (" + duration + ")";
+        if (out) { msg += ": \"" + out + "\""; }
+        console.log(msg);
+    }
+
     function cliHandler(method, cmd, args, opts) {
         return new Promise(function (resolve, reject) {
             opts = opts || {};
@@ -75,11 +84,12 @@ define(function (require, exports, module) {
 
             // log all cli communication into console when debug mode is on
             if (debugOn) {
+                var startTime = (new Date()).getTime();
                 console.log(extName + "cmd-" + method + ": " + (opts.customCwd ? opts.cwd + "\\" : "") + cmd + " " + args.join(" "));
             }
 
             // we connect to node (promise is returned immediately if we are already connected)
-            connectToNode().then(function () {
+            connectToNode().then(function (wasConnected) {
 
                 var resolved = false;
                 // nodeConnection returns jQuery deffered
@@ -87,14 +97,18 @@ define(function (require, exports, module) {
                     .fail(function (err) { // jQuery promise - .fail is fine
                         if (!resolved) {
                             err = sanitizeOutput(err);
-                            if (debugOn) { console.log(extName + "cmd-" + method + "-fail: \"" + err + "\""); }
+                            if (debugOn) {
+                                logDebug(startTime, wasConnected, method, "fail", err);
+                            }
                             reject(err);
                         }
                     })
                     .then(function (out) {
                         if (!resolved) {
                             out = sanitizeOutput(out);
-                            if (debugOn) { console.log(extName + "cmd-" + method + "-out: \"" + out + "\""); }
+                            if (debugOn) {
+                                logDebug(startTime, wasConnected, method, "out", out);
+                            }
                             resolve(out);
                         }
                     })
@@ -103,20 +117,45 @@ define(function (require, exports, module) {
                     })
                     .done();
 
-                setTimeout(function () {
-                    if (!resolved) {
-                        var err = new Error("cmd-" + method + "-timeout: " + cmd + " " + args.join(" "));
-                        if (opts.timeoutExpected) {
-                            if (debugOn) {
-                                console.log(extName + "cmd-" + method + "-timeout: \"" + err + "\"");
-                            }
-                        } else {
-                            ErrorHandler.logError(err);
-                        }
-                        reject(err);
-                        resolved = true;
+                function timeoutPromise() {
+                    if (debugOn) {
+                        logDebug(startTime, wasConnected, method, "timeout");
                     }
-                }, opts.timeout ? (opts.timeout * 1000) : TIMEOUT_VALUE);
+                    var err = new Error("cmd-" + method + "-timeout: " + cmd + " " + args.join(" "));
+                    if (!opts.timeoutExpected) {
+                        ErrorHandler.logError(err);
+                    }
+                    reject(err);
+                    resolved = true;
+                }
+
+                function timeoutCall() {
+                    setTimeout(function () {
+                        if (!resolved) {
+                            if (typeof opts.timeoutCheck === "function") {
+                                Promise.cast(opts.timeoutCheck())
+                                    .catch(function (err) {
+                                        ErrorHandler.logError("timeoutCheck failed: " + opts.timeoutCheck.toString());
+                                        ErrorHandler.logError(err);
+                                    })
+                                    .then(function (continueExecution) {
+                                        if (continueExecution) {
+                                            // check again later
+                                            timeoutCall();
+                                        } else {
+                                            timeoutPromise();
+                                        }
+                                    });
+                            } else {
+                                // we don't have any custom handler, so just kill the promise here
+                                // note that command WILL keep running in the background
+                                // so even when timeout occurs, operation might finish after it
+                                timeoutPromise();
+                            }
+                        }
+                    }, opts.timeout ? (opts.timeout * 1000) : TIMEOUT_VALUE);
+                }
+                timeoutCall();
 
             }).catch(function (err) {
                 // failed to connect to node for some reason

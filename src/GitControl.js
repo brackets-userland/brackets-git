@@ -441,7 +441,12 @@ define(function (require, exports, module) {
                 escapeShellArg(remoteGitUrl),
                 escapeShellArg(destinationFolder)
             ];
-            return this.executeCommand(this._git, args);
+            return this.executeCommand(this._git, args, {
+                timeout: 1, // check every 1 second,
+                timeoutCheck: function () { // promise that decides whether to timeout or check again later
+                    return false; // do not continue execution
+                }
+            });
         },
 
         gitHistory: function (branch, skipCommits) {
