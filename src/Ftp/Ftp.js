@@ -16,7 +16,7 @@ define(function (require) {
         GitFtp        = require("./GitFtp");
 
     // Module variables
-    var ftpRemotesTemplate = require("text!src/Ftp/templates/remotes-picker.html"),
+    var ftpScopesTemplate = require("text!src/Ftp/templates/remotes-picker.html"),
         $gitPanel = null,
         $remotesDropdown = null;
     
@@ -24,8 +24,9 @@ define(function (require) {
     
     var attachEvents = _.once(function () {
         $gitPanel
-            .on("click", ".gitftp-remote-new", handleGitFtpRemoteCreation)
-            .on("click", ".gitftp-remove-remote", function () { handleGitFtpRemoteRemove($(this)); })
+            .on("click", ".gitftp-remote-new", function () { handleGitFtpScopeCreation(); })
+            .on("click", ".gitftp-remove-remote", function () { handleGitFtpScopeRemove($(this)); })
+            .on("click", ".gitftp-init-remote", function () { handleGitFtpInitScope($(this)); })
             .on("click", ".gitftp-push", handleGitFtpPush);
     });
     
@@ -38,10 +39,10 @@ define(function (require) {
     }
 
     function handleGitFtpPush() {
-        var gitFtpRemote = $gitPanel.find(".git-remote-selected").text().trim();
+        var gitFtpScope = $gitPanel.find(".git-remote-selected").text().trim();
         $gitPanel.find(".gitftp-push").prop("disabled", true).addClass("btn-loading");
 
-        GitFtp.push(gitFtpRemote).done(function (result) {
+        GitFtp.push(gitFtpScope).done(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GITFTP_PUSH_RESPONSE, // title
@@ -56,16 +57,16 @@ define(function (require) {
         });
     }
     
-    function handleGitFtpRemoteCreation() {
+    function handleGitFtpScopeCreation() {
         $gitPanel.find(".git-remotes")
             .addClass("btn-loading")
             .prop("disabled", true);
         
-        return Utils.askQuestion(Strings.CREATE_GITFTP_NEW_REMOTE, Strings.ENTER_GITFTP_REMOTE_NAME)
+        return Utils.askQuestion(Strings.CREATE_GITFTP_NEW_SCOPE, Strings.ENTER_GITFTP_SCOPE_NAME)
             .then(function (name) {
                 return Utils.askQuestion(
-                    Strings.CREATE_GITFTP_NEW_REMOTE,
-                    Strings.ENTER_GITFTP_REMOTE_URL,
+                    Strings.CREATE_GITFTP_NEW_SCOPE,
+                    Strings.ENTER_GITFTP_SCOPE_URL,
                     {defaultValue: "ftp://user:passwd@example.org/folder"}
                 )
                     .then(function (url) {
@@ -73,25 +74,25 @@ define(function (require) {
 
                             // Render the list element of the new remote
                             // TODO: replace this part with a way to call `Remotes.refreshRemotesPicker()`
-                            var $newRemote =   $("<li/>")
-                                                    .addClass("gitftp-remote")
-                                                    .append("<a/>")
-                                                    .find("a")
-                                                        .attr({href: "#", "data-remote-name": name, "data-type": "ftp"})
-                                                        .addClass("remote-name")
-                                                        .append("<span/>")
-                                                        .find("span")
-                                                            .addClass("trash-icon gitftp-remove-remote")
-                                                            .html("&times;")
-                                                        .end()
-                                                        .append("<span/>")
-                                                        .find("span:nth-child(2)")
-                                                            .addClass("change-remote")
-                                                            .text(name)
-                                                        .end()
-                                                    .end();
+                            var $newScope = $("<li/>")
+                                                .addClass("gitftp-remote")
+                                                .append("<a/>")
+                                                .find("a")
+                                                    .attr({href: "#", "data-remote-name": name, "data-type": "ftp"})
+                                                    .addClass("remote-name")
+                                                    .append("<span/>")
+                                                    .find("span")
+                                                        .addClass("trash-icon gitftp-remove-remote")
+                                                        .html("&times;")
+                                                    .end()
+                                                    .append("<span/>")
+                                                    .find("span:nth-child(2)")
+                                                        .addClass("change-remote")
+                                                        .text(name)
+                                                    .end()
+                                                .end();
 
-                            $gitPanel.find(".git-remotes-dropdown .ftp-remotes-header").after($newRemote);
+                            $gitPanel.find(".git-remotes-dropdown .ftp-remotes-header").after($newScope);
 
                         }).catch(function (err) {
                             ErrorHandler.showError(err, "Git-FTP remote creation failed");
@@ -105,25 +106,25 @@ define(function (require) {
             });
     }
     
-    function handleGitFtpRemoteRemove($this) {
+    function handleGitFtpScopeRemove($this) {
         $gitPanel.find(".git-remotes")
             .addClass("btn-loading")
             .prop("disabled", true);
         
         var $selectedElement = $this.closest(".remote-name"),
-            $currentRemote = $gitPanel.find(".git-remote-selected"),
-            remoteName = $selectedElement.data("remote-name");
+            $currentScope = $gitPanel.find(".git-remote-selected"),
+            scopeName = $selectedElement.data("remote-name");
 
         return Utils.askQuestion(
-            Strings.DELETE_REMOTE,
-            StringUtils.format(Strings.DELETE_REMOTE_NAME, remoteName),
+            Strings.DELETE_SCOPE,
+            StringUtils.format(Strings.DELETE_SCOPE_NAME, scopeName),
             {booleanResponse: true}
         ).then(function (response) {
             if (response) {
-                return GitFtp.removeScope(remoteName).then(function () {
+                return GitFtp.removeScope(scopeName).then(function () {
                     $selectedElement.parent().remove();
-                    var newRemote = $gitPanel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
-                    $currentRemote.data("remote-name", newRemote).html(newRemote);
+                    var newScope = $gitPanel.find(".git-remotes-dropdown .remote").first().find("a").data("remote-name");
+                    $currentScope.data("remote-name", newScope).html(newScope);
                 }).catch(function (err) {
                     ErrorHandler.showError(err, "Remove scope failed");
                 });
@@ -135,16 +136,40 @@ define(function (require) {
         });
     }
     
-    function addFtpRemotesToPicker() {
-        GitFtp.getRemotes().then(function (ftpRemotes) {
+    function handleGitFtpInitScope($this) {
+        $gitPanel.find(".git-remotes")
+            .addClass("btn-loading")
+            .prop("disabled", true);
+
+        var $selectedElement = $this.closest(".remote-name"),
+            scopeName = $selectedElement.data("remote-name");
+
+        return Utils.askQuestion(
+            Strings.INIT_GITFTP_SCOPE,
+            StringUtils.format(Strings.INIT_GITFTP_SCOPE_NAME, scopeName),
+            {booleanResponse: true}
+        ).then(function (response) {
+            if (response) {
+                return GitFtp.init(scopeName).catch(function (err) {
+                    ErrorHandler.showError(err, "Init scope failed");
+                });
+            }
+        }).finally(function () {
+            $gitPanel.find(".git-remotes")
+                .removeClass("btn-loading")
+                .prop("disabled", false);
+        });
+    }
+
+    function addFtpScopesToPicker() {
+        GitFtp.getScopes().then(function (ftpScopes) {
 
             // Pass to Mustache the needed data
-            var compiledTemplate = Mustache.render(ftpRemotesTemplate, {
+            var compiledTemplate = Mustache.render(ftpScopesTemplate, {
                 Strings: Strings,
-                ftpRemotes: ftpRemotes,
-                hasFtpRemotes: ftpRemotes.length > 0
+                ftpScopes: ftpScopes,
+                hasFtpScopes: ftpScopes.length > 0
             });
-
             $remotesDropdown.prepend(compiledTemplate);
 
         }).catch(function (err) {
@@ -158,7 +183,7 @@ define(function (require) {
     });
 
     EventEmitter.on(Events.REMOTES_REFRESH_PICKER, function () {
-        addFtpRemotesToPicker();
+        addFtpScopesToPicker();
     });
 
 });

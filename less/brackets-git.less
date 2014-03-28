@@ -240,7 +240,7 @@
             display: inline-block;
             width: 100%;
         }
-        .trash-icon {
+        .hover-icon {
             opacity: 0;
             background-image: none !important;
             width: 16px;
@@ -254,15 +254,9 @@
                 font-weight: bold;
             }
         }
-        &:hover .trash-icon {
+        &:hover .hover-icon {
             opacity: 1;
         }
-    }
-
-    a[data-type=ftp] .change-remote:before, span[data-type=ftp]:before {
-        content: "FTP:";
-        padding-right: 5px;
-        opacity: 0.5;
     }
 
     .dropdown-menu {
@@ -299,7 +293,7 @@
             cursor: default;
         }
 
-        .gitftp-remote-new, .git-remote-new {
+        li:not(".remote"):not(".divider"):not(".dropdown-header") > a {
             font-style: italic;
         }
     }
@@ -339,6 +333,22 @@
         background-repeat: repeat;
         -webkit-animation: btn-loading 1s linear infinite;
     }
+
+    // Git-FTP styles, will be removed after S38, see /src/Ftp/styles/ftp.less
+    .git-remotes-dropdown {
+        .gitftp-init-remote {
+            position: relative;
+            top: 2px;
+            right: 4px;
+        }
+    }
+
+    a[data-type=ftp] .change-remote:before, span[data-type=ftp]:before {
+        content: "FTP:";
+        padding-right: 5px;
+        opacity: 0.5;
+    }
+
 }
 
 @-webkit-keyframes btn-loading {
