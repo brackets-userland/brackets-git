@@ -162,7 +162,7 @@ define(function (require) {
     function decideRemoteBranch(remoteName) {
         remoteName = remoteName + "/";
         return Git.getCurrentUpstreamBranch().then(function (upstreamBranch) {
-            return Git.getCurrentBranchName().then(function (currentBranch) {
+            return Git.getCurrentBranchHash().then(function (currentBranch) {
 
                 // if we don't have an upstream branch - remote branch will have the same name
                 if (!upstreamBranch) {
@@ -270,14 +270,14 @@ define(function (require) {
         if (!remoteName) {
             throw ErrorHandler.rewrapError(originalPushError, new Error("handleGitPushWithPassword remote argument is empty!"));
         }
-        return Git.getCurrentBranchName().then(function (branchName) {
+        return Git.getCurrentBranchHash().then(function (branchHash) {
             return Git.getConfig("remote." + remoteName + ".url").then(function (remoteUrl) {
                 if (!remoteUrl) {
                     throw ErrorHandler.rewrapError(originalPushError, new Error("git config remote." + remoteName + ".url is empty!"));
                 }
-                return [branchName, remoteUrl];
+                return [branchHash, remoteUrl];
             });
-        }).spread(function (branchName, remoteUrl) {
+        }).spread(function (branchHash, remoteUrl) {
 
             var isHttp = remoteUrl.indexOf("http") === 0;
             if (!isHttp) {
@@ -337,7 +337,7 @@ define(function (require) {
                     var io = remoteUrl.indexOf("@");
                     remoteUrl = remoteUrl.substring(0, io) + ":" + password + remoteUrl.substring(io);
                 }
-                return Git.push(remoteUrl, branchName).then(function (pushResponse) {
+                return Git.push(remoteUrl, branchHash).then(function (pushResponse) {
                     if (shouldSave) {
                         return Git.setConfig("remote." + remoteName + ".url", remoteUrl).then(function () {
                             return pushResponse;

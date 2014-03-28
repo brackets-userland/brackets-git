@@ -140,8 +140,12 @@ define(function (require, exports) {
         return git(["branch", "-u", remoteName + "/" + remoteBranch]);
     }
 
-    function getCurrentBranchName() {
+    function getCurrentBranchHash() {
         return git(["rev-parse", "--abbrev-ref", "HEAD"]);
+    }
+
+    function getCurrentBranchName() {
+        return git(["symbolic-ref", "--short", "HEAD"]);
     }
 
     function getBranches(moreArgs) {
@@ -203,14 +207,15 @@ define(function (require, exports) {
 
     // Get list of deleted files between two branches
     function getDeletedFiles(oldBranch, newBranch) {
-        return git(["diff", "--name-status", oldBranch, newBranch])
-            .done(function (response) {
-                return response.split("\n").map(function (row) {
-                    row.substring(1).trim();
+        return git(["diff", "--name-status", oldBranch + ".." + newBranch])
+            .then(function (stdout) {
+                var regex = /^D/;
+                return $.map(stdout.split("\n"), function (row) {
+                    return regex.test(row) ? $.trim(row.substring(1)) : undefined;
                 });
             })
-            .catch(function () {
-                return null;
+            .catch(function (err) {
+                throw new Error("Unable to get list of deleted files: " + err);
             });
     }
 
@@ -239,6 +244,7 @@ define(function (require, exports) {
     exports.pull                      = pull;
     exports.push                      = push;
     exports.setUpstreamBranch         = setUpstreamBranch;
+    exports.getCurrentBranchHash      = getCurrentBranchHash;
     exports.getCurrentBranchName      = getCurrentBranchName;
     exports.getCurrentUpstreamBranch  = getCurrentUpstreamBranch;
     exports.getConfig                 = getConfig;
