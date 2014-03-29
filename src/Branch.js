@@ -110,6 +110,9 @@ define(function (require, exports) {
                             newVal = $opt.val();
                         if (remote) {
                             newVal = newVal.substring(remote.length + 1);
+                            if (remote !== "origin") {
+                                newVal = remote + "-" + newVal;
+                            }
                         }
                         $input.val(newVal);
                     }
