@@ -392,8 +392,16 @@ define(function (require, exports, module) {
             }
         },
 
-        gitReset: function () {
-            return this.executeCommand(this._git, ["reset"]);
+        gitCheckout: function (commit) {
+            return this.executeCommand(this._git, ["checkout", commit]);
+        },
+
+        gitReset: function (type, hash) {
+            if (type) {
+                return this.executeCommand(this._git, ["reset", "--" + type, hash]);
+            } else {
+                return this.executeCommand(this._git, ["reset"]);
+            }
         },
 
         gitDiff: function (file) {

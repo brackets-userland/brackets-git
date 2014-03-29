@@ -710,6 +710,47 @@ define(function (require, exports) {
                 $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
             });
         });
+
+        $dialog.find(".btn-reset-hard").on("click", function () {
+            Main.gitControl.gitResetHard('hard', hashCommit).then(function () {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITILE_DONE, "Reset to " + hashCommit + ".");
+            }, function (err) {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
+            });
+        });
+
+        $dialog.find(".btn-reset-soft").on("click", function () {
+            Main.gitControl.gitReset('soft', hashCommit).then(function () {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITLE_DONE, "Reset to " + hashCommit + ".");
+            }, function (err) {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
+            });
+        });
+
+        $dialog.find(".btn-reset-mixed").on("click", function () {
+            Main.gitControl.gitReset('mixed', hashCommit).then(function () {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITLE_DONE, "Reset to " + hashCommit + ".");
+            }, function (err) {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
+            });
+        });
+
+        $dialog.find(".btn-checkout").on("click", function () {
+            Main.gitControl.gitCheckout(hashCommit).then(function () {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.TITLE_DONE, "Check out to " + hashCommit + ".");
+                return Branch.refresh();
+            }).fail(function (err) {
+                dialog.close();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.TITLE_ERROR, err);
+            });
+        });
     }
 
     // show a commit with given hash in a dialog
@@ -773,6 +814,57 @@ define(function (require, exports) {
         }
     }
     
+    function convertCommitDates(commits) {
+        var mode        = Preferences.get("dateMode"),
+            format      = Strings.DATE_FORMAT,
+            now         = moment(),
+            yesterday   = moment().subtract("d", 1).startOf("d"),
+            ownFormat   = Preferences.get("dateFormat") || Strings.DATE_FORMAT;
+
+        _.forEach(commits, function (commit) {
+            if (mode === 4) {
+                // mode 4: Original Git date
+                commit.date = {
+                    shown: commit.date
+                };
+                return;
+            }
+
+            var date = moment(commit.date);
+            commit.date = {
+                title: ""
+            };
+            switch (mode) {
+                // mode 0 (default): formatted with Strings.DATE_FORMAT
+                default:
+                case 0:
+                    commit.date.shown = date.format(format);
+                    break;
+                // mode 1: always relative
+                case 1:
+                    commit.date.shown = date.fromNow();
+                    commit.date.title = date.format(format);
+                    break;
+                // mode 2: intelligent relative/formatted
+                case 2:
+                    if (date.diff(yesterday) > 0) {
+                        commit.date.shown = moment.duration(Math.max(date.diff(now), -24 * 60 * 60 * 1000), "ms").humanize(true);
+                        commit.date.title = date.format(format);
+                    } else {
+                        commit.date.shown = date.format(format);
+                    }
+                    break;
+                // mode 3: formatted with own format (as pref)
+                case 3:
+                    commit.date.shown = date.format(ownFormat);
+                    commit.date.title = date.format(format);
+                    break;
+                /* mode 4 (Original Git date) is handled above */
+            }
+        });
+        return commits;
+    }
+
     function convertCommitDates(commits) {
         var mode        = Preferences.get("dateMode"),
             format      = Strings.DATE_FORMAT,
@@ -1153,7 +1245,7 @@ define(function (require, exports) {
         Main.gitControl.getGitConfig("user.email").then(function (currentEmail) {
             EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
         });
-        
+
         // Init moment - use the correct language
         moment.lang(brackets.getLocale());
     }

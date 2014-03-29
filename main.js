@@ -32,6 +32,9 @@ define(function (require, exports, module) {
     }
     require(modules);
 
+    // Seems just too buggy right now
+    q.stopUnhandledRejectionTracking();
+
     // Load CSS
     ExtensionUtils.loadStyleSheet(module, "less/brackets-git.less");
     ExtensionUtils.loadStyleSheet(module, "less/fonts/octicon.less");
