@@ -4,6 +4,7 @@ define(function (require, exports, module) {
         NodeConnection = brackets.getModule("utils/NodeConnection");
 
     var Promise       = require("bluebird"),
+        Strings       = require("strings"),
         ErrorHandler  = require("src/ErrorHandler"),
         Preferences   = require("src/Preferences"),
         Utils         = require("src/Utils");
@@ -163,7 +164,7 @@ define(function (require, exports, module) {
 
             }).catch(function (err) {
                 // failed to connect to node for some reason
-                ErrorHandler.showError(err, "Failed to connect to Node.js");
+                ErrorHandler.showError(err, Strings.ERROR_CONNECT_NODEJS);
             });
         });
     }
