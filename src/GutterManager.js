@@ -245,10 +245,10 @@ define(function (require, exports) {
 
 
     $(document).on("mouseenter", ".CodeMirror-linenumber", function(evt) {
-        console.log($(".gitline-" + $(evt.target).html()).addClass("brackets-git-gutter-hover"));
+        $(".gitline-" + $(evt.target).html()).addClass("brackets-git-gutter-hover");
     })
     .on("mouseout", ".CodeMirror-linenumber", function(evt) {
-        console.log($(".gitline-" + $(evt.target).html()).removeClass("brackets-git-gutter-hover"));
+        $(".gitline-" + $(evt.target).html()).removeClass("brackets-git-gutter-hover");
     });
 
 
