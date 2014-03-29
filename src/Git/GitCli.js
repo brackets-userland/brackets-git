@@ -238,7 +238,7 @@ define(function (require, exports) {
     function forceBranchDelete(branchName) {
         return git(["branch", "-D", branchName]);
     }
-
+    
     function getHistory(branch, skipCommits, file) {
         var separator = "_._",
             items  = ["hashShort", "hash", "author", "date", "message"],
@@ -316,6 +316,10 @@ define(function (require, exports) {
         if (hash) { args.push(hash); }
         return git(args);
     }
+    
+    function checkout(hash) {
+        return git(["checkout", hash]);
+    }
 
     // Public API
     exports.git                       = git;
@@ -342,5 +346,6 @@ define(function (require, exports) {
     exports.stage                     = stage;
     exports.commit                    = commit;
     exports.reset                     = reset;
+    exports.checkout                  = checkout;
 
 });
