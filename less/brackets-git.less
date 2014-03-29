@@ -129,9 +129,14 @@
 
 /* CodeMirror area */
 .CodeMirror {
+    .brackets-git-gutter-deleted-lines.brackets-git-gutter-hover,
+    .brackets-git-gutter-removed.brackets-git-gutter-hover {
+        background-color: yellow !important;
+    }
+
     .brackets-git-gutter {
         width: @gutterWidth;
-        margin-left: 1px;
+        margin-left: 5px;
     }
     .brackets-git-gutter-added {
         background-size: @gutterWidth @gutterWidth;
