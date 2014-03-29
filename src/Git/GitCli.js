@@ -205,6 +205,13 @@ define(function (require, exports) {
         return git(["checkout", commit]);
     }
 
+    function reset(commit, type) {
+        var args = [];
+        if (type) args.push("--" + type);
+        if (commit) args.push(commit);
+        return git(args);
+    }
+
     // Public API
     exports.git                       = git;
     exports.fetchAllRemotes           = fetchAllRemotes;
@@ -223,5 +230,6 @@ define(function (require, exports) {
     exports.branchDelete              = branchDelete;
     exports.forceBranchDelete         = forceBranchDelete;
     exports.checkout                  = checkout;
+    exports.reset                     = reset;
 
 });
