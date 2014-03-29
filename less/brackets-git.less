@@ -134,9 +134,9 @@
     .brackets-git-gutter-modified.brackets-git-gutter-hover:before {
         content: '';
         display: inline-block;
-        border-left: 7px solid transparent;
-        border-right: 7px solid transparent;
-        border-bottom: 7px solid #ccc;
+        border-left: 0.8em solid transparent;
+        border-right: 0.8em solid transparent;
+        border-bottom: 0.8em solid #ccc;
         border-bottom-color: #ffffff;
         position: absolute;
         bottom:  -10px;
@@ -148,11 +148,13 @@
     .brackets-git-gutter-modified.brackets-git-gutter-hover:after {
         background-color:  white;
         position: absolute;
-        bottom: -30px;
+        bottom: -28px;
+        left: 0px;
         content: "Click for more details";
         width: 20em;
         border-radius: 2px;
-        padding: .2em;
+        padding: 3px;
+        font-size: .9em;
     }
 
     .brackets-git-gutter-deleted-lines.brackets-git-gutter-hover,

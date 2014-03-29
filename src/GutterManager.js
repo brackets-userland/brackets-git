@@ -1,7 +1,6 @@
 /*jslint plusplus: true, vars: true, nomen: true */
 /*global brackets, define */
 
-// this file was composed with a big help from @MiguelCastillo extension Brackets-InteractiveLinter
 // @see https://github.com/MiguelCastillo/Brackets-InteractiveLinter
 
 define(function (require, exports) {
@@ -244,10 +243,19 @@ define(function (require, exports) {
     }
 
 
-    $(document).on("mouseenter", ".CodeMirror-linenumber", function(evt) {
-        $(".gitline-" + $(evt.target).html()).addClass("brackets-git-gutter-hover");
+    var _timer;
+    $(document).on("mouseenter", ".CodeMirror-linenumber", function (evt) {
+        var $item = $(".gitline-" + $(evt.target).html()).addClass("brackets-git-gutter-hover");
+
+        if (_timer) {
+            clearTimeout(_timer);
+        }
+
+        _timer = setTimeout(function () {
+            $item.removeClass("brackets-git-gutter-hover");
+        }, 3000);
     })
-    .on("mouseout", ".CodeMirror-linenumber", function(evt) {
+    .on("mouseleave", ".CodeMirror-linenumber", function (evt) {
         $(".gitline-" + $(evt.target).html()).removeClass("brackets-git-gutter-hover");
     });
 
