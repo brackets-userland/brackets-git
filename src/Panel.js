@@ -683,7 +683,8 @@ define(function (require, exports) {
             refreshCallback  = function () {
                 dialog.close();
                 Branch.refresh();
-            };
+            },
+            git              = require("./Git/Git");
         _makeDialogBig($dialog);
 
         var firstFile = selectedFile || $dialog.find(".commit-files ul li:first-child").text().trim();
@@ -711,7 +712,7 @@ define(function (require, exports) {
         $dialog.find(".btn-checkout").on("click", function () {
             Utils.askQuestion("Sure to checkout?", "When checkout a commit, the repo will go into a DETACHED HEAD. You can't make further commits unless you create a branch based on this.", {booleanResponse: true}).then(function (ac) {
                 if (ac) {
-                    return Main.gitControl.gitCheckout(hashCommit).then(refreshCallback);
+                    return git.checkout(hashCommit).then(refreshCallback);
                 }
             });
         });
@@ -719,7 +720,7 @@ define(function (require, exports) {
         $dialog.find(".btn-reset-hard").on("click", function () {
             Utils.askQuestion("Sure to reset?", "This will really lose your current work.", {booleanResponse: true}).then(function () {
                 if (ac) {
-                    return Main.gitControl.gitReset(hashCommit, "hard").then(refreshCallback);
+                    return git.reset(hashCommit, "hard").then(refreshCallback);
                 }
             });
         });
@@ -727,7 +728,7 @@ define(function (require, exports) {
         $dialog.find(".btn-reset-mixed").on("click", function () {
             Utils.askQuestion("Sure to reset?", "It resets the index, but not the work tree.", {booleanResponse: true}).then(function () {
                 if (ac) {
-                    return Main.gitControl.gitReset(hashCommit, "mixed").then(refreshCallback);
+                    return git.reset(hashCommit, "mixed").then(refreshCallback);
                 }
             });
         });
@@ -735,7 +736,7 @@ define(function (require, exports) {
         $dialog.find(".btn-reset-soft").on("click", function () {
             Utils.askQuestion("Sure to reset?", "It doesn't touch the index or work tree. All your files are intact as with --mixed, but all the changes show up as changes to be committed with git status.", {booleanResponse: true}).then(function (ac) {
                 if (ac) {
-                    return Main.gitControl.gitReset(hashCommit, "soft").then(refreshCallback);
+                    return git.reset(hashCommit, "soft").then(refreshCallback);
                 }
             });
         });
