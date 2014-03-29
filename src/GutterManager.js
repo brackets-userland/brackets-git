@@ -246,8 +246,24 @@ define(function (require, exports) {
 
 
     var _timer;
+    var $line = $(),
+        $gitGutterLines = $();
     $(document).on("mouseenter", ".CodeMirror-linenumber", function (evt) {
-        $(".gitline-" + $(evt.target).html()).addClass("brackets-git-gutter-hover");
+        var $target = $(evt.target);
+
+        // Remove tooltip
+        $line.attr("title", "");
+
+        // Remove any misc gutter hover classes
+        $(".brackets-git-gutter-hover").removeClass("brackets-git-gutter-hover");
+
+        // Add new gutter hover classes
+        $gitGutterLines = $(".gitline-" + $target.html()).addClass("brackets-git-gutter-hover");
+
+        // Add tooltips if there are any git gutter marks
+        if ($gitGutterLines.length) {
+            $line = $target.attr("title", "Click for more details");
+        }
     })
     .on("mouseleave", ".CodeMirror-linenumber", function (evt) {
         if (_timer) {
