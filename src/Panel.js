@@ -721,10 +721,10 @@ define(function (require, exports) {
     }
 
     // Render history list the first time
-    function renderHistory() {
+    function renderHistory(file) {
         return Main.gitControl.getBranchName().then(function (branchName) {
             // Get the history commit of the current branch
-            return Main.gitControl.gitHistory(branchName).then(function (commits) {
+            return Main.gitControl.gitHistory(branchName, null, file.absolute).then(function (commits) {
                 commits = convertCommitDates(commits);
 
                 var template = "<table class='git-history-list bottom-panel-table table table-striped table-condensed row-highlight'>";
@@ -736,6 +736,10 @@ define(function (require, exports) {
                 $tableContainer.append(Mustache.render(template, {
                     commits: commits
                 }));
+
+                if (file) {
+                    $(".git-history-list", $tableContainer).data("file", file.absolute);
+                }
             });
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to get history");
@@ -747,7 +751,7 @@ define(function (require, exports) {
         if ($tableContainer.find(".git-history-list").is(":visible")) {
             if (($tableContainer.prop("scrollHeight") - $tableContainer.scrollTop()) === $tableContainer.height()) {
                 return Main.gitControl.getBranchName().then(function (branchName) {
-                    return Main.gitControl.gitHistory(branchName, $tableContainer.find("tr.history-commit").length).then(function (commits) {
+                    return Main.gitControl.gitHistory(branchName, $tableContainer.find("tr.history-commit").length, $tableContainer.find(".git-history-list").data("file")).then(function (commits) {
                         if (commits.length === 0) {
                             return;
                         }
@@ -818,13 +822,19 @@ define(function (require, exports) {
     }
 
     // Show or hide the history list on click of .history button
-    function handleToggleHistory() {
+    function handleToggleHistory(fileHistory) {
 
         var $panel = gitPanel.$panel,
             historyEnabled = !$panel.find(".git-history-list").is(":visible");
 
+        if (fileHistory) {
+            var file = {};
+            file.absolute = DocumentManager.getCurrentDocument().file.fullPath;
+            file.relative = ProjectManager.makeProjectRelativeIfPossible(file.absolute);
+        }
+
         // Render .git-history-list if is not already generated
-        if ($tableContainer.find(".git-history-list").length === 0) { renderHistory(); }
+        if ($tableContainer.find(".git-history-list").length === 0) { renderHistory(file); }
 
         // Toggle commit button and check-all checkbox
         $panel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
@@ -1079,6 +1089,7 @@ define(function (require, exports) {
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
             .on("click", ".authors-selection", handleAuthorsSelection)
             .on("click", ".authors-file", handleAuthorsFile)
+            .on("click", ".file-history", function () { handleToggleHistory(true); })
             .on("click", ".git-history", handleToggleHistory)
             .on("click", ".git-push", EventEmitter.emitFactory(Events.HANDLE_PUSH))
             .on("click", ".git-pull", EventEmitter.emitFactory(Events.HANDLE_PULL))

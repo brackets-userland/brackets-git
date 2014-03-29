@@ -119,6 +119,7 @@ define({
     SHORTCUTS:                          "Shortcuts",
     SHORTCUTS_HINT:                     "Separate keys with dash, like this: Ctrl-Alt-G<br>You can use the english key identifiers Ctrl, Cmd (Mac), Alt and Shift.",
     SHOW_BASH_TERMINAL_BUTTON:          "Show Bash/Terminal button in the panel",
+    SHOW_FILE_HISTORY:                  "Show file history",
     SHOWN_DATE_FORMAT:                  "Format of commit dates in history",
     SHOW_REPORT_BUG_BUTTON:             "Show Report Bug button in the panel",
     SHOW_UNTRACKED:                     "Show untracked",
