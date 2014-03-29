@@ -436,6 +436,10 @@ define(function (require, exports, module) {
         gitInit: function () {
             return this.executeCommand(this._git, ["init"]);
         },
+        
+        gitCheckout: function (commit) {
+            return this.executeCommand(this._git, ["checkout", commit]);
+        },
 
         gitClone: function (remoteGitUrl, destinationFolder) {
             var args = [

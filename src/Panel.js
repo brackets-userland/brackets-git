@@ -710,6 +710,12 @@ define(function (require, exports) {
                 $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
             });
         });
+        
+        $dialog.find(".btn-checkout").on("click", function () {
+            Utils.askQuestion("Sure to checkout?", "When checkout a commit, the repo will go into a DETACHED HEAD. You can't make further commits unless you create a branch based on this.", {booleanResponse: true}).then(function () {
+                Main.gitControl.gitCheckout(hashCommit);
+            });
+        });
     }
 
     // show a commit with given hash in a dialog
