@@ -709,6 +709,24 @@ define(function (require, exports) {
                 Main.gitControl.gitCheckout(hashCommit);
             });
         });
+        
+        $dialog.find(".btn-reset-hard").on("click", function () {
+            Utils.askQuestion("Sure to reset?", "This will really lose your current work.", {booleanResponse: true}).then(function () {
+                Main.gitControl.gitReset(hashCommit, "hard");
+            });
+        });
+        
+        $dialog.find(".btn-reset-mixed").on("click", function () {
+            Utils.askQuestion("Sure to reset?", "It resets the index, but not the work tree.", {booleanResponse: true}).then(function () {
+                Main.gitControl.gitReset(hashCommit, "mixed");
+            });
+        });
+        
+        $dialog.find(".btn-reset-soft").on("click", function () {
+            Utils.askQuestion("Sure to reset?", "It doesn't touch the index or work tree. All your files are intact as with --mixed, but all the changes show up as changes to be committed with git status.", {booleanResponse: true}).then(function () {
+                Main.gitControl.gitReset(hashCommit, "soft");
+            });
+        });
     }
 
     // show a commit with given hash in a dialog
