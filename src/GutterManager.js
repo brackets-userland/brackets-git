@@ -5,7 +5,6 @@
 // @see https://github.com/MiguelCastillo/Brackets-InteractiveLinter
 
 define(function (require, exports) {
-    "use strict";
 
     var _               = brackets.getModule("thirdparty/lodash"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
@@ -13,6 +12,7 @@ define(function (require, exports) {
         Main            = require("./Main"),
         Preferences     = require("./Preferences"),
         Utils           = require("src/Utils");
+
 
     var cm = null,
         results = null,
@@ -74,7 +74,7 @@ define(function (require, exports) {
 
         cm.clearGutter(gutterName);
         results.forEach(function (obj) {
-            cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-" + obj.type + "'>&nbsp;</div>")[0]);
+            cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-" + obj.type + " gitline-" + (obj.line + 1) + "'>&nbsp;</div>")[0]);
         });
 
         // reopen widgets that were opened before refresh
@@ -242,6 +242,15 @@ define(function (require, exports) {
             activeEditor.setCursorPos(goToMark.line, currentPos.ch);
         }
     }
+
+
+    $(document).on("mouseenter", ".CodeMirror-linenumber", function(evt) {
+        console.log($(".gitline-" + $(evt.target).html()).addClass("brackets-git-gutter-hover"));
+    })
+    .on("mouseout", ".CodeMirror-linenumber", function(evt) {
+        console.log($(".gitline-" + $(evt.target).html()).removeClass("brackets-git-gutter-hover"));
+    });
+
 
     // API
     exports.refresh = refresh;
