@@ -22,7 +22,9 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-lesslint");
-    grunt.registerTask("default", ["jshint"]);
-    grunt.registerTask("less", ["lesslint"]);
+
+    grunt.registerTask("jshint-test", ["jshint"]);
+    grunt.registerTask("less-test", ["lesslint"]);
+    grunt.registerTask("test", ["jshint"]); // for travis
 
 };

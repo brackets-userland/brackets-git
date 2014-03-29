@@ -30,7 +30,6 @@
 
     },
     "devDependencies": {
-        "q": "0.9.7",
         "grunt": "latest",
         "grunt-contrib-jshint": "latest",
         "grunt-lesslint": "latest"
