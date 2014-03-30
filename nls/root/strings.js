@@ -5,6 +5,7 @@ define({
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Add endline at the end of file",
     ADD_TO_GITIGNORE:                   "Add to .gitignore",
     AGREE_TO_STORE_PASSWORDS:           "I agree that password are stored in plain text on my computer",
+    ADVANCE_MODE:                       "Advance Mode",
     AMEND_COMMIT:                       "Amend last commit",
     AMEND_COMMIT_FORBIDDEN:             "Cannot amend commit when there are no unpushed commits",
     AUTHOR:                             "Author",
