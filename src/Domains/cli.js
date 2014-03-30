@@ -80,6 +80,10 @@
                 major: 0,
                 minor: 1
             });
+        } else {
+            throw new Error(domainName +
+                            " domain already registered. Close all Brackets instances and start again. " +
+                            "This should only happen when updating the extension.");
         }
 
         DomainManager.registerCommand(
