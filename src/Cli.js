@@ -13,6 +13,7 @@ define(function (require, exports, module) {
         domainModulePath  = moduleDirectory + "Domains/cli",
         debugOn           = Preferences.get("debugMode"),
         TIMEOUT_VALUE     = Preferences.get("TIMEOUT_VALUE"),
+        domainName        = "brackets-git",
         extName           = "[brackets-git] ",
         nodeConnection    = new NodeConnection(),
         nextCliId         = 0;
@@ -124,7 +125,7 @@ define(function (require, exports, module) {
 
                 var resolved = false;
                 // nodeConnection returns jQuery deffered
-                nodeConnection.domains["brackets-git"][method](opts.cwd, cmd, args, domainOpts)
+                nodeConnection.domains[domainName][method](opts.cwd, cmd, args, domainOpts)
                     .fail(function (err) { // jQuery promise - .fail is fine
                         if (!resolved) {
                             err = sanitizeOutput(err);
@@ -159,6 +160,12 @@ define(function (require, exports, module) {
                     reject(err);
                     resolved = true;
                 }
+
+                /*
+                nodeConnection.domains[domainName].kill(domainOpts.cliId).fail(function (err) {
+                    ErrorHandler.logError(err);
+                }).done();
+                */
 
                 function timeoutCall() {
                     setTimeout(function () {

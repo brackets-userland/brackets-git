@@ -5,7 +5,8 @@
 
     var ChildProcess  = require("child_process"),
         domainName    = "brackets-git",
-        domainManager = null;
+        domainManager = null,
+        processMap    = {};
 
     function fixEOL(str) {
         if (str[str.length - 1] === "\n") {
@@ -43,6 +44,8 @@
         var child = ChildProcess.spawn(command, args, {
             cwd: directory
         });
+        processMap[opts.cliId] = child;
+
         var exitCode, stdout = [], stderr = [];
         child.stdout.addListener("data", function (text) {
             stdout[stdout.length] = text;
@@ -54,10 +57,23 @@
             exitCode = code;
         });
         child.addListener("close", function () {
+            delete processMap[opts.cliId];
             callback(exitCode > 0 ? join(stderr) : undefined,
                      exitCode > 0 ? undefined : join(stdout));
         });
         child.stdin.end();
+    }
+
+    function kill(cliId, callback) {
+        var process = processMap[cliId];
+        if (!process) {
+            return callback("Couldn't find process to kill with ID:" + cliId);
+        }
+        try {
+            callback(undefined, process.kill());
+        } catch (e) {
+            callback(e);
+        }
     }
 
     /**
@@ -106,6 +122,20 @@
                 { name: "command", type: "string" },
                 { name: "args", type: "array" },
                 { name: "opts", type: "object" }
+            ],
+            [
+                { name: "stdout", type: "string" }
+            ]
+        );
+
+        domainManager.registerCommand(
+            domainName,
+            "kill", // command name
+            kill, // command handler function
+            true, // this command is async
+            "Launches a new process with the given command.",
+            [
+                { name: "commandId", type: "number" }
             ],
             [
                 { name: "stdout", type: "string" }
