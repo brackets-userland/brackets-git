@@ -724,6 +724,10 @@ define(function (require, exports) {
             });
         });
         
+        if (!Preferences.get("advanceMode")) {
+            $dialog.find(".git-advance-mode").hide();
+        }
+
         $dialog.find(".btn-reset-hard").on("click", function () {
             Utils.askQuestion(Strings.TITLE_RESET_HARD, Strings.DIALOG_RESET_HARD, {booleanResponse: true}).then(function () {
                 if (ac) {
