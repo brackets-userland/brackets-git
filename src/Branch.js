@@ -111,7 +111,7 @@ define(function (require, exports) {
                         if (remote) {
                             newVal = newVal.substring(remote.length + 1);
                             if (remote !== "origin") {
-                                newVal = remote + "-" + newVal;
+                                newVal = remote + "#" + newVal;
                             }
                         }
                         $input.val(newVal);
