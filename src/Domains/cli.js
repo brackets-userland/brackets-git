@@ -3,8 +3,9 @@
 (function () {
     "use strict";
 
-    var ChildProcess = require("child_process"),
-        domainName   = "brackets-git";
+    var ChildProcess  = require("child_process"),
+        domainName    = "brackets-git",
+        domainManager = null;
 
     function fixEOL(str) {
         if (str[str.length - 1] === "\n") {
@@ -14,22 +15,11 @@
     }
 
     // handler with ChildProcess.exec
+    // this won't handle cases where process outputs a large string
     function execute(directory, command, args, opts, callback) {
         // http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
         var toExec = command + " " + args.join(" ");
         ChildProcess.exec(toExec, { cwd: directory }, function (err, stdout, stderr) {
-            /*
-            if (true) {
-                var line = [
-                    "in(" + typeof toExec + ")",
-                    toExec,
-                    "out(" + typeof stderr + "," + typeof stdout + ")",
-                    stderr,
-                    stdout
-                ];
-                fs.appendFileSync(__dirname + "/git.log", line.join("|") + "\n");
-            }
-            */
             callback(err ? fixEOL(stderr) : undefined, err ? undefined : fixEOL(stdout));
         });
     }
@@ -74,9 +64,11 @@
      * Initializes the domain.
      * @param {DomainManager} DomainManager for the server
      */
-    exports.init = function (DomainManager) {
-        if (!DomainManager.hasDomain(domainName)) {
-            DomainManager.registerDomain(domainName, {
+    exports.init = function (_domainManager) {
+        domainManager = _domainManager;
+
+        if (!domainManager.hasDomain(domainName)) {
+            domainManager.registerDomain(domainName, {
                 major: 0,
                 minor: 1
             });
@@ -86,64 +78,38 @@
                             "This should only happen when updating the extension.");
         }
 
-        DomainManager.registerCommand(
+        domainManager.registerCommand(
             domainName,
             "execute", // command name
             execute, // command handler function
             true, // this command is async
             "Runs a command in a shell and buffers the output.",
             [
-                {
-                    name: "directory",
-                    type: "string"
-                },
-                {
-                    name: "command",
-                    type: "string"
-                },
-                {
-                    name: "args",
-                    type: "array"
-                },
-                {
-                    name: "opts",
-                    type: "object"
-                }
+                { name: "directory", type: "string" },
+                { name: "command", type: "string" },
+                { name: "args", type: "array" },
+                { name: "opts", type: "object" }
             ],
-            [{
-                name: "stdout",
-                type: "string"
-            }]
+            [
+                { name: "stdout", type: "string" }
+            ]
         );
 
-        DomainManager.registerCommand(
+        domainManager.registerCommand(
             domainName,
             "spawn", // command name
             spawn, // command handler function
             true, // this command is async
             "Launches a new process with the given command.",
             [
-                {
-                    name: "directory",
-                    type: "string"
-                },
-                {
-                    name: "command",
-                    type: "string"
-                },
-                {
-                    name: "args",
-                    type: "array"
-                },
-                {
-                    name: "opts",
-                    type: "object"
-                }
+                { name: "directory", type: "string" },
+                { name: "command", type: "string" },
+                { name: "args", type: "array" },
+                { name: "opts", type: "object" }
             ],
-            [{
-                name: "stdout",
-                type: "string"
-            }]
+            [
+                { name: "stdout", type: "string" }
+            ]
         );
     };
 
