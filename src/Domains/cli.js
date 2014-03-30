@@ -14,7 +14,7 @@
     }
 
     // handler with ChildProcess.exec
-    function execute(directory, command, args, callback) {
+    function execute(directory, command, args, opts, callback) {
         // http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
         var toExec = command + " " + args.join(" ");
         ChildProcess.exec(toExec, { cwd: directory }, function (err, stdout, stderr) {
@@ -48,7 +48,7 @@
         return fixEOL(result.toString("utf8"));
     }
 
-    function spawn(directory, command, args, callback) {
+    function spawn(directory, command, args, opts, callback) {
         // https://github.com/creationix/node-git
         var child = ChildProcess.spawn(command, args, {
             cwd: directory
@@ -104,6 +104,10 @@
                 {
                     name: "args",
                     type: "array"
+                },
+                {
+                    name: "opts",
+                    type: "object"
                 }
             ],
             [{
@@ -130,6 +134,10 @@
                 {
                     name: "args",
                     type: "array"
+                },
+                {
+                    name: "opts",
+                    type: "object"
                 }
             ],
             [{

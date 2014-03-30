@@ -14,7 +14,17 @@ define(function (require, exports, module) {
         debugOn           = Preferences.get("debugMode"),
         TIMEOUT_VALUE     = Preferences.get("TIMEOUT_VALUE"),
         extName           = "[brackets-git] ",
-        nodeConnection    = new NodeConnection();
+        nodeConnection    = new NodeConnection(),
+        nextCliId         = 0;
+
+    var MAX_COUNTER_VALUE = 4294967295; // 2^32 - 1
+
+    function getNextCliId() {
+        if (nextCliId >= MAX_COUNTER_VALUE) {
+            nextCliId = 0;
+        }
+        return ++nextCliId;
+    }
 
     // return true/false to state if wasConnected before
     function connectToNode() {
@@ -58,10 +68,21 @@ define(function (require, exports, module) {
         return str;
     }
 
-    function logDebug(startTime, wasConnected, method, type, out) {
-        var duration = ((new Date()).getTime() - startTime) + "ms";
-        if (!wasConnected) { duration += "+conn"; }
-        var msg = extName + "cmd-" + method + "-" + type + " (" + duration + ")";
+    function logDebug(opts, debugInfo, method, type, out) {
+        var processInfo = [];
+
+        var duration = (new Date()).getTime() - debugInfo.startTime;
+        processInfo.push(duration + "ms");
+
+        if (!debugInfo.wasConnected) {
+            processInfo.push("+conn");
+        }
+
+        if (opts.cliId) {
+            processInfo.push("ID=" + opts.cliId);
+        }
+
+        var msg = extName + "cmd-" + method + "-" + type + " (" + processInfo.join(";") + ")";
         if (out) { msg += ": \"" + out + "\""; }
         console.log(msg);
     }
@@ -92,14 +113,23 @@ define(function (require, exports, module) {
             // we connect to node (promise is returned immediately if we are already connected)
             connectToNode().then(function (wasConnected) {
 
+                var domainOpts = {
+                    cliId: getNextCliId()
+                };
+
+                var debugInfo = {
+                    startTime: startTime,
+                    wasConnected: wasConnected
+                };
+
                 var resolved = false;
                 // nodeConnection returns jQuery deffered
-                nodeConnection.domains["brackets-git"][method](opts.cwd, cmd, args)
+                nodeConnection.domains["brackets-git"][method](opts.cwd, cmd, args, domainOpts)
                     .fail(function (err) { // jQuery promise - .fail is fine
                         if (!resolved) {
                             err = sanitizeOutput(err);
                             if (debugOn) {
-                                logDebug(startTime, wasConnected, method, "fail", err);
+                                logDebug(domainOpts, debugInfo, method, "fail", err);
                             }
                             reject(err);
                         }
@@ -108,7 +138,7 @@ define(function (require, exports, module) {
                         if (!resolved) {
                             out = sanitizeOutput(out);
                             if (debugOn) {
-                                logDebug(startTime, wasConnected, method, "out", out);
+                                logDebug(domainOpts, debugInfo, method, "out", out);
                             }
                             resolve(out);
                         }
@@ -120,7 +150,7 @@ define(function (require, exports, module) {
 
                 function timeoutPromise() {
                     if (debugOn) {
-                        logDebug(startTime, wasConnected, method, "timeout");
+                        logDebug(domainOpts, debugInfo, method, "timeout");
                     }
                     var err = new Error("cmd-" + method + "-timeout: " + cmd + " " + args.join(" "));
                     if (!opts.timeoutExpected) {
