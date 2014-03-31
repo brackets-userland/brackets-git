@@ -13,8 +13,7 @@ define(function (require, exports) {
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         StringUtils             = brackets.getModule("utils/StringUtils"),
         SidebarView             = brackets.getModule("project/SidebarView"),
-        DocumentManager         = brackets.getModule("document/DocumentManager"),
-        ProjectManager          = brackets.getModule("project/ProjectManager");
+        DocumentManager         = brackets.getModule("document/DocumentManager");
 
     var Promise                 = require("bluebird"),
         Git                     = require("src/Git/Git"),
@@ -87,14 +86,15 @@ define(function (require, exports) {
         $el.html(html);
     }
 
-    function closeNotExistingFiles(oldBranchName, newBranchName, oFiles) {
-
-        var projectRootPath = ProjectManager.getProjectRoot()._path;
-
+    function closeNotExistingFiles(oldBranchName, newBranchName) {
         return Git.getDeletedFiles(oldBranchName, newBranchName).then(function (deletedFiles) {
+            var projectRootPath = Utils.getProjectRoot(),
+                openedFiles     = DocumentManager.getWorkingSet();
             // Close files that does not exists anymore in the new selected branch
             deletedFiles.forEach(function (dFile) {
-                var oFile = oFiles.filter(function (oFile) { return oFile._path.replace(projectRootPath, "") == dFile; });
+                var oFile = openedFiles.filter(function (oFile) {
+                    return oFile._path.replace(projectRootPath, "") == dFile;
+                });
                 if (oFile.length !== 0) {
                     DocumentManager.closeFullEditor(oFile);
                 }
@@ -176,12 +176,11 @@ define(function (require, exports) {
 
         }).on("click", "a.git-branch-link .switch-branch", function (e) {
             e.stopPropagation();
-            var newBranchName = $(this).parent().data("branch"),
-                openedFiles   = DocumentManager.getWorkingSet();
+            var newBranchName = $(this).parent().data("branch");
             return Git.getCurrentBranchName().then(function (oldBranchName) {
                 Main.gitControl.checkoutBranch(newBranchName).then(function () {
                     closeDropdown();
-                    return closeNotExistingFiles(oldBranchName, newBranchName, openedFiles);
+                    return closeNotExistingFiles(oldBranchName, newBranchName);
 
                 }).catch(function (err) { ErrorHandler.showError(err, "Switching branches failed."); });
             }).catch(function (err) { ErrorHandler.showError(err, "Getting current branch name failed."); });
