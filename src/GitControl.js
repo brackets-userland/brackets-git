@@ -441,11 +441,12 @@ define(function (require, exports, module) {
         gitClone: function (remoteGitUrl, destinationFolder) {
             var args = [
                 "clone",
-                escapeShellArg(remoteGitUrl),
-                escapeShellArg(destinationFolder)
+                remoteGitUrl,
+                destinationFolder,
+                "--progress"
             ];
-            return this.executeCommand(this._git, args, {
-                timeout: 1, // check every 1 second,
+            return this.spawnCommand(this._git, args, {
+                timeout: 30, // check every 1 second,
                 timeoutCheck: function () { // promise that decides whether to timeout or check again later
                     return false; // do not continue execution
                 }

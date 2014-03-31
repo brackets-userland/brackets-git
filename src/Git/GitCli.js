@@ -150,10 +150,15 @@ define(function (require, exports) {
 
         return git(args).then(function (stdout) {
             if (!stdout) { return []; }
-            return stdout.split("\n").map(function (l) {
+            return stdout.split("\n").reduce(function (arr, l) {
                 var name = l.trim(),
                     currentBranch = false,
-                    remote = null;
+                    remote = null,
+                    sortPrefix = "";
+
+                if (name.indexOf("->") !== -1) {
+                    return arr;
+                }
 
                 if (name.indexOf("* ") === 0) {
                     name = name.substring(2);
@@ -165,12 +170,23 @@ define(function (require, exports) {
                     remote = name.substring(0, name.indexOf("/"));
                 }
 
-                return {
+                var sortName = name.toLowerCase();
+                if (remote) {
+                    sortName = sortName.substring(remote.length + 1);
+                }
+                if (sortName.indexOf("#") !== -1) {
+                    sortPrefix = sortName.slice(0, sortName.indexOf("#"));
+                }
+
+                arr.push({
                     name: name,
+                    sortPrefix: sortPrefix,
+                    sortName: sortName,
                     currentBranch: currentBranch,
                     remote: remote
-                };
-            });
+                });
+                return arr;
+            }, []);
         });
     }
 

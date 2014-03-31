@@ -26,6 +26,9 @@
     "engines": {
         "brackets": ">=0.37.0"
     },
+    "scripts": {
+        "test": "grunt test"
+    },
     "dependencies": {
 
     },
