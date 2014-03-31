@@ -14,6 +14,7 @@ define(function (require, exports) {
         Preferences     = require("./Preferences"),
         Utils           = require("src/Utils");
 
+
     var cm = null,
         results = null,
         gutterName = "brackets-git-gutter",
@@ -74,7 +75,7 @@ define(function (require, exports) {
 
         cm.clearGutter(gutterName);
         results.forEach(function (obj) {
-            cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-" + obj.type + "'>&nbsp;</div>")[0]);
+            cm.setGutterMarker(obj.line, gutterName, $("<div class='" + gutterName + "-" + obj.type + " gitline-" + (obj.line + 1) + "'>&nbsp;</div>")[0]);
         });
 
         // reopen widgets that were opened before refresh
@@ -242,6 +243,38 @@ define(function (require, exports) {
             activeEditor.setCursorPos(goToMark.line, currentPos.ch);
         }
     }
+
+
+    var _timer;
+    var $line = $(),
+        $gitGutterLines = $();
+    $(document).on("mouseenter", ".CodeMirror-linenumber", function (evt) {
+        var $target = $(evt.target);
+
+        // Remove tooltip
+        $line.attr("title", "");
+
+        // Remove any misc gutter hover classes
+        $(".brackets-git-gutter-hover").removeClass("brackets-git-gutter-hover");
+
+        // Add new gutter hover classes
+        $gitGutterLines = $(".gitline-" + $target.html()).addClass("brackets-git-gutter-hover");
+
+        // Add tooltips if there are any git gutter marks
+        if ($gitGutterLines.length) {
+            $line = $target.attr("title", "Click for more details");
+        }
+    })
+    .on("mouseleave", ".CodeMirror-linenumber", function (evt) {
+        if (_timer) {
+            clearTimeout(_timer);
+        }
+
+        _timer = setTimeout(function () {
+            $(".gitline-" + $(evt.target).html()).removeClass("brackets-git-gutter-hover");
+        }, 500);
+    });
+
 
     // API
     exports.refresh = refresh;
