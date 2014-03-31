@@ -4,6 +4,7 @@
     "use strict";
 
     var ChildProcess  = require("child_process"),
+        ProcessUtils  = require("./processUtils"),
         domainName    = "brackets-git",
         domainManager = null,
         processMap    = {};
@@ -76,13 +77,14 @@
         if (!process) {
             return callback("Couldn't find process to kill with ID:" + cliId);
         }
-        try {
-            var response = process.kill();
-            delete processMap[cliId];
-            callback(undefined, response);
-        } catch (e) {
-            callback(e);
-        }
+        delete processMap[cliId];
+        ProcessUtils.getChildrenOfPid(process.pid, function (err, children) {
+            // kill also parent process
+            children.push(process.pid);
+            children.forEach(function (pid) {
+                ProcessUtils.killSingleProcess(pid);
+            });
+        });
     }
 
     /**
