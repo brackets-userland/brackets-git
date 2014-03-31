@@ -47,21 +47,9 @@
     overflow: hidden;
     padding: 0 5px;
     white-space: nowrap;
-    // .btn-alt-quiet
-    border: 1px solid transparent;
-    border-radius: 3px;
-    text-decoration: none;
-    &:hover {
-        border: 1px solid rgba(0, 0, 0, 0.24);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    }
-    &:active {
-        background: #404141;
-        border: 1px solid rgba(0, 0, 0, 0.24);
-        box-shadow: inset 0 1px 0 rgba(0,0,0,0.12);
-    }
+    .btn-alt-quiet();
 }
-#git-branch-dropdown.dropdown-menu {
+#git-branch-dropdown {
     margin-left: -12px;
     position: absolute;
     display: block;
@@ -70,20 +58,19 @@
     &:focus {
         outline: none;
     }
+    a:hover {
+        color: @defaultText;
+    }
     .git-branch-new, .git-branch-link {
-        display: block;
         padding: 5px 26px 5px 26px;
-        white-space: nowrap;
-        span {
-            color: #454545;
-        }
     }
     .git-branch-link {
         .switch-branch {
             display: inline-block;
             width: 100%;
         }
-        .trash-icon {
+        .trash-icon, .merge-branch {
+            position: absolute;
             opacity: 0;
             background-image: none !important;
             width: 16px;
@@ -97,30 +84,29 @@
                 font-weight: bold;
             }
         }
+        .trash-icon, .merge-branch {
+            &:hover {
+                color: rgba(0, 0, 0, 1);
+                font-weight: bold;
+            }
+        }
         &:hover {
             .trash-icon, .merge-branch {
                 opacity: 1;
             }
         }
         .merge-branch {
-            position: absolute;
             right: 5px;
-            color: rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            &:hover {
-                color: rgba(0, 0, 0, 1);
-                font-weight: bold;
-            }
         }
     }
-    a.selected {
-        background: @slightBlue;
-    }
-    a:not(.selected):hover {
-        background: none;
-    }
-    li a {
+    a {
         padding: 5px 15px;
+        &.selected {
+            background: @slightBlue;
+        }
+        &:not(.selected):hover {
+            background: none;
+        }
     }
     .divider {
         margin: 5px 1px;
@@ -172,12 +158,19 @@
     tr.selected {
         font-weight: 400;
     }
-    td.checkbox-column {
-        vertical-align: middle;
-        width: 13px;
-    }
-    td.status-column {
-        width: 100px;
+    td {
+        &.checkbox-column {
+            vertical-align: middle;
+            width: 13px;
+        }
+        &.status-column {
+            width: 100px;
+        }
+        &:last-child {
+            width: 250px;
+            text-align: right;
+            padding-right: 20px;
+        }
     }
     .check-all {
         margin-left: 7px;
@@ -186,46 +179,28 @@
     .btn-group {
         line-height: 1;
     }
-    .btn-mini {
+    .btn-git-diff, .btn-git-undo {
         padding: 2px 5px;
         font-size: 12px;
         line-height: 1em;
         border-radius: 3px;
-    }
-    .btn-git-diff {
-        margin-right: 15px;
+        margin: 0 6px;
     }
     .nothing-to-commit {
         padding: 15px;
     }
     .git-right-icons {
         position:absolute;
-        right: 50px;
+        right: 40px;
         top: 6px;
     }
     .octicon:not(:only-child) {
         margin-right: 5px;
     }
-    .git-bash {
-        margin-left: 15px;
-    }
-    .dropdown-toggle {
-        height: 26px;
-        &:active {
-            background-color: #d3d7d7;
-            box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
-            color: #454545;
-        }
-        .caret {
-            margin-right: 5px;
-            position: relative;
-            top: -1px;
-        }
-    }
     .btn-group.open .dropdown-toggle {
         background-color: #d3d7d7;
         box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
-        color: #454545;
+        color: @defaultText;
     }
     .git-more {
         border-radius: 0 4px 4px 0;
@@ -236,16 +211,16 @@
     }
     .git-remotes {
         border-radius: 4px 0 0 4px;
-        border-right: 0;
-        &:focus {
+        padding-bottom: 5px;
+        -webkit-transform-origin: 0 100%;
+        &, &:focus {
             border-right: 0;
         }
-    }
-    .dropup .dropdown-menu {
-        -webkit-transform-origin: 0 100%;
+        .caret {
+            margin: 7px 5px auto 0px;
+        }
     }
     .git-remotes-dropdown a {
-        padding-left: 25px;
         .change-remote {
             display: inline-block;
             width: 100%;
@@ -267,9 +242,19 @@
         &:hover .hover-icon {
             opacity: 1;
         }
+        &[class$="-remote-new"] {
+            font-style: italic;
+        }
     }
 
     .dropdown-menu {
+        a {
+            padding: 5px 26px 5px 26px;
+            &:hover {
+                background: @slightBlue;
+                color: @defaultText;
+            }
+        }
         border: none;
         border-radius: @tc-control-border-radius;
         box-shadow: @tc-dropdown-shadow;
@@ -281,10 +266,14 @@
         }
 
         > li {
-            > a:hover, > a:focus {
-                .both();
+            > a {
+                cursor: default;
+                &:hover, > &:focus {
+                    .both();
+                }
             }
         }
+
         .dropdown-submenu:hover, .dropdown-submenu:focus {
             > a {
                 .both();
@@ -296,34 +285,16 @@
             padding: 3px 20px;
             font-size: 12px;
             line-height: 1.42857143;
-            color: #999;
+            color: @lightGrey;
         }
 
-        li > a {
-            cursor: default;
-        }
-
-        li:not(".remote"):not(".divider"):not(".dropdown-header") > a {
-            font-style: italic;
-        }
     }
 
-    // class for activated buttons
-    .btn-active {
-        background-image: none;
-        background-color: #d3d7d7;
-        box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.12);
-        color: #454545;
-        outline: 0;
-        -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, .15), 0 1px 2px rgba(0, 0, 0, .05);
-        -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, .15), 0 1px 2px rgba(0, 0, 0, .05);
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, .15), 0 1px 2px rgba(0, 0, 0, .05);
-    }
-
+    // remove any kind of :focus state from buttons (because it's ugly)
     .btn:focus {
         border-color: @darkGrey;
         box-shadow: none;
-        color: #454545;
+        color: @defaultText;
         outline: none;
     }
 
@@ -344,6 +315,11 @@
         -webkit-animation: btn-loading 1s linear infinite;
     }
 
+    @-webkit-keyframes btn-loading {
+        0% { background-position: 0 0; }
+        100% { background-position: 60px 30px; }
+    }
+
     // Git-FTP styles, will be removed after S38, see /src/Ftp/styles/ftp.less
     .git-remotes-dropdown {
         .gitftp-init-remote {
@@ -361,25 +337,20 @@
 
 }
 
-@-webkit-keyframes btn-loading {
-    0% { background-position: 0 0; }
-    100% { background-position: 60px 30px; }
-}
-
 /* Toolbar icon */
 #git-toolbar-icon {
     background: url("git-icon.svg") no-repeat 0 0;
     &.on {
-        background: url("git-icon.svg") no-repeat 0 -24px;
+        background-position: 0 -24px;
     }
     &.ok {
-        background: url("git-icon.svg") no-repeat 0 -48px;
+        background-position: 0 -48px;
     }
     &.warning, &.loading {
-        background: url("git-icon.svg") no-repeat 0 -72px;
+        background-position: 0 -72px;
     }
     &.error {
-        background: url("git-icon.svg") no-repeat 0 -96px;
+        background-position: 0 -96px;
     }
 }
 
@@ -430,43 +401,41 @@
     .tab-content {
         margin-top: 1em;
     }
-    #git-settings-dateMode {
+    select {
         width: 280px;
     }
 }
 
-#git-changelog-dialog {
-    #git-changelog {
-        color: #333333;
-        font-family: Helvetica, arial, sans-serif;
-        font-size: 15px;
-        line-height: 1.7px;
-        padding: 1em;
-        margin: auto;
-        background: #f8f8f8;
-        border-radius: 5px;
-        p {
-            margin: 1em 0;
-        }
-        h1, h2 {
-            color: #111111;
-        }
-        h1 {
-            font-size: 2.5em;
-            font-weight: bold;
-            border-bottom: 1px solid #dddddd;
-        }
-        h2 {
-            font-size: 2em;
-            border-bottom: 1px solid #eeeeee;
-        }
-        li {
-            margin: 4px 0;
-        }
-        ul {
-            margin-top: 18px;
-            margin-bottom: 28px;
-        }
+#git-changelog {
+    color: @defaultText;
+    font-family: Helvetica, arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.7px;
+    padding: 1em;
+    margin: auto;
+    background: #f8f8f8;
+    border-radius: 5px;
+    p {
+        margin: 1em 0;
+    }
+    h1, h2 {
+        color: #111111;
+    }
+    h1 {
+        font-size: 2.5em;
+        font-weight: bold;
+        border-bottom: 1px solid #dddddd;
+    }
+    h2 {
+        font-size: 2em;
+        border-bottom: 1px solid #eeeeee;
+    }
+    li {
+        margin: 4px 0;
+    }
+    ul {
+        margin-top: 18px;
+        margin-bottom: 28px;
     }
 }
 
@@ -599,37 +568,27 @@
     }
 }
 
-.git-close-not-modified {
-    position: absolute;
-    right: 30px;
-    top: 7px;
-    padding: 4px 6px;
-    width: 13px;
-    height: 13px;
-    opacity: 0.8;
-    text-shadow: 0 1px 0 rgba(0,0,0,.69);
-    i {
-        font-size: 13px;
-        color: #798286;
-        position: relative;
-        top: -2px;
-        text-shadow: none;
-    }
-    &:hover {
-        opacity: 1;
-    }
-    // .btn-alt-quiet
-    border: 1px solid transparent;
-    border-radius: 3px;
-    text-decoration: none;
-    &:hover {
-        border: 1px solid rgba(0, 0, 0, 0.24);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    }
-    &:active {
-        background: #404141;
-        border: 1px solid rgba(0, 0, 0, 0.24);
-        box-shadow: inset 0 1px 0 rgba(0,0,0,0.12);
+#working-set-header {
+    .git-close-not-modified {
+        position: absolute;
+        right: 30px;
+        top: 7px;
+        padding: 4px 6px;
+        width: 13px;
+        height: 13px;
+        opacity: 0.8;
+        text-shadow: 0 1px 0 rgba(0,0,0,.69);
+        i {
+            font-size: 13px;
+            color: #798286;
+            position: relative;
+            top: -2px;
+            text-shadow: none;
+        }
+        &:hover {
+            opacity: 1;
+        }
+        .btn-alt-quiet();
     }
 }
 
@@ -671,4 +630,20 @@ because there's no way to import them right now
 .flex-item(@grow: 0, @shrink: 1, @basis: auto) {
     -webkit-flex: @grow @shrink @basis;
     flex: @grow @shrink @basis;
+}
+
+// Remove it after fix of brackets imports in S38
+.btn-alt-quiet {
+    border: 1px solid transparent;
+    border-radius: 3px;
+    text-decoration: none;
+    &:hover {
+        border: 1px solid rgba(0, 0, 0, 0.24);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+    &:active {
+        background: #404141;
+        border: 1px solid rgba(0, 0, 0, 0.24);
+        box-shadow: inset 0 1px 0 rgba(0,0,0,0.12);
+    }
 }
