@@ -677,10 +677,7 @@ define(function (require, exports) {
 
         gitPanel.$panel
             .find(".git-toggle-untracked")
-                .attr("title", showingUntracked ? Strings.TOOLTIP_HIDE_UNTRACKED : Strings.TOOLTIP_SHOW_UNTRACKED)
-                .find("i")
-                    .toggleClass("octicon-eye", !showingUntracked)
-                    .toggleClass("octicon-eye-unwatch", showingUntracked);
+                .text(showingUntracked ? Strings.HIDE_UNTRACKED : Strings.SHOW_UNTRACKED);
 
         refresh();
     }
