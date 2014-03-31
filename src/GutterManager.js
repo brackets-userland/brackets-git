@@ -12,7 +12,8 @@ define(function (require, exports) {
         EditorManager   = brackets.getModule("editor/EditorManager"),
         Main            = require("./Main"),
         Preferences     = require("./Preferences"),
-        Utils           = require("src/Utils");
+        Utils           = require("src/Utils"),
+        Strings         = require("strings");
 
 
     var cm = null,
@@ -76,8 +77,9 @@ define(function (require, exports) {
         cm.clearGutter(gutterName);
         results.forEach(function (obj) {
             var $marker = $("<div>")
-                            .addClass(gutterName + "-" + obj.type + " gitline-" + (obj.line + 1))
+                            .addClass(gutterName + "-" + obj.type)
                             .html("&nbsp;");
+
             cm.setGutterMarker(obj.line, gutterName, $marker[0]);
         });
 
@@ -247,37 +249,37 @@ define(function (require, exports) {
         }
     }
 
-
-    var _timer;
-    var $line = $(),
-        $gitGutterLines = $();
-
     $(document)
         .on("mouseenter", ".CodeMirror-linenumber", function (evt) {
-            var $target = $(evt.target);
 
-            // Remove tooltip
-            $line.attr("title", "");
+            // Define line elements
+            var $lineNumber = $(evt.target),
+                $line       = $lineNumber.parent().parent(),
+                $gitGutter  = $line.find("[class^='brackets-git-gutter-']");
 
-            // Remove any misc gutter hover classes
-            $(".brackets-git-gutter-hover").removeClass("brackets-git-gutter-hover");
+            // Check if the hovered line has a git-gutter
+            if ($gitGutter.length) {
 
-            // Add new gutter hover classes
-            $gitGutterLines = $(".gitline-" + $target.html()).addClass("brackets-git-gutter-hover");
+                // Add tooltip to line number if is a removed or modified line
+                if ($gitGutter.attr("class") != "brackets-git-gutter-added") {
+                    $lineNumber.attr("title", Strings.SHOW_PREVIOUS_CONTENT);
+                }
 
-            // Add tooltips if there are any git gutter marks
-            if ($gitGutterLines.length) {
-                $line = $target.attr("title", "Click for more details");
+                // Add new gutter hover class
+                $line.addClass("brackets-git-gutter-hover, " + $gitGutter.attr("class"));
             }
         })
         .on("mouseleave", ".CodeMirror-linenumber", function (evt) {
-            if (_timer) {
-                clearTimeout(_timer);
-            }
 
-            _timer = setTimeout(function () {
-                $(".gitline-" + $(evt.target).html()).removeClass("brackets-git-gutter-hover");
-            }, 500);
+            // Define line elements
+            var $lineNumber = $(evt.target),
+                $line       = $lineNumber.parent().parent();
+
+            // Remove gutter hover class and tooltip
+            $lineNumber.attr("class", "CodeMirror-linenumber CodeMirror-gutter-elt").removeAttr("title");
+
+            // Remove line hover style
+            $line.removeAttr("class");
         });
 
     // API

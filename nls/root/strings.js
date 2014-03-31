@@ -119,6 +119,7 @@ define({
     SHOW_BASH_TERMINAL_BUTTON:          "Show Bash/Terminal button in the panel",
     SHOWN_DATE_FORMAT:                  "Format of commit dates in history",
     SHOW_REPORT_BUG_BUTTON:             "Show Report Bug button in the panel",
+    SHOW_PREVIOUS_CONTENT:              "Click to show the previous content",
     STRIP_WHITESPACE_FROM_COMMITS:      "Strip trailing whitespace from commits",
     TARGET_BRANCH:                      "Target branch",
     TOOLTIP_BUG:                        "Report bug",
