@@ -310,6 +310,12 @@ define(function (require, exports) {
             });
         }
     }
+    
+    function reset(type, hash) {
+        var args = ["reset", type || "--mixed"]; // mixed is the default action
+        if (hash) { args.push(hash); }
+        return git(args);
+    }
 
     // Public API
     exports.git                       = git;
@@ -335,5 +341,6 @@ define(function (require, exports) {
     exports.clone                     = clone;
     exports.stage                     = stage;
     exports.commit                    = commit;
-
+    exports.reset                     = reset;
+    
 });

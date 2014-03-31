@@ -850,6 +850,18 @@ define(function (require, exports) {
         });
     }
 
+    function resetAll() {
+        return Utils.askQuestion(Strings.RESET_LOCAL_REPO, Strings.RESET_LOCAL_REPO_CONFIRM, { booleanResponse: true })
+            .then(function (response) {
+                if (response) {
+                    return Main.gitControl.reset(false, true).catch(function (err) {
+                        ErrorHandler.showError(err, "Reset of local repository failed");
+                    });
+                }
+            });
+    }
+
+
     EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
         gitPanel.$panel.find(".git-user-name").text(userName);
     });
@@ -887,8 +899,12 @@ define(function (require, exports) {
     });
 
     function init() {
+        // Prepare variables to send to Mustache
+        var panelVars = Strings;
+        panelVars.enableDangerousFeatures = Preferences.get("enableDangerousFeatures");
+
         // Add panel
-        var panelHtml = Mustache.render(gitPanelTemplate, Strings);
+        var panelHtml = Mustache.render(gitPanelTemplate, panelVars);
         var $panelHtml = $(panelHtml);
         $panelHtml.find(".git-available").hide();
 
@@ -941,6 +957,11 @@ define(function (require, exports) {
             .on("click", ".change-user-email", changeUserEmail)
             .on("click", ".undo-last-commit", undoLastLocalCommit)
             .on("click", ".git-bash", openBashConsole);
+
+        if (Preferences.get("enableDangerousFeatures")) {
+            gitPanel.$panel
+                .on("click", ".reset-all", resetAll);
+        }
 
         // Attaching table handlers
         attachDefaultTableHandlers();

@@ -343,6 +343,15 @@
         opacity: 0.5;
     }
 
+    .dangerous-feature {
+        &, & * {
+            color: @red !important;
+            &:hover {
+                color: @lightRed !important;
+            }
+        }
+    }
+
 }
 
 /* Toolbar icon */
@@ -412,6 +421,10 @@
     }
     select {
         width: 280px;
+    }
+
+    .dangerous-features-setting {
+        color: @red;
     }
 }
 
