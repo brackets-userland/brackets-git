@@ -88,14 +88,14 @@ define(function (require, exports) {
 
     function closeNotExistingFiles(oldBranchName, newBranchName) {
         return Git.getDeletedFiles(oldBranchName, newBranchName).then(function (deletedFiles) {
-            var projectRootPath = Utils.getProjectRoot(),
-                openedFiles     = DocumentManager.getWorkingSet();
+            var projectRoot = Utils.getProjectRoot(),
+                openedFiles = DocumentManager.getWorkingSet();
             // Close files that does not exists anymore in the new selected branch
             deletedFiles.forEach(function (dFile) {
-                var oFile = openedFiles.filter(function (oFile) {
-                    return oFile._path.replace(projectRootPath, "") == dFile;
+                var oFile = _.find(openedFiles, function (oFile) {
+                    return oFile.fullPath == projectRoot + dFile;
                 });
-                if (oFile.length !== 0) {
+                if (oFile) {
                     DocumentManager.closeFullEditor(oFile);
                 }
             });
