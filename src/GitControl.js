@@ -226,7 +226,7 @@ define(function (require, exports, module) {
         },
 
         mergeBranch: function (branchName) {
-            var args = ["merge", branchName];
+            var args = ["merge", "--no-ff", branchName];
             return this.spawnCommand(this._git, args);
         },
 
