@@ -61,12 +61,23 @@ define(function (require, exports) {
             });
 
             var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
-            dialog.getElement().find("input").focus();
+            var $dialog = dialog.getElement();
+            $dialog.find("input").focus();
+
+            var $mergeMessage = $dialog.find("[name='merge-message']");
+            $mergeMessage.attr("placeholder", "Merge branch '" + fromBranch + "'");
+            $dialog.find(".fill-pr").on("click", function () {
+                var prMsg = "Merge pull request #??? from " + fromBranch;
+                $mergeMessage.val(prMsg);
+                $mergeMessage[0].setSelectionRange(prMsg.indexOf("???"), prMsg.indexOf("???") + 3);
+            });
+
             dialog.done(function (buttonId) {
                 if (buttonId === "ok") {
                     // right now only merge to current branch without any configuration
                     // later delete merge branch and so ...
-                    Main.gitControl.mergeBranch(fromBranch).catch(function (err) {
+                    var mergeMsg = $mergeMessage.val();
+                    Main.gitControl.mergeBranch(fromBranch, mergeMsg).catch(function (err) {
                         throw ErrorHandler.showError(err, "Merge failed");
                     }).then(function (stdout) {
                         // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then

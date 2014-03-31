@@ -98,6 +98,7 @@ define({
     MARK_MODIFIED_FILES_IN_TREE:        "Mark modified files in file tree",
     MERGE_BRANCH:                       "Merge branch",
     MERGE_RESULT:                       "Merge result",
+    MERGE_MESSAGE:                      "Merge message",
     NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
     ORIGIN_BRANCH:                      "Origin branch",
     PANEL_COMMAND:                      "Show Git panel",
