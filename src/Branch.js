@@ -196,28 +196,28 @@ define(function (require, exports) {
             Utils.askQuestion(Strings.DELETE_LOCAL_BRANCH,
                               StringUtils.format(Strings.DELETE_LOCAL_BRANCH_NAME, branchName),
                               { booleanResponse: true })
-            .then(function (response) {
-                if (response === true) {
-                    return Git.branchDelete(branchName).catch(function (err) {
+                .then(function (response) {
+                    if (response === true) {
+                        return Git.branchDelete(branchName).catch(function (err) {
 
-                        return Utils.showOutput(err, "Branch deletion failed", {
-                            question: "Do you wish to force branch deletion?"
-                        }).then(function (response) {
-                            if (response === true) {
-                                return Git.forceBranchDelete(branchName).then(function (output) {
-                                    return Utils.showOutput(output);
-                                }).catch(function (err) {
-                                    ErrorHandler.showError(err, "Forced branch deletion failed");
-                                });
-                            }
+                            return Utils.showOutput(err, "Branch deletion failed", {
+                                question: "Do you wish to force branch deletion?"
+                            }).then(function (response) {
+                                if (response === true) {
+                                    return Git.forceBranchDelete(branchName).then(function (output) {
+                                        return Utils.showOutput(output);
+                                    }).catch(function (err) {
+                                        ErrorHandler.showError(err, "Forced branch deletion failed");
+                                    });
+                                }
+                            });
+
                         });
-
-                    });
-                }
-            })
-            .catch(function (err) {
-                ErrorHandler.showError(err);
-            });
+                    }
+                })
+                .catch(function (err) {
+                    ErrorHandler.showError(err);
+                });
 
         }).on("click", ".merge-branch", function () {
             var fromBranch = $(this).parent().data("branch");
@@ -302,8 +302,8 @@ define(function (require, exports) {
 
             if (!isRepositoryRoot) {
                 $gitBranchName
-                .off("click")
-                .text("not a git repo");
+                    .off("click")
+                    .text("not a git repo");
                 Panel.disable("not-repo");
                 return;
             }
@@ -317,8 +317,8 @@ define(function (require, exports) {
             }).catch(function (ex) {
                 if (ErrorHandler.contains(ex, "unknown revision")) {
                     $gitBranchName
-                    .off("click")
-                    .text("no branch");
+                        .off("click")
+                        .text("no branch");
                     Panel.enable();
                 } else {
                     throw ex;
@@ -333,14 +333,14 @@ define(function (require, exports) {
         // Add branch name to project tree
         $gitBranchName = $("<span id='git-branch'></span>");
         $("<div id='git-branch-dropdown-toggle' class='btn-alt-quiet'></div>")
-        .append("[ ")
-        .append($gitBranchName)
-        .append(" ]")
-        .on("click", function () {
-            $gitBranchName.click();
-            return false;
-        })
-        .appendTo("#project-files-header");
+            .append("[ ")
+            .append($gitBranchName)
+            .append(" ]")
+            .on("click", function () {
+                $gitBranchName.click();
+                return false;
+            })
+            .appendTo("#project-files-header");
         refresh();
     }
 
