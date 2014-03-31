@@ -133,30 +133,24 @@
         pointer-events: all;
     }
 
-    .brackets-git-gutter-deleted-lines.brackets-git-gutter-hover,
-    .brackets-git-gutter-removed.brackets-git-gutter-hover,
-    .brackets-git-gutter-modified.brackets-git-gutter-hover {
-        background-color: yellow !important;
-    }
-
     .brackets-git-gutter {
         width: @gutterWidth;
         margin-left: 1px;
     }
+    .CodeMirror-gutter-elt {
+        [class^=".brackets-git-gutter-"] {
+            background-size: @gutterWidth @gutterWidth;
+            background-repeat: no-repeat;
+        }
+    }
     .brackets-git-gutter-added {
-        background-size: @gutterWidth @gutterWidth;
         background-color: @green;
-        background-repeat: no-repeat;
     }
     .brackets-git-gutter-modified {
-        background-size: @gutterWidth @gutterWidth;
         background-color: @orange;
-        background-repeat: no-repeat;
     }
     .brackets-git-gutter-removed {
-        background-size: @gutterWidth @gutterWidth;
         background-color: @red;
-        background-repeat: no-repeat;
     }
     .brackets-git-gutter-deleted-lines {
         background-color: @lighterRed;
