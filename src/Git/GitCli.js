@@ -216,6 +216,17 @@ define(function (require, exports) {
     function forceBranchDelete(branchName) {
         return git(["branch", "-D", branchName]);
     }
+    
+    function checkout(commit) {
+        return git(["checkout", commit]);
+    }
+
+    function reset(commit, type) {
+        var args = [];
+        if (type) args.push("--" + type);
+        if (commit) args.push(commit);
+        return git(args);
+    }
 
     // Public API
     exports.git                       = git;
@@ -234,5 +245,7 @@ define(function (require, exports) {
     exports.getAllBranches            = getAllBranches;
     exports.branchDelete              = branchDelete;
     exports.forceBranchDelete         = forceBranchDelete;
+    exports.checkout                  = checkout;
+    exports.reset                     = reset;
 
 });

@@ -397,8 +397,12 @@ define(function (require, exports, module) {
             }
         },
 
-        gitReset: function () {
-            return this.executeCommand(this._git, ["reset"]);
+        gitReset: function (commit, type) {
+            if (!type) {
+                return this.executeCommand(this._git, ["reset", commit]);
+            } else {
+                return this.executeCommand(this._git, ["reset", "--" + type, commit]);
+            }
         },
 
         gitDiff: function (file) {
@@ -441,6 +445,10 @@ define(function (require, exports, module) {
 
         gitInit: function () {
             return this.executeCommand(this._git, ["init"]);
+        },
+        
+        gitCheckout: function (commit) {
+            return this.executeCommand(this._git, ["checkout", commit]);
         },
 
         gitClone: function (remoteGitUrl, destinationFolder) {
