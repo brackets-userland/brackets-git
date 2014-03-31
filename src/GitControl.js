@@ -91,15 +91,20 @@ define(function (require, exports, module) {
                 args = queueItem[3],
                 opts = queueItem[4];
 
-            self.options.handler(method, cmd, args, opts).then(function (result) {
-                promise.resolve(result);
-                self._isHandlerRunning = false;
-                self._processQueue();
-            }).catch(function (ex) {
-                promise.reject(ex);
-                self._isHandlerRunning = false;
-                self._processQueue();
-            });
+            self.options.handler(method, cmd, args, opts)
+                .progressed(function () {
+                    promise.progress.apply(promise, arguments);
+                })
+                .then(function (result) {
+                    promise.resolve(result);
+                    self._isHandlerRunning = false;
+                    self._processQueue();
+                })
+                .catch(function (ex) {
+                    promise.reject(ex);
+                    self._isHandlerRunning = false;
+                    self._processQueue();
+                });
         },
 
         _pushToQueue: function (method, cmd, args, opts) {
@@ -445,12 +450,7 @@ define(function (require, exports, module) {
                 destinationFolder,
                 "--progress"
             ];
-            return this.spawnCommand(this._git, args, {
-                timeout: 30, // check every 1 second,
-                timeoutCheck: function () { // promise that decides whether to timeout or check again later
-                    return false; // do not continue execution
-                }
-            });
+            return this.spawnCommand(this._git, args);
         },
 
         gitHistory: function (branch, skipCommits) {

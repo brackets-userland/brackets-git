@@ -16,7 +16,8 @@ define(function (require, exports, module) {
         domainName        = "brackets-git",
         extName           = "[brackets-git] ",
         nodeConnection    = new NodeConnection(),
-        nextCliId         = 0;
+        nextCliId         = 0,
+        deferredMap       = {};
 
     // Constants
     var MAX_COUNTER_VALUE = 4294967295; // 2^32 - 1
@@ -33,7 +34,12 @@ define(function (require, exports, module) {
         $(nodeConnection)
             .off(EVENT_NAMESPACE)
             .on(domainName + ":progress" + EVENT_NAMESPACE, function (err, cliId, time, message) {
-                console.log("progress(" + cliId + "): " + message);
+                var deferred = deferredMap[cliId];
+                if (deferred && !deferred.isResolved()) {
+                    deferred.progress(message);
+                } else {
+                    ErrorHandler.logError("Progress sent for a non-existing process(" + cliId + "): " + message);
+                }
             });
     }
 
@@ -100,8 +106,10 @@ define(function (require, exports, module) {
     }
 
     function cliHandler(method, cmd, args, opts) {
-        var deferred = Promise.defer();
+        var cliId     = getNextCliId(),
+            deferred  = Promise.defer();
 
+        deferredMap[cliId] = deferred;
         opts = opts || {};
 
         // it is possible to set a custom working directory in options
@@ -124,10 +132,16 @@ define(function (require, exports, module) {
         }
 
         // we connect to node (promise is returned immediately if we are already connected)
-        connectToNode().then(function (wasConnected) {
+        connectToNode().catch(function (err) {
+            // failed to connect to node for some reason
+            throw ErrorHandler.showError(err, Strings.ERROR_CONNECT_NODEJS);
+        }).then(function (wasConnected) {
+
+            var resolved      = false,
+                timeoutLength = opts.timeout ? (opts.timeout * 1000) : TIMEOUT_VALUE;
 
             var domainOpts = {
-                cliId: getNextCliId(),
+                cliId: cliId,
                 watchProgress: args.indexOf("--progress") !== -1
             };
 
@@ -136,8 +150,7 @@ define(function (require, exports, module) {
                 wasConnected: wasConnected
             };
 
-            var resolved = false;
-            // nodeConnection returns jQuery deffered
+            // nodeConnection returns jQuery deferred
             nodeConnection.domains[domainName][method](opts.cwd, cmd, args, domainOpts)
                 .fail(function (err) { // jQuery promise - .fail is fine
                     if (!resolved) {
@@ -145,6 +158,7 @@ define(function (require, exports, module) {
                         if (debugOn) {
                             logDebug(domainOpts, debugInfo, method, "fail", err);
                         }
+                        delete deferredMap[cliId];
                         deferred.reject(err);
                     }
                 })
@@ -154,6 +168,7 @@ define(function (require, exports, module) {
                         if (debugOn) {
                             logDebug(domainOpts, debugInfo, method, "out", out);
                         }
+                        delete deferredMap[cliId];
                         deferred.resolve(out);
                     }
                 })
@@ -177,10 +192,12 @@ define(function (require, exports, module) {
                         ErrorHandler.logError(err);
                     });
 
+                delete deferredMap[cliId];
                 deferred.reject(err);
                 resolved = true;
             }
 
+            var lastProgressTime = 0;
             function timeoutCall() {
                 setTimeout(function () {
                     if (!resolved) {
@@ -198,6 +215,18 @@ define(function (require, exports, module) {
                                         timeoutPromise();
                                     }
                                 });
+                        } else if (domainOpts.watchProgress) {
+                            // we are watching the promise progress in the domain
+                            // so we should check if the last message was sent in more than timeout time
+                            var currentTime = (new Date()).getTime();
+                            var diff = currentTime - lastProgressTime;
+                            if (diff > timeoutLength) {
+                                console.log("last progress message was sent " + diff + " ago - timeout");
+                                timeoutPromise();
+                            } else {
+                                console.log("last progress message was sent " + diff + " ago - delay");
+                                timeoutCall();
+                            }
                         } else {
                             // we don't have any custom handler, so just kill the promise here
                             // note that command WILL keep running in the background
@@ -205,17 +234,23 @@ define(function (require, exports, module) {
                             timeoutPromise();
                         }
                     }
-                }, opts.timeout ? (opts.timeout * 1000) : TIMEOUT_VALUE);
+                }, timeoutLength);
             }
 
             // when opts.timeout === false then never timeout the process
             if (opts.timeout !== false) {
+                // if we are watching for progress events, mark the time when last progress was made
+                if (domainOpts.watchProgress) {
+                    deferred.promise.progressed(function () {
+                        lastProgressTime = (new Date()).getTime();
+                    });
+                }
+                // call the method which will timeout the promise after a certain period of time
                 timeoutCall();
             }
 
         }).catch(function (err) {
-            // failed to connect to node for some reason
-            ErrorHandler.showError(err, Strings.ERROR_CONNECT_NODEJS);
+            throw ErrorHandler.showError(err, "Unexpected error in CLI handler");
         });
 
         return deferred.promise;

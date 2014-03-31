@@ -86,6 +86,8 @@ define(function (require, exports) {
     };
 
     exports.showError = function (err, title) {
+        if (err.__shown) { return err; }
+
         exports.logError(err);
 
         var dialog,
@@ -129,6 +131,8 @@ define(function (require, exports) {
             }
         });
 
+        if (typeof err === "string") { err = new Error(err); }
+        err.__shown = true;
         return err;
     };
 
