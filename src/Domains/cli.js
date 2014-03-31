@@ -51,6 +51,13 @@
             stdout[stdout.length] = text;
         });
         child.stderr.addListener("data", function (text) {
+            if (opts.watchProgress) {
+                domainManager.emitEvent(domainName, "progress", [
+                    opts.cliId,
+                    (new Date()).getTime(),
+                    fixEOL(text.toString("utf8"))
+                ]);
+            }
             stderr[stderr.length] = text;
         });
         child.addListener("exit", function (code) {
@@ -70,7 +77,9 @@
             return callback("Couldn't find process to kill with ID:" + cliId);
         }
         try {
-            callback(undefined, process.kill());
+            var response = process.kill();
+            delete processMap[cliId];
+            callback(undefined, response);
         } catch (e) {
             callback(e);
         }
@@ -139,6 +148,16 @@
             ],
             [
                 { name: "stdout", type: "string" }
+            ]
+        );
+
+        domainManager.registerEvent(
+            domainName,
+            "progress",
+            [
+                {name: "commandId", type: "number"},
+                {name: "time", type: "number"},
+                {name: "message", type: "string"}
             ]
         );
     };

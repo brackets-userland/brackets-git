@@ -18,13 +18,23 @@ define(function (require, exports, module) {
         nodeConnection    = new NodeConnection(),
         nextCliId         = 0;
 
+    // Constants
     var MAX_COUNTER_VALUE = 4294967295; // 2^32 - 1
+    var EVENT_NAMESPACE   = ".bracketsGitEvent";
 
     function getNextCliId() {
         if (nextCliId >= MAX_COUNTER_VALUE) {
             nextCliId = 0;
         }
         return ++nextCliId;
+    }
+
+    function attachEventHandlers() {
+        $(nodeConnection)
+            .off(EVENT_NAMESPACE)
+            .on(domainName + ":progress" + EVENT_NAMESPACE, function (err, cliId, time, message) {
+                console.log("progress(" + cliId + "): " + message);
+            });
     }
 
     // return true/false to state if wasConnected before
@@ -36,6 +46,7 @@ define(function (require, exports, module) {
             // we don't want automatic reconnections as we handle the reconnect manually
             nodeConnection.connect(false).then(function () {
                 nodeConnection.loadDomains([domainModulePath], false).then(function () {
+                    attachEventHandlers();
                     resolve(false);
                 }).fail(function (err) { // jQuery promise - .fail is fine
                     reject(err);
@@ -115,7 +126,8 @@ define(function (require, exports, module) {
             connectToNode().then(function (wasConnected) {
 
                 var domainOpts = {
-                    cliId: getNextCliId()
+                    cliId: getNextCliId(),
+                    watchProgress: args.indexOf("--progress") !== -1
                 };
 
                 var debugInfo = {
@@ -157,15 +169,16 @@ define(function (require, exports, module) {
                     if (!opts.timeoutExpected) {
                         ErrorHandler.logError(err);
                     }
+
+                    // process still lives and we need to kill it
+                    nodeConnection.domains[domainName].kill(domainOpts.cliId)
+                        .fail(function (err) {
+                            ErrorHandler.logError(err);
+                        });
+
                     reject(err);
                     resolved = true;
                 }
-
-                /*
-                nodeConnection.domains[domainName].kill(domainOpts.cliId).fail(function (err) {
-                    ErrorHandler.logError(err);
-                }).done();
-                */
 
                 function timeoutCall() {
                     setTimeout(function () {
