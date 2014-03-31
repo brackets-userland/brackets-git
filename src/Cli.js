@@ -221,10 +221,14 @@ define(function (require, exports, module) {
                             var currentTime = (new Date()).getTime();
                             var diff = currentTime - lastProgressTime;
                             if (diff > timeoutLength) {
-                                console.log("last progress message was sent " + diff + " ago - timeout");
+                                if (debugOn) {
+                                    console.log(extName + "cmd(" + cliId + ") - last progress message was sent " + diff + "ms ago - timeout");
+                                }
                                 timeoutPromise();
                             } else {
-                                console.log("last progress message was sent " + diff + " ago - delay");
+                                if (debugOn) {
+                                    console.log(extName + "cmd(" + cliId + ") - last progress message was sent " + diff + "ms ago - delay");
+                                }
                                 timeoutCall();
                             }
                         } else {

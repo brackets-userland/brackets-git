@@ -866,24 +866,26 @@ define(function (require, exports) {
 
     function handleGitClone() {
         Main.isProjectRootEmpty()
-        .then(function (isEmpty) {
-            if (isEmpty) {
-                return Utils.askQuestion(Strings.CLONE_REPOSITORY, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
-                    gitPanel.$panel.find(".git-clone").prop("disabled", true);
-                    return Main.gitControl.gitClone(remoteGitUrl, ".")
-                    .then(function () {
-                        refresh();
+            .then(function (isEmpty) {
+                if (isEmpty) {
+                    return Utils.askQuestion(Strings.CLONE_REPOSITORY, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
+                        gitPanel.$panel.find(".git-clone").prop("disabled", true);
+                        return Main.gitControl.gitClone(remoteGitUrl, ".")
+                            .progressed(function (msg) {
+                                console.log(msg);
+                            })
+                            .then(function () {
+                                refresh();
+                            });
                     });
-                });
-            }
-            else {
-                var err = new ExpectedError("Project root is not empty, be sure you have deleted hidden files");
-                ErrorHandler.showError(err, "Cloning remote repository failed!");
-            }
-        })
-        .catch(function (err) {
-            ErrorHandler.showError(err);
-        });
+                }
+                else {
+                    var err = new ExpectedError("Project root is not empty, be sure you have deleted hidden files");
+                    ErrorHandler.showError(err, "Cloning remote repository failed!");
+                }
+            }).catch(function (err) {
+                ErrorHandler.showError(err);
+            });
     }
 
     function commitCurrentFile() {
