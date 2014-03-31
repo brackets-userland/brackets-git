@@ -294,7 +294,7 @@ define(function (require, exports) {
         $gitBranchName
             .text("\u2026")
             .parent()
-            .show();
+                .show();
 
         return _isRepositoryRoot().then(function (isRepositoryRoot) {
             $gitBranchName.parent().toggle(isRepositoryRoot);
@@ -309,9 +309,9 @@ define(function (require, exports) {
 
             return Main.gitControl.getBranchName().then(function (branchName) {
                 $gitBranchName.text(branchName)
-                .off("click")
-                .on("click", toggleDropdown)
-                .append($("<span class='dropdown-arrow' />"));
+                    .off("click")
+                    .on("click", toggleDropdown)
+                    .append($("<span class='dropdown-arrow' />"));
                 Panel.enable();
             }).catch(function (ex) {
                 if (ErrorHandler.contains(ex, "unknown revision")) {

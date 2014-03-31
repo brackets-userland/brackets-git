@@ -210,8 +210,8 @@ define(function (require, exports) {
         return git(["diff", "--name-status", oldBranch + ".." + newBranch])
             .then(function (stdout) {
                 var regex = /^D/;
-                return $.map(stdout.split("\n"), function (row) {
-                    return regex.test(row) ? $.trim(row.substring(1)) : undefined;
+                return _.map(stdout.split("\n"), function (row) {
+                    return regex.test(row) ? row.substring(1).trim() : undefined;
                 });
             })
             .catch(function (err) {
