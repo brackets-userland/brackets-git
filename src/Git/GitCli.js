@@ -217,6 +217,13 @@ define(function (require, exports) {
         return git(["branch", "-D", branchName]);
     }
 
+    function reset(file, hard) {
+        var args = ["reset"];
+        if (file) { args.push(file); }
+        if (hard) { args.push("--hard"); }
+        return git(args);
+    }
+
     // Public API
     exports.git                       = git;
     exports.fetchAllRemotes           = fetchAllRemotes;
@@ -234,5 +241,6 @@ define(function (require, exports) {
     exports.getAllBranches            = getAllBranches;
     exports.branchDelete              = branchDelete;
     exports.forceBranchDelete         = forceBranchDelete;
+    exports.reset                     = reset;
 
 });

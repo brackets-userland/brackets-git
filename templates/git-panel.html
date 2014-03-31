@@ -18,6 +18,7 @@
                     <i class="octicon octicon-three-bars"></i>
                 </button>
                 <ul class="dropdown-menu">
+                    {{#enableDangerousFeatures}}<li class="dangerous-feature"><a class="reset-all" href="#">{{RESET_LOCAL_REPO}}</a></li>{{/enableDangerousFeatures}}
                     <li><a class="undo-last-commit" href="#">{{UNDO_LAST_LOCAL_COMMIT}}</a></li>
                     <li class="divider"></li>
                     <li><a class="change-user-name" href="#">{{CHANGE_USER_NAME}} (<span class="git-user-name"></span>)</a></li>

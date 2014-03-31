@@ -359,6 +359,15 @@
         opacity: 0.5;
     }
 
+    .dangerous-feature {
+        &, & * {
+            color: @red !important;
+            &:hover {
+                color: @lightRed !important;
+            }
+        }
+    }
+
 }
 
 @-webkit-keyframes btn-loading {
@@ -432,6 +441,10 @@
     }
     #git-settings-dateMode {
         width: 280px;
+    }
+
+    .dangerous-features-setting {
+        color: @red;
     }
 }
 
