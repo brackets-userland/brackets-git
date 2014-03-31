@@ -13,6 +13,13 @@ define(function (require, exports) {
     var git = GitCli.git;
     
     // Implementation
+    function isAvailable() {
+        return git(["ftp"]).then(function () {
+            return true;
+        }).catch(function (err) {
+            return err;
+        });
+    }
     
     function init(scope) {
         return git(["ftp", "init", "--scope", scope]);
@@ -55,7 +62,7 @@ define(function (require, exports) {
             git(usernameArgs),
             git(passwordArgs)
         ]).catch(function (err) {
-            throw ErrorHandler.rewrapError(err, "There was a problem editing Git configuration file. Operation aborted.");
+            throw ErrorHandler.logError(err);
         });
     }
 
@@ -64,6 +71,7 @@ define(function (require, exports) {
     }
 
     // Public API
+    exports.isAvailable = isAvailable;
     exports.init        = init;
     exports.push        = push;
     exports.getScopes   = getScopes;
