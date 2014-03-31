@@ -216,9 +216,6 @@ define(function (require, exports) {
                     }
                     return arr;
                 }, []);
-            })
-            .catch(function (err) {
-                throw new Error("Unable to get list of deleted files: " + err);
             });
     }
 
