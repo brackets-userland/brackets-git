@@ -100,123 +100,125 @@ define(function (require, exports, module) {
     }
 
     function cliHandler(method, cmd, args, opts) {
-        return new Promise(function (resolve, reject) {
-            opts = opts || {};
+        var deferred = Promise.defer();
 
-            // it is possible to set a custom working directory in options
-            // otherwise the current project root is used to execute commands
-            if (opts.cwd) { opts.customCwd = true; }
-            else { opts.cwd = Utils.getProjectRoot(); }
+        opts = opts || {};
 
-            // convert paths like c:/foo/bar to c:\foo\bar on windows
-            opts.cwd = normalizePathForOs(opts.cwd);
+        // it is possible to set a custom working directory in options
+        // otherwise the current project root is used to execute commands
+        if (opts.cwd) { opts.customCwd = true; }
+        else { opts.cwd = Utils.getProjectRoot(); }
 
-            // execute commands have to be escaped, spawn does this automatically and will fail if cmd is escaped
-            if (method === "execute") {
-                cmd = "\"" + cmd + "\"";
-            }
+        // convert paths like c:/foo/bar to c:\foo\bar on windows
+        opts.cwd = normalizePathForOs(opts.cwd);
 
-            // log all cli communication into console when debug mode is on
-            if (debugOn) {
-                var startTime = (new Date()).getTime();
-                console.log(extName + "cmd-" + method + ": " + (opts.customCwd ? opts.cwd + "\\" : "") + cmd + " " + args.join(" "));
-            }
+        // execute commands have to be escaped, spawn does this automatically and will fail if cmd is escaped
+        if (method === "execute") {
+            cmd = "\"" + cmd + "\"";
+        }
 
-            // we connect to node (promise is returned immediately if we are already connected)
-            connectToNode().then(function (wasConnected) {
+        // log all cli communication into console when debug mode is on
+        if (debugOn) {
+            var startTime = (new Date()).getTime();
+            console.log(extName + "cmd-" + method + ": " + (opts.customCwd ? opts.cwd + "\\" : "") + cmd + " " + args.join(" "));
+        }
 
-                var domainOpts = {
-                    cliId: getNextCliId(),
-                    watchProgress: args.indexOf("--progress") !== -1
-                };
+        // we connect to node (promise is returned immediately if we are already connected)
+        connectToNode().then(function (wasConnected) {
 
-                var debugInfo = {
-                    startTime: startTime,
-                    wasConnected: wasConnected
-                };
+            var domainOpts = {
+                cliId: getNextCliId(),
+                watchProgress: args.indexOf("--progress") !== -1
+            };
 
-                var resolved = false;
-                // nodeConnection returns jQuery deffered
-                nodeConnection.domains[domainName][method](opts.cwd, cmd, args, domainOpts)
-                    .fail(function (err) { // jQuery promise - .fail is fine
-                        if (!resolved) {
-                            err = sanitizeOutput(err);
-                            if (debugOn) {
-                                logDebug(domainOpts, debugInfo, method, "fail", err);
-                            }
-                            reject(err);
+            var debugInfo = {
+                startTime: startTime,
+                wasConnected: wasConnected
+            };
+
+            var resolved = false;
+            // nodeConnection returns jQuery deffered
+            nodeConnection.domains[domainName][method](opts.cwd, cmd, args, domainOpts)
+                .fail(function (err) { // jQuery promise - .fail is fine
+                    if (!resolved) {
+                        err = sanitizeOutput(err);
+                        if (debugOn) {
+                            logDebug(domainOpts, debugInfo, method, "fail", err);
                         }
-                    })
-                    .then(function (out) {
-                        if (!resolved) {
-                            out = sanitizeOutput(out);
-                            if (debugOn) {
-                                logDebug(domainOpts, debugInfo, method, "out", out);
-                            }
-                            resolve(out);
+                        deferred.reject(err);
+                    }
+                })
+                .then(function (out) {
+                    if (!resolved) {
+                        out = sanitizeOutput(out);
+                        if (debugOn) {
+                            logDebug(domainOpts, debugInfo, method, "out", out);
                         }
-                    })
-                    .always(function () {
-                        resolved = true;
-                    })
-                    .done();
-
-                function timeoutPromise() {
-                    if (debugOn) {
-                        logDebug(domainOpts, debugInfo, method, "timeout");
+                        deferred.resolve(out);
                     }
-                    var err = new Error("cmd-" + method + "-timeout: " + cmd + " " + args.join(" "));
-                    if (!opts.timeoutExpected) {
-                        ErrorHandler.logError(err);
-                    }
-
-                    // process still lives and we need to kill it
-                    nodeConnection.domains[domainName].kill(domainOpts.cliId)
-                        .fail(function (err) {
-                            ErrorHandler.logError(err);
-                        });
-
-                    reject(err);
+                })
+                .always(function () {
                     resolved = true;
+                })
+                .done();
+
+            function timeoutPromise() {
+                if (debugOn) {
+                    logDebug(domainOpts, debugInfo, method, "timeout");
+                }
+                var err = new Error("cmd-" + method + "-timeout: " + cmd + " " + args.join(" "));
+                if (!opts.timeoutExpected) {
+                    ErrorHandler.logError(err);
                 }
 
-                function timeoutCall() {
-                    setTimeout(function () {
-                        if (!resolved) {
-                            if (typeof opts.timeoutCheck === "function") {
-                                Promise.cast(opts.timeoutCheck())
-                                    .catch(function (err) {
-                                        ErrorHandler.logError("timeoutCheck failed: " + opts.timeoutCheck.toString());
-                                        ErrorHandler.logError(err);
-                                    })
-                                    .then(function (continueExecution) {
-                                        if (continueExecution) {
-                                            // check again later
-                                            timeoutCall();
-                                        } else {
-                                            timeoutPromise();
-                                        }
-                                    });
-                            } else {
-                                // we don't have any custom handler, so just kill the promise here
-                                // note that command WILL keep running in the background
-                                // so even when timeout occurs, operation might finish after it
-                                timeoutPromise();
-                            }
+                // process still lives and we need to kill it
+                nodeConnection.domains[domainName].kill(domainOpts.cliId)
+                    .fail(function (err) {
+                        ErrorHandler.logError(err);
+                    });
+
+                deferred.reject(err);
+                resolved = true;
+            }
+
+            function timeoutCall() {
+                setTimeout(function () {
+                    if (!resolved) {
+                        if (typeof opts.timeoutCheck === "function") {
+                            Promise.cast(opts.timeoutCheck())
+                                .catch(function (err) {
+                                    ErrorHandler.logError("timeoutCheck failed: " + opts.timeoutCheck.toString());
+                                    ErrorHandler.logError(err);
+                                })
+                                .then(function (continueExecution) {
+                                    if (continueExecution) {
+                                        // check again later
+                                        timeoutCall();
+                                    } else {
+                                        timeoutPromise();
+                                    }
+                                });
+                        } else {
+                            // we don't have any custom handler, so just kill the promise here
+                            // note that command WILL keep running in the background
+                            // so even when timeout occurs, operation might finish after it
+                            timeoutPromise();
                         }
-                    }, opts.timeout ? (opts.timeout * 1000) : TIMEOUT_VALUE);
-                }
+                    }
+                }, opts.timeout ? (opts.timeout * 1000) : TIMEOUT_VALUE);
+            }
 
-                // when opts.timeout === false then never timeout the process
-                if (opts.timeout !== false) {
-                    timeoutCall();
-                }
+            // when opts.timeout === false then never timeout the process
+            if (opts.timeout !== false) {
+                timeoutCall();
+            }
 
-            }).catch(function (err) {
-                // failed to connect to node for some reason
-                ErrorHandler.showError(err, Strings.ERROR_CONNECT_NODEJS);
-            });
+        }).catch(function (err) {
+            // failed to connect to node for some reason
+            ErrorHandler.showError(err, Strings.ERROR_CONNECT_NODEJS);
         });
+
+        return deferred.promise;
     }
 
     function executeCommand(cmd, args, opts) {
