@@ -210,9 +210,12 @@ define(function (require, exports) {
         return git(["diff", "--name-status", oldBranch + ".." + newBranch])
             .then(function (stdout) {
                 var regex = /^D/;
-                return _.map(stdout.split("\n"), function (row) {
-                    return regex.test(row) ? row.substring(1).trim() : undefined;
-                });
+                return stdout.split("\n").reduce(function (arr, row) {
+                    if (regex.test(row)) {
+                        arr.push(row.substring(1).trim());
+                    }
+                    return arr;
+                }, []);
             })
             .catch(function (err) {
                 throw new Error("Unable to get list of deleted files: " + err);
