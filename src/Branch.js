@@ -178,8 +178,7 @@ define(function (require, exports) {
             e.stopPropagation();
             var newBranchName = $(this).parent().data("branch"),
                 openedFiles   = DocumentManager.getWorkingSet();
-            return Git.getCurrentBranchName()
-            .then(function (oldBranchName) {
+            return Git.getCurrentBranchName().then(function (oldBranchName) {
                 Main.gitControl.checkoutBranch(newBranchName).then(function () {
                     closeDropdown();
                     return closeNotExistingFiles(oldBranchName, newBranchName, openedFiles);
@@ -270,11 +269,11 @@ define(function (require, exports) {
 
             var toggleOffset = $gitBranchName.offset();
             $dropdown
-            .css({
-                left: toggleOffset.left,
-                top: toggleOffset.top + $gitBranchName.outerHeight()
-            })
-            .appendTo($("body"));
+                .css({
+                    left: toggleOffset.left,
+                    top: toggleOffset.top + $gitBranchName.outerHeight()
+                })
+                .appendTo($("body"));
 
             PopUpManager.addPopUp($dropdown, detachCloseEvents, true);
             attachCloseEvents();
@@ -294,9 +293,9 @@ define(function (require, exports) {
     function refresh() {
         // show info that branch is refreshing currently
         $gitBranchName
-        .text("\u2026")
-        .parent()
-        .show();
+            .text("\u2026")
+            .parent()
+            .show();
 
         return _isRepositoryRoot().then(function (isRepositoryRoot) {
             $gitBranchName.parent().toggle(isRepositoryRoot);
