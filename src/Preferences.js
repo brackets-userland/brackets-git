@@ -20,6 +20,7 @@ define(function (require, exports, module) {
         "dateFormat": {                     "type": "string",            "value": null          },
         "showReportBugButton": {            "type": "boolean",           "value": true          },
         "storePlainTextPasswords": {        "type": "boolean",           "value": false         },
+        "enableDangerousFeatures": {        "type": "boolean",           "value": false         },
         // shortcuts
         "panelShortcut": {                  "type": "string",            "value": "Ctrl-Alt-G"  },
         "commitCurrentShortcut": {          "type": "string",            "value": null          },
