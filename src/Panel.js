@@ -578,7 +578,7 @@ define(function (require, exports) {
 
     function refresh() {
         // set the history panel to false and remove the class that show the button history active when refresh
-        gitPanel.$panel.find(".git-history").removeClass("btn-active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
+        gitPanel.$panel.find(".git-history").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
 
         if (gitPanelMode === "not-repo") {
             $tableContainer.empty();
@@ -840,7 +840,7 @@ define(function (require, exports) {
         $tableContainer.find(".git-edited-list, .git-history-list").toggle();
 
         // Toggle history button
-        $panel.find(".git-history").toggleClass("btn-active")
+        $panel.find(".git-history").toggleClass("active")
         .attr("title", historyEnabled ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
 
     }
