@@ -569,6 +569,15 @@ define(function (require, exports) {
         }
     }
 
+    function handleFileChange() {
+        var noDoc = !DocumentManager.getCurrentDocument(),
+            $historyList = $tableContainer.find(".git-history-list");
+        if ($historyList.is(":visible") && $historyList.data("file")) {
+            handleToggleHistory(true, noDoc);
+        }
+        gitPanel.$panel.find(".git-file-history").prop("disabled", noDoc);
+    }
+
     function shouldShow(fileObj) {
         if (showFileWhiteList.test(fileObj.name)) {
             return true;
@@ -579,6 +588,7 @@ define(function (require, exports) {
     function refresh() {
         // set the history panel to false and remove the class that show the button history active when refresh
         gitPanel.$panel.find(".git-history").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
+        gitPanel.$panel.find(".git-file-history").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_FILE_HISTORY);
 
         if (gitPanelMode === "not-repo") {
             $tableContainer.empty();
@@ -826,19 +836,30 @@ define(function (require, exports) {
     }
 
     // Show or hide the history list on click of .history button
-    function handleToggleHistory(fileHistory) {
+    function handleToggleHistory(fileHistory, toggleVisibility) {
+        if (toggleVisibility === undefined) {
+            toggleVisibility = true;
+        }
 
         var $panel = gitPanel.$panel,
             $historyList = $tableContainer.find(".git-history-list"),
-            historyEnabled = !$historyList.is(":visible");
+            historyEnabled = !$historyList.is(":visible"),
+            currentMode = !!$historyList.data("file");
 
-        if (fileHistory) {
-            var file = {};
-            file.absolute = DocumentManager.getCurrentDocument().file.fullPath;
-            file.relative = ProjectManager.makeProjectRelativeIfPossible(file.absolute);
+        if (!toggleVisibility || (!historyEnabled && currentMode === !fileHistory)) {
+            historyEnabled = !historyEnabled;
         }
 
-        // Render .git-history-list if is not already generated or if the viewed file of the file history has changed
+        if (fileHistory) {
+            var doc = DocumentManager.getCurrentDocument();
+            if (doc) {
+                var file = {};
+                file.absolute = doc.file.fullPath;
+                file.relative = ProjectManager.makeProjectRelativeIfPossible(file.absolute);
+            }
+        }
+
+        // Render .git-history-list if is not already generated or if the viewed file for file history has changed
         if (historyEnabled && ($historyList.length === 0 || $historyList.data("file") !== ((file && file.absolute) || ""))) {
             if ($historyList.length > 0) {
                 $historyList.remove();
@@ -850,11 +871,16 @@ define(function (require, exports) {
         $panel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
 
         // Toggle visibility of .git-edited-list and .git-history-list
-        $tableContainer.find(".git-edited-list, .git-history-list").toggle();
+        $tableContainer.find(".git-edited-list").toggle(!historyEnabled);
+        $tableContainer.find(".git-history-list").toggle(historyEnabled);
 
         // Toggle history button
-        $panel.find(".git-history").toggleClass("active")
-        .attr("title", historyEnabled ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
+        var globalButtonActive = !!(historyEnabled && !fileHistory),
+            fileButtonActive = !!(historyEnabled && fileHistory);
+        $panel.find(".git-history").toggleClass("active", globalButtonActive)
+        .attr("title", globalButtonActive ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
+        $panel.find(".git-file-history").toggleClass("active", fileButtonActive)
+        .attr("title", fileButtonActive ? Strings.TOOLTIP_HIDE_FILE_HISTORY : Strings.TOOLTIP_SHOW_FILE_HISTORY);
 
     }
 
@@ -1216,5 +1242,6 @@ define(function (require, exports) {
     exports.enable = enable;
     exports.disable = disable;
     exports.refreshCurrentFile = refreshCurrentFile;
+    exports.handleFileChange = handleFileChange;
     exports.getPanel = getPanel;
 });

@@ -108,6 +108,7 @@ define(function (require, exports) {
         });
         $(DocumentManager).on("currentDocumentChange", function () {
             Panel.refreshCurrentFile();
+            Panel.handleFileChange();
             GutterManager.refresh();
         });
     }
