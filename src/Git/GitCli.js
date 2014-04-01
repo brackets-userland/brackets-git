@@ -217,10 +217,9 @@ define(function (require, exports) {
         return git(["branch", "-D", branchName]);
     }
 
-    function reset(file, hard) {
-        var args = ["reset"];
-        if (file) { args.push(file); }
-        if (hard) { args.push("--hard"); }
+    function reset(type, hash) {
+        var args = ["reset", type || "--mixed"]; // mixed is the default action
+        if (hash) { args.push(hash); }
         return git(args);
     }
 

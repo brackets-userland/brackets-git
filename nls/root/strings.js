@@ -114,7 +114,7 @@ define({
     REMOVE_FROM_GITIGNORE:              "Remove from .gitignore",
     RESTART:                            "Restart",
     RESET_LOCAL_REPO:                   "Reset local repository",
-    RESET_LOCAL_REPO_CONFIRM:           "Are you sure you want to reset this local repository? Every not pushed change will be lost.",
+    RESET_LOCAL_REPO_CONFIRM:           "Do you wish to discard all changes done since last commit? This action can't be reverted.",
     SAVE_PASSWORD_QUESTION:             "Save username/password?",
     SET_ORIGIN_URL:                     "Set origin URL",
     SHORTCUTS:                          "Shortcuts",
