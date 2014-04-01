@@ -61,9 +61,7 @@ define(function (require, exports) {
             git(scopeArgs),
             git(usernameArgs),
             git(passwordArgs)
-        ]).catch(function (err) {
-            throw ErrorHandler.logError(err);
-        });
+        ]);
     }
 
     function removeScope(scope) {
