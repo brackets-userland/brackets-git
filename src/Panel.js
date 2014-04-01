@@ -668,7 +668,7 @@ define(function (require, exports) {
         CommandManager.get(PANEL_COMMAND_ID).setChecked(bool);
 
         if (bool) {
-            refresh();
+            Branch.refresh();
         }
     }
 
@@ -1145,14 +1145,6 @@ define(function (require, exports) {
         CommandManager.register(Strings.GOTO_NEXT_GIT_CHANGE, GOTO_NEXT_CHANGE, GutterManager.goToNext);
         KeyBindingManager.addBinding(GOTO_NEXT_CHANGE, Preferences.get("gotoNextChangeShortcut"));
 
-        // Add info from Git to panel
-        Main.gitControl.getGitConfig("user.name").then(function (currentUserName) {
-            EventEmitter.emit(Events.GIT_USERNAME_CHANGED, currentUserName);
-        });
-        Main.gitControl.getGitConfig("user.email").then(function (currentEmail) {
-            EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
-        });
-        
         // Init moment - use the correct language
         moment.lang(brackets.getLocale());
     }
@@ -1189,6 +1181,17 @@ define(function (require, exports) {
     function getPanel() {
         return gitPanel.$panel;
     }
+
+    // Event listeners
+    EventEmitter.on(Events.GIT_ENABLED, function () {
+        // Add info from Git to panel
+        Main.gitControl.getGitConfig("user.name").then(function (currentUserName) {
+            EventEmitter.emit(Events.GIT_USERNAME_CHANGED, currentUserName);
+        });
+        Main.gitControl.getGitConfig("user.email").then(function (currentEmail) {
+            EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
+        });
+    });
 
     exports.init = init;
     exports.refresh = refresh;

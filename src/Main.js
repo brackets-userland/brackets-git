@@ -11,6 +11,8 @@ define(function (require, exports) {
         ProjectManager    = brackets.getModule("project/ProjectManager");
 
     var Promise           = require("bluebird"),
+        Events            = require("src/Events"),
+        EventEmitter      = require("src/EventEmitter"),
         Strings           = require("../strings"),
         Preferences       = require("./Preferences"),
         ErrorHandler      = require("./ErrorHandler"),
@@ -88,11 +90,12 @@ define(function (require, exports) {
     // Call this only when Git is available
     function attachEventsToBrackets() {
         $(ProjectManager).on("projectOpen projectRefresh", function () {
-            // use .fin in case there's no .gitignore file
-            refreshIgnoreEntries().finally(function () {
-                // Branch.refresh will refresh also Panel
-                Branch.refresh();
-            });
+            // Branch.refresh will refresh also Panel
+            Branch.refresh();
+        });
+        $(ProjectManager).on("beforeProjectClose", function () {
+            // Disable Git when closing a project so listeners won't fire before new is opened
+            EventEmitter.emit(Events.GIT_DISABLED);
         });
         $(FileSystem).on("change rename", function () {
             // Branch.refresh will refresh also Panel
@@ -106,9 +109,6 @@ define(function (require, exports) {
             Panel.refreshCurrentFile();
             GutterManager.refresh();
         });
-
-        refreshIgnoreEntries();
-        GutterManager.refresh();
     }
 
     function _addRemoveItemInGitignore(selectedEntry, method) {
@@ -194,7 +194,7 @@ define(function (require, exports) {
     }
 
     function refreshIgnoreEntries() {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
 
             if (!Preferences.get("markModifiedInTree")) {
                 return resolve();
@@ -205,7 +205,8 @@ define(function (require, exports) {
             FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
                 if (err) {
                     _ignoreEntries = [];
-                    return reject(err);
+                    ErrorHandler.logError("Can't open .gitignore file: " + err);
+                    return resolve();
                 }
 
                 _ignoreEntries = _.compact(_.map(content.split("\n"), function (line) {
@@ -291,6 +292,14 @@ define(function (require, exports) {
             panelCmenu.addMenuItem(cmdName + "2");
         });
     }
+
+    // Event handlers
+    EventEmitter.on(Events.GIT_ENABLED, function () {
+        refreshIgnoreEntries();
+    });
+    EventEmitter.on(Events.GIT_DISABLED, function () {
+        _ignoreEntries = [];
+    });
 
     // API
     exports.$icon = $icon;

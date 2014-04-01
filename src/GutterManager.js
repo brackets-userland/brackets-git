@@ -10,12 +10,15 @@ define(function (require, exports) {
     var _               = brackets.getModule("thirdparty/lodash"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
         EditorManager   = brackets.getModule("editor/EditorManager"),
+        Events          = require("src/Events"),
+        EventEmitter    = require("src/EventEmitter"),
         Main            = require("./Main"),
         Preferences     = require("./Preferences"),
         Utils           = require("src/Utils");
 
 
-    var cm = null,
+    var guttersEnabled = true,
+        cm = null,
         results = null,
         gutterName = "brackets-git-gutter",
         openWidgets = [];
@@ -34,6 +37,7 @@ define(function (require, exports) {
     }
 
     function clearOld() {
+        if (!cm) { return; }
         var gutters = cm.getOption("gutters").slice(0),
             io = gutters.indexOf(gutterName);
         if (io !== -1) {
@@ -127,6 +131,10 @@ define(function (require, exports) {
     }
 
     function refresh() {
+        if (!guttersEnabled) {
+            return;
+        }
+
         if (!Preferences.get("useGitGutter")) {
             return;
         }
@@ -279,6 +287,16 @@ define(function (require, exports) {
                 $(".gitline-" + $(evt.target).html()).removeClass("brackets-git-gutter-hover");
             }, 500);
         });
+
+    // Event handlers
+    EventEmitter.on(Events.GIT_ENABLED, function () {
+        guttersEnabled = true;
+        refresh();
+    });
+    EventEmitter.on(Events.GIT_DISABLED, function () {
+        guttersEnabled = false;
+        clearOld();
+    });
 
     // API
     exports.refresh = refresh;
