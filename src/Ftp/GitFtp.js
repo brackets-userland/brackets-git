@@ -4,8 +4,7 @@
 define(function (require, exports) {
 
     // Local modules
-    var ErrorHandler  = require("src/ErrorHandler"),
-        GitCli        = require("src/Git/GitCli"),
+    var GitCli        = require("src/Git/GitCli"),
         Promise       = require("bluebird"),
         URI           = require("URI");
 
