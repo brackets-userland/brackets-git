@@ -724,7 +724,7 @@ define(function (require, exports) {
     function renderHistory(file) {
         return Main.gitControl.getBranchName().then(function (branchName) {
             // Get the history commit of the current branch
-            return Main.gitControl.gitHistory(branchName, null, file.absolute).then(function (commits) {
+            return Main.gitControl.gitHistory(branchName, null, file && file.absolute).then(function (commits) {
                 commits = convertCommitDates(commits);
 
                 var template = "<table class='git-history-list bottom-panel-table table table-striped table-condensed row-highlight'>";
@@ -737,9 +737,7 @@ define(function (require, exports) {
                     commits: commits
                 }));
 
-                if (file) {
-                    $(".git-history-list", $tableContainer).data("file", file.absolute);
-                }
+                $(".git-history-list", $tableContainer).data("file", (file && file.absolute) || "");
             });
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to get history");
@@ -825,7 +823,8 @@ define(function (require, exports) {
     function handleToggleHistory(fileHistory) {
 
         var $panel = gitPanel.$panel,
-            historyEnabled = !$panel.find(".git-history-list").is(":visible");
+            $historyList = $tableContainer.find(".git-history-list"),
+            historyEnabled = !$historyList.is(":visible");
 
         if (fileHistory) {
             var file = {};
@@ -834,7 +833,12 @@ define(function (require, exports) {
         }
 
         // Render .git-history-list if is not already generated
-        if ($tableContainer.find(".git-history-list").length === 0) { renderHistory(file); }
+        if (historyEnabled && ($historyList.length === 0 || $historyList.data("file") !== ((file && file.absolute) || ""))) {
+            if ($historyList.length > 0) {
+                $historyList.remove();
+            }
+            renderHistory(file);
+        }
 
         // Toggle commit button and check-all checkbox
         $panel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
@@ -1090,7 +1094,7 @@ define(function (require, exports) {
             .on("click", ".authors-selection", handleAuthorsSelection)
             .on("click", ".authors-file", handleAuthorsFile)
             .on("click", ".file-history", function () { handleToggleHistory(true); })
-            .on("click", ".git-history", handleToggleHistory)
+            .on("click", ".git-history", function () { handleToggleHistory(); })
             .on("click", ".git-push", EventEmitter.emitFactory(Events.HANDLE_PUSH))
             .on("click", ".git-pull", EventEmitter.emitFactory(Events.HANDLE_PULL))
             .on("click", ".git-bug", ErrorHandler.reportBug)
