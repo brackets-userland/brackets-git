@@ -679,16 +679,19 @@ define(function (require, exports) {
     }
 
     // Render the dialog with the modified files list and the diff commited
-    function _showCommitDiffDialog(hashCommit, files) {
+    function _showCommitDiffDialog(hashCommit, files, selectedFile) {
         var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { hashCommit: hashCommit, files: files, Strings: Strings }),
             dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
             $dialog          = dialog.getElement();
         _makeDialogBig($dialog);
 
-        var firstFile = $dialog.find(".commit-files ul li:first-child").text().trim();
+        var firstFile = selectedFile || $dialog.find(".commit-files ul li:first-child").text().trim();
         if (firstFile) {
             Main.gitControl.getDiffOfFileFromCommit(hashCommit, firstFile).then(function (diff) {
-                $dialog.find(".commit-files a").first().addClass("active");
+                var $fileEntry = $dialog.find(".commit-files a[data-file='" + firstFile + "']").first(),
+                    $commitFiles = $dialog.find(".commit-files");
+                $fileEntry.addClass("active");
+                $commitFiles.animate({ scrollTop: $fileEntry.offset().top - $commitFiles.height() });
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
             });
         }
@@ -709,12 +712,14 @@ define(function (require, exports) {
     function showHistoryCommitDialog(hash) {
         Main.gitControl.getFilesFromCommit(hash).then(function (files) {
             var list = $.map(files, function (file) {
-                var dotPosition = file.lastIndexOf("."),
-                    fileName = file.substring(0, dotPosition),
-                    fileExtension = file.substring(dotPosition, file.length);
-                return {name: fileName, extension: fileExtension};
+                // FUTURE: Remove extensionFunction one day (always use getSmartFileExtension, needs Sprint 38)
+                var extensionFunction = FileUtils.getSmartFileExtension || FileUtils.getFileExtension,
+                    fileExtension = extensionFunction(file),
+                    i = file.lastIndexOf("." + fileExtension),
+                    fileName = file.substring(0, i >= 0 ? i : file.length);
+                return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
             });
-            _showCommitDiffDialog(hash, list);
+            _showCommitDiffDialog(hash, list, $tableContainer.find(".git-history-list").data("file-relative"));
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to load list of diff files");
         });
@@ -723,7 +728,7 @@ define(function (require, exports) {
     // Render history list the first time
     function renderHistory(file) {
         return Main.gitControl.getBranchName().then(function (branchName) {
-            // Get the history commit of the current branch
+            // Get the history commits of the current branch
             return Main.gitControl.gitHistory(branchName, null, file && file.absolute).then(function (commits) {
                 commits = convertCommitDates(commits);
 
@@ -738,6 +743,7 @@ define(function (require, exports) {
                 }));
 
                 $(".git-history-list", $tableContainer).data("file", (file && file.absolute) || "");
+                $(".git-history-list", $tableContainer).data("file-relative", (file && file.relative) || "");
             });
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to get history");
@@ -832,7 +838,7 @@ define(function (require, exports) {
             file.relative = ProjectManager.makeProjectRelativeIfPossible(file.absolute);
         }
 
-        // Render .git-history-list if is not already generated
+        // Render .git-history-list if is not already generated or if the viewed file of the file history has changed
         if (historyEnabled && ($historyList.length === 0 || $historyList.data("file") !== ((file && file.absolute) || ""))) {
             if ($historyList.length > 0) {
                 $historyList.remove();
@@ -1093,7 +1099,7 @@ define(function (require, exports) {
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
             .on("click", ".authors-selection", handleAuthorsSelection)
             .on("click", ".authors-file", handleAuthorsFile)
-            .on("click", ".file-history", function () { handleToggleHistory(true); })
+            .on("click", ".git-file-history", function () { handleToggleHistory(true); })
             .on("click", ".git-history", function () { handleToggleHistory(); })
             .on("click", ".git-push", EventEmitter.emitFactory(Events.HANDLE_PUSH))
             .on("click", ".git-pull", EventEmitter.emitFactory(Events.HANDLE_PULL))
