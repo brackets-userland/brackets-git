@@ -10,7 +10,6 @@ define(function (require) {
     var ErrorHandler  = require("src/ErrorHandler"),
         Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
-        Preferences   = require("src/Preferences"),
         Strings       = require("strings"),
         Utils         = require("src/Utils"),
         GitFtp        = require("./GitFtp");
@@ -21,7 +20,6 @@ define(function (require) {
         $remotesDropdown = null;
     
     // Implementation
-    
     var attachEvents = _.once(function () {
         $gitPanel
             .on("click", ".gitftp-remote-new", function () { handleGitFtpScopeCreation(); })
@@ -33,9 +31,7 @@ define(function (require) {
     function initVariables() {
         $gitPanel = $("#git-panel");
         $remotesDropdown = $gitPanel.find(".git-remotes-dropdown");
-        if (Preferences.get("useGitFtp")) {
-            attachEvents();
-        }
+        attachEvents();
     }
 
     function handleGitFtpPush() {
@@ -177,13 +173,18 @@ define(function (require) {
         });
     }
 
-    // Event subscriptions
-    EventEmitter.on(Events.GIT_ENABLED, function () {
-        initVariables();
+    GitFtp.isAvailable().then(function () {
+        // Event subscriptions
+        EventEmitter.on(Events.GIT_ENABLED, function () {
+            initVariables();
+        });
+
+        EventEmitter.on(Events.REMOTES_REFRESH_PICKER, function () {
+            addFtpScopesToPicker();
+        });
+    }).catch(function (err) {
+        ErrorHandler.showError(err, "Git-FTP seems not installed in your system, please install it and restart Brackets.");
     });
 
-    EventEmitter.on(Events.REMOTES_REFRESH_PICKER, function () {
-        addFtpScopesToPicker();
-    });
 
 });
