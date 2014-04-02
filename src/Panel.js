@@ -1,6 +1,3 @@
-/*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, console, define, Mustache, refresh */
-
 define(function (require, exports) {
     "use strict";
 
@@ -39,7 +36,6 @@ define(function (require, exports) {
     var gitignoreTemplate           = require("text!templates/default-gitignore"),
         gitPanelTemplate            = require("text!templates/git-panel.html"),
         gitPanelResultsTemplate     = require("text!templates/git-panel-results.html"),
-        gitPanelHistoryTemplate     = require("text!templates/git-panel-history.html"),
         gitAuthorsDialogTemplate    = require("text!templates/authors-dialog.html"),
         gitCommitDialogTemplate     = require("text!templates/git-commit-dialog.html"),
         gitDiffDialogTemplate       = require("text!templates/git-diff-dialog.html"),
@@ -579,6 +575,7 @@ define(function (require, exports) {
     function refresh() {
         // set the history panel to false and remove the class that show the button history active when refresh
         gitPanel.$panel.find(".git-history").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
+        gitPanel.$panel.find(".git-file-history").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_FILE_HISTORY);
 
         if (gitPanelMode === "not-repo") {
             $tableContainer.empty();
@@ -679,16 +676,19 @@ define(function (require, exports) {
     }
 
     // Render the dialog with the modified files list and the diff commited
-    function _showCommitDiffDialog(hashCommit, files) {
+    function _showCommitDiffDialog(hashCommit, files, selectedFile) {
         var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { hashCommit: hashCommit, files: files, Strings: Strings }),
             dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
             $dialog          = dialog.getElement();
         _makeDialogBig($dialog);
 
-        var firstFile = $dialog.find(".commit-files ul li:first-child").text().trim();
+        var firstFile = selectedFile || $dialog.find(".commit-files ul li:first-child").text().trim();
         if (firstFile) {
             Main.gitControl.getDiffOfFileFromCommit(hashCommit, firstFile).then(function (diff) {
-                $dialog.find(".commit-files a").first().addClass("active");
+                var $fileEntry = $dialog.find(".commit-files a[data-file='" + firstFile + "']").first(),
+                    $commitFiles = $dialog.find(".commit-files");
+                $fileEntry.addClass("active");
+                $commitFiles.animate({ scrollTop: $fileEntry.offset().top - $commitFiles.height() });
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
             });
         }
@@ -709,133 +709,17 @@ define(function (require, exports) {
     function showHistoryCommitDialog(hash) {
         Main.gitControl.getFilesFromCommit(hash).then(function (files) {
             var list = $.map(files, function (file) {
-                var dotPosition = file.lastIndexOf("."),
-                    fileName = file.substring(0, dotPosition),
-                    fileExtension = file.substring(dotPosition, file.length);
-                return {name: fileName, extension: fileExtension};
+                // FUTURE: Remove extensionFunction one day (always use getSmartFileExtension, needs Sprint 38)
+                var extensionFunction = FileUtils.getSmartFileExtension || FileUtils.getFileExtension,
+                    fileExtension = extensionFunction(file),
+                    i = file.lastIndexOf("." + fileExtension),
+                    fileName = file.substring(0, i >= 0 ? i : file.length);
+                return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
             });
-            _showCommitDiffDialog(hash, list);
+            _showCommitDiffDialog(hash, list, $tableContainer.find(".git-history-list").data("file-relative"));
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to load list of diff files");
         });
-    }
-
-    // Render history list the first time
-    function renderHistory() {
-        return Main.gitControl.getBranchName().then(function (branchName) {
-            // Get the history commit of the current branch
-            return Main.gitControl.gitHistory(branchName).then(function (commits) {
-                commits = convertCommitDates(commits);
-
-                var template = "<table class='git-history-list bottom-panel-table table table-striped table-condensed row-highlight'>";
-                template += "<tbody>";
-                template += gitPanelHistoryTemplate;
-                template += "</tbody>";
-                template += "</table>";
-
-                $tableContainer.append(Mustache.render(template, {
-                    commits: commits
-                }));
-            });
-        }).catch(function (err) {
-            ErrorHandler.showError(err, "Failed to get history");
-        });
-    }
-
-    // Load more rows in the history list on scroll
-    function loadMoreHistory() {
-        if ($tableContainer.find(".git-history-list").is(":visible")) {
-            if (($tableContainer.prop("scrollHeight") - $tableContainer.scrollTop()) === $tableContainer.height()) {
-                return Main.gitControl.getBranchName().then(function (branchName) {
-                    return Main.gitControl.gitHistory(branchName, $tableContainer.find("tr.history-commit").length).then(function (commits) {
-                        if (commits.length === 0) {
-                            return;
-                        }
-                        commits = convertCommitDates(commits);
-
-                        $tableContainer.find(".git-history-list > tbody").append(Mustache.render(gitPanelHistoryTemplate, {commits: commits}));
-                    })
-                    .catch(function (err) {
-                        ErrorHandler.showError(err, "Failed to load more history rows");
-                    });
-                })
-                .catch(function (err) {
-                    ErrorHandler.showError(err, "Failed to get branch name");
-                });
-            }
-        }
-    }
-    
-    function convertCommitDates(commits) {
-        var mode        = Preferences.get("dateMode"),
-            format      = Strings.DATE_FORMAT,
-            now         = moment(),
-            yesterday   = moment().subtract("d", 1).startOf("d"),
-            ownFormat   = Preferences.get("dateFormat") || Strings.DATE_FORMAT;
-
-        _.forEach(commits, function (commit) {
-            if (mode === 4) {
-                // mode 4: Original Git date
-                commit.date = {
-                    shown: commit.date
-                };
-                return;
-            }
-
-            var date = moment(commit.date);
-            commit.date = {
-                title: ""
-            };
-            switch (mode) {
-                // mode 0 (default): formatted with Strings.DATE_FORMAT
-                default:
-                case 0:
-                    commit.date.shown = date.format(format);
-                    break;
-                // mode 1: always relative
-                case 1:
-                    commit.date.shown = date.fromNow();
-                    commit.date.title = date.format(format);
-                    break;
-                // mode 2: intelligent relative/formatted
-                case 2:
-                    if (date.diff(yesterday) > 0) {
-                        commit.date.shown = moment.duration(Math.max(date.diff(now), -24 * 60 * 60 * 1000), "ms").humanize(true);
-                        commit.date.title = date.format(format);
-                    } else {
-                        commit.date.shown = date.format(format);
-                    }
-                    break;
-                // mode 3: formatted with own format (as pref)
-                case 3:
-                    commit.date.shown = date.format(ownFormat);
-                    commit.date.title = date.format(format);
-                    break;
-                /* mode 4 (Original Git date) is handled above */
-            }
-        });
-        return commits;
-    }
-
-    // Show or hide the history list on click of .history button
-    function handleToggleHistory() {
-
-        var $panel = gitPanel.$panel,
-            historyEnabled = !$panel.find(".git-history-list").is(":visible");
-
-        // Render .git-history-list if is not already generated
-        if ($tableContainer.find(".git-history-list").length === 0) { renderHistory(); }
-
-        // Toggle commit button and check-all checkbox
-        $panel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
-
-        // Toggle visibility of .git-edited-list and .git-history-list
-        $tableContainer.find(".git-edited-list, .git-history-list").toggle();
-
-        // Toggle history button
-        $panel.find(".git-history").toggleClass("active")
-        .attr("title", historyEnabled ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
-
     }
 
     function handleGitInit() {
@@ -976,9 +860,6 @@ define(function (require, exports) {
             })
             .on("click", ".history-commit", function () {
                 showHistoryCommitDialog($(this).attr("data-hash"));
-            })
-            .on("scroll", function () {
-                loadMoreHistory();
             });
     }
 
@@ -1079,7 +960,8 @@ define(function (require, exports) {
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
             .on("click", ".authors-selection", handleAuthorsSelection)
             .on("click", ".authors-file", handleAuthorsFile)
-            .on("click", ".git-history", handleToggleHistory)
+            .on("click", ".git-file-history", EventEmitter.emitFactory(Events.HISTORY_SHOW, "FILE"))
+            .on("click", ".git-history", EventEmitter.emitFactory(Events.HISTORY_SHOW, "GLOBAL"))
             .on("click", ".git-push", EventEmitter.emitFactory(Events.HANDLE_PUSH))
             .on("click", ".git-pull", EventEmitter.emitFactory(Events.HANDLE_PULL))
             .on("click", ".git-bug", ErrorHandler.reportBug)
@@ -1188,12 +1070,14 @@ define(function (require, exports) {
             EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
         });
     });
+    EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
+        refreshCurrentFile();
+    });
 
     exports.init = init;
     exports.refresh = refresh;
     exports.toggle = toggle;
     exports.enable = enable;
     exports.disable = disable;
-    exports.refreshCurrentFile = refreshCurrentFile;
     exports.getPanel = getPanel;
 });

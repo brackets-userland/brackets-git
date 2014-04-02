@@ -130,6 +130,8 @@ define({
     TOOLTIP_REFRESH_PANEL:              "Panel aktualisieren",
     TOOLTIP_HIDE_HISTORY:               "Verlauf ausblenden",
     TOOLTIP_SHOW_HISTORY:               "Verlauf anzeigen",
+    TOOLTIP_HIDE_FILE_HISTORY:          "Dateiverlauf ausblenden",
+    TOOLTIP_SHOW_FILE_HISTORY:          "Dateiverlauf anzeigen",
     TOOLTIP_PICK_REMOTE:                "Bevorzugtes Remote-Repository wählen",
     TOOLTIP_MORE:                       "Mehr Aktionen\u2026",
     UNDO_CHANGES:                       "Änderungen verwerfen",

@@ -22,7 +22,7 @@
     "trailing": true,
     "maxparams": 5,
     "maxdepth": 5,
-    "maxstatements": 100,
+    "maxstatements": 60,
     "maxlen": 150,
 
     "eqnull": true,

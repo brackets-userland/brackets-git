@@ -235,6 +235,29 @@ define(function (require, exports) {
         return git(["branch", "-D", branchName]);
     }
 
+    function getHistory(branch, skipCommits, file) {
+        var separator = "_._",
+            items  = ["hashShort", "hash", "author", "date", "message"],
+            format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
+
+        var args = ["log", "-100"];
+        if (skipCommits) { args.push("--skip=" + skipCommits); }
+        args.push("--format=" + format);
+        args.push(branch);
+        if (file) { args.push("--follow", file); }
+
+        return git(args).then(function (stdout) {
+            return !stdout ? [] : stdout.split("\n").map(function (line) {
+                var result = {},
+                    data = line.split(separator);
+                items.forEach(function (name, i) {
+                    result[name] = data[i];
+                });
+                return result;
+            });
+        });
+    }
+
     // Public API
     exports.git                       = git;
     exports.fetchAllRemotes           = fetchAllRemotes;
@@ -254,5 +277,6 @@ define(function (require, exports) {
     exports.branchDelete              = branchDelete;
     exports.forceBranchDelete         = forceBranchDelete;
     exports.getDeletedFiles           = getDeletedFiles;
+    exports.getHistory                = getHistory;
 
 });

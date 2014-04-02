@@ -462,28 +462,6 @@ define(function (require, exports, module) {
             return this.spawnCommand(this._git, args);
         },
 
-        gitHistory: function (branch, skipCommits) {
-            var separator = "_._",
-                items  = ["hashShort", "hash", "author", "date", "message"],
-                format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
-
-            var args = ["log", "-100"];
-            if (skipCommits) { args.push("--skip=" + skipCommits); }
-            args.push("--format=" + escapeShellArg(format));
-            args.push(escapeShellArg(branch));
-
-            return this.executeCommand(this._git, args).then(function (stdout) {
-                return !stdout ? [] : stdout.split("\n").map(function (line) {
-                    var result = {},
-                        data = line.split(separator);
-                    items.forEach(function (name, i) {
-                        result[name] = data[i];
-                    });
-                    return result;
-                });
-            });
-        },
-
         getFilesFromCommit: function (hash) {
             var args = [
                 "diff",

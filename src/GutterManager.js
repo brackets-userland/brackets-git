@@ -1,6 +1,3 @@
-/*jslint plusplus: true, vars: true, nomen: true */
-/*global brackets, define */
-
 // this file was composed with a big help from @MiguelCastillo extension Brackets-InteractiveLinter
 // @see https://github.com/MiguelCastillo/Brackets-InteractiveLinter
 
@@ -303,6 +300,9 @@ define(function (require, exports) {
     EventEmitter.on(Events.GIT_DISABLED, function () {
         guttersEnabled = false;
         clearOld();
+    });
+    EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
+        refresh();
     });
 
     // API

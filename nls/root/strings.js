@@ -136,6 +136,8 @@ define({
     TOOLTIP_REFRESH_PANEL:              "Refresh panel",
     TOOLTIP_HIDE_HISTORY:               "Hide history",
     TOOLTIP_SHOW_HISTORY:               "Show history",
+    TOOLTIP_HIDE_FILE_HISTORY:          "Hide file history",
+    TOOLTIP_SHOW_FILE_HISTORY:          "Show file history",
     TOOLTIP_PICK_REMOTE:                "Pick preferred remote",
     TOOLTIP_MORE:                       "More actions\u2026",
     USER_ABORTED:                       "User aborted!",

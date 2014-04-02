@@ -6,6 +6,9 @@ define(function (require, exports) {
      * Events should be structured by file who emits them.
      */
 
+    // Brackets events
+    exports.BRACKETS_CURRENT_DOCUMENT_CHANGE = "brackets.current.document.change";
+
     // Panel.js
     exports.GIT_ENABLED = "git.enabled";
     exports.GIT_DISABLED = "git.disabled";
@@ -17,6 +20,7 @@ define(function (require, exports) {
     exports.HANDLE_REMOTE_DELETE = "handle.remote.delete";
     exports.HANDLE_REMOTE_CREATE = "handle.remote.create";
     exports.HANDLE_FTP_PUSH = "handle.ftp.push";
+    exports.HISTORY_SHOW = "history.show";
 
     // Git results
     exports.GIT_STATUS_RESULTS = "git.status.results";
