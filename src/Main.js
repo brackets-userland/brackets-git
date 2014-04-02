@@ -26,7 +26,8 @@ define(function (require, exports) {
 
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
                                     .addClass("loading").appendTo($("#main-toolbar .buttons")),
-        gitControl              = null;
+        gitControl              = null,
+        currentlyModifiedFiles  = [];
 
     var writeTestResults = {};
     function isProjectRootWritable() {
@@ -169,7 +170,7 @@ define(function (require, exports) {
 
     var _ignoreEntries = [];
 
-    function refreshProjectFiles(modifiedEntries) {
+    function refreshProjectFiles() {
         if (!Preferences.get("markModifiedInTree")) {
             return;
         }
@@ -184,12 +185,14 @@ define(function (require, exports) {
             return ignored;
         }
 
-        $("#project-files-container").find("li").each(function () {
-            var $li = $(this),
-                fullPath = $li.data("entry").fullPath,
-                isModified = modifiedEntries.indexOf(fullPath) !== -1;
-            $li.toggleClass("git-ignored", isIgnored(fullPath))
-               .toggleClass("git-modified", isModified);
+        [ ["#project-files-container", "entry"], ["#open-files-container", "file"] ].forEach(function (arr) {
+            $(arr[0]).find("li").each(function () {
+                var $li = $(this),
+                    fullPath = $li.data(arr[1]).fullPath,
+                    isModified = currentlyModifiedFiles.indexOf(fullPath) !== -1;
+                $li.toggleClass("git-ignored", isIgnored(fullPath))
+                   .toggleClass("git-modified", isModified);
+            });
         });
     }
 
@@ -300,11 +303,20 @@ define(function (require, exports) {
     EventEmitter.on(Events.GIT_DISABLED, function () {
         _ignoreEntries = [];
     });
+    EventEmitter.on(Events.GIT_STATUS_RESULTS, function (files) {
+        var projectRoot = Utils.getProjectRoot();
+        currentlyModifiedFiles = files.map(function (entry) {
+            return projectRoot + entry.file;
+        });
+        refreshProjectFiles();
+    });
+    $("#open-files-container").on("contentChanged", function () {
+        refreshProjectFiles();
+    });
 
     // API
     exports.$icon = $icon;
     exports.isProjectRootEmpty = isProjectRootEmpty;
     exports.isProjectRootWritable = isProjectRootWritable;
-    exports.refreshProjectFiles = refreshProjectFiles;
     exports.init = init;
 });

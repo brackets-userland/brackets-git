@@ -18,7 +18,7 @@
 @tc-dropdown-shadow: 0 3px 9px rgba(0, 0, 0, 0.24);
 
 /* Project tree */
-.jstree-brackets {
+.jstree-brackets, #open-files-container {
     li.git-modified > a:before {
         content: "|";
         color: @orange;
@@ -119,34 +119,39 @@
         pointer-events: all;
     }
 
-    .brackets-git-gutter-deleted-lines.brackets-git-gutter-hover,
-    .brackets-git-gutter-removed.brackets-git-gutter-hover,
-    .brackets-git-gutter-modified.brackets-git-gutter-hover {
-        background-color: yellow !important;
-    }
-
     .brackets-git-gutter {
         width: @gutterWidth;
         margin-left: 1px;
     }
-    .brackets-git-gutter-added {
-        background-size: @gutterWidth @gutterWidth;
-        background-color: @green;
-        background-repeat: no-repeat;
-    }
-    .brackets-git-gutter-modified {
-        background-size: @gutterWidth @gutterWidth;
-        background-color: @orange;
-        background-repeat: no-repeat;
-    }
+    .brackets-git-gutter-added,
+    .brackets-git-gutter-modified,
     .brackets-git-gutter-removed {
         background-size: @gutterWidth @gutterWidth;
-        background-color: @red;
         background-repeat: no-repeat;
     }
+    .brackets-git-gutter-added {
+        background-color: @green;
+    }
+    .brackets-git-gutter-modified {
+        background-color: @orange;
+    }
+    .brackets-git-gutter-modified.brackets-git-gutter-hover {
+        background-color: lighten(@orange, 15%);
+    }
+    .brackets-git-gutter-removed {
+        background-color: @red;
+    }
+    .brackets-git-gutter-removed.brackets-git-gutter-hover {
+        background-color: lighten(@red, 15%);
+    }
     .brackets-git-gutter-deleted-lines {
-        background-color: @lighterRed;
+        color: @red;
+        background-color: lighten(@red, 35%);
         .selectable-text();
+    }
+    .CodeMirror-linenumber.brackets-git-gutter-hover {
+        cursor: pointer;
+        background-color: #FFFFFF;
     }
 }
 
@@ -162,6 +167,9 @@
         &.checkbox-column {
             vertical-align: middle;
             width: 13px;
+        }
+        &.icons-column {
+            width: 1px;
         }
         &.status-column {
             width: 100px;
@@ -378,10 +386,11 @@
         min-height: 350px;
     }
     hr {
-        margin: 18px 0;
-        border: 0;
-        border-top: 1px solid #ccc;
-        border-bottom: 1px solid #eee;
+        margin: 12px auto;
+        width: 95%;
+        height: 1px;
+        border: none;
+        background-color: #bfbfbf;
     }
     .nav-tabs {
         border-bottom: 1px solid #c3c6c5;
@@ -436,6 +445,12 @@
     ul {
         margin-top: 18px;
         margin-bottom: 28px;
+    }
+    code {
+        border: 1px solid #cccccc;
+        background-color: #f4f4f4;
+        border-radius: 3px;
+        padding: 3px;
     }
 }
 

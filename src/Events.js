@@ -18,6 +18,9 @@ define(function (require, exports) {
     exports.HANDLE_REMOTE_CREATE = "handle.remote.create";
     exports.HANDLE_FTP_PUSH = "handle.ftp.push";
 
+    // Git results
+    exports.GIT_STATUS_RESULTS = "git.status.results";
+
     // Remotes.js
     exports.GIT_REMOTE_AVAILABLE = "git.remote.available";
     exports.GIT_REMOTE_NOT_AVAILABLE = "git.remote.not.available";

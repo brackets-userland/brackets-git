@@ -3,11 +3,13 @@
         {{#files}}
         <tr class="modified-file" data-file="{{file}}" data-status="{{status}}">
             <td class="checkbox-column"><input type="checkbox" class="check-one" /></td>
+            <td class="icons-column">
+                {{#allowDiff}}<button class="btn btn-mini btn-git-diff" title="{{Strings.DIFF}}"><i class="octicon octicon-diff"></i></button>{{/allowDiff}}
+            </td>
             <td class="status-column">{{statusText}}</td>
             <td>{{file}}</td>
             <td>
                 <div class="btn-group">
-                    {{#allowDiff}}   <button class="btn btn-mini btn-git-diff">{{Strings.DIFF}}</button>          {{/allowDiff}}
                     {{#allowUndo}}   <button class="btn btn-mini btn-git-undo">{{Strings.UNDO_CHANGES}}</button>  {{/allowUndo}}
                     {{#allowDelete}} <button class="btn btn-mini btn-git-delete">{{Strings.DELETE_FILE}}</button> {{/allowDelete}}
                 </div>

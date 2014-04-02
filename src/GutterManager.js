@@ -268,23 +268,30 @@ define(function (require, exports) {
             $line.attr("title", "");
 
             // Remove any misc gutter hover classes
+            $(".CodeMirror-linenumber").removeClass("brackets-git-gutter-hover");
             $(".brackets-git-gutter-hover").removeClass("brackets-git-gutter-hover");
 
             // Add new gutter hover classes
             $gitGutterLines = $(".gitline-" + $target.html()).addClass("brackets-git-gutter-hover");
 
             // Add tooltips if there are any git gutter marks
-            if ($gitGutterLines.length) {
+            if ($gitGutterLines.hasClass("brackets-git-gutter-modified") ||
+                $gitGutterLines.hasClass("brackets-git-gutter-removed")) {
+
                 $line = $target.attr("title", "Click for more details");
+                $target.addClass("brackets-git-gutter-hover");
             }
         })
         .on("mouseleave", ".CodeMirror-linenumber", function (evt) {
+            var $target = $(evt.target);
+
             if (_timer) {
                 clearTimeout(_timer);
             }
 
             _timer = setTimeout(function () {
-                $(".gitline-" + $(evt.target).html()).removeClass("brackets-git-gutter-hover");
+                $(".gitline-" + $target.html()).removeClass("brackets-git-gutter-hover");
+                $target.removeClass("brackets-git-gutter-hover");
             }, 500);
         });
 

@@ -2,9 +2,8 @@
     "name": "zaggino.brackets-git",
 
     "title": "Brackets Git",
-    "description": "Integration of Git into Brackets UI",
-    "keywords": ["git"],
-    "categories": ["general", "external"],
+    "description": "Integration of Git into Brackets",
+    "keywords": ["git", "version-control", "source-control"],
     "version": "0.13.0-dev",
 
     "license": "MIT",

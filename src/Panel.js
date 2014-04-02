@@ -586,10 +586,6 @@ define(function (require, exports) {
         }
 
         var p1 = Main.gitControl.getGitStatus().then(function (files) {
-            // mark files in the project tree
-            var projectRoot = Utils.getProjectRoot();
-            Main.refreshProjectFiles(files.map(function (entry) { return projectRoot + entry.file; }));
-
             if (!gitPanel.isVisible()) {
                 return;
             }
