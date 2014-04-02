@@ -89,6 +89,7 @@ define({
     GOTO_PREVIOUS_GIT_CHANGE:           "Go to previous Git change",
     GOTO_NEXT_GIT_CHANGE:               "Go to next Git change",
     HIDE_UNTRACKED:                     "Hide untracked",
+    HISTORY:                            "History",
     INIT_GITFTP_SCOPE:                  "Initialize Git-FTP remote",
     INIT_GITFTP_SCOPE_NAME:             "Initialize Git-FTP remote \"{0}\"?",
     LAUNCH_BASH_SHORTCUT:               "Bash/Terminal shortcut",
@@ -146,6 +147,7 @@ define({
     USE_GIT_GUTTER:                     "Use Git gutter marks",
     USER_DATE_FORMAT:                   "Own date format (<a href='http://momentjs.com/docs/#/displaying/format/'>Syntax</a>)",
     USE_GITFTP:                         "Use Git-FTP",
+    USE_GRAVATAR:                       "Use Gravatars (requires internet)",
     USING_GIT_VERSION:                  "Git version",
     VIEW_AUTHORS_SELECTION:             "View authors of selection",
     VIEW_AUTHORS_FILE:                  "View authors of file"

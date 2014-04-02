@@ -1,0 +1,10 @@
+{{#commits}}
+    <div class="history-commit" data-commit="{{commit}}">
+        <div class="commit-author-avatar" style="background-color: #{{avatarColor}}; color: #{{avatarColor}};">
+            {{#useGravatar}}<img src="http://gravatar.com/avatar/{{emailHash}}?size=30px">{{/useGravatar}}
+            {{^useGravatar}}<span>{{avatarLetter}}</span>{{/useGravatar}}
+        </div>
+            <span class="commit-title">{{subject}}</span>
+            <span class="commit-details">{{date.shown}} by <span class="commit-author">{{author}}</span></span>
+    </div>
+{{/commits}}

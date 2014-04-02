@@ -1,5 +1,5 @@
 /*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, console, define, Mustache, refresh */
+/*global $, brackets, console, define, Mustache, refresh, window */
 
 define(function (require, exports) {
     "use strict";
@@ -36,15 +36,17 @@ define(function (require, exports) {
         SettingsDialog     = require("./SettingsDialog"),
         PANEL_COMMAND_ID   = "brackets-git.panel";
 
-    var gitignoreTemplate           = require("text!templates/default-gitignore"),
-        gitPanelTemplate            = require("text!templates/git-panel.html"),
-        gitPanelResultsTemplate     = require("text!templates/git-panel-results.html"),
-        gitPanelHistoryTemplate     = require("text!templates/git-panel-history.html"),
-        gitAuthorsDialogTemplate    = require("text!templates/authors-dialog.html"),
-        gitCommitDialogTemplate     = require("text!templates/git-commit-dialog.html"),
-        gitDiffDialogTemplate       = require("text!templates/git-diff-dialog.html"),
-        gitCommitDiffDialogTemplate = require("text!templates/git-commit-diff-dialog.html"),
-        questionDialogTemplate      = require("text!templates/git-question-dialog.html");
+    var gitignoreTemplate               = require("text!templates/default-gitignore"),
+        gitPanelTemplate                = require("text!templates/git-panel.html"),
+        gitPanelResultsTemplate         = require("text!templates/git-panel-results.html"),
+        gitPanelHistoryTemplate         = require("text!templates/git-panel-history.html"),
+        gitPanelHistoryCommitsTemplate  = require("text!templates/git-panel-history-commits.html"),
+        gitAuthorsDialogTemplate        = require("text!templates/authors-dialog.html"),
+        gitCommitDialogTemplate         = require("text!templates/git-commit-dialog.html"),
+        gitDiffDialogTemplate           = require("text!templates/git-diff-dialog.html"),
+        gitDiffDetailsTemplate          = require("text!templates/git-diff-details.html"),
+        gitCommitDiffTemplate           = require("text!templates/git-commit-diff.html"),
+        questionDialogTemplate          = require("text!templates/git-question-dialog.html");
 
     var showFileWhiteList = /^\.gitignore$/;
 
@@ -682,43 +684,68 @@ define(function (require, exports) {
         refresh();
     }
 
-    // Render the dialog with the modified files list and the diff commited
-    function _showCommitDiffDialog(hashCommit, files) {
-        var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { hashCommit: hashCommit, files: files, Strings: Strings }),
-            dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-            $dialog          = dialog.getElement();
-        _makeDialogBig($dialog);
+    // Render view with the modified files list and the diff commited
+    function _renderCommitDiff(commit, files) {
 
-        var firstFile = $dialog.find(".commit-files ul li:first-child").text().trim();
-        if (firstFile) {
-            Main.gitControl.getDiffOfFileFromCommit(hashCommit, firstFile).then(function (diff) {
-                $dialog.find(".commit-files a").first().addClass("active");
-                $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
-            });
-        }
+        var variables = commit;
+        variables.files = files;
+        variables.Strings = Strings;
+        variables.useGravatar = Preferences.get("useGravatar");
+        var compiledTemplate = Mustache.render(gitCommitDiffTemplate, variables);
 
-        $dialog.find(".commit-files a").on("click", function () {
-            $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
-            var self = $(this);
-            Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).text().trim()).then(function (diff) {
-                $dialog.find(".commit-files a").removeClass("active");
-                self.addClass("active");
-                $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
-                $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
+        var $historyDiff = gitPanel.$panel.find(".history-diff");
+        $historyDiff.html(compiledTemplate);
+
+        $historyDiff
+            .off("click.historyDiff")
+            .on("click.historyDiff", ".commit-files a", function () {
+                var self = $(this),
+                    file = $(this).text().trim();
+
+                if (self.parent().is(".active")) {
+                    self.parent().removeClass("active");
+                }
+                else {
+                    $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
+                    Main.gitControl.getDiffOfFileFromCommit(commit.hash, file).then(function (diff) {
+                        $historyDiff.find(".commit-files li").removeClass("active");
+                        self.parent().addClass("active");
+                        $historyDiff.parent().find(".commit-diff").html(Utils.formatDiff(diff));
+                        $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
+                    });
+                }
             });
-        });
+
+        $(window)
+            .off("resize.historyDiff")
+            .on("resize.historyDiff", function () {
+                gitPanel.$panel.find(".diff-header").width(gitPanel.$panel.find(".history-diff").width() - 12);
+            })
+            .trigger("resize.historyDiff");
+
+        $historyDiff
+            .on("scroll", function () {
+                if ($historyDiff.scrollTop() > 0) {
+                    $(".diff-header").addClass("shadow");
+                }
+                else {
+                    $(".diff-header").removeClass("shadow");
+                }
+            });
     }
 
-    // show a commit with given hash in a dialog
-    function showHistoryCommitDialog(hash) {
-        Main.gitControl.getFilesFromCommit(hash).then(function (files) {
+    // show a commit with given hash
+    function renderHistoryCommit(commit, self) {
+        gitPanel.$panel.find(".history-commits-list .active").removeClass("active");
+        self.addClass("active");
+        Main.gitControl.getFilesFromCommit(commit.hash).then(function (files) {
             var list = $.map(files, function (file) {
                 var dotPosition = file.lastIndexOf("."),
                     fileName = file.substring(0, dotPosition),
                     fileExtension = file.substring(dotPosition, file.length);
                 return {name: fileName, extension: fileExtension};
             });
-            _showCommitDiffDialog(hash, list);
+            _renderCommitDiff(commit, list);
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to load list of diff files");
         });
@@ -728,18 +755,22 @@ define(function (require, exports) {
     function renderHistory() {
         return Main.gitControl.getBranchName().then(function (branchName) {
             // Get the history commit of the current branch
-            return Main.gitControl.gitHistory(branchName).then(function (commits) {
+            return Main.gitControl.getHistory(branchName).then(function (commits) {
                 commits = convertCommitDates(commits);
 
-                var template = "<table class='git-history-list bottom-panel-table table table-striped table-condensed row-highlight'>";
-                template += "<tbody>";
-                template += gitPanelHistoryTemplate;
-                template += "</tbody>";
-                template += "</table>";
+                var partials = {gitPanelHistoryCommits: gitPanelHistoryCommitsTemplate, gitDiffDetails: gitDiffDetailsTemplate},
+                    variables = {commits: commits, useGravatar: Preferences.get("useGravatar")};
 
-                $tableContainer.append(Mustache.render(template, {
-                    commits: commits
-                }));
+                $tableContainer
+                    .append(Mustache.render(gitPanelHistoryTemplate, variables, partials))
+                    .find(".history-commits-list")
+                        .off("scroll.history")
+                        .on("scroll.history", function () {
+                            loadMoreHistory();
+                        });
+
+                renderHistoryCommit(commits[0], $tableContainer.find(".history-commits-list .history-commit").first());
+
             });
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to get history");
@@ -749,15 +780,17 @@ define(function (require, exports) {
     // Load more rows in the history list on scroll
     function loadMoreHistory() {
         if ($tableContainer.find(".git-history-list").is(":visible")) {
-            if (($tableContainer.prop("scrollHeight") - $tableContainer.scrollTop()) === $tableContainer.height()) {
+            var $commitsList = $tableContainer.find(".history-commits-list");
+            if (($commitsList.prop("scrollHeight") - $commitsList.scrollTop()) === $commitsList.height()) {
                 return Main.gitControl.getBranchName().then(function (branchName) {
-                    return Main.gitControl.gitHistory(branchName, $tableContainer.find("tr.history-commit").length).then(function (commits) {
+                    return Main.gitControl.getHistory(branchName, $commitsList.find(".history-commit").length).then(function (commits) {
                         if (commits.length === 0) {
                             return;
                         }
                         commits = convertCommitDates(commits);
+                        var variables = {commits: commits, useGravatar: Preferences.get("useGravatar")};
 
-                        $tableContainer.find(".git-history-list > tbody").append(Mustache.render(gitPanelHistoryTemplate, {commits: commits}));
+                        $commitsList.append(Mustache.render(gitPanelHistoryCommitsTemplate, variables));
                     })
                     .catch(function (err) {
                         ErrorHandler.showError(err, "Failed to load more history rows");
@@ -769,7 +802,7 @@ define(function (require, exports) {
             }
         }
     }
-    
+
     function convertCommitDates(commits) {
         var mode        = Preferences.get("dateMode"),
             format      = Strings.DATE_FORMAT,
@@ -979,11 +1012,9 @@ define(function (require, exports) {
                 FileViewController.addToWorkingSetAndSelect(Utils.getProjectRoot() + $this.data("file"));
             })
             .on("click", ".history-commit", function () {
-                showHistoryCommitDialog($(this).attr("data-hash"));
-            })
-            .on("scroll", function () {
-                loadMoreHistory();
+                renderHistoryCommit(JSON.parse($(this).attr("data-commit")), $(this));
             });
+
     }
 
     function changeUserName() {
