@@ -1,4 +1,4 @@
-/*jslint plusplus: true, vars: true, nomen: true */
+/*jslint plusplus: true, vars: true, nomen: true, maxstatements: 80 */
 /*global $, brackets, console, define, Mustache, refresh */
 
 define(function (require, exports) {
