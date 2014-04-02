@@ -119,30 +119,30 @@
         pointer-events: all;
     }
 
-    .brackets-git-gutter-deleted-lines.brackets-git-gutter-hover,
-    .brackets-git-gutter-removed.brackets-git-gutter-hover,
-    .brackets-git-gutter-modified.brackets-git-gutter-hover {
-        background-color: yellow !important;
-    }
-
     .brackets-git-gutter {
         width: @gutterWidth;
         margin-left: 1px;
     }
-    .brackets-git-gutter-added {
-        background-size: @gutterWidth @gutterWidth;
-        background-color: @green;
-        background-repeat: no-repeat;
-    }
-    .brackets-git-gutter-modified {
-        background-size: @gutterWidth @gutterWidth;
-        background-color: @orange;
-        background-repeat: no-repeat;
-    }
+    .brackets-git-gutter-added,
+    .brackets-git-gutter-modified,
     .brackets-git-gutter-removed {
         background-size: @gutterWidth @gutterWidth;
-        background-color: @red;
         background-repeat: no-repeat;
+    }
+    .brackets-git-gutter-added {
+        background-color: @green;
+    }
+    .brackets-git-gutter-modified {
+        background-color: @orange;
+    }
+    .brackets-git-gutter-modified.brackets-git-gutter-hover {
+        background-color: lighten(@orange, 15%);
+    }
+    .brackets-git-gutter-removed {
+        background-color: @red;
+    }
+    .brackets-git-gutter-removed.brackets-git-gutter-hover {
+        background-color: lighten(@red, 15%);
     }
     .brackets-git-gutter-deleted-lines {
         background-color: @lighterRed;
