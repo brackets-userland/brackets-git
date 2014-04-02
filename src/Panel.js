@@ -741,7 +741,7 @@ define(function (require, exports) {
     function renderHistory(file) {
         return Main.gitControl.getBranchName().then(function (branchName) {
             // Get the history commits of the current branch
-            return Main.gitControl.gitHistory(branchName, null, file ? file.absolute : null).then(function (commits) {
+            return Main.gitControl.gitHistory(branchName, null, file ? file.relative : null).then(function (commits) {
                 commits = convertCommitDates(commits);
 
                 var template = "<table class='git-history-list bottom-panel-table table table-striped table-condensed row-highlight'>";
@@ -768,7 +768,7 @@ define(function (require, exports) {
         if ($tableContainer.find(".git-history-list").is(":visible")) {
             if (($tableContainer.prop("scrollHeight") - $tableContainer.scrollTop()) === $tableContainer.height()) {
                 return Main.gitControl.getBranchName().then(function (branchName) {
-                    var file = $tableContainer.find(".git-history-list").data("file");
+                    var file = $tableContainer.find(".git-history-list").data("file-relative");
                     return Main.gitControl.gitHistory(branchName, $tableContainer.find("tr.history-commit").length, file).then(function (commits) {
                         if (commits.length === 0) {
                             return;

@@ -469,6 +469,7 @@ define(function (require, exports, module) {
 
             var args = ["log", "-100"];
             if (skipCommits) { args.push("--skip=" + skipCommits); }
+            if (file) { args.push("--follow"); }
             args.push("--format=" + escapeShellArg(format));
             args.push(escapeShellArg(branch));
             if (file) { args.push(escapeShellArg(file)); }
