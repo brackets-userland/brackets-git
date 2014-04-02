@@ -36,7 +36,6 @@ define(function (require, exports) {
     var gitignoreTemplate           = require("text!templates/default-gitignore"),
         gitPanelTemplate            = require("text!templates/git-panel.html"),
         gitPanelResultsTemplate     = require("text!templates/git-panel-results.html"),
-        gitPanelHistoryTemplate     = require("text!templates/git-panel-history.html"),
         gitAuthorsDialogTemplate    = require("text!templates/authors-dialog.html"),
         gitCommitDialogTemplate     = require("text!templates/git-commit-dialog.html"),
         gitDiffDialogTemplate       = require("text!templates/git-diff-dialog.html"),
@@ -566,20 +565,6 @@ define(function (require, exports) {
         }
     }
 
-    function handleFileChange() {
-        var noDoc = !DocumentManager.getCurrentDocument(),
-            $historyList = $tableContainer.find(".git-history-list");
-        if ($historyList.is(":visible") && $historyList.data("file")) {
-            handleToggleHistory("FILE", noDoc);
-        }
-        gitPanel.$panel.find(".git-file-history").prop("disabled", noDoc);
-    }
-
-    EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
-        refreshCurrentFile();
-        handleFileChange();
-    });
-
     function shouldShow(fileObj) {
         if (showFileWhiteList.test(fileObj.name)) {
             return true;
@@ -737,159 +722,6 @@ define(function (require, exports) {
         });
     }
 
-    // Render history list the first time
-    function renderHistory(file) {
-        return Main.gitControl.getBranchName().then(function (branchName) {
-            // Get the history commits of the current branch
-            return Main.gitControl.gitHistory(branchName, null, file ? file.relative : null).then(function (commits) {
-                commits = convertCommitDates(commits);
-
-                var template = "<table class='git-history-list bottom-panel-table table table-striped table-condensed row-highlight'>";
-                template += "<tbody>";
-                template += gitPanelHistoryTemplate;
-                template += "</tbody>";
-                template += "</table>";
-
-                $tableContainer.append(Mustache.render(template, {
-                    commits: commits
-                }));
-
-                $(".git-history-list", $tableContainer)
-                    .data("file", file ? file.absolute : null)
-                    .data("file-relative", file ? file.relative : null);
-            });
-        }).catch(function (err) {
-            ErrorHandler.showError(err, "Failed to get history");
-        });
-    }
-
-    // Load more rows in the history list on scroll
-    function loadMoreHistory() {
-        if ($tableContainer.find(".git-history-list").is(":visible")) {
-            if (($tableContainer.prop("scrollHeight") - $tableContainer.scrollTop()) === $tableContainer.height()) {
-                return Main.gitControl.getBranchName().then(function (branchName) {
-                    var file = $tableContainer.find(".git-history-list").data("file-relative");
-                    return Main.gitControl.gitHistory(branchName, $tableContainer.find("tr.history-commit").length, file).then(function (commits) {
-                        if (commits.length === 0) {
-                            return;
-                        }
-                        commits = convertCommitDates(commits);
-
-                        $tableContainer.find(".git-history-list > tbody").append(Mustache.render(gitPanelHistoryTemplate, {commits: commits}));
-                    })
-                    .catch(function (err) {
-                        ErrorHandler.showError(err, "Failed to load more history rows");
-                    });
-                })
-                .catch(function (err) {
-                    ErrorHandler.showError(err, "Failed to get branch name");
-                });
-            }
-        }
-    }
-    
-    function convertCommitDates(commits) {
-        var mode        = Preferences.get("dateMode"),
-            format      = Strings.DATE_FORMAT,
-            now         = moment(),
-            yesterday   = moment().subtract("d", 1).startOf("d"),
-            ownFormat   = Preferences.get("dateFormat") || Strings.DATE_FORMAT;
-
-        _.forEach(commits, function (commit) {
-            if (mode === 4) {
-                // mode 4: Original Git date
-                commit.date = {
-                    shown: commit.date
-                };
-                return;
-            }
-
-            var date = moment(commit.date);
-            commit.date = {
-                title: ""
-            };
-            switch (mode) {
-                // mode 0 (default): formatted with Strings.DATE_FORMAT
-                default:
-                case 0:
-                    commit.date.shown = date.format(format);
-                    break;
-                // mode 1: always relative
-                case 1:
-                    commit.date.shown = date.fromNow();
-                    commit.date.title = date.format(format);
-                    break;
-                // mode 2: intelligent relative/formatted
-                case 2:
-                    if (date.diff(yesterday) > 0) {
-                        commit.date.shown = moment.duration(Math.max(date.diff(now), -24 * 60 * 60 * 1000), "ms").humanize(true);
-                        commit.date.title = date.format(format);
-                    } else {
-                        commit.date.shown = date.format(format);
-                    }
-                    break;
-                // mode 3: formatted with own format (as pref)
-                case 3:
-                    commit.date.shown = date.format(ownFormat);
-                    commit.date.title = date.format(format);
-                    break;
-                /* mode 4 (Original Git date) is handled above */
-            }
-        });
-        return commits;
-    }
-
-    // Show or hide the history list on click of .history button
-    // newHistoryMode can be "FILE" or "GLOBAL"
-    function handleToggleHistory(newHistoryMode, toggleVisibility) {
-        if (toggleVisibility === undefined) {
-            toggleVisibility = true;
-        }
-
-        var $panel = gitPanel.$panel,
-            $historyList = $tableContainer.find(".git-history-list"),
-            historyEnabled = !$historyList.is(":visible"),
-            currentHistoryMode = $historyList.data("file") ? "FILE" : "GLOBAL",
-            file;
-
-        if (!toggleVisibility || (!historyEnabled && currentHistoryMode !== newHistoryMode)) {
-            historyEnabled = !historyEnabled;
-        }
-
-        if (newHistoryMode === "FILE") {
-            var doc = DocumentManager.getCurrentDocument();
-            if (doc) {
-                file = {};
-                file.absolute = doc.file.fullPath;
-                file.relative = ProjectManager.makeProjectRelativeIfPossible(file.absolute);
-            }
-        }
-
-        // Render .git-history-list if is not already generated or if the viewed file for file history has changed
-        if (historyEnabled && ($historyList.length === 0 || $historyList.data("file") !== ((file && file.absolute) || ""))) {
-            if ($historyList.length > 0) {
-                $historyList.remove();
-            }
-            renderHistory(file);
-        }
-
-        // Toggle commit button and check-all checkbox
-        $panel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
-
-        // Toggle visibility of .git-edited-list and .git-history-list
-        $tableContainer.find(".git-edited-list").toggle(!historyEnabled);
-        $tableContainer.find(".git-history-list").toggle(historyEnabled);
-
-        // Toggle history button
-        var globalButtonActive = !!(historyEnabled && newHistoryMode === "GLOBAL"),
-            fileButtonActive = !!(historyEnabled && newHistoryMode === "FILE");
-        $panel.find(".git-history").toggleClass("active", globalButtonActive)
-            .attr("title", globalButtonActive ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
-        $panel.find(".git-file-history").toggleClass("active", fileButtonActive)
-            .attr("title", fileButtonActive ? Strings.TOOLTIP_HIDE_FILE_HISTORY : Strings.TOOLTIP_SHOW_FILE_HISTORY);
-
-    }
-
     function handleGitInit() {
         Main.isProjectRootWritable().then(function (writable) {
             if (!writable) {
@@ -1028,9 +860,6 @@ define(function (require, exports) {
             })
             .on("click", ".history-commit", function () {
                 showHistoryCommitDialog($(this).attr("data-hash"));
-            })
-            .on("scroll", function () {
-                loadMoreHistory();
             });
     }
 
@@ -1131,8 +960,8 @@ define(function (require, exports) {
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
             .on("click", ".authors-selection", handleAuthorsSelection)
             .on("click", ".authors-file", handleAuthorsFile)
-            .on("click", ".git-file-history", function () { handleToggleHistory("FILE"); })
-            .on("click", ".git-history", function () { handleToggleHistory("GLOBAL"); })
+            .on("click", ".git-file-history", EventEmitter.emitFactory(Events.HISTORY_SHOW, "FILE"))
+            .on("click", ".git-history", EventEmitter.emitFactory(Events.HISTORY_SHOW, "GLOBAL"))
             .on("click", ".git-push", EventEmitter.emitFactory(Events.HANDLE_PUSH))
             .on("click", ".git-pull", EventEmitter.emitFactory(Events.HANDLE_PULL))
             .on("click", ".git-bug", ErrorHandler.reportBug)
@@ -1241,13 +1070,14 @@ define(function (require, exports) {
             EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
         });
     });
+    EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
+        refreshCurrentFile();
+    });
 
     exports.init = init;
     exports.refresh = refresh;
     exports.toggle = toggle;
     exports.enable = enable;
     exports.disable = disable;
-    exports.refreshCurrentFile = refreshCurrentFile;
-    exports.handleFileChange = handleFileChange;
     exports.getPanel = getPanel;
 });

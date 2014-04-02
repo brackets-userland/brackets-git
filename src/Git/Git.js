@@ -58,10 +58,20 @@ define(function (require, exports) {
         });
     }
 
+    function getHistory(branch, skip) {
+        return GitCli.getHistory(branch, skip);
+    }
+
+    function getFileHistory(file, branch, skip) {
+        return GitCli.getHistory(branch, skip, file);
+    }
+
     // Public API
     exports.pushToNewUpstream = pushToNewUpstream;
     exports.getBranches       = getBranches;
     exports.getAllBranches    = getAllBranches;
+    exports.getHistory        = getHistory;
+    exports.getFileHistory    = getFileHistory;
 
     Object.keys(GitCli).forEach(function (method) {
         if (!exports[method]) {
