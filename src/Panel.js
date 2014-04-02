@@ -1055,6 +1055,18 @@ define(function (require, exports) {
         refresh();
     });
 
+    EventEmitter.on(Events.SYNC_STARTED, function () {
+        Main.gitControl.sync(gitPanel.$panel.find(".git-selected-remote").data("remote"), gitPanel.$panel.find("#git-branch").text().trim());
+        gitPanel.$panel.find(".git-sync, .git-pull, .git-push").prop("disabled", true);
+        gitPanel.$panel.find(".git-sync").addClass("btn-loading");
+    });
+
+    EventEmitter.on(Events.SYNC_FINISHED, function () {
+        gitPanel.$panel.find(".git-sync, .git-pull, .git-push").prop("disabled", false);
+        gitPanel.$panel.find(".git-sync").removeClass("btn-loading");
+        refresh();
+    });
+
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, Strings);
@@ -1108,7 +1120,8 @@ define(function (require, exports) {
             .on("click", ".change-user-name", changeUserName)
             .on("click", ".change-user-email", changeUserEmail)
             .on("click", ".undo-last-commit", undoLastLocalCommit)
-            .on("click", ".git-bash", openBashConsole);
+            .on("click", ".git-bash", openBashConsole)
+            .on("click", ".git-sync", EventEmitter.emitFactory(Events.SYNC_REPO));
 
         // Attaching table handlers
         attachDefaultTableHandlers();
@@ -1119,6 +1132,7 @@ define(function (require, exports) {
             BASH_CMD           = "brackets-git.launchBash",
             PUSH_CMD           = "brackets-git.push",
             PULL_CMD           = "brackets-git.pull",
+            SYNC_CMD           = "brackets-git.sync",
             GOTO_PREV_CHANGE   = "brackets-git.gotoPrevChange",
             GOTO_NEXT_CHANGE   = "brackets-git.gotoNextChange";
 
@@ -1141,6 +1155,9 @@ define(function (require, exports) {
 
         CommandManager.register(Strings.PULL_SHORTCUT, PULL_CMD, EventEmitter.emitFactory(Events.HANDLE_PULL));
         KeyBindingManager.addBinding(PULL_CMD, Preferences.get("pullShortcut"));
+
+        CommandManager.register(Strings.SYNC_SHORTCUT, SYNC_CMD, EventEmitter.emitFactory(Events.HANDLE_SYNC));
+        KeyBindingManager.addBinding(SYNC_CMD, Preferences.get("syncShortcut"));
 
         CommandManager.register(Strings.GOTO_PREVIOUS_GIT_CHANGE, GOTO_PREV_CHANGE, GutterManager.goToPrev);
         KeyBindingManager.addBinding(GOTO_PREV_CHANGE, Preferences.get("gotoPrevChangeShortcut"));

@@ -69,6 +69,14 @@ define(function (require, exports) {
             });
     }
 
+    function pullRebase(remoteName) {
+        return git(["pull", "--rebase", remoteName])
+            .then(function (stdout) {
+                // stdout contains currently non-parseable message
+                return stdout;
+            });
+    }
+
     /*
         returns parsed push response in this format:
         {
@@ -224,6 +232,7 @@ define(function (require, exports) {
     exports.createRemote              = createRemote;
     exports.deleteRemote              = deleteRemote;
     exports.pull                      = pull;
+    exports.pullRebase                = pullRebase;
     exports.push                      = push;
     exports.setUpstreamBranch         = setUpstreamBranch;
     exports.getCurrentBranchName      = getCurrentBranchName;

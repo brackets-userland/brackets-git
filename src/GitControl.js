@@ -547,6 +547,10 @@ define(function (require, exports, module) {
         undoLastLocalCommit: function () {
             var args = ["reset", "--soft", "HEAD~1"];
             return this.executeCommand(this._git, args);
+        },
+
+        sync: function (remoteName, remoteBranch) {
+            return this.sync(remoteName, remoteBranch);
         }
 
     };
