@@ -19,6 +19,7 @@ define(function (require, exports) {
         PanelManager       = brackets.getModule("view/PanelManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         StringUtils        = brackets.getModule("utils/StringUtils"),
+        Git                = require("src/Git/Git"),
         Events             = require("./Events"),
         EventEmitter       = require("./EventEmitter"),
         Preferences        = require("./Preferences"),
@@ -33,8 +34,7 @@ define(function (require, exports) {
         SettingsDialog     = require("./SettingsDialog"),
         PANEL_COMMAND_ID   = "brackets-git.panel";
 
-    var gitignoreTemplate           = require("text!templates/default-gitignore"),
-        gitPanelTemplate            = require("text!templates/git-panel.html"),
+    var gitPanelTemplate            = require("text!templates/git-panel.html"),
         gitPanelResultsTemplate     = require("text!templates/git-panel-results.html"),
         gitAuthorsDialogTemplate    = require("text!templates/authors-dialog.html"),
         gitCommitDialogTemplate     = require("text!templates/git-commit-dialog.html"),
@@ -227,7 +227,7 @@ define(function (require, exports) {
                 var commitMessage = getCommitMessageElement().val(),
                     amendCommit = $dialog.find(".amend-commit").prop("checked");
 
-                Main.gitControl.gitCommit(commitMessage, amendCommit).then(function () {
+                Git.commit(commitMessage, amendCommit).then(function () {
                     return refresh();
                 }).catch(function (err) {
                     ErrorHandler.showError(err, "Git Commit failed");
@@ -514,7 +514,7 @@ define(function (require, exports) {
                 }
 
                 queue = queue.then(function () {
-                    return Main.gitControl.gitAdd(fileObj.filename, updateIndex);
+                    return Git.stage(fileObj.filename, updateIndex);
                 });
 
                 // do a code inspection for the file, if it was not deleted
@@ -722,49 +722,6 @@ define(function (require, exports) {
         });
     }
 
-    function handleGitInit() {
-        Main.isProjectRootWritable().then(function (writable) {
-            if (!writable) {
-                throw new ExpectedError("Folder " + Utils.getProjectRoot() + " is not writable!");
-            }
-            return Main.gitControl.gitInit();
-        }).then(function () {
-            return Promise.cast(FileUtils.writeText(FileSystem.getFileForPath(Utils.getProjectRoot() + ".gitignore"), gitignoreTemplate));
-        }).then(function () {
-            return Main.gitControl.gitAdd(".gitignore");
-        }).then(function () {
-            return Main.gitControl.gitCommit("Initial commit");
-        }).then(function () {
-            return $(ProjectManager).triggerHandler("projectRefresh");
-        }).catch(function (err) {
-            ErrorHandler.showError(err, "Initializing new repository failed");
-        });
-    }
-
-    function handleGitClone() {
-        Main.isProjectRootEmpty()
-            .then(function (isEmpty) {
-                if (isEmpty) {
-                    return Utils.askQuestion(Strings.CLONE_REPOSITORY, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
-                        gitPanel.$panel.find(".git-clone").prop("disabled", true);
-                        return Main.gitControl.gitClone(remoteGitUrl, ".")
-                            .progressed(function (msg) {
-                                console.log(msg);
-                            })
-                            .then(function () {
-                                refresh();
-                            });
-                    });
-                }
-                else {
-                    var err = new ExpectedError("Project root is not empty, be sure you have deleted hidden files");
-                    ErrorHandler.showError(err, "Cloning remote repository failed!");
-                }
-            }).catch(function (err) {
-                ErrorHandler.showError(err);
-            });
-    }
-
     function commitCurrentFile() {
         return Promise.cast(CommandManager.execute("file.save")).then(function () {
             return handleGitReset();
@@ -965,8 +922,8 @@ define(function (require, exports) {
             .on("click", ".git-push", EventEmitter.emitFactory(Events.HANDLE_PUSH))
             .on("click", ".git-pull", EventEmitter.emitFactory(Events.HANDLE_PULL))
             .on("click", ".git-bug", ErrorHandler.reportBug)
-            .on("click", ".git-init", handleGitInit)
-            .on("click", ".git-clone", handleGitClone)
+            .on("click", ".git-init", EventEmitter.emitFactory(Events.HANDLE_GIT_INIT))
+            .on("click", ".git-clone", EventEmitter.emitFactory(Events.HANDLE_GIT_CLONE))
             .on("click", ".change-remote", EventEmitter.emitFactory(Events.HANDLE_REMOTE_PICK))
             .on("click", ".remove-remote", EventEmitter.emitFactory(Events.HANDLE_REMOTE_DELETE))
             .on("click", ".git-remote-new", EventEmitter.emitFactory(Events.HANDLE_REMOTE_CREATE))

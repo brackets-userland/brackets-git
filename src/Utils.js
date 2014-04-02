@@ -5,6 +5,8 @@ define(function (require, exports, module) {
     var _               = brackets.getModule("thirdparty/lodash"),
         Dialogs         = brackets.getModule("widgets/Dialogs"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
+        FileSystem      = brackets.getModule("filesystem/FileSystem"),
+        FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
     // Local modules
@@ -13,8 +15,9 @@ define(function (require, exports, module) {
         Strings         = require("strings");
 
     // Module variables
-    var questionDialogTemplate = require("text!templates/git-question-dialog.html"),
-        outputDialogTemplate = require("text!templates/git-output.html");
+    var questionDialogTemplate  = require("text!templates/git-question-dialog.html"),
+        outputDialogTemplate    = require("text!templates/git-output.html"),
+        writeTestResults        = {};
 
     // Implementation
 
@@ -107,10 +110,51 @@ define(function (require, exports, module) {
         });
     }
 
+    function isProjectRootWritable() {
+        return new Promise(function (resolve) {
+
+            var folder = getProjectRoot();
+
+            // if we previously tried, assume nothing has changed
+            if (writeTestResults[folder]) {
+                return resolve(writeTestResults[folder]);
+            }
+
+            // create entry for temporary file
+            var fileEntry = FileSystem.getFileForPath(folder + ".bracketsGitTemp");
+
+            function finish(bool) {
+                // delete the temp file and resolve
+                fileEntry.unlink(function () {
+                    resolve(writeTestResults[folder] = bool);
+                });
+            }
+
+            // try writing some text into the temp file
+            Promise.cast(FileUtils.writeText(fileEntry, ""))
+                .then(function () {
+                    finish(true);
+                })
+                .catch(function () {
+                    finish(false);
+                });
+        });
+    }
+
+    function pathExists(path) {
+        return new Promise(function (resolve) {
+            FileSystem.resolve(path, function (err, entry) {
+                resolve(!err && entry ? true : false);
+            });
+        });
+    }
+
     // Public API
     exports.formatDiff            = formatDiff;
     exports.getProjectRoot        = getProjectRoot;
     exports.getExtensionDirectory = getExtensionDirectory;
     exports.askQuestion           = askQuestion;
     exports.showOutput            = showOutput;
+    exports.isProjectRootWritable = isProjectRootWritable;
+    exports.pathExists            = pathExists;
 });

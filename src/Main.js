@@ -7,7 +7,6 @@ define(function (require, exports) {
         Menus             = brackets.getModule("command/Menus"),
         DocumentManager   = brackets.getModule("document/DocumentManager"),
         FileSystem        = brackets.getModule("filesystem/FileSystem"),
-        FileUtils         = brackets.getModule("file/FileUtils"),
         ProjectManager    = brackets.getModule("project/ProjectManager");
 
     var Promise           = require("bluebird"),
@@ -28,50 +27,6 @@ define(function (require, exports) {
                                     .addClass("loading").appendTo($("#main-toolbar .buttons")),
         gitControl              = null,
         currentlyModifiedFiles  = [];
-
-    var writeTestResults = {};
-    function isProjectRootWritable() {
-        return new Promise(function (resolve) {
-
-            var folder = Utils.getProjectRoot();
-
-            // if we previously tried, assume nothing has changed
-            if (writeTestResults[folder]) {
-                return resolve(writeTestResults[folder]);
-            }
-
-            // create entry for temporary file
-            var fileEntry = FileSystem.getFileForPath(folder + ".bracketsGitTemp");
-
-            function finish(bool) {
-                // delete the temp file and resolve
-                fileEntry.unlink(function () {
-                    resolve(writeTestResults[folder] = bool);
-                });
-            }
-
-            // try writing some text into the temp file
-            Promise.cast(FileUtils.writeText(fileEntry, ""))
-                .then(function () {
-                    finish(true);
-                })
-                .catch(function () {
-                    finish(false);
-                });
-        });
-    }
-
-    // This checks if the project root is empty (to let Git clone repositories)
-    function isProjectRootEmpty() {
-        return new Promise(function (resolve, reject) {
-            ProjectManager.getProjectRoot().getContents(function (err, entries) {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(entries.length === 0);
-            });
-        });
-    }
 
     // This only launches when Git is available
     function initUi() {
@@ -207,7 +162,7 @@ define(function (require, exports) {
             FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
                 if (err) {
                     _ignoreEntries = [];
-                    ErrorHandler.logError("Can't open .gitignore file: " + err);
+                    EventEmitter.emit(Events.GITIGNORE_MISSING);
                     return resolve();
                 }
 
@@ -309,13 +264,14 @@ define(function (require, exports) {
         });
         refreshProjectFiles();
     });
+    EventEmitter.on(Events.HANDLE_PROJECT_REFRESH, function () {
+        $(ProjectManager).triggerHandler("projectRefresh");
+    });
     $("#open-files-container").on("contentChanged", function () {
         refreshProjectFiles();
     });
 
     // API
     exports.$icon = $icon;
-    exports.isProjectRootEmpty = isProjectRootEmpty;
-    exports.isProjectRootWritable = isProjectRootWritable;
     exports.init = init;
 });

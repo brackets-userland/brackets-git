@@ -23,7 +23,7 @@ define(function (require, exports, module) {
         Strings         = require("strings");
 
     // Load extension modules that are not included by core
-    var modules = ["src/History", "src/Remotes"];
+    var modules = ["src/NoRepo", "src/History", "src/Remotes"];
     if (Preferences.get("useGitFtp")) { modules.push("src/Ftp/Ftp"); }
     require(modules);
 

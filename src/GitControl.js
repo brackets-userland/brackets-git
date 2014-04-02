@@ -5,9 +5,6 @@ define(function (require, exports, module) {
     "use strict";
 
     var _               = brackets.getModule("thirdparty/lodash"),
-        FileSystem      = brackets.getModule("filesystem/FileSystem"),
-        FileUtils       = brackets.getModule("file/FileUtils"),
-        ProjectManager  = brackets.getModule("project/ProjectManager"),
         Promise         = require("bluebird"),
         Utils           = require("src/Utils"),
         Events          = require("./Events"),
@@ -356,54 +353,12 @@ define(function (require, exports, module) {
             });
         },
 
-        gitAdd: function (file, updateIndex) {
-            var args = ["add"];
-            if (updateIndex) { args.push("-u"); }
-            args.push(escapeShellArg(file));
-            return this.executeCommand(this._git, args);
-        },
-
         gitUndoFile: function (file) {
             var args = [
                 "checkout",
                 escapeShellArg(file)
             ];
             return this.executeCommand(this._git, args);
-        },
-
-        gitCommit: function (message, amend) {
-            var self = this,
-                lines = message.split("\n");
-
-            var args = ["commit"];
-            if (amend) {
-                args.push("--amend", "--reset-author");
-            }
-
-            if (lines.length === 1) {
-                args.push("-m", escapeShellArg(message));
-                return self.executeCommand(self._git, args);
-            } else {
-                return new Promise(function (resolve, reject) {
-                    // TODO: maybe use git commit --file=-
-                    var fileEntry = FileSystem.getFileForPath(ProjectManager.getProjectRoot().fullPath + ".bracketsGitTemp");
-                    Promise.cast(FileUtils.writeText(fileEntry, message))
-                        .then(function () {
-                            args.push("-F", ".bracketsGitTemp");
-                            return self.executeCommand(self._git, args);
-                        })
-                        .then(function (res) {
-                            fileEntry.unlink(function () {
-                                resolve(res);
-                            });
-                        })
-                        .catch(function (err) {
-                            fileEntry.unlink(function () {
-                                reject(err);
-                            });
-                        });
-                });
-            }
         },
 
         gitReset: function () {
@@ -446,20 +401,6 @@ define(function (require, exports, module) {
                 "--name-only"
             ];
             return this.executeCommand(this._git, args);
-        },
-
-        gitInit: function () {
-            return this.executeCommand(this._git, ["init"]);
-        },
-
-        gitClone: function (remoteGitUrl, destinationFolder) {
-            var args = [
-                "clone",
-                remoteGitUrl,
-                destinationFolder,
-                "--progress"
-            ];
-            return this.spawnCommand(this._git, args);
         },
 
         getFilesFromCommit: function (hash) {

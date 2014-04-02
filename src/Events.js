@@ -8,12 +8,21 @@ define(function (require, exports) {
 
     // Brackets events
     exports.BRACKETS_CURRENT_DOCUMENT_CHANGE = "brackets.current.document.change";
+    exports.HANDLE_PROJECT_REFRESH = "handle.project.refresh";
 
-    // Panel.js
-    exports.GIT_ENABLED = "git.enabled";
-    exports.GIT_DISABLED = "git.disabled";
+    // Git events
+    exports.GITIGNORE_MISSING = "gitignore.file.missing";
     exports.GIT_USERNAME_CHANGED = "git.username.changed";
     exports.GIT_EMAIL_CHANGED = "git.email.changed";
+
+    // Startup events
+    exports.REFRESH_ALL = "git.refresh.all";
+    exports.GIT_ENABLED = "git.enabled";
+    exports.GIT_DISABLED = "git.disabled";
+
+    // Panel.js
+    exports.HANDLE_GIT_INIT = "handle.git.init";
+    exports.HANDLE_GIT_CLONE = "handle.git.clone";
     exports.HANDLE_PUSH = "handle.push";
     exports.HANDLE_PULL = "handle.pull";
     exports.HANDLE_REMOTE_PICK = "handle.remote.pick";

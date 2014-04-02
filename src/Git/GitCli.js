@@ -7,11 +7,15 @@
 define(function (require, exports) {
 
     // Brackets modules
-    var _ = brackets.getModule("thirdparty/lodash");
+    var _           = brackets.getModule("thirdparty/lodash"),
+        FileSystem  = brackets.getModule("filesystem/FileSystem"),
+        FileUtils   = brackets.getModule("file/FileUtils");
 
     // Local modules
-    var Cli         = require("src/Cli"),
-        Preferences = require("src/Preferences");
+    var Promise     = require("bluebird"),
+        Cli         = require("src/Cli"),
+        Preferences = require("src/Preferences"),
+        Utils       = require("src/Utils");
 
     // Module variables
     var _gitPath = null;
@@ -258,6 +262,55 @@ define(function (require, exports) {
         });
     }
 
+    function init() {
+        return git(["init"]);
+    }
+
+    function clone(remoteGitUrl, destinationFolder) {
+        return git(["clone", remoteGitUrl, destinationFolder, "--progress"]);
+    }
+
+    function stage(file, updateIndex) {
+        var args = ["add"];
+        if (updateIndex) { args.push("-u"); }
+        args.push(file);
+        return git(args);
+    }
+
+    function commit(message, amend) {
+        var lines = message.split("\n"),
+            args = ["commit"];
+
+        if (amend) {
+            args.push("--amend", "--reset-author");
+        }
+
+        if (lines.length === 1) {
+            args.push("-m", message);
+            return git(args);
+        } else {
+            return new Promise(function (resolve, reject) {
+                // TODO: maybe use git commit --file=-
+                var fileEntry = FileSystem.getFileForPath(Utils.getProjectRoot() + ".bracketsGitTemp");
+                Promise.cast(FileUtils.writeText(fileEntry, message))
+                    .then(function () {
+                        args.push("-F", ".bracketsGitTemp");
+                        return git(args);
+                    })
+                    .then(function (res) {
+                        fileEntry.unlink(function () {
+                            resolve(res);
+                        });
+                    })
+                    .catch(function (err) {
+                        fileEntry.unlink(function () {
+                            reject(err);
+                        });
+                    });
+            });
+        }
+    }
+
     // Public API
     exports.git                       = git;
     exports.fetchAllRemotes           = fetchAllRemotes;
@@ -278,5 +331,9 @@ define(function (require, exports) {
     exports.forceBranchDelete         = forceBranchDelete;
     exports.getDeletedFiles           = getDeletedFiles;
     exports.getHistory                = getHistory;
+    exports.init                      = init;
+    exports.clone                     = clone;
+    exports.stage                     = stage;
+    exports.commit                    = commit;
 
 });

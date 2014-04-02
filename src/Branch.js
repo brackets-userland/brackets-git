@@ -8,15 +8,15 @@ define(function (require, exports) {
         CommandManager          = brackets.getModule("command/CommandManager"),
         Dialogs                 = brackets.getModule("widgets/Dialogs"),
         EditorManager           = brackets.getModule("editor/EditorManager"),
-        FileSystem              = brackets.getModule("filesystem/FileSystem"),
         Menus                   = brackets.getModule("command/Menus"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         StringUtils             = brackets.getModule("utils/StringUtils"),
         SidebarView             = brackets.getModule("project/SidebarView"),
         DocumentManager         = brackets.getModule("document/DocumentManager");
 
-    var Promise                 = require("bluebird"),
-        Git                     = require("src/Git/Git"),
+    var Git                     = require("src/Git/Git"),
+        Events                  = require("src/Events"),
+        EventEmitter            = require("src/EventEmitter"),
         ErrorHandler            = require("./ErrorHandler"),
         Main                    = require("./Main"),
         Panel                   = require("./Panel"),
@@ -292,12 +292,8 @@ define(function (require, exports) {
     }
 
     function _isRepositoryRoot() {
-        return new Promise(function (resolve) {
-            var gitFolder = Utils.getProjectRoot() + "/.git";
-            FileSystem.resolve(gitFolder, function (err, directory) {
-                resolve(!err && directory ? true : false);
-            });
-        });
+        var gitFolder = Utils.getProjectRoot() + "/.git";
+        return Utils.pathExists(gitFolder);
     }
 
     function refresh() {
@@ -353,6 +349,10 @@ define(function (require, exports) {
             .appendTo("#project-files-header");
         refresh();
     }
+
+    EventEmitter.on(Events.REFRESH_ALL, function () {
+        refresh();
+    });
 
     exports.init    = init;
     exports.refresh = refresh;
