@@ -9,7 +9,7 @@ module.exports = function (grunt) {
             }
         },
         lesslint: {
-            src: ["less/**/*.less"],
+            src: ["styles/**/*.less"],
             options: {
                 csslint: {
                     "ids": false,

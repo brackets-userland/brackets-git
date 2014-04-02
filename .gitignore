@@ -1,6 +1,6 @@
-/less/brackets-git.css
-/node_modules/
-/npm-debug.log
-/less/fonts/octicon.css
 /git.log
+/npm-debug.log
+/node_modules/
+/styles/brackets-git.css
+/styles/fonts/octicon.css
 /src/Ftp/styles/ftp.css

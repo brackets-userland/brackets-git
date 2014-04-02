@@ -33,8 +33,8 @@ define(function (require, exports, module) {
     require(modules);
 
     // Load CSS
-    ExtensionUtils.loadStyleSheet(module, "less/brackets-git.less");
-    ExtensionUtils.loadStyleSheet(module, "less/fonts/octicon.less");
+    ExtensionUtils.loadStyleSheet(module, "styles/brackets-git.less");
+    ExtensionUtils.loadStyleSheet(module, "styles/fonts/octicon.less");
 
     // Handle settings dialog
     function openSettingsPanel() {
