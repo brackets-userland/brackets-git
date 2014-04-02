@@ -58,10 +58,17 @@ define(function (require, exports) {
         });
     }
 
+    function sync(remoteName, remoteBranch) {
+        return GitCli.pullRebase(remoteName).then(function () {
+            return GitCli.push(remoteName, remoteBranch);
+        });
+    }
+
     // Public API
     exports.pushToNewUpstream = pushToNewUpstream;
     exports.getBranches       = getBranches;
     exports.getAllBranches    = getAllBranches;
+    exports.sync              = sync;
 
     Object.keys(GitCli).forEach(function (method) {
         if (!exports[method]) {

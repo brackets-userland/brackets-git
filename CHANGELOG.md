@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.13.1-dev
+* Added feature to sync repository (`git pull --rebase && git push`) by [Fez Vrasta](https://github.com/FezVrasta)
+
 ## 0.13.0
 * `Q` library has been completely removed and replaced by `bluebird`
 * Added French translation by [rainje](https://github.com/rainje)

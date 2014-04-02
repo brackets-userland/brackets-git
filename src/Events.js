@@ -7,16 +7,19 @@ define(function (require, exports) {
      */
 
     // Panel.js
-    exports.GIT_ENABLED = "git.enabled";
-    exports.GIT_DISABLED = "git.disabled";
-    exports.GIT_USERNAME_CHANGED = "git.username.changed";
-    exports.GIT_EMAIL_CHANGED = "git.email.changed";
-    exports.HANDLE_PUSH = "handle.push";
-    exports.HANDLE_PULL = "handle.pull";
-    exports.HANDLE_REMOTE_PICK = "handle.remote.pick";
-    exports.HANDLE_REMOTE_DELETE = "handle.remote.delete";
-    exports.HANDLE_REMOTE_CREATE = "handle.remote.create";
-    exports.HANDLE_FTP_PUSH = "handle.ftp.push";
+    exports.GIT_ENABLED             = "git.enabled";
+    exports.GIT_DISABLED            = "git.disabled";
+    exports.GIT_USERNAME_CHANGED    = "git.username.changed";
+    exports.GIT_EMAIL_CHANGED       = "git.email.changed";
+    exports.HANDLE_PUSH             = "handle.push";
+    exports.HANDLE_PULL             = "handle.pull";
+    exports.HANDLE_REMOTE_PICK      = "handle.remote.pick";
+    exports.HANDLE_REMOTE_DELETE    = "handle.remote.delete";
+    exports.HANDLE_REMOTE_CREATE    = "handle.remote.create";
+    exports.HANDLE_FTP_PUSH         = "handle.ftp.push";
+    exports.SYNC_REPO               = "handle.sync";
+    exports.SYNC_STARTED            = "sync.started";
+    exports.SYNC_FINISHED           = "sync.finished";
 
     // Git results
     exports.GIT_STATUS_RESULTS = "git.status.results";
