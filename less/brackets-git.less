@@ -145,8 +145,13 @@
         background-color: lighten(@red, 15%);
     }
     .brackets-git-gutter-deleted-lines {
-        background-color: @lighterRed;
+        color: @red;
+        background-color: lighten(@red, 35%);
         .selectable-text();
+    }
+    .CodeMirror-linenumber.brackets-git-gutter-hover {
+        cursor: pointer;
+        background-color: lighten(yellow, 35%);
     }
 }
 
