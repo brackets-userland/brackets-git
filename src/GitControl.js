@@ -10,6 +10,8 @@ define(function (require, exports, module) {
         ProjectManager  = brackets.getModule("project/ProjectManager"),
         Promise         = require("bluebird"),
         Utils           = require("src/Utils"),
+        Events          = require("./Events"),
+        EventEmitter    = require("./EventEmitter"),
         ErrorHandler    = require("./ErrorHandler"),
         ExpectedError   = require("./ExpectedError"),
         Preferences     = require("./Preferences");
@@ -348,6 +350,9 @@ define(function (require, exports, module) {
                     }
                     return 0;
                 });
+            }).then(function (results) {
+                EventEmitter.emit(Events.GIT_STATUS_RESULTS, results);
+                return results;
             });
         },
 
