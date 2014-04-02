@@ -85,9 +85,9 @@ define(function (require, exports, module) {
                     return resolve(buttonId === "ok");
                 }
                 if (buttonId === "ok") {
-                    return resolve(dialog.getElement().find("input").val().trim());
+                    resolve(dialog.getElement().find("input").val().trim());
                 } else {
-                    return reject(Strings.USER_ABORTED);
+                    reject(Strings.USER_ABORTED);
                 }
             });
         });
@@ -126,7 +126,8 @@ define(function (require, exports, module) {
             function finish(bool) {
                 // delete the temp file and resolve
                 fileEntry.unlink(function () {
-                    resolve(writeTestResults[folder] = bool);
+                    writeTestResults[folder] = bool;
+                    resolve(bool);
                 });
             }
 

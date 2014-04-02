@@ -34,6 +34,7 @@
     "devDependencies": {
         "grunt": "latest",
         "grunt-contrib-jshint": "latest",
+        "grunt-jslint": "latest",
         "grunt-lesslint": "latest"
     }
 }

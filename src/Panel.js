@@ -168,15 +168,6 @@ define(function (require, exports) {
             }
         });
 
-        // commit message handling
-        function switchCommitMessageElement() {
-            var findStr = "[name='commit-message']",
-                currentValue = $dialog.find(findStr + ":visible").val();
-            $dialog.find(findStr).toggle();
-            $dialog.find(findStr + ":visible").val(currentValue);
-            recalculateMessageLength();
-        }
-
         function getCommitMessageElement() {
             var r = $dialog.find("[name='commit-message']:visible");
             if (r.length !== 1) {
@@ -188,6 +179,24 @@ define(function (require, exports) {
                 }
             }
             return r;
+        }
+
+        // Add event to count characters in commit message
+        var recalculateMessageLength = function () {
+            var length = getCommitMessageElement().val().replace("\n", "").trim().length;
+            $commitMessageCount
+                .val(length)
+                .toggleClass("over50", length > 50 && length <= 100)
+                .toggleClass("over100", length > 100);
+        };
+
+        // commit message handling
+        function switchCommitMessageElement() {
+            var findStr = "[name='commit-message']",
+                currentValue = $dialog.find(findStr + ":visible").val();
+            $dialog.find(findStr).toggle();
+            $dialog.find(findStr + ":visible").val(currentValue);
+            recalculateMessageLength();
         }
 
         $dialog.find("button.primary").on("click", function (e) {
@@ -206,15 +215,6 @@ define(function (require, exports) {
 
         // Add focus to commit message input
         getCommitMessageElement().focus();
-
-        // Add event to count characters in commit message
-        var recalculateMessageLength = function () {
-            var length = getCommitMessageElement().val().replace("\n", "").trim().length;
-            $commitMessageCount
-                .val(length)
-                .toggleClass("over50", length > 50 && length <= 100)
-                .toggleClass("over100", length > 100);
-        };
 
         $dialog.find("[name='commit-message']")
             .on("keyup", recalculateMessageLength)

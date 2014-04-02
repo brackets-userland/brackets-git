@@ -181,91 +181,6 @@ define(function (require) {
         });
     }
 
-    function pushToRemote(remoteName) {
-        if (!remoteName) {
-            ErrorHandler.showError("No remote has been selected for push!");
-            return;
-        }
-
-        EventEmitter.emit(Events.PUSH_STARTED);
-        decideRemoteBranch(remoteName).spread(function (remoteBranch, newUpstream) {
-            var p;
-            if (newUpstream) {
-                p = Git.pushToNewUpstream(remoteName, remoteBranch);
-            } else {
-                p = Git.push(remoteName, remoteBranch);
-            }
-            return p.catch(function (err) {
-
-                if (!ErrorHandler.contains(err, "git remote add <name> <url>")) {
-                    throw err;
-                }
-
-                // this will ask user to enter an origin url for pushing
-                // it's pretty dumb because if he enters invalid url, he has to go to console again
-                // but our users are very wise so that definitely won't happen :)))
-
-                return new Promise(function (resolve, reject) {
-                    Utils.askQuestion(Strings.SET_ORIGIN_URL, _.escape(Strings.URL)).then(function (url) {
-                        Git.createRemote("origin", url)
-                            .then(function () {
-                                return Git.push("origin");
-                            })
-                            .then(resolve)
-                            .catch(reject);
-                    });
-                });
-
-            }).catch(function (err) {
-
-                throw err;
-                /* this shouldn't be needed anymore
-                if (typeof err !== "string") { throw err; }
-                var m = err.match(/git push --set-upstream (\S+) (\S+)/);
-                if (!m) { throw err; }
-                return Git.pushToNewUpstream(m[1], m[2]);
-                */
-
-            }).catch(function (err) {
-
-                var validFail = false;
-                if (ErrorHandler.contains(err, "rejected because")) {
-                    validFail = true;
-                }
-                if (validFail) {
-                    throw err;
-                } else {
-                    console.warn("Traditional push failed: " + err);
-                    return handleGitPushWithPassword(err, remoteName);
-                }
-
-            }).then(function (result) {
-
-                var template = [
-                    "<h3>{{flagDescription}}</h3>",
-                    "Info:",
-                    "Remote url - {{remoteUrl}}",
-                    "Local branch - {{from}}",
-                    "Remote branch - {{to}}",
-                    "Summary - {{summary}}",
-                    "<h4>Status - {{status}}</h4>"
-                ].join("<br>");
-
-                Dialogs.showModalDialog(
-                    DefaultDialogs.DIALOG_ID_INFO,
-                    Strings.GIT_PUSH_RESPONSE, // title
-                    Mustache.render(template, result) // message
-                );
-
-            }).catch(function (err) {
-                console.warn("Pushing to remote repositories with username / password is not fully supported! See github page/issues for details.");
-                ErrorHandler.showError(err, "Pushing to remote repository failed.");
-            });
-        }).finally(function () {
-            EventEmitter.emit(Events.PUSH_FINISHED);
-        });
-    }
-
     function handleGitPushWithPassword(originalPushError, remoteName) {
         if (!remoteName) {
             throw ErrorHandler.rewrapError(originalPushError, new Error("handleGitPushWithPassword remote argument is empty!"));
@@ -342,11 +257,94 @@ define(function (require) {
                         return Git.setConfig("remote." + remoteName + ".url", remoteUrl).then(function () {
                             return pushResponse;
                         });
-                    } else {
-                        return pushResponse;
                     }
+                    return pushResponse;
                 });
             });
+        });
+    }
+
+    function pushToRemote(remoteName) {
+        if (!remoteName) {
+            ErrorHandler.showError("No remote has been selected for push!");
+            return;
+        }
+
+        EventEmitter.emit(Events.PUSH_STARTED);
+        decideRemoteBranch(remoteName).spread(function (remoteBranch, newUpstream) {
+            var p;
+            if (newUpstream) {
+                p = Git.pushToNewUpstream(remoteName, remoteBranch);
+            } else {
+                p = Git.push(remoteName, remoteBranch);
+            }
+            return p.catch(function (err) {
+
+                if (!ErrorHandler.contains(err, "git remote add <name> <url>")) {
+                    throw err;
+                }
+
+                // this will ask user to enter an origin url for pushing
+                // it's pretty dumb because if he enters invalid url, he has to go to console again
+                // but our users are very wise so that definitely won't happen :)))
+
+                return new Promise(function (resolve, reject) {
+                    Utils.askQuestion(Strings.SET_ORIGIN_URL, _.escape(Strings.URL)).then(function (url) {
+                        Git.createRemote("origin", url)
+                            .then(function () {
+                                return Git.push("origin");
+                            })
+                            .then(resolve)
+                            .catch(reject);
+                    });
+                });
+
+            }).catch(function (err) {
+
+                throw err;
+                /* this shouldn't be needed anymore
+                if (typeof err !== "string") { throw err; }
+                var m = err.match(/git push --set-upstream (\S+) (\S+)/);
+                if (!m) { throw err; }
+                return Git.pushToNewUpstream(m[1], m[2]);
+                */
+
+            }).catch(function (err) {
+
+                var validFail = false;
+                if (ErrorHandler.contains(err, "rejected because")) {
+                    validFail = true;
+                }
+                if (validFail) {
+                    throw err;
+                }
+                console.warn("Traditional push failed: " + err);
+                return handleGitPushWithPassword(err, remoteName);
+
+            }).then(function (result) {
+
+                var template = [
+                    "<h3>{{flagDescription}}</h3>",
+                    "Info:",
+                    "Remote url - {{remoteUrl}}",
+                    "Local branch - {{from}}",
+                    "Remote branch - {{to}}",
+                    "Summary - {{summary}}",
+                    "<h4>Status - {{status}}</h4>"
+                ].join("<br>");
+
+                Dialogs.showModalDialog(
+                    DefaultDialogs.DIALOG_ID_INFO,
+                    Strings.GIT_PUSH_RESPONSE, // title
+                    Mustache.render(template, result) // message
+                );
+
+            }).catch(function (err) {
+                console.warn("Pushing to remote repositories with username / password is not fully supported! See github page/issues for details.");
+                ErrorHandler.showError(err, "Pushing to remote repository failed.");
+            });
+        }).finally(function () {
+            EventEmitter.emit(Events.PUSH_FINISHED);
         });
     }
 
