@@ -1,7 +1,3 @@
-/*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, console, define, Mustache, refresh */
-/*jshint -W018 */
-
 define(function (require, exports) {
     "use strict";
 
@@ -574,7 +570,7 @@ define(function (require, exports) {
         var noDoc = !DocumentManager.getCurrentDocument(),
             $historyList = $tableContainer.find(".git-history-list");
         if ($historyList.is(":visible") && $historyList.data("file")) {
-            handleToggleHistory(true, noDoc);
+            handleToggleHistory("FILE", noDoc);
         }
         gitPanel.$panel.find(".git-file-history").prop("disabled", noDoc);
     }
@@ -745,7 +741,7 @@ define(function (require, exports) {
     function renderHistory(file) {
         return Main.gitControl.getBranchName().then(function (branchName) {
             // Get the history commits of the current branch
-            return Main.gitControl.gitHistory(branchName, null, file && file.absolute).then(function (commits) {
+            return Main.gitControl.gitHistory(branchName, null, file ? file.absolute : null).then(function (commits) {
                 commits = convertCommitDates(commits);
 
                 var template = "<table class='git-history-list bottom-panel-table table table-striped table-condensed row-highlight'>";
@@ -758,8 +754,9 @@ define(function (require, exports) {
                     commits: commits
                 }));
 
-                $(".git-history-list", $tableContainer).data("file", (file && file.absolute) || "");
-                $(".git-history-list", $tableContainer).data("file-relative", (file && file.relative) || "");
+                $(".git-history-list", $tableContainer)
+                    .data("file", file ? file.absolute : null)
+                    .data("file-relative", file ? file.relative : null);
             });
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to get history");
@@ -843,7 +840,8 @@ define(function (require, exports) {
     }
 
     // Show or hide the history list on click of .history button
-    function handleToggleHistory(fileHistory, toggleVisibility) {
+    // newHistoryMode can be "FILE" or "GLOBAL"
+    function handleToggleHistory(newHistoryMode, toggleVisibility) {
         if (toggleVisibility === undefined) {
             toggleVisibility = true;
         }
@@ -851,14 +849,14 @@ define(function (require, exports) {
         var $panel = gitPanel.$panel,
             $historyList = $tableContainer.find(".git-history-list"),
             historyEnabled = !$historyList.is(":visible"),
-            currentMode = !!$historyList.data("file"),
+            currentHistoryMode = $historyList.data("file") ? "FILE" : "GLOBAL",
             file;
 
-        if (!toggleVisibility || (!historyEnabled && currentMode === !fileHistory)) {
+        if (!toggleVisibility || (!historyEnabled && currentHistoryMode !== newHistoryMode)) {
             historyEnabled = !historyEnabled;
         }
 
-        if (fileHistory) {
+        if (newHistoryMode === "FILE") {
             var doc = DocumentManager.getCurrentDocument();
             if (doc) {
                 file = {};
@@ -883,8 +881,8 @@ define(function (require, exports) {
         $tableContainer.find(".git-history-list").toggle(historyEnabled);
 
         // Toggle history button
-        var globalButtonActive = !!(historyEnabled && !fileHistory),
-            fileButtonActive = !!(historyEnabled && fileHistory);
+        var globalButtonActive = !!(historyEnabled && newHistoryMode === "GLOBAL"),
+            fileButtonActive = !!(historyEnabled && newHistoryMode === "FILE");
         $panel.find(".git-history").toggleClass("active", globalButtonActive)
             .attr("title", globalButtonActive ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
         $panel.find(".git-file-history").toggleClass("active", fileButtonActive)
@@ -1133,8 +1131,8 @@ define(function (require, exports) {
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
             .on("click", ".authors-selection", handleAuthorsSelection)
             .on("click", ".authors-file", handleAuthorsFile)
-            .on("click", ".git-file-history", function () { handleToggleHistory(true); })
-            .on("click", ".git-history", function () { handleToggleHistory(); })
+            .on("click", ".git-file-history", function () { handleToggleHistory("FILE"); })
+            .on("click", ".git-history", function () { handleToggleHistory("GLOBAL"); })
             .on("click", ".git-push", EventEmitter.emitFactory(Events.HANDLE_PUSH))
             .on("click", ".git-pull", EventEmitter.emitFactory(Events.HANDLE_PULL))
             .on("click", ".git-bug", ErrorHandler.reportBug)
