@@ -1,5 +1,6 @@
 /*jslint plusplus: true, vars: true, nomen: true */
 /*global $, brackets, console, define, Mustache, refresh */
+/*jshint -W018 */
 
 define(function (require, exports) {
     "use strict";
@@ -765,7 +766,8 @@ define(function (require, exports) {
         if ($tableContainer.find(".git-history-list").is(":visible")) {
             if (($tableContainer.prop("scrollHeight") - $tableContainer.scrollTop()) === $tableContainer.height()) {
                 return Main.gitControl.getBranchName().then(function (branchName) {
-                    return Main.gitControl.gitHistory(branchName, $tableContainer.find("tr.history-commit").length, $tableContainer.find(".git-history-list").data("file")).then(function (commits) {
+                    var file = $tableContainer.find(".git-history-list").data("file");
+                    return Main.gitControl.gitHistory(branchName, $tableContainer.find("tr.history-commit").length, file).then(function (commits) {
                         if (commits.length === 0) {
                             return;
                         }
@@ -844,7 +846,8 @@ define(function (require, exports) {
         var $panel = gitPanel.$panel,
             $historyList = $tableContainer.find(".git-history-list"),
             historyEnabled = !$historyList.is(":visible"),
-            currentMode = !!$historyList.data("file");
+            currentMode = !!$historyList.data("file"),
+            file;
 
         if (!toggleVisibility || (!historyEnabled && currentMode === !fileHistory)) {
             historyEnabled = !historyEnabled;
@@ -853,7 +856,7 @@ define(function (require, exports) {
         if (fileHistory) {
             var doc = DocumentManager.getCurrentDocument();
             if (doc) {
-                var file = {};
+                file = {};
                 file.absolute = doc.file.fullPath;
                 file.relative = ProjectManager.makeProjectRelativeIfPossible(file.absolute);
             }
@@ -878,9 +881,9 @@ define(function (require, exports) {
         var globalButtonActive = !!(historyEnabled && !fileHistory),
             fileButtonActive = !!(historyEnabled && fileHistory);
         $panel.find(".git-history").toggleClass("active", globalButtonActive)
-        .attr("title", globalButtonActive ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
+            .attr("title", globalButtonActive ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
         $panel.find(".git-file-history").toggleClass("active", fileButtonActive)
-        .attr("title", fileButtonActive ? Strings.TOOLTIP_HIDE_FILE_HISTORY : Strings.TOOLTIP_SHOW_FILE_HISTORY);
+            .attr("title", fileButtonActive ? Strings.TOOLTIP_HIDE_FILE_HISTORY : Strings.TOOLTIP_SHOW_FILE_HISTORY);
 
     }
 
