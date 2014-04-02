@@ -579,6 +579,11 @@ define(function (require, exports) {
         gitPanel.$panel.find(".git-file-history").prop("disabled", noDoc);
     }
 
+    EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
+        refreshCurrentFile();
+        handleFileChange();
+    });
+
     function shouldShow(fileObj) {
         if (showFileWhiteList.test(fileObj.name)) {
             return true;

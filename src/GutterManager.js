@@ -304,6 +304,9 @@ define(function (require, exports) {
         guttersEnabled = false;
         clearOld();
     });
+    EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
+        refresh();
+    });
 
     // API
     exports.refresh = refresh;

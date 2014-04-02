@@ -107,9 +107,7 @@ define(function (require, exports) {
             GutterManager.refresh();
         });
         $(DocumentManager).on("currentDocumentChange", function () {
-            Panel.refreshCurrentFile();
-            Panel.handleFileChange();
-            GutterManager.refresh();
+            EventEmitter.emit(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE);
         });
     }
 

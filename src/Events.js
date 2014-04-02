@@ -6,6 +6,9 @@ define(function (require, exports) {
      * Events should be structured by file who emits them.
      */
 
+    // Brackets events
+    exports.BRACKETS_CURRENT_DOCUMENT_CHANGE = "brackets.current.document.change";
+
     // Panel.js
     exports.GIT_ENABLED = "git.enabled";
     exports.GIT_DISABLED = "git.disabled";
