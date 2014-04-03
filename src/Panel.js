@@ -688,7 +688,11 @@ define(function (require, exports) {
 
     // Render the dialog with the modified files list and the diff commited
     function _showCommitDiffDialog(hashCommit, files, selectedFile) {
-        var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { hashCommit: hashCommit, files: files, Strings: Strings }),
+        var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, {
+                hashCommit: hashCommit,
+                files: files,
+                Strings: Strings
+            }),
             dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
             $dialog          = dialog.getElement(),
             refreshCallback  = function () {
@@ -784,7 +788,7 @@ define(function (require, exports) {
                 var extensionFunction = FileUtils.getSmartFileExtension || FileUtils.getFileExtension,
                     fileExtension = extensionFunction(file),
                     i = file.lastIndexOf("." + fileExtension),
-                    fileName = file.substring(0, i >= 0 ? i : file.length);
+                    fileName = file.substring(0, fileExtension && i >= 0 ? i : file.length);
                 return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
             });
             _showCommitDiffDialog(hash, list, $tableContainer.find(".git-history-list").data("file-relative"));
