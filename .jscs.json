@@ -27,7 +27,9 @@
 
     "disallowImplicitTypeConversion":               ["numeric", "binary", "string"],
     "requireCamelCaseOrUpperCaseIdentifiers":       true,
-    "disallowKeywords":                             ["with"],
+    "disallowKeywords":                             ["with", "debugger", "void", "class", "extends", "super", "enum", "import", "export",
+                                                     "implements", "private", "static", "interface", "protected", "yield", "let", "public",
+                                                     "package"],
     "disallowKeywordsOnNewLine":                    ["else"],
     "disallowMultipleLineStrings":                  true,
     "disallowMultipleLineBreaks":                   true,
