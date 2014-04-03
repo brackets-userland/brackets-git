@@ -178,6 +178,9 @@ define(function (require) {
                 file = {};
                 file.absolute = doc.file.fullPath;
                 file.relative = ProjectManager.makeProjectRelativeIfPossible(file.absolute);
+            } else {
+                // we want a file history but no file was found
+                historyEnabled = false;
             }
         }
 
@@ -197,8 +200,8 @@ define(function (require) {
         $tableContainer.find(".git-history-list").toggle(historyEnabled);
 
         // Toggle history button
-        var globalButtonActive = !!(historyEnabled && newHistoryMode === "GLOBAL"),
-            fileButtonActive = !!(historyEnabled && newHistoryMode === "FILE");
+        var globalButtonActive  = historyEnabled && newHistoryMode === "GLOBAL",
+            fileButtonActive    = historyEnabled && newHistoryMode === "FILE";
         $gitPanel.find(".git-history").toggleClass("active", globalButtonActive)
             .attr("title", globalButtonActive ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
         $gitPanel.find(".git-file-history").toggleClass("active", fileButtonActive)
