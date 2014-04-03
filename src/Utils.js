@@ -66,9 +66,13 @@ define(function (require, exports, module) {
         return new Promise(function (resolve, reject) {
             options = options || {};
 
+            if (!options.noescape) {
+                question = _.escape(question);
+            }
+
             var compiledTemplate = Mustache.render(questionDialogTemplate, {
                 title: title,
-                question: _.escape(question),
+                question: question,
                 stringInput: !options.booleanResponse && !options.password,
                 passwordInput: options.password,
                 defaultValue: options.defaultValue,

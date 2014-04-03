@@ -361,10 +361,6 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
-        gitReset: function () {
-            return this.executeCommand(this._git, ["reset"]);
-        },
-
         gitDiff: function (file) {
             var args = [
                 "diff",

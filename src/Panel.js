@@ -97,7 +97,7 @@ define(function (require, exports) {
     }
 
     function handleGitReset() {
-        return Main.gitControl.gitReset().then(function () {
+        return Git.resetIndex().then(function () {
             // Branch.refresh will refresh also Panel
             return Branch.refresh();
         }).catch(function (err) {
@@ -490,7 +490,7 @@ define(function (require, exports) {
         }
 
         // First reset staged files, then add selected files to the index.
-        Main.gitControl.gitReset().then(function () {
+        Git.resetIndex().then(function () {
             var lintResults = [],
                 promises = [];
             files.forEach(function (fileObj) {
@@ -679,7 +679,11 @@ define(function (require, exports) {
     function _showCommitDiffDialog(hashCommit, files, selectedFile) {
         var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, { hashCommit: hashCommit, files: files, Strings: Strings }),
             dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-            $dialog          = dialog.getElement();
+            $dialog          = dialog.getElement(),
+            refreshCallback  = function () {
+                dialog.close();
+                EventEmitter.emit(Events.REFRESH_ALL);
+            };
         _makeDialogBig($dialog);
 
         var firstFile = selectedFile || $dialog.find(".commit-files ul li:first-child").text().trim();
@@ -702,6 +706,62 @@ define(function (require, exports) {
                 $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
                 $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
             });
+        });
+        
+
+        
+        if (!Preferences.get("enableAdvancedFeatures")) {
+            $dialog.find(".git-advanced-features").hide();
+            return;
+        }
+        // advanced features follow
+
+        $dialog.find(".btn-checkout").on("click", function () {
+            var cmd = "git checkout " + hashCommit;
+            Utils.askQuestion(Strings.TITLE_CHECKOUT,
+                              Strings.DIALOG_CHECKOUT + "<br><br>" + cmd,
+                              {booleanResponse: true, noescape: true})
+                .then(function (response) {
+                    if (response === true) {
+                        return Git.checkout(hashCommit).then(refreshCallback);
+                    }
+                });
+        });
+
+        $dialog.find(".btn-reset-hard").on("click", function () {
+            var cmd = "git reset --hard " + hashCommit;
+            Utils.askQuestion(Strings.TITLE_RESET,
+                              Strings.DIALOG_RESET_HARD + "<br><br>" + cmd,
+                              {booleanResponse: true, noescape: true})
+                .then(function (response) {
+                    if (response === true) {
+                        return Git.reset("--hard", hashCommit).then(refreshCallback);
+                    }
+                });
+        });
+        
+        $dialog.find(".btn-reset-mixed").on("click", function () {
+            var cmd = "git reset --mixed " + hashCommit;
+            Utils.askQuestion(Strings.TITLE_RESET,
+                              Strings.DIALOG_RESET_MIXED + "<br><br>" + cmd,
+                              {booleanResponse: true, noescape: true})
+                .then(function (response) {
+                    if (response === true) {
+                        return Git.reset("--mixed", hashCommit).then(refreshCallback);
+                    }
+                });
+        });
+        
+        $dialog.find(".btn-reset-soft").on("click", function () {
+            var cmd = "git reset --soft " + hashCommit;
+            Utils.askQuestion(Strings.TITLE_RESET,
+                              Strings.DIALOG_RESET_SOFT + "<br><br>" + cmd,
+                              {booleanResponse: true, noescape: true})
+                .then(function (response) {
+                    if (response === true) {
+                        return Git.reset("--soft", hashCommit).then(refreshCallback);
+                    }
+                });
         });
     }
 

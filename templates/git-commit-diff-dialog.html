@@ -18,6 +18,18 @@
         <div style="clear: both;"></div>
     </div>
     <div class="modal-footer">
+        <button class="git-advanced-features btn-checkout btn left" title="{{Strings.TOOLTIP_CHECKOUT_COMMIT}}">{{Strings.BUTTON_CHECKOUT_COMMIT}}</button>
+        <div class="git-advanced-features dropup left">
+            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" title="{{Strings.TOOLTIP_RESET}}">
+                <span class="git-reset-label">{{Strings.BUTTON_RESET}}</span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu git-dropdown">
+                <li><a href="#" class="btn-reset-hard">{{Strings.BUTTON_RESET_HARD}}</a></li>
+                <li><a href="#" class="btn-reset-mixed">{{Strings.BUTTON_RESET_MIXED}}</a></li>
+                <li><a href="#" class="btn-reset-soft">{{Strings.BUTTON_RESET_SOFT}}</a></li>
+            </ul>
+        </div>
         <button data-button-id="close" class="dialog-button btn btn-80">{{Strings.BUTTON_CLOSE}}</button>
     </div>
 </div>

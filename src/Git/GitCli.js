@@ -18,15 +18,53 @@ define(function (require, exports) {
         Utils       = require("src/Utils");
 
     // Module variables
-    var _gitPath = null;
+    var _gitPath = null,
+        _gitQueue = [],
+        _gitQueueBusy = false;
 
     // Implementation
     function getGitPath() {
         return _gitPath || (Preferences.get("gitIsInSystemPath") ? "git" : Preferences.get("gitPath"));
     }
 
-    function git(args) {
-        return Cli.spawnCommand(getGitPath(), args);
+    function _processQueue() {
+        // do nothing if the queue is busy
+        if (_gitQueueBusy) {
+            return;
+        }
+        // do nothing if the queue is empty
+        if (_gitQueue.length === 0) {
+            _gitQueueBusy = false;
+            return;
+        }
+        // get item from queue
+        var item  = _gitQueue.shift(),
+            defer = item[0],
+            args  = item[1],
+            opts  = item[2];
+        // execute git command in a queue so no two commands are running at the same time
+        _gitQueueBusy = true;
+        Cli.spawnCommand(getGitPath(), args, opts)
+            .progressed(function () {
+                defer.progress.apply(defer, arguments);
+            })
+            .then(function (r) {
+                defer.resolve(r);
+            })
+            .catch(function (e) {
+                defer.reject(e);
+            })
+            .finally(function () {
+                _gitQueueBusy = false;
+                _processQueue();
+            });
+    }
+
+    function git(args, opts) {
+        var rv = Promise.defer();
+        _gitQueue.push([rv, args || [], opts || {}]);
+        _processQueue();
+        return rv.promise;
     }
 
     function fetchAllRemotes() {
@@ -238,7 +276,7 @@ define(function (require, exports) {
     function forceBranchDelete(branchName) {
         return git(["branch", "-D", branchName]);
     }
-
+    
     function getHistory(branch, skipCommits, file) {
         var separator = "_._",
             items  = ["hashShort", "hash", "author", "date", "message"],
@@ -316,6 +354,10 @@ define(function (require, exports) {
         if (hash) { args.push(hash); }
         return git(args);
     }
+    
+    function checkout(hash) {
+        return git(["checkout", hash]);
+    }
 
     // Public API
     exports.git                       = git;
@@ -342,5 +384,6 @@ define(function (require, exports) {
     exports.stage                     = stage;
     exports.commit                    = commit;
     exports.reset                     = reset;
+    exports.checkout                  = checkout;
 
 });
