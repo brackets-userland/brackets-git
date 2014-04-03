@@ -18,8 +18,9 @@ define(function (require) {
     var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html");
 
     // Module variables
-    var $gitPanel = $(null),
-        $tableContainer = $(null);
+    var $gitPanel       = $(null),
+        $tableContainer = $(null),
+        $historyList    = $(null);
 
     // Implementation
 
@@ -55,9 +56,14 @@ define(function (require) {
                     commits: commits
                 }));
 
-                $(".git-history-list", $tableContainer)
+                $historyList = $tableContainer.find(".git-history-list")
                     .data("file", file ? file.absolute : null)
                     .data("file-relative", file ? file.relative : null);
+
+                // file history always loads everything
+                if (file) {
+                    $historyList.attr("x-finished", "true");
+                }
             });
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to get history");
@@ -66,11 +72,14 @@ define(function (require) {
 
     // Load more rows in the history list on scroll
     function loadMoreHistory() {
-        if ($tableContainer.find(".git-history-list").is(":visible")) {
+        if ($historyList.is(":visible")) {
             if (($tableContainer.prop("scrollHeight") - $tableContainer.scrollTop()) === $tableContainer.height()) {
+                if ($historyList.attr("x-finished") === "true") {
+                    return;
+                }
                 return Git.getCurrentBranchName().then(function (branchName) {
                     var p,
-                        file = $tableContainer.find(".git-history-list").data("file-relative"),
+                        file = $historyList.data("file-relative"),
                         skipCount = $tableContainer.find("tr.history-commit").length;
                     if (file) {
                         p = Git.getFileHistory(file, branchName, skipCount);
@@ -78,7 +87,10 @@ define(function (require) {
                         p = Git.getHistory(branchName, skipCount);
                     }
                     return p.then(function (commits) {
-                        if (commits.length === 0) { return; }
+                        if (commits.length === 0) {
+                            $historyList.attr("x-finished", "true");
+                            return;
+                        }
                         commits = convertCommitDates(commits);
                         $tableContainer.find(".git-history-list > tbody")
                             .append(Mustache.render(gitPanelHistoryTemplate, {commits: commits}));
@@ -146,21 +158,17 @@ define(function (require) {
     }
 
     function handleFileChange() {
-        var currentDocument = DocumentManager.getCurrentDocument(),
-            $historyList    = $tableContainer.find(".git-history-list");
-
+        var currentDocument = DocumentManager.getCurrentDocument();
         if ($historyList.is(":visible") && $historyList.data("file")) {
             handleToggleHistory("FILE", currentDocument);
         }
-
         $gitPanel.find(".git-file-history").prop("disabled", !currentDocument);
     }
 
     // Show or hide the history list on click of .history button
     // newHistoryMode can be "FILE" or "GLOBAL"
     function handleToggleHistory(newHistoryMode, newDocument) {
-        var $historyList = $tableContainer.find(".git-history-list"),
-            historyEnabled = $historyList.is(":visible"),
+        var historyEnabled = $historyList.is(":visible"),
             currentFile = $historyList.data("file") || null,
             currentHistoryMode = historyEnabled ? (currentFile ? "FILE" : "GLOBAL") : "DISABLED",
             $spinner = $(".spinner", $gitPanel),
@@ -202,7 +210,7 @@ define(function (require) {
 
         // Toggle visibility of .git-edited-list and .git-history-list
         $tableContainer.find(".git-edited-list").toggle(!historyEnabled);
-        $tableContainer.find(".git-history-list").toggle(historyEnabled);
+        $historyList.toggle(historyEnabled);
 
         // Toggle history button
         var globalButtonActive  = historyEnabled && newHistoryMode === "GLOBAL",
