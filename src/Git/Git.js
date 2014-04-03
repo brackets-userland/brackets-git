@@ -66,12 +66,22 @@ define(function (require, exports) {
         return GitCli.getHistory(branch, skip, file);
     }
 
+    function resetIndex() {
+        return GitCli.reset();
+    }
+
+    function discardAllChanges() {
+        return GitCli.reset("--hard");
+    }
+
     // Public API
     exports.pushToNewUpstream = pushToNewUpstream;
     exports.getBranches       = getBranches;
     exports.getAllBranches    = getAllBranches;
     exports.getHistory        = getHistory;
     exports.getFileHistory    = getFileHistory;
+    exports.resetIndex        = resetIndex;
+    exports.discardAllChanges = discardAllChanges;
 
     Object.keys(GitCli).forEach(function (method) {
         if (!exports[method]) {

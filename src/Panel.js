@@ -850,9 +850,18 @@ define(function (require, exports) {
         });
     }
 
-    EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
-        gitPanel.$panel.find(".git-user-name").text(userName);
-    });
+    function discardAllChanges() {
+        return Utils.askQuestion(Strings.RESET_LOCAL_REPO, Strings.RESET_LOCAL_REPO_CONFIRM, { booleanResponse: true })
+            .then(function (response) {
+                if (response) {
+                    return Git.discardAllChanges().catch(function (err) {
+                        ErrorHandler.showError(err, "Reset of local repository failed");
+                    }).then(function () {
+                        refresh();
+                    });
+                }
+            });
+    }
 
     EventEmitter.on(Events.GIT_EMAIL_CHANGED, function (email) {
         gitPanel.$panel.find(".git-user-email").text(email);
@@ -888,7 +897,10 @@ define(function (require, exports) {
 
     function init() {
         // Add panel
-        var panelHtml = Mustache.render(gitPanelTemplate, Strings);
+        var panelHtml = Mustache.render(gitPanelTemplate, {
+            enableAdvancedFeatures: Preferences.get("enableAdvancedFeatures"),
+            S: Strings
+        });
         var $panelHtml = $(panelHtml);
         $panelHtml.find(".git-available").hide();
 
@@ -940,7 +952,17 @@ define(function (require, exports) {
             .on("click", ".change-user-name", changeUserName)
             .on("click", ".change-user-email", changeUserEmail)
             .on("click", ".undo-last-commit", undoLastLocalCommit)
-            .on("click", ".git-bash", openBashConsole);
+            .on("click", ".git-bash", openBashConsole)
+            .on("click", ".reset-all", discardAllChanges);
+
+        /* Put here event handlers for advanced actions
+        if (Preferences.get("enableAdvancedFeatures")) {
+
+            gitPanel.$panel
+                .on("click", target, function);
+
+         }
+         */
 
         // Attaching table handlers
         attachDefaultTableHandlers();
