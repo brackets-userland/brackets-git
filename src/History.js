@@ -151,34 +151,34 @@ define(function (require) {
     }
 
     function handleFileChange() {
-        var noDoc = !DocumentManager.getCurrentDocument(),
-            $historyList = $tableContainer.find(".git-history-list");
+        var currentDocument = DocumentManager.getCurrentDocument(),
+            $historyList    = $tableContainer.find(".git-history-list");
+
         if ($historyList.is(":visible") && $historyList.data("file")) {
-            handleToggleHistory("FILE", noDoc);
+            handleToggleHistory("FILE", currentDocument);
         }
-        $gitPanel.find(".git-file-history").prop("disabled", noDoc);
+
+        $gitPanel.find(".git-file-history").prop("disabled", !currentDocument);
     }
 
     // Show or hide the history list on click of .history button
     // newHistoryMode can be "FILE" or "GLOBAL"
-    function handleToggleHistory(newHistoryMode, toggleVisibility) {
-        if (toggleVisibility === undefined) {
-            toggleVisibility = true;
-        }
-
+    function handleToggleHistory(newHistoryMode, newDocument) {
         var $historyList = $tableContainer.find(".git-history-list"),
-            historyEnabled = !$historyList.is(":visible"),
-            currentHistoryMode = $historyList.data("file") ? "FILE" : "GLOBAL",
+            historyEnabled = $historyList.is(":visible"),
+            currentHistoryMode = historyEnabled ? ($historyList.data("file") ? "FILE" : "GLOBAL") : "DISABLED",
             file;
 
-        if (!toggleVisibility || (!historyEnabled && currentHistoryMode !== newHistoryMode)) {
+        if (currentHistoryMode !== newHistoryMode) {
+            // we are switching the modes so enable
+            historyEnabled = true;
+        } else if (!newDocument) {
+            // we are not changing the mode and we are not switching to a new document
             historyEnabled = !historyEnabled;
         }
 
-        // from this point historyEnabled should have a proper value
-
         if (historyEnabled && newHistoryMode === "FILE") {
-            var doc = DocumentManager.getCurrentDocument();
+            var doc = newDocument ? newDocument : DocumentManager.getCurrentDocument();
             if (doc) {
                 file = {};
                 file.absolute = doc.file.fullPath;
