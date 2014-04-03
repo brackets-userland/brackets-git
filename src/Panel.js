@@ -97,7 +97,7 @@ define(function (require, exports) {
     }
 
     function handleGitReset() {
-        return Main.gitControl.gitReset().then(function () {
+        return Git.resetIndex().then(function () {
             // Branch.refresh will refresh also Panel
             return Branch.refresh();
         }).catch(function (err) {
@@ -490,7 +490,7 @@ define(function (require, exports) {
         }
 
         // First reset staged files, then add selected files to the index.
-        Main.gitControl.gitReset().then(function () {
+        Git.resetIndex().then(function () {
             var lintResults = [],
                 promises = [];
             files.forEach(function (fileObj) {
@@ -682,9 +682,8 @@ define(function (require, exports) {
             $dialog          = dialog.getElement(),
             refreshCallback  = function () {
                 dialog.close();
-                Branch.refresh();
-            },
-            git              = require("./Git/Git");
+                EventEmitter.emit(Events.REFRESH_ALL);
+            };
         _makeDialogBig($dialog);
 
         var firstFile = selectedFile || $dialog.find(".commit-files ul li:first-child").text().trim();
@@ -709,40 +708,60 @@ define(function (require, exports) {
             });
         });
         
-        $dialog.find(".btn-checkout").on("click", function () {
-            Utils.askQuestion(Strings.TITLE_CHECKOUT, Strings.DIALOG_CHECKOUT, {booleanResponse: true}).then(function (ac) {
-                if (ac) {
-                    return git.checkout(hashCommit).then(refreshCallback);
-                }
-            });
-        });
+
         
         if (!Preferences.get("enableAdvancedFeatures")) {
-            $dialog.find(".git-advance-mode").hide();
+            $dialog.find(".git-advanced-features").hide();
+            return;
         }
+        // advanced features follow
+
+        $dialog.find(".btn-checkout").on("click", function () {
+            var cmd = "git checkout " + hashCommit;
+            Utils.askQuestion(Strings.TITLE_CHECKOUT,
+                              Strings.DIALOG_CHECKOUT + "<br><br>" + cmd,
+                              {booleanResponse: true, noescape: true})
+                .then(function (response) {
+                    if (response === true) {
+                        return Git.checkout(hashCommit).then(refreshCallback);
+                    }
+                });
+        });
 
         $dialog.find(".btn-reset-hard").on("click", function () {
-            Utils.askQuestion(Strings.TITLE_RESET_HARD, Strings.DIALOG_RESET_HARD, {booleanResponse: true}).then(function () {
-                if (ac) {
-                    return git.reset(hashCommit, "hard").then(refreshCallback);
-                }
-            });
+            var cmd = "git reset --hard " + hashCommit;
+            Utils.askQuestion(Strings.TITLE_RESET,
+                              Strings.DIALOG_RESET_HARD + "<br><br>" + cmd,
+                              {booleanResponse: true, noescape: true})
+                .then(function (response) {
+                    if (response === true) {
+                        return Git.reset("--hard", hashCommit).then(refreshCallback);
+                    }
+                });
         });
         
         $dialog.find(".btn-reset-mixed").on("click", function () {
-            Utils.askQuestion(Strings.TITLE_RESET_MIXED, Strings.DIALOG_RESET_MIXED, {booleanResponse: true}).then(function () {
-                if (ac) {
-                    return git.reset(hashCommit, "mixed").then(refreshCallback);
-                }
-            });
+            var cmd = "git reset --mixed " + hashCommit;
+            Utils.askQuestion(Strings.TITLE_RESET,
+                              Strings.DIALOG_RESET_MIXED + "<br><br>" + cmd,
+                              {booleanResponse: true, noescape: true})
+                .then(function (response) {
+                    if (response === true) {
+                        return Git.reset("--mixed", hashCommit).then(refreshCallback);
+                    }
+                });
         });
         
         $dialog.find(".btn-reset-soft").on("click", function () {
-            Utils.askQuestion(Strings.TITLE_RESET_SOFT, Strings.DIALOG_RESET_SOFT, {booleanResponse: true}).then(function (ac) {
-                if (ac) {
-                    return git.reset(hashCommit, "soft").then(refreshCallback);
-                }
-            });
+            var cmd = "git reset --soft " + hashCommit;
+            Utils.askQuestion(Strings.TITLE_RESET,
+                              Strings.DIALOG_RESET_SOFT + "<br><br>" + cmd,
+                              {booleanResponse: true, noescape: true})
+                .then(function (response) {
+                    if (response === true) {
+                        return Git.reset("--soft", hashCommit).then(refreshCallback);
+                    }
+                });
         });
     }
 
