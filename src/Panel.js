@@ -386,7 +386,11 @@ define(function (require, exports) {
                 var fileEntry = FileSystem.getFileForPath(fullPath);
                 return FileUtils.readAsText(fileEntry).then(function (text) {
                     // remove BOM - \ufeff
-                    var lines = text.replace(/\ufeff/, "").split("\n");
+                    text = text.replace(/\ufeff/g, "");
+                    // normalizes line endings // TODO: as a preference only
+                    if (false) { text = text.replace(/\r\n/g, "\n"); }
+                    // process lines
+                    var lines = text.split("\n");
 
                     if (lineNumbers) {
                         lineNumbers.forEach(function (lineNumber) {
