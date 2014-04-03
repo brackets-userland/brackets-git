@@ -276,7 +276,7 @@ define(function (require, exports) {
     function forceBranchDelete(branchName) {
         return git(["branch", "-D", branchName]);
     }
-    
+
     function getHistory(branch, skipCommits, file) {
         var separator = "_._",
             items  = ["hashShort", "hash", "author", "date", "message"],
@@ -356,7 +356,7 @@ define(function (require, exports) {
         if (hash) { args.push(hash); }
         return git(args);
     }
-    
+
     function checkout(hash) {
         return git(["checkout", hash]);
     }

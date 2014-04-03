@@ -1,5 +1,3 @@
-/*global require, exports */
-
 (function () {
     "use strict";
 

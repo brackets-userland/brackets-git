@@ -88,5 +88,4 @@ define(function (require, exports) {
             exports[method] = GitCli[method];
         }
     });
-
 });

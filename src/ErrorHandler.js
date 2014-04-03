@@ -1,6 +1,3 @@
-/*jslint plusplus: true, vars: true, nomen: true */
-/*global brackets, define, Mustache */
-
 define(function (require, exports) {
     "use strict";
 

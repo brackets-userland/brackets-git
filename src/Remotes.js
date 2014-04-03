@@ -353,28 +353,23 @@ define(function (require) {
         initVariables();
         refreshRemotesPicker();
     });
-
     EventEmitter.on(Events.HANDLE_REMOTE_PICK, function (event) {
         var $remote     = $(event.target).closest(".remote-name"),
             remoteName  = $remote.data("remote-name"),
             type        = $remote.data("type");
         selectRemote(remoteName, type);
     });
-
     EventEmitter.on(Events.HANDLE_REMOTE_CREATE, function () {
         handleRemoteCreation();
     });
-
     EventEmitter.on(Events.HANDLE_REMOTE_DELETE, function (event) {
         var remoteName = $(event.target).closest(".remote-name").data("remote-name");
         deleteRemote(remoteName);
     });
-
     EventEmitter.on(Events.HANDLE_PULL, function () {
         var remoteName = $selectedRemote.data("remote");
         pullFromRemote(remoteName);
     });
-
     EventEmitter.on(Events.HANDLE_PUSH, function () {
         var remoteName = $selectedRemote.data("remote");
         pushToRemote(remoteName);

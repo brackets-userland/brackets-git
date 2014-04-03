@@ -226,5 +226,4 @@ define(function (require) {
     EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
         handleFileChange();
     });
-
 });

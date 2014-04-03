@@ -42,5 +42,4 @@ define(function (require, exports) {
     exports.PUSH_STARTED = "push.started";
     exports.PUSH_FINISHED = "push.finished";
     exports.REMOTES_REFRESH_PICKER = "remotes.refresh.picker";
-
 });

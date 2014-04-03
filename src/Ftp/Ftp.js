@@ -18,7 +18,7 @@ define(function (require) {
     var ftpScopesTemplate = require("text!src/Ftp/templates/remotes-picker.html"),
         $gitPanel = null,
         $remotesDropdown = null;
-    
+
     // Implementation
     var attachEvents = _.once(function () {
         $gitPanel
@@ -27,7 +27,7 @@ define(function (require) {
             .on("click", ".gitftp-init-remote", function () { handleGitFtpInitScope($(this)); })
             .on("click", ".gitftp-push", handleGitFtpPush);
     });
-    
+
     function initVariables() {
         $gitPanel = $("#git-panel");
         $remotesDropdown = $gitPanel.find(".git-remotes-dropdown");
@@ -52,12 +52,12 @@ define(function (require) {
                 .removeClass("btn-loading");
         });
     }
-    
+
     function handleGitFtpScopeCreation() {
         $gitPanel.find(".git-remotes")
             .addClass("btn-loading")
             .prop("disabled", true);
-        
+
         return Utils.askQuestion(Strings.CREATE_GITFTP_NEW_SCOPE, Strings.ENTER_GITFTP_SCOPE_NAME)
             .then(function (name) {
                 return Utils.askQuestion(
@@ -101,12 +101,12 @@ define(function (require) {
                     .prop("disabled", false);
             });
     }
-    
+
     function handleGitFtpScopeRemove($this) {
         $gitPanel.find(".git-remotes")
             .addClass("btn-loading")
             .prop("disabled", true);
-        
+
         var $selectedElement = $this.closest(".remote-name"),
             $currentScope = $gitPanel.find(".git-remote-selected"),
             scopeName = $selectedElement.data("remote-name");
@@ -131,7 +131,7 @@ define(function (require) {
                 .prop("disabled", false);
         });
     }
-    
+
     function handleGitFtpInitScope($this) {
         $gitPanel.find(".git-remotes")
             .addClass("btn-loading")
@@ -185,6 +185,5 @@ define(function (require) {
     }).catch(function (err) {
         ErrorHandler.showError(err, "Git-FTP seems not installed in your system, please install it and restart Brackets.");
     });
-
 
 });

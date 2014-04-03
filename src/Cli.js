@@ -114,8 +114,11 @@ define(function (require, exports, module) {
 
         // it is possible to set a custom working directory in options
         // otherwise the current project root is used to execute commands
-        if (opts.cwd) { opts.customCwd = true; }
-        else { opts.cwd = Utils.getProjectRoot(); }
+        if (opts.cwd) {
+            opts.customCwd = true;
+        } else {
+            opts.cwd = Utils.getProjectRoot();
+        }
 
         // convert paths like c:/foo/bar to c:\foo\bar on windows
         opts.cwd = normalizePathForOs(opts.cwd);

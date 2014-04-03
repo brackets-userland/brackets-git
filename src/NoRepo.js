@@ -80,8 +80,7 @@ define(function (require) {
                             EventEmitter.emit(Events.REFRESH_ALL);
                         });
                 });
-            }
-            else {
+            } else {
                 var err = new ExpectedError("Project root is not empty, be sure you have deleted hidden files");
                 ErrorHandler.showError(err, "Cloning remote repository failed!");
             }

@@ -162,4 +162,5 @@ define(function (require, exports, module) {
     exports.showOutput            = showOutput;
     exports.isProjectRootWritable = isProjectRootWritable;
     exports.pathExists            = pathExists;
+
 });

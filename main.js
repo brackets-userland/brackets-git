@@ -54,4 +54,5 @@ define(function (require, exports, module) {
     AppInit.appReady(function () {
         Main.init();
     });
+
 });

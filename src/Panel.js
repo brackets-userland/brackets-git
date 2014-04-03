@@ -722,9 +722,7 @@ define(function (require, exports) {
                 $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
             });
         });
-        
 
-        
         if (!Preferences.get("enableAdvancedFeatures")) {
             $dialog.find(".git-advanced-features").hide();
             return;
@@ -754,7 +752,7 @@ define(function (require, exports) {
                     }
                 });
         });
-        
+
         $dialog.find(".btn-reset-mixed").on("click", function () {
             var cmd = "git reset --mixed " + hashCommit;
             Utils.askQuestion(Strings.TITLE_RESET,
@@ -766,7 +764,7 @@ define(function (require, exports) {
                     }
                 });
         });
-        
+
         $dialog.find(".btn-reset-soft").on("click", function () {
             var cmd = "git reset --soft " + hashCommit;
             Utils.askQuestion(Strings.TITLE_RESET,
@@ -1134,4 +1132,5 @@ define(function (require, exports) {
     exports.enable = enable;
     exports.disable = disable;
     exports.getPanel = getPanel;
+
 });

@@ -13,7 +13,6 @@ define(function (require, exports) {
         Preferences     = require("./Preferences"),
         Utils           = require("src/Utils");
 
-
     var guttersEnabled = true,
         cm = null,
         results = null,
@@ -252,7 +251,6 @@ define(function (require, exports) {
         }
     }
 
-
     var _timer;
     var $line = $(),
         $gitGutterLines = $();
@@ -309,5 +307,4 @@ define(function (require, exports) {
     exports.refresh = refresh;
     exports.goToPrev = goToPrev;
     exports.goToNext = goToNext;
-
 });

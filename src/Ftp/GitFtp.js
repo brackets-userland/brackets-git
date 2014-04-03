@@ -10,7 +10,7 @@ define(function (require, exports) {
 
     // Module variables
     var git = GitCli.git;
-    
+
     // Implementation
     function isAvailable() {
         return git(["ftp"]).then(function () {
@@ -19,7 +19,7 @@ define(function (require, exports) {
             return err;
         });
     }
-    
+
     function init(scope) {
         return git(["ftp", "init", "--scope", scope]);
     }
@@ -47,7 +47,7 @@ define(function (require, exports) {
         var uri = new URI(url),
             username = uri.username(),
             password = uri.password();
-        
+
         uri.username("");
         uri.password("");
         url = uri.toString();

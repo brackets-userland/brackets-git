@@ -1,5 +1,4 @@
 var ProcessUtils = require("./ProcessUtils");
-
 var pid = 5064;
 
 ProcessUtils.getChildrenOfPid(pid, function (err, children) {

@@ -38,8 +38,8 @@ define(function (require, exports) {
             };
         });
         var templateVars  = {
-            branchList : _.filter(branches, function (o) { return !o.currentBranch; }),
-            Strings     : Strings
+            branchList: _.filter(branches, function (o) { return !o.currentBranch; }),
+            Strings:    Strings
         };
         return Mustache.render(branchesMenuTemplate, templateVars);
     }
@@ -356,4 +356,5 @@ define(function (require, exports) {
 
     exports.init    = init;
     exports.refresh = refresh;
+
 });

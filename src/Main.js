@@ -33,7 +33,7 @@ define(function (require, exports) {
         Panel.init(gitControl);
         Branch.init(gitControl);
         CloseNotModified.init(gitControl);
-        
+
         // Attach events
         $icon.on("click", Panel.toggle);
 
@@ -254,9 +254,11 @@ define(function (require, exports) {
     EventEmitter.on(Events.GIT_ENABLED, function () {
         refreshIgnoreEntries();
     });
+
     EventEmitter.on(Events.GIT_DISABLED, function () {
         _ignoreEntries = [];
     });
+
     EventEmitter.on(Events.GIT_STATUS_RESULTS, function (files) {
         var projectRoot = Utils.getProjectRoot();
         currentlyModifiedFiles = files.map(function (entry) {
@@ -264,9 +266,11 @@ define(function (require, exports) {
         });
         refreshProjectFiles();
     });
+
     EventEmitter.on(Events.HANDLE_PROJECT_REFRESH, function () {
         $(ProjectManager).triggerHandler("projectRefresh");
     });
+
     $("#open-files-container").on("contentChanged", function () {
         refreshProjectFiles();
     });
@@ -274,4 +278,5 @@ define(function (require, exports) {
     // API
     exports.$icon = $icon;
     exports.init = init;
+
 });

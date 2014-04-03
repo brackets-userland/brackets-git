@@ -1,5 +1,4 @@
 /*jshint maxlen:false */
-
 define({
     ADVANCED_FEATURES_WARNING:          "This features are not recommended for basic Git users as they may cause you to lose code that has been already commited if used inproperly. Use with caution.",
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Add endline at the end of file",

@@ -55,6 +55,6 @@ module.exports = function (grunt) {
     grunt.registerTask("jslint-test", ["jslint"]);
     grunt.registerTask("jshint-test", ["jshint"]);
     grunt.registerTask("less-test", ["lesslint"]);
-    grunt.registerTask("test", ["jshint", "jscs"]); // for travis
+    grunt.registerTask("test", ["jshint", "jscs"]); // for Travis
 
 };

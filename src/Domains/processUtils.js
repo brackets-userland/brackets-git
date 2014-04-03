@@ -1,5 +1,4 @@
 var exec  = require("child_process").exec;
-
 var isWin = /^win/.test(process.platform);
 var noop = function () {};
 
