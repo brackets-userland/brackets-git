@@ -1,6 +1,7 @@
 /*jshint maxlen:false */
 
 define({
+    ADVANCED_FEATURES_WARNING:          "This features are not recommended for basic Git users as they may cause you to lose code that has been already commited if used inproperly. Use with caution.",
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Add endline at the end of file",
     ADD_TO_GITIGNORE:                   "Add to .gitignore",
     AGREE_TO_STORE_PASSWORDS:           "I agree that password are stored in plain text on my computer",
@@ -66,7 +67,7 @@ define({
     EXTENSION_WAS_UPDATED_TITLE:        "The extension was updated to {0}",
     ENTER_NEW_USER_NAME:                "Enter username",
     ENTER_NEW_USER_EMAIL:               "Enter email",
-    ENABLE_DANGEROUS_FEATURES:          "Enable dangerous features",
+    ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
     FEATURES:                           "Features",
     FILE_DELETED:                       "Deleted",
     FILE_MODIFIED:                      "Modified",
@@ -115,7 +116,7 @@ define({
     Q_UNDO_CHANGES:                     "Reset changes to file <span class='dialog-filename'>{0}</span>?",
     REMOVE_FROM_GITIGNORE:              "Remove from .gitignore",
     RESTART:                            "Restart",
-    RESET_LOCAL_REPO:                   "Reset local repository",
+    RESET_LOCAL_REPO:                   "Discard all changes since last commit",
     RESET_LOCAL_REPO_CONFIRM:           "Do you wish to discard all changes done since last commit? This action can't be reverted.",
     SAVE_PASSWORD_QUESTION:             "Save username/password?",
     SET_ORIGIN_URL:                     "Set origin URL",

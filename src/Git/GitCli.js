@@ -310,7 +310,7 @@ define(function (require, exports) {
             });
         }
     }
-    
+
     function reset(type, hash) {
         var args = ["reset", type || "--mixed"]; // mixed is the default action
         if (hash) { args.push(hash); }
@@ -342,5 +342,5 @@ define(function (require, exports) {
     exports.stage                     = stage;
     exports.commit                    = commit;
     exports.reset                     = reset;
-    
+
 });

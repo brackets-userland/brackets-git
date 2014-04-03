@@ -65,7 +65,7 @@ define(function (require, exports) {
     function getFileHistory(file, branch, skip) {
         return GitCli.getHistory(branch, skip, file);
     }
-        
+
     function resetIndex() {
         return GitCli.reset();
     }

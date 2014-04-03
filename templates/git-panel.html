@@ -4,57 +4,57 @@
         <!-- on left -->
         <input type="checkbox" class="check-all git-available" />
         <div class="btn-group git-available">
-            <button title="{{TOOLTIP_COMMIT}}" class="btn small git-commit" disabled><i class="octicon octicon-git-commit"></i><span>{{BUTTON_COMMIT}}</span></button>
+            <button title="{{S.TOOLTIP_COMMIT}}" class="btn small git-commit" disabled><i class="octicon octicon-git-commit"></i><span>{{S.BUTTON_COMMIT}}</span></button>
         </div>
         <div class="btn-group git-available">
-            <button title="{{GOTO_PREVIOUS_GIT_CHANGE}}" class="btn small git-prev-gutter"><i class="octicon octicon-arrow-up"></i></button>
-            <button title="{{GOTO_NEXT_GIT_CHANGE}}" class="btn small git-next-gutter"><i class="octicon octicon-arrow-down"></i></button>
+            <button title="{{S.GOTO_PREVIOUS_GIT_CHANGE}}" class="btn small git-prev-gutter"><i class="octicon octicon-arrow-up"></i></button>
+            <button title="{{S.GOTO_NEXT_GIT_CHANGE}}" class="btn small git-next-gutter"><i class="octicon octicon-arrow-down"></i></button>
         </div>
         <div class="btn-group git-available">
-            <button title="{{TOOLTIP_REFRESH_PANEL}}" class="btn small git-reset git-icon"><i class="octicon octicon-sync"></i></button>
+            <button title="{{S.TOOLTIP_REFRESH_PANEL}}" class="btn small git-reset git-icon"><i class="octicon octicon-sync"></i></button>
             <div class="btn-group dropup">
-                <button type="button" class="git-more btn small dropdown-toggle" data-toggle="dropdown" title="{{TOOLTIP_MORE}}">
+                <button type="button" class="git-more btn small dropdown-toggle" data-toggle="dropdown" title="{{S.TOOLTIP_MORE}}">
                     <i class="octicon octicon-three-bars"></i>
                 </button>
                 <ul class="dropdown-menu">
-                    <!-- {{#enableDangerousFeatures}}<li class="dangerous-feature"><a class="action" href="#">{{STRING}}</a></li>{{/enableDangerousFeatures}} -->
-                    <li><a class="reset-all" href="#">{{RESET_LOCAL_REPO}}</a></li>
-                    <li><a class="undo-last-commit" href="#">{{UNDO_LAST_LOCAL_COMMIT}}</a></li>
+                    <!-- {{#enableAdvancedFeatures}}<li class="advanced-feature"><a class="action" href="#">{{STRING}}</a></li>{{/enableAdvancedFeatures}} -->
+                    <li><a class="reset-all" href="#">{{S.RESET_LOCAL_REPO}}</a></li>
+                    <li><a class="undo-last-commit" href="#">{{S.UNDO_LAST_LOCAL_COMMIT}}</a></li>
                     <li class="divider"></li>
-                    <li><a class="change-user-name" href="#">{{CHANGE_USER_NAME}} (<span class="git-user-name"></span>)</a></li>
-                    <li><a class="change-user-email" href="#">{{CHANGE_USER_EMAIL}} (<span class="git-user-email"></span>)</a></li>
+                    <li><a class="change-user-name" href="#">{{S.CHANGE_USER_NAME}} (<span class="git-user-name"></span>)</a></li>
+                    <li><a class="change-user-email" href="#">{{S.CHANGE_USER_EMAIL}} (<span class="git-user-email"></span>)</a></li>
                     <li class="divider"></li>
-                    <li><a class="authors-selection" href="#">{{VIEW_AUTHORS_SELECTION}}</a></li>
-                    <li><a class="authors-file" href="#">{{VIEW_AUTHORS_FILE}}</a></li>
+                    <li><a class="authors-selection" href="#">{{S.VIEW_AUTHORS_SELECTION}}</a></li>
+                    <li><a class="authors-file" href="#">{{S.VIEW_AUTHORS_FILE}}</a></li>
                     <li class="divider"></li>
-                    <li><a class="git-toggle-untracked" href="#">{{HIDE_UNTRACKED}}</a></li>
+                    <li><a class="git-toggle-untracked" href="#">{{S.HIDE_UNTRACKED}}</a></li>
                 </ul>
             </div>
         </div>
         <div class="btn-group git-available">
-            <button title="{{TOOLTIP_SHOW_HISTORY}}" class="btn small git-history"><i class="octicon octicon-history"></i></button>
-            <button title="{{TOOLTIP_SHOW_FILE_HISTORY}}" class="btn small git-file-history"><i class="octicon octicon-file-text"></i></button>
+            <button title="{{S.TOOLTIP_SHOW_HISTORY}}" class="btn small git-history"><i class="octicon octicon-history"></i></button>
+            <button title="{{S.TOOLTIP_SHOW_FILE_HISTORY}}" class="btn small git-file-history"><i class="octicon octicon-file-text"></i></button>
         </div>
         <div class="btn-group git-not-available">
-          <button title="{{TOOLTIP_INIT}}" class="btn small git-init"><i class="octicon octicon-repo-create"></i><span>{{BUTTON_INIT}}</span></button>
-          <button title="{{TOOLTIP_CLONE}}" class="btn small git-clone"><i class="octicon octicon-repo-clone"></i><span>{{BUTTON_CLONE}}</span></button>
+          <button title="{{S.TOOLTIP_INIT}}" class="btn small git-init"><i class="octicon octicon-repo-create"></i><span>{{S.BUTTON_INIT}}</span></button>
+          <button title="{{S.TOOLTIP_CLONE}}" class="btn small git-clone"><i class="octicon octicon-repo-clone"></i><span>{{S.BUTTON_CLONE}}</span></button>
         </div>
 
         <!-- on right -->
         <div class="git-right-icons">
             <div class="btn-group git-available dropup">
-                <button type="button" class="git-remotes btn small dropdown-toggle" data-toggle="dropdown" title="{{TOOLTIP_PICK_REMOTE}}">
+                <button type="button" class="git-remotes btn small dropdown-toggle" data-toggle="dropdown" title="{{S.TOOLTIP_PICK_REMOTE}}">
                     <span class="caret"></span>
                     <span class="git-selected-remote">&mdash;</span>
                 </button>
                 <ul class="dropdown-menu git-remotes-dropdown"></ul>
-                <button title="{{TOOLTIP_PULL}}" class="btn small git-pull"><i class="octicon octicon-repo-pull"></i></button>
-                <button title="{{TOOLTIP_PUSH}}" class="btn small git-push"><i class="octicon octicon-repo-push"></i></button>
+                <button title="{{S.TOOLTIP_PULL}}" class="btn small git-pull"><i class="octicon octicon-repo-pull"></i></button>
+                <button title="{{S.TOOLTIP_PUSH}}" class="btn small git-push"><i class="octicon octicon-repo-push"></i></button>
             </div>
             <div class="btn-group">
-                <button title="{{TOOLTIP_OPEN_BASH}}" class="btn small git-bash"><i class="octicon octicon-terminal"></i></button>
-                <button title="{{GIT_SETTINGS}}" class="btn small git-settings"><i class="octicon octicon-settings"></i></button>
-                <button title="{{TOOLTIP_BUG}}" class="btn small git-bug"><i class="octicon octicon-bug"></i></button>
+                <button title="{{S.TOOLTIP_OPEN_BASH}}" class="btn small git-bash"><i class="octicon octicon-terminal"></i></button>
+                <button title="{{S.GIT_SETTINGS}}" class="btn small git-settings"><i class="octicon octicon-settings"></i></button>
+                <button title="{{S.TOOLTIP_BUG}}" class="btn small git-bug"><i class="octicon octicon-bug"></i></button>
             </div>
         </div>
         <a href="#" class="close">&times;</a>
