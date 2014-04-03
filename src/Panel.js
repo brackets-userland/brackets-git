@@ -385,7 +385,8 @@ define(function (require, exports) {
                 // clean the file
                 var fileEntry = FileSystem.getFileForPath(fullPath);
                 return FileUtils.readAsText(fileEntry).then(function (text) {
-                    var lines = text.split("\n");
+                    // remove BOM - \ufeff
+                    var lines = text.replace(/\ufeff/, "").split("\n");
 
                     if (lineNumbers) {
                         lineNumbers.forEach(function (lineNumber) {

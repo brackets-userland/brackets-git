@@ -12,6 +12,7 @@
 * Fixed some console errors when not working in a Git repository.
 * Modified files are now also marked in working files list.
 * Fixed a bug when an empty repository is opened (without master branch)
+* Whitespace cleanup now removes byte order mark.
 * History can now also be viewed for a particular file by [Marcel Gerber](https://github.com/SAPlayer)
 * Feature to discard all changes since last commit by [Fez Vrasta](https://github.com/FezVrasta)
 * Feature to checkout a commit in history, or reset to a commit in history by [Zhi](https://github.com/yfwz100)
