@@ -283,12 +283,12 @@ define(function (require, exports) {
             format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
 
         var args = ["log", "-100"];
-        // do not use skip when following a file, always load everything
-        if (!file && skipCommits) { args.push("--skip=" + skipCommits); }
+        if (skipCommits) { args.push("--skip=" + skipCommits); }
         args.push("--format=" + format);
         args.push(branch);
-        // follow has a bug - it ignores skip parameter
-        if (file) { args.push("--follow", file); }
+        // follow is too buggy - do not use
+        // if (file) { args.push("--follow"); }
+        if (file) { args.push(file); }
 
         return git(args).then(function (stdout) {
             return !stdout ? [] : stdout.split("\n").map(function (line) {

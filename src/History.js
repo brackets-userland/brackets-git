@@ -59,11 +59,6 @@ define(function (require) {
                 $historyList = $tableContainer.find(".git-history-list")
                     .data("file", file ? file.absolute : null)
                     .data("file-relative", file ? file.relative : null);
-
-                // file history always loads everything
-                if (file) {
-                    $historyList.attr("x-finished", "true");
-                }
             });
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to get history");
