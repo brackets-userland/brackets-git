@@ -161,7 +161,9 @@ define(function (require) {
     function handleToggleHistory(newHistoryMode, newDocument) {
         var $historyList = $tableContainer.find(".git-history-list"),
             historyEnabled = $historyList.is(":visible"),
-            currentHistoryMode = historyEnabled ? ($historyList.data("file") ? "FILE" : "GLOBAL") : "DISABLED",
+            currentFile = $historyList.data("file") || null,
+            currentHistoryMode = historyEnabled ? (currentFile ? "FILE" : "GLOBAL") : "DISABLED",
+            $spinner = $(".spinner", $gitPanel),
             file;
 
         if (currentHistoryMode !== newHistoryMode) {
@@ -185,11 +187,14 @@ define(function (require) {
         }
 
         // Render .git-history-list if is not already generated or if the viewed file for file history has changed
-        if (historyEnabled && ($historyList.length === 0 || $historyList.data("file") !== ((file && file.absolute) || ""))) {
+        if (historyEnabled && ($historyList.length === 0 || currentFile !== (file ? file.absolute : null))) {
             if ($historyList.length > 0) {
                 $historyList.remove();
             }
-            renderHistory(file);
+            $spinner.addClass("spin");
+            renderHistory(file).then(function () {
+                $spinner.removeClass("spin");
+            });
         }
 
         // Toggle commit button and check-all checkbox
