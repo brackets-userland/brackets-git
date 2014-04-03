@@ -41,12 +41,7 @@ define(function (require) {
     function renderHistory(file) {
         return Git.getCurrentBranchName().then(function (branchName) {
             // Get the history commits of the current branch
-            var p;
-            if (file) {
-                p = Git.getFileHistory(file.relative, branchName);
-            } else {
-                p = Git.getHistory(branchName);
-            }
+            var p = file ? Git.getFileHistory(file.relative, branchName) : Git.getHistory(branchName);
             return p.then(function (commits) {
                 commits = convertCommitDates(commits);
 
