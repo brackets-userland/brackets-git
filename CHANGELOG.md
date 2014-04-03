@@ -1,13 +1,31 @@
 # Changelog
 
+**If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
+
 ## 0.13.0
 * `Q` library has been completely removed and replaced by `bluebird`
+* Clone won't timeout anymore when cloning large repositories.
+* Switching between branches will never timeout.
+* Improved new branch dialog.
+* Git processes that timeouted (waiting for password) will no longer stay opened in your OS.
+* You can fill in a merge message while merging a branch.
+* Fixed some console errors when not working in a Git repository.
+* Modified files are now also marked in working files list.
+* Fixed a bug when an empty repository is opened (without master branch)
+* History can now also be viewed for a particular file by [Marcel Gerber](https://github.com/SAPlayer)
+* Feature to discard all changes since last commit by [Fez Vrasta](https://github.com/FezVrasta)
+* Feature to checkout a commit in history, or reset to a commit in history by [Zhi](https://github.com/yfwz100)
+* Opened files that do not exist in a newly switched branch are now automatically closed by [Fez Vrasta](https://github.com/FezVrasta)
+* Hover for the expandable gutters has been added by [Miguel Castillo](https://github.com/MiguelCastillo)
+* Improved Git-FTP support by [Fez Vrasta](https://github.com/FezVrasta)
 * Added French translation by [rainje](https://github.com/rainje)
+* Fixed some errors in translations by [Fez Vrasta](https://github.com/FezVrasta)
+* Various UI improvements by [Fez Vrasta](https://github.com/FezVrasta), [Marcel Gerber](https://github.com/SAPlayer) and [Larz](https://github.com/larz0)
 
 ## 0.12.2
 * Top menu has been removed - you can access settings through panel or File > Git settings...
 * Branch deletion handling has been improved and now you can delete also not fully merged branches.
-* README has been updated after a long time (thanks [Fez Vrasta](https://github.com/FezVrasta))
+* README has been updated after a long time by [Fez Vrasta](https://github.com/FezVrasta)
 * [Fez Vrasta](https://github.com/FezVrasta) started to add support for [Git-FTP](https://github.com/git-ftp/git-ftp)
 * Updated translations by [Marcel Gerber](https://github.com/SAPlayer)
 
