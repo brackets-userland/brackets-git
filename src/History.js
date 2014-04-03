@@ -175,7 +175,9 @@ define(function (require) {
             historyEnabled = !historyEnabled;
         }
 
-        if (newHistoryMode === "FILE") {
+        // from this point historyEnabled should have a proper value
+
+        if (historyEnabled && newHistoryMode === "FILE") {
             var doc = DocumentManager.getCurrentDocument();
             if (doc) {
                 file = {};
