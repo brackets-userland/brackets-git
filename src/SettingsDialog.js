@@ -56,7 +56,7 @@ define(function (require, exports) {
         });
         $("#git-settings-stripWhitespaceFromCommits", $dialog).on("change", function () {
             var on = $(this).is(":checked");
-            $("#git-settings-addEndlineToTheEndOfFile", $dialog)
+            $("#git-settings-addEndlineToTheEndOfFile,#git-settings-removeByteOrderMark,#git-settings-normalizeLineEndings", $dialog)
                 .prop("checked", on)
                 .prop("disabled", !on);
         });

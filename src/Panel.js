@@ -379,16 +379,22 @@ define(function (require, exports) {
     function stripWhitespaceFromFile(filename, clearWholeFile) {
         return new Promise(function (resolve, reject) {
 
-            var fullPath = Utils.getProjectRoot() + filename;
+            var fullPath              = Utils.getProjectRoot() + filename,
+                removeBom             = Preferences.get("removeByteOrderMark"),
+                normalizeLineEndings  = Preferences.get("normalizeLineEndings");
 
             var _cleanLines = function (lineNumbers) {
                 // clean the file
                 var fileEntry = FileSystem.getFileForPath(fullPath);
                 return FileUtils.readAsText(fileEntry).then(function (text) {
-                    // remove BOM - \ufeff
-                    text = text.replace(/\ufeff/g, "");
-                    // normalizes line endings // TODO: as a preference only
-                    if (false) { text = text.replace(/\r\n/g, "\n"); }
+                    if (removeBom) {
+                        // remove BOM - \ufeff
+                        text = text.replace(/\ufeff/g, "");
+                    }
+                    if (normalizeLineEndings) {
+                        // normalizes line endings
+                        text = text.replace(/\r\n/g, "\n");
+                    }
                     // process lines
                     var lines = text.split("\n");
 
