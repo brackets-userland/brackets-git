@@ -38,16 +38,23 @@ module.exports = function (grunt) {
                     "known-properties": false
                 }
             }
+        },
+        jscs: {
+            src: ["*.js", "src/**/*.js", "nls/**/*.js"],
+            options: {
+                config: ".jscs.json"
+            }
         }
     });
 
     grunt.loadNpmTasks("grunt-jslint");
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-lesslint");
+    grunt.loadNpmTasks("grunt-jscs-checker");
 
     grunt.registerTask("jslint-test", ["jslint"]);
     grunt.registerTask("jshint-test", ["jshint"]);
     grunt.registerTask("less-test", ["lesslint"]);
-    grunt.registerTask("test", ["jshint"]); // for travis
+    grunt.registerTask("test", ["jshint", "jscs"]); // for travis
 
 };
