@@ -1,8 +1,8 @@
 <table class="git-edited-list bottom-panel-table table table-striped table-condensed row-highlight">
     <tbody>
         {{#files}}
-        <tr class="modified-file" data-file="{{file}}" data-status="{{status}}">
-            <td class="checkbox-column"><input type="checkbox" class="check-one" /></td>
+        <tr class="modified-file" x-file="{{file}}" x-status="{{status}}">
+            <td class="checkbox-column"><input type="checkbox" class="check-one" {{#staged}}checked="true"{{/staged}} /></td>
             <td class="icons-column">
                 {{#allowDiff}}<button class="btn btn-mini btn-git-diff" title="{{Strings.DIFF}}"><i class="octicon octicon-diff"></i></button>{{/allowDiff}}
             </td>

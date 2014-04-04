@@ -92,15 +92,22 @@ define(function (require, exports) {
         });
     }
 
+    function discardFileChanges(file) {
+        return GitCli.unstage(file).then(function () {
+            return GitCli.checkout(file);
+        });
+    }
+
     // Public API
-    exports.pushToNewUpstream = pushToNewUpstream;
-    exports.getBranches       = getBranches;
-    exports.getAllBranches    = getAllBranches;
-    exports.getHistory        = getHistory;
-    exports.getFileHistory    = getFileHistory;
-    exports.resetIndex        = resetIndex;
-    exports.discardAllChanges = discardAllChanges;
-    exports.getMergeInfo      = getMergeInfo;
+    exports.pushToNewUpstream   = pushToNewUpstream;
+    exports.getBranches         = getBranches;
+    exports.getAllBranches      = getAllBranches;
+    exports.getHistory          = getHistory;
+    exports.getFileHistory      = getFileHistory;
+    exports.resetIndex          = resetIndex;
+    exports.discardAllChanges   = discardAllChanges;
+    exports.getMergeInfo        = getMergeInfo;
+    exports.discardFileChanges  = discardFileChanges;
 
     Object.keys(GitCli).forEach(function (method) {
         if (!exports[method]) {

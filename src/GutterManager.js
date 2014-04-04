@@ -9,7 +9,7 @@ define(function (require, exports) {
         EditorManager   = brackets.getModule("editor/EditorManager"),
         Events          = require("src/Events"),
         EventEmitter    = require("src/EventEmitter"),
-        Main            = require("./Main"),
+        Git             = require("src/Git/Git"),
         Preferences     = require("./Preferences"),
         Utils           = require("src/Utils");
 
@@ -145,7 +145,7 @@ define(function (require, exports) {
         prepareGutter(editor._codeMirror);
 
         var filename = currentDoc.file.fullPath.substring(Utils.getProjectRoot().length);
-        Main.gitControl.gitDiff(filename).then(function (diff) {
+        Git.diffFile(filename).then(function (diff) {
             var added = [],
                 removed = [],
                 modified = [],

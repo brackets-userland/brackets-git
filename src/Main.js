@@ -111,13 +111,13 @@ define(function (require, exports) {
     }
 
     function addItemToGitingoreFromPanel() {
-        var filePath = Panel.getPanel().find("tr.selected").data("file"),
+        var filePath = Panel.getPanel().find("tr.selected").attr("x-file"),
             fileEntry = FileSystem.getFileForPath(Utils.getProjectRoot() + filePath);
         return _addRemoveItemInGitignore(fileEntry, "add");
     }
 
     function removeItemFromGitingoreFromPanel() {
-        var filePath = Panel.getPanel().find("tr.selected").data("file"),
+        var filePath = Panel.getPanel().find("tr.selected").attr("x-file"),
             fileEntry = FileSystem.getFileForPath(Utils.getProjectRoot() + filePath);
         return _addRemoveItemInGitignore(fileEntry, "remove");
     }

@@ -12,15 +12,30 @@ define(function (require, exports) {
         FileUtils   = brackets.getModule("file/FileUtils");
 
     // Local modules
-    var Promise     = require("bluebird"),
-        Cli         = require("src/Cli"),
-        Preferences = require("src/Preferences"),
-        Utils       = require("src/Utils");
+    var Promise       = require("bluebird"),
+        Cli           = require("src/Cli"),
+        Events        = require("src/Events"),
+        EventEmitter  = require("src/EventEmitter"),
+        Preferences   = require("src/Preferences"),
+        Utils         = require("src/Utils");
 
     // Module variables
     var _gitPath = null,
         _gitQueue = [],
         _gitQueueBusy = false;
+    
+    var FILE_STATUS = {
+        STAGED: "STAGED",
+        UNMODIFIED: "UNMODIFIED",
+        IGNORED: "IGNORED",
+        UNTRACKED: "UNTRACKED",
+        MODIFIED: "MODIFIED",
+        ADDED: "ADDED",
+        DELETED: "DELETED",
+        RENAMED: "RENAMED",
+        COPIED: "COPIED",
+        UNMERGED: "UNMERGED"
+    };
 
     // Implementation
     function getGitPath() {
@@ -316,6 +331,10 @@ define(function (require, exports) {
         args.push(file);
         return git(args);
     }
+    
+    function stageAll() {
+        return git(["add", "--all"]);
+    }
 
     function commit(message, amend) {
         var lines = message.split("\n"),
@@ -356,9 +375,138 @@ define(function (require, exports) {
         if (hash) { args.push(hash); }
         return git(args);
     }
+    
+    function unstage(file) {
+        return git(["reset", file]);
+    }
 
     function checkout(hash) {
         return git(["checkout", hash]);
+    }
+    
+    function _unquote(str) {
+        if (str[0] === "\"" && str[str.length - 1] === "\"") {
+            str = str.substring(1, str.length - 1);
+        }
+        return str;
+    }
+    
+    function status() {
+        // TODO: this is called twice on startup!
+        return git(["status", "-u", "--porcelain"]).then(function (stdout) {
+            if (!stdout) { return []; }
+            
+            // files that are modified both in index and working tree should be resetted
+            var needReset = [],
+                results = [],
+                lines = stdout.split("\n");
+            
+            lines.forEach(function (line) {
+                var statusStaged = line.substring(0, 1),
+                    statusUnstaged = line.substring(1, 2),
+                    status = [],
+                    file = _unquote(line.substring(3));
+                
+                if (statusStaged !== " " && statusUnstaged !== " ") {
+                    needReset.push(file);
+                    return;
+                }
+                
+                var statusChar;
+                if (statusStaged !== " ") {
+                    status.push(FILE_STATUS.STAGED);
+                    statusChar = statusStaged;
+                } else {
+                    statusChar = statusUnstaged;
+                }
+                
+                switch (statusChar) {
+                    case " ":
+                        status.push(FILE_STATUS.UNMODIFIED);
+                        break;
+                    case "!":
+                        status.push(FILE_STATUS.IGNORED);
+                        break;
+                    case "?":
+                        status.push(FILE_STATUS.UNTRACKED);
+                        break;
+                    case "M":
+                        status.push(FILE_STATUS.MODIFIED);
+                        break;
+                    case "A":
+                        status.push(FILE_STATUS.ADDED);
+                        break;
+                    case "D":
+                        status.push(FILE_STATUS.DELETED);
+                        break;
+                    case "R":
+                        status.push(FILE_STATUS.RENAMED);
+                        break;
+                    case "C":
+                        status.push(FILE_STATUS.COPIED);
+                        break;
+                    case "U":
+                        status.push(FILE_STATUS.UNMERGED);
+                        break;
+                    default:
+                        throw new Error("Unexpected status: " + statusChar);
+                }
+
+                results.push({
+                    status: status,
+                    file: file,
+                    name: file.substring(file.lastIndexOf("/") + 1)
+                });
+            });
+            
+            if (needReset.length > 0) {
+                return Promise.all(needReset.map(function (fileName) {
+                    return unstage(fileName);
+                })).then(function () {
+                    return status();
+                });
+            }
+            
+            return results.sort(function (a, b) {
+                if (a.file < b.file) {
+                    return -1;
+                }
+                if (a.file > b.file) {
+                    return 1;
+                }
+                return 0;
+            });
+        }).then(function (results) {
+            EventEmitter.emit(Events.GIT_STATUS_RESULTS, results);
+            return results;
+        });
+    }
+
+    function _isFileStaged(file) {
+        return git(["status", "-u", "--porcelain"]).then(function (stdout) {
+            if (!stdout) { return false; }
+            return _.any(stdout.split("\n"), function (line) {
+                return line.match("^(\\S)(.)\\s+(" + file + ")$") !== null;
+            });
+        });
+    }
+
+    function diffFile(file) {
+        return _isFileStaged(file).then(function (staged) {
+            var args = ["diff", "--no-color"];
+            if (staged) { args.push("--staged"); }
+            args.push("-U0", file);
+            return git(args);
+        });
+    }
+
+    function diffFileNice(file) {
+        return _isFileStaged(file).then(function (staged) {
+            var args = ["diff", "--no-color"];
+            if (staged) { args.push("--staged"); }
+            args.push(file);
+            return git(args);
+        });
     }
 
     // Public API
@@ -384,8 +532,14 @@ define(function (require, exports) {
     exports.init                      = init;
     exports.clone                     = clone;
     exports.stage                     = stage;
+    exports.unstage                   = unstage;
+    exports.stageAll                  = stageAll;
     exports.commit                    = commit;
     exports.reset                     = reset;
     exports.checkout                  = checkout;
+    exports.status                    = status;
+    exports.diffFile                  = diffFile;
+    exports.diffFileNice              = diffFileNice;
+    exports.FILE_STATUS               = FILE_STATUS;
 
 });

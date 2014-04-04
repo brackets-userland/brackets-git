@@ -7,31 +7,9 @@ define(function (require, exports, module) {
     var _               = brackets.getModule("thirdparty/lodash"),
         Promise         = require("bluebird"),
         Utils           = require("src/Utils"),
-        Events          = require("./Events"),
-        EventEmitter    = require("./EventEmitter"),
         ErrorHandler    = require("./ErrorHandler"),
         ExpectedError   = require("./ExpectedError"),
         Preferences     = require("./Preferences");
-
-    var FILE_STATUS = {
-        STAGED: "FILE_STAGED",
-        NEWFILE: "FILE_NEWFILE",
-        MODIFIED: "FILE_MODIFIED",
-        DELETED: "FILE_DELETED",
-        RENAMED: "FILE_RENAMED",
-        UNTRACKED: "FILE_UNTRACKED",
-        UNMERGED: "FILE_UNMERGED"
-    };
-
-    function uniqSorted(arr) {
-        var rv = [];
-        arr.forEach(function (i) {
-            if (rv.indexOf(i) === -1) {
-                rv.push(i);
-            }
-        });
-        return rv.sort();
-    }
 
     function escapeShellArg(str) {
         if (typeof str !== "string") {
@@ -71,8 +49,6 @@ define(function (require, exports, module) {
             this._git = Preferences.get("gitPath");
         }
     }
-
-    GitControl.FILE_STATUS = FILE_STATUS;
 
     GitControl.prototype = {
 
@@ -264,120 +240,6 @@ define(function (require, exports, module) {
                     };
                 });
             });
-        },
-
-        getGitStatus: function () {
-            function unquote(str) {
-                if (str[0] === "\"" && str[str.length - 1] === "\"") {
-                    str = str.substring(1, str.length - 1);
-                }
-                return str;
-            }
-
-            var args = ["status", "-u", "--porcelain"];
-            return this.spawnCommand(this._git, args).then(function (stdout) {
-                if (!stdout) {
-                    return [];
-                }
-
-                var results = [],
-                    lines = stdout.split("\n");
-                lines.forEach(function (line) {
-                    var statusStaged = line.substring(0, 1),
-                        statusUnstaged = line.substring(1, 2),
-                        status = [],
-                        file = unquote(line.substring(3));
-
-                    switch (statusStaged) {
-                    case " ":
-                        break;
-                    case "?":
-                        status.push(FILE_STATUS.UNTRACKED);
-                        break;
-                    case "A":
-                        status.push(FILE_STATUS.STAGED, FILE_STATUS.NEWFILE);
-                        break;
-                    case "D":
-                        status.push(FILE_STATUS.STAGED, FILE_STATUS.DELETED);
-                        break;
-                    case "M":
-                        status.push(FILE_STATUS.STAGED, FILE_STATUS.MODIFIED);
-                        break;
-                    case "R":
-                        status.push(FILE_STATUS.STAGED, FILE_STATUS.RENAMED);
-                        break;
-                    case "U":
-                        status.push(FILE_STATUS.UNMERGED);
-                        break;
-                    default:
-                        throw new Error("Unexpected status: " + statusStaged);
-                    }
-
-                    switch (statusUnstaged) {
-                    case " ":
-                        break;
-                    case "?":
-                        status.push(FILE_STATUS.UNTRACKED);
-                        break;
-                    case "D":
-                        status.push(FILE_STATUS.DELETED);
-                        break;
-                    case "M":
-                        status.push(FILE_STATUS.MODIFIED);
-                        break;
-                    case "U":
-                        status.push(FILE_STATUS.UNMERGED);
-                        break;
-                    default:
-                        throw new Error("Unexpected status: " + statusStaged);
-                    }
-
-                    results.push({
-                        status: uniqSorted(status),
-                        file: file,
-                        name: file.substring(file.lastIndexOf("/") + 1)
-                    });
-                });
-                return results.sort(function (a, b) {
-                    if (a.file < b.file) {
-                        return -1;
-                    }
-                    if (a.file > b.file) {
-                        return 1;
-                    }
-                    return 0;
-                });
-            }).then(function (results) {
-                EventEmitter.emit(Events.GIT_STATUS_RESULTS, results);
-                return results;
-            });
-        },
-
-        gitUndoFile: function (file) {
-            var args = [
-                "checkout",
-                escapeShellArg(file)
-            ];
-            return this.executeCommand(this._git, args);
-        },
-
-        gitDiff: function (file) {
-            var args = [
-                "diff",
-                "--no-color",
-                "-U0",
-                escapeShellArg(file)
-            ];
-            return this.executeCommand(this._git, args);
-        },
-
-        gitDiffSingle: function (file) {
-            var args = [
-                "diff",
-                "--no-color",
-                escapeShellArg(file)
-            ];
-            return this.executeCommand(this._git, args);
         },
 
         gitDiffStaged: function () {

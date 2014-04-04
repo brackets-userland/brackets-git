@@ -174,6 +174,14 @@ define(function (require, exports, module) {
             });
         });
     }
+    
+    function setLoading($btn) {
+        $btn.prop("disabled", true).addClass("btn-loading");
+    }
+    
+    function unsetLoading($btn) {
+        $btn.prop("disabled", false).removeClass("btn-loading");
+    }
 
     // Public API
     exports.formatDiff            = formatDiff;
@@ -184,5 +192,7 @@ define(function (require, exports, module) {
     exports.isProjectRootWritable = isProjectRootWritable;
     exports.pathExists            = pathExists;
     exports.loadPathContent       = loadPathContent;
+    exports.setLoading            = setLoading;
+    exports.unsetLoading          = unsetLoading;
 
 });
