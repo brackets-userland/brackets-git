@@ -35,7 +35,7 @@ define({
     FEATURES:                           "Recursos",
     FILE_DELETED:                       "Exluído",
     FILE_MODIFIED:                      "Modificado",
-    FILE_NEWFILE:                       "Adicionado",
+    FILE_ADDED:                         "Adicionado",
     FILE_RENAMED:                       "Renomeado",
     FILE_STAGED:                        "Staged",
     FILE_UNTRACKED:                     "Untracked",

@@ -391,7 +391,7 @@ define(function (require, exports) {
         return str;
     }
 
-    function status() {
+    function status(type) {
         // TODO: this is called twice on startup!
         return git(["status", "-u", "--porcelain"]).then(function (stdout) {
             if (!stdout) { return []; }
@@ -407,13 +407,14 @@ define(function (require, exports) {
                     status = [],
                     file = _unquote(line.substring(3));
 
-                if (statusStaged !== " " && statusUnstaged !== " ") {
+                if (statusStaged !== " " && statusUnstaged !== " " &&
+                    statusStaged !== "?" && statusUnstaged !== "?") {
                     needReset.push(file);
                     return;
                 }
 
                 var statusChar;
-                if (statusStaged !== " ") {
+                if (statusStaged !== " " && statusStaged !== "?") {
                     status.push(FILE_STATUS.STAGED);
                     statusChar = statusStaged;
                 } else {
@@ -463,7 +464,10 @@ define(function (require, exports) {
                 return Promise.all(needReset.map(function (fileName) {
                     return unstage(fileName);
                 })).then(function () {
-                    return status();
+                    if (type === "RECURSIVE_CALL") {
+                        throw new Error("git status is calling itself in a recursive loop!");
+                    }
+                    return status("RECURSIVE_CALL");
                 });
             }
 

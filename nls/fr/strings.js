@@ -68,7 +68,7 @@ define({
     FEATURES:                           "Fonctionnalités",
     FILE_DELETED:                       "Supprimé",
     FILE_MODIFIED:                      "Modifié",
-    FILE_NEWFILE:                       "Nouveau fichier",
+    FILE_ADDED:                         "Nouveau fichier",
     FILE_RENAMED:                       "Renommé",
     FILE_STAGED:                        "Suivi",
     FILE_UNTRACKED:                     "Non suivi",

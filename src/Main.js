@@ -25,8 +25,7 @@ define(function (require, exports) {
 
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
                                     .addClass("loading").appendTo($("#main-toolbar .buttons")),
-        gitControl              = null,
-        currentlyModifiedFiles  = [];
+        gitControl              = null;
 
     // This only launches when Git is available
     function initUi() {
@@ -124,7 +123,7 @@ define(function (require, exports) {
 
     var _ignoreEntries = [];
 
-    function refreshProjectFiles() {
+    function refreshProjectFiles(fullPaths) {
         if (!Preferences.get("markModifiedInTree")) {
             return;
         }
@@ -143,7 +142,7 @@ define(function (require, exports) {
             $(arr[0]).find("li").each(function () {
                 var $li = $(this),
                     fullPath = $li.data(arr[1]).fullPath,
-                    isModified = currentlyModifiedFiles.indexOf(fullPath) !== -1;
+                    isModified = fullPaths.indexOf(fullPath) !== -1;
                 $li.toggleClass("git-ignored", isIgnored(fullPath))
                    .toggleClass("git-modified", isModified);
             });
@@ -260,19 +259,15 @@ define(function (require, exports) {
     });
 
     EventEmitter.on(Events.GIT_STATUS_RESULTS, function (files) {
-        var projectRoot = Utils.getProjectRoot();
-        currentlyModifiedFiles = files.map(function (entry) {
-            return projectRoot + entry.file;
-        });
-        refreshProjectFiles();
+        var projectRoot = Utils.getProjectRoot(),
+            fullPaths = files.map(function (entry) {
+                return projectRoot + entry.file;
+            });
+        refreshProjectFiles(fullPaths);
     });
 
     EventEmitter.on(Events.HANDLE_PROJECT_REFRESH, function () {
         $(ProjectManager).triggerHandler("projectRefresh");
-    });
-
-    $("#open-files-container").on("contentChanged", function () {
-        refreshProjectFiles();
     });
 
     // API

@@ -41,7 +41,7 @@ define({
     FEATURES:                           "特性",
     FILE_DELETED:                       "已删除",
     FILE_MODIFIED:                      "已修改",
-    FILE_NEWFILE:                       "新加入",
+    FILE_ADDED:                         "新加入",
     FILE_RENAMED:                       "重命名",
     FILE_STAGED:                        "被跟踪的文件",
     FILE_UNTRACKED:                     "未被跟踪的文件",

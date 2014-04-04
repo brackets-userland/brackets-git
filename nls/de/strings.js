@@ -82,7 +82,7 @@ define({
     FEATURES:                           "Funktionen",
     FILE_DELETED:                       "Gelöscht",
     FILE_MODIFIED:                      "Geändert",
-    FILE_NEWFILE:                       "Neue Datei",
+    FILE_ADDED:                         "Neue Datei",
     FILE_RENAMED:                       "Umbenannt",
     FILE_STAGED:                        "Zum Commit vorgemerkt",
     FILE_UNTRACKED:                     "Unbeobachtet",
