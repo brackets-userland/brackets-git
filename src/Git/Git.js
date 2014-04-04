@@ -73,7 +73,9 @@ define(function (require, exports) {
     }
 
     function discardAllChanges() {
-        return GitCli.reset("--hard");
+        return GitCli.reset("--hard").then(function () {
+            return GitCli.clean();
+        });
     }
 
     function getMergeInfo() {

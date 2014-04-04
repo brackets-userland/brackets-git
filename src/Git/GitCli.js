@@ -377,7 +377,7 @@ define(function (require, exports) {
     }
 
     function unstage(file) {
-        return git(["reset", file]);
+        return git(["reset", "--", file]);
     }
 
     function checkout(hash) {
@@ -513,8 +513,13 @@ define(function (require, exports) {
         });
     }
 
+    function clean() {
+        return git(["clean", "-f", "-d"]);
+    }
+
     // Public API
-    exports.git                       = git;
+    exports._git                      = git;
+    exports.FILE_STATUS               = FILE_STATUS;
     exports.fetchAllRemotes           = fetchAllRemotes;
     exports.getRemotes                = getRemotes;
     exports.createRemote              = createRemote;
@@ -544,6 +549,6 @@ define(function (require, exports) {
     exports.status                    = status;
     exports.diffFile                  = diffFile;
     exports.diffFileNice              = diffFileNice;
-    exports.FILE_STATUS               = FILE_STATUS;
+    exports.clean                     = clean;
 
 });

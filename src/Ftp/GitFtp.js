@@ -9,7 +9,7 @@ define(function (require, exports) {
         URI           = require("URI");
 
     // Module variables
-    var git = GitCli.git;
+    var git = GitCli._git;
 
     // Implementation
     function isAvailable() {
