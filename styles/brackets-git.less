@@ -4,7 +4,7 @@
 @darkGrey:    #9c9e9e;
 @moreDarkGrey:#868888;
 @almostWhite: #f5f5f5;
-@green:       #3B9102;
+@green:       #5daa02;
 @red:         #F74687;
 @slightBlue:  #E0F0FA;
 @lightBlue:   #78B2F2;
@@ -128,32 +128,32 @@
     .brackets-git-gutter-removed {
         background-size: @gutterWidth @gutterWidth;
         background-repeat: no-repeat;
+        font-weight: bolder;
+        font-size: 1.2em;
+        line-height: 1;
     }
-    .brackets-git-gutter-added {
-        background-color: @green;
+    .brackets-git-gutter-added:before {
+        color: @green;
+        content: "+";
     }
-    .brackets-git-gutter-modified {
-        background-color: @orange;
-    }
-    .brackets-git-gutter-modified.brackets-git-gutter-hover:before {
-        background-color: lighten(@orange, 15%);
+    .brackets-git-gutter-modified:before {
+        color: @orange;
         content: "\d7";
     }
-    .brackets-git-gutter-removed {
-        background-color: @red;
-    }
-    .brackets-git-gutter-removed.brackets-git-gutter-hover:before {
-        background-color: lighten(@red, 15%);
+    .brackets-git-gutter-removed:before {
+        color: @red;
         content: "-";
-    }
+    }    
     .brackets-git-gutter-deleted-lines {
         color: @red;
         background-color: lighten(@red, 35%);
         .selectable-text();
     }
-    .CodeMirror-linenumber.brackets-git-gutter-hover {
+    .CodeMirror-linenumber.brackets-git-gutter-hover,
+    .brackets-git-gutter-modified.brackets-git-gutter-hover:before,
+    .brackets-git-gutter-removed.brackets-git-gutter-hover:before {
         cursor: pointer;
-        background-color: #FFFFFF;
+        background-color: #e0f0fa;
     }
 }
 
@@ -173,6 +173,7 @@
             width: 13px;
         }
         &.icons-column {
+            padding-left: 13px;
             width: 1px;
         }
         &.status-column {
@@ -196,7 +197,7 @@
         font-size: 12px;
         line-height: 1em;
         border-radius: 3px;
-        margin: 0 6px;
+        margin: 0 6px 0 0;
     }
     .nothing-to-commit {
         padding: 15px;
@@ -224,13 +225,16 @@
     .git-remotes {
         border-radius: 4px 0 0 4px;
         padding-bottom: 5px;
-        -webkit-transform-origin: 0 100%;
         &, &:focus {
             border-right: 0;
         }
         .caret {
             margin: 7px 5px auto 0px;
         }
+    }
+    .git-remotes-dropdown {
+        // don't mess with this, the dropdown menu is at the top so it should grow from bottom left to top right.
+        -webkit-transform-origin: 0 100%;        
     }
     .git-remotes-dropdown a {
         .change-remote {
@@ -260,6 +264,8 @@
     }
 
     .dropdown-menu {
+        // don't mess with this, the dropdown menu is at the top so it should grow from bottom left to top right.
+        -webkit-transform-origin: 0 100%;
         a {
             padding: 5px 26px 5px 26px;
             &:hover {
@@ -304,7 +310,7 @@
 
     // remove any kind of :focus state from buttons (because it's ugly)
     .btn:focus {
-        border-color: @darkGrey;
+        border-color: #b2b5b5;
         box-shadow: none;
         color: @defaultText;
         outline: none;
@@ -398,7 +404,7 @@
 
 #git-settings-dialog {
     .modal-body {
-        min-height: 350px;
+        min-height: 390px; // this needs to be set to a height that'll prevent the dialog to change size when tabs are being switched.
     }
     hr {
         margin: 12px auto;
@@ -616,13 +622,12 @@
         width: 13px;
         height: 13px;
         opacity: 0.8;
-        text-shadow: 0 1px 0 rgba(0,0,0,.69);
         i {
-            font-size: 13px;
+            font-size: 14px;
             color: #798286;
             position: relative;
             top: -2px;
-            text-shadow: none;
+            text-shadow: 0 1px 0 rgba(0,0,0,.69); // adding shadow; the cog icon in Brackets sprint 38 will have a dropshadow.
         }
         &:hover {
             opacity: 1;
@@ -685,4 +690,11 @@ because there's no way to import them right now
         border: 1px solid rgba(0, 0, 0, 0.24);
         box-shadow: inset 0 1px 0 rgba(0,0,0,0.12);
     }
+}
+
+.btn.active:not([disabled]),
+.btn:active:not([disabled]) {
+    background-color: #e0f0fa;
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
+    color: #0083e8;
 }
