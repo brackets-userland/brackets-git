@@ -34,16 +34,14 @@ define(function (require) {
     // Implementation
 
     function getDefaultRemote() {
-        // TODO: refactor after Sprint 38 is published
-        var key = ["defaultRemotes", Utils.getProjectRoot()].join(".");
-        var defaultRemote = Preferences.get(key);
-        return defaultRemote || "origin";
+        var defaultRemotes = Preferences.get("defaultRemotes");
+        return defaultRemotes[Utils.getProjectRoot()] || "origin";
     }
 
     function setDefaultRemote(remoteName) {
-        // TODO: refactor after Sprint 38 is published
-        var key = ["defaultRemotes", Utils.getProjectRoot()].join(".");
-        Preferences.persist(key, remoteName);
+        var defaultRemotes = Preferences.get("defaultRemotes");
+        defaultRemotes[Utils.getProjectRoot()] = remoteName;
+        Preferences.persist("defaultRemotes", defaultRemotes);
     }
 
     function clearRemotePicker() {

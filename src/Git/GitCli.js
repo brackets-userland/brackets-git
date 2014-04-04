@@ -392,7 +392,7 @@ define(function (require, exports) {
     }
 
     function status(type) {
-        // TODO: this is called twice on startup!
+        // FIXME: this is called twice on startup!
         return git(["status", "-u", "--porcelain"]).then(function (stdout) {
             if (!stdout) { return []; }
 

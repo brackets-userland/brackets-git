@@ -167,7 +167,7 @@ define(function (require, exports, module) {
                         resolve(content);
                     });
                 } else {
-                    // TODO: load contents when this is a directory
+                    // FIXME: load contents when this is a directory
                     throw "NOT IMPLEMENTED";
                 }
             });

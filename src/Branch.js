@@ -316,11 +316,11 @@ define(function (require, exports) {
 
             return Main.gitControl.getBranchName().then(function (branchName) {
 
-                // TODO: why this is launched twice on startup?
+                // FIXME: why this is launched twice on startup?
                 Git.getMergeInfo().then(function (mergeInfo) {
 
                     if (mergeInfo.mergeMode) {
-                        // TODO: check if anyone is not reading the text if $gitBranchName
+                        // FIXME: check if anyone is not reading the text if $gitBranchName
                         branchName += "|MERGING";
                     }
 

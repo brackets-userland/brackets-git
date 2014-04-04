@@ -36,7 +36,7 @@ define(function (require, exports, module) {
             args = _.toArray(arguments);
 
         return function () {
-            self.emit.apply(self, args);
+            self.emit.apply(self, _.union(args, arguments));
         };
     };
 

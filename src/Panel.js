@@ -810,9 +810,7 @@ define(function (require, exports) {
     function showHistoryCommitDialog(hash) {
         Main.gitControl.getFilesFromCommit(hash).then(function (files) {
             var list = $.map(files, function (file) {
-                // FUTURE: Remove extensionFunction one day (always use getSmartFileExtension, needs Sprint 38)
-                var extensionFunction = FileUtils.getSmartFileExtension || FileUtils.getFileExtension,
-                    fileExtension = extensionFunction(file),
+                var fileExtension = FileUtils.getSmartFileExtension(file),
                     i = file.lastIndexOf("." + fileExtension),
                     fileName = file.substring(0, fileExtension && i >= 0 ? i : file.length);
                 return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
