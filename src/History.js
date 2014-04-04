@@ -1,9 +1,12 @@
+/*global window*/
 define(function (require) {
 
     // Brackets modules
     var _ = brackets.getModule("thirdparty/lodash"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
-        ProjectManager = brackets.getModule("project/ProjectManager");
+        ProjectManager  = brackets.getModule("project/ProjectManager"),
+        Utils           = brackets.getModule("src/Utils"),
+        FileUtils       = brackets.getModule("file/FileUtils");
 
     // Local modules
     var moment = require("moment"),
@@ -15,7 +18,10 @@ define(function (require) {
         Preferences = require("src/Preferences");
 
     // Templates
-    var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html");
+    var gitPanelHistoryTemplate         = require("text!templates/git-panel-history.html"),
+        gitPanelHistoryCommitsTemplate  = require("text!templates/git-panel-history-commits.html"),
+        gitDiffDetailsTemplate          = require("text!templates/git-diff-details.html"),
+        gitCommitDiffTemplate           = require("text!templates/git-commit-diff-dialog.html");
 
     // Module variables
     var $gitPanel       = $(null),
@@ -31,11 +37,152 @@ define(function (require) {
     }
 
     function attachHandlers() {
-        $tableContainer
+        $tableContainer.find(".history-commits-list")
             .off(".history")
+            .off("click.history")
             .on("scroll.history", function () {
                 loadMoreHistory();
+            })
+            .on("click.history", ".history-commit", function () {
+                renderHistoryCommit($(this).attr("data-hash"));
             });
+    }
+
+    // Render the dialog with the modified files list and the diff commited
+    function _renderCommitDiff(commit, files, selectedFile) {
+
+        var variables                    = commit;
+        variables.files                  = files;
+        variables.Strings                = Strings;
+        variables.enableAdvancedFeatures = Preferences.get("enableAdvancedFeatures");
+
+        var compiledTemplate = Mustache.render(gitCommitDiffTemplate, variables),
+            refreshCallback  = function () {
+                EventEmitter.emit(Events.REFRESH_ALL);
+            },
+            $historyDiff = $gitPanel.find(".history-diff");
+
+        $historyDiff.html(compiledTemplate);
+
+        // Handle click on commit list's elements
+        $historyDiff
+             .off("click.historyDiff")
+             .on("click.historyDiff", ".commit-files a", function () {
+                var self = $(this),
+                     file = $(this).text().trim();
+
+                if (self.parent().is(".active")) {
+                    self.parent().removeClass("active");
+                }
+                else {
+                    $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
+                    Git.getDiffOfFileFromCommit(commit.hash, file).then(function (diff) {
+                        $historyDiff.find(".commit-files li").removeClass("active");
+                        self.parent().addClass("active");
+                        $historyDiff.parent().find(".commit-diff").html(Utils.formatDiff(diff));
+                        $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
+                    });
+                }
+            });
+
+        var firstFile = selectedFile || $historyDiff.find(".commit-files ul li:first-child").text().trim();
+        if (firstFile) {
+            Git.getDiffOfFileFromCommit(commit.hash, firstFile).then(function (diff) {
+                var $fileEntry = $historyDiff.find(".commit-files a[data-file='" + firstFile + "']").first(),
+                    $commitFiles = $historyDiff.find(".commit-files");
+                $fileEntry.addClass("active");
+                $commitFiles.animate({ scrollTop: $fileEntry.offset().top - $commitFiles.height() });
+                $fileEntry.parent().find(".commit-diff").html(Utils.formatDiff(diff));
+            });
+        }
+
+        $(window)
+            .off("resize.historyDiff")
+            .on("resize.historyDiff", function () {
+                $gitPanel.find(".diff-header").width($gitPanel.find(".history-diff").width() - 12);
+            })
+            .trigger("resize.historyDiff");
+
+        $historyDiff
+            .off("scroll")
+            .on("scroll", function () {
+                if ($historyDiff.scrollTop() > 0) {
+                    $(".diff-header").addClass("shadow");
+                }
+                else {
+                    $(".diff-header").removeClass("shadow");
+                }
+            });
+
+        // Remove advanced features binds to prevent double assignments
+        $historyDiff.off("click.advancedFeature");
+
+        // Add advanced features binds if needed
+        if (variables.enableAdvancedFeatures) {
+            $historyDiff
+                .on("click.advancedFeature", ".btn-checkout", function () {
+                    var cmd = "git checkout " + commit.hash;
+                    Utils.askQuestion(Strings.TITLE_CHECKOUT,
+                                      Strings.DIALOG_CHECKOUT + "<br><br>" + cmd,
+                                      {booleanResponse: true, noescape: true})
+                        .then(function (response) {
+                            if (response === true) {
+                                return Git.checkout(commit.hash).then(refreshCallback);
+                            }
+                        });
+                })
+                .on("click.advancedFeature", ".btn-reset-hard", function () {
+                    var cmd = "git reset --hard " + commit.hash;
+                    Utils.askQuestion(Strings.TITLE_RESET,
+                                      Strings.DIALOG_RESET_HARD + "<br><br>" + cmd,
+                                      {booleanResponse: true, noescape: true})
+                        .then(function (response) {
+                            if (response === true) {
+                                return Git.reset("--hard", commit.hash).then(refreshCallback);
+                            }
+                        });
+                })
+                .on("click.advancedFeature", ".btn-reset-mixed", function () {
+                    var cmd = "git reset --mixed " + commit.hash;
+                    Utils.askQuestion(Strings.TITLE_RESET,
+                                      Strings.DIALOG_RESET_MIXED + "<br><br>" + cmd,
+                                      {booleanResponse: true, noescape: true})
+                        .then(function (response) {
+                            if (response === true) {
+                                return Git.reset("--mixed", commit.hash).then(refreshCallback);
+                            }
+                        });
+                })
+                .on("click.advancedFeature", ".btn-reset-soft", function () {
+                    var cmd = "git reset --soft " + commit.hash;
+                    Utils.askQuestion(Strings.TITLE_RESET,
+                                      Strings.DIALOG_RESET_SOFT + "<br><br>" + cmd,
+                                      {booleanResponse: true, noescape: true})
+                        .then(function (response) {
+                            if (response === true) {
+                                return Git.reset("--soft", commit.hash).then(refreshCallback);
+                            }
+                        });
+                });
+        }
+    }
+
+
+    // show a commit with given hash
+    function renderHistoryCommit(commit) {
+        Git.getFilesFromCommit(commit.hash).then(function (files) {
+            var list = $.map(files, function (file) {
+                // FUTURE: Remove extensionFunction one day (always use getSmartFileExtension, needs Sprint 38)
+                var extensionFunction = FileUtils.getSmartFileExtension || FileUtils.getFileExtension,
+                    fileExtension = extensionFunction(file),
+                    i = file.lastIndexOf("." + fileExtension),
+                    fileName = file.substring(0, fileExtension && i >= 0 ? i : file.length);
+                return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
+            });
+            _renderCommitDiff(commit, list, $tableContainer.find(".git-history-list").data("file-relative"));
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Failed to load list of diff files");
+        });
     }
 
     // Render history list the first time
@@ -46,19 +193,18 @@ define(function (require) {
             return p.then(function (commits) {
                 commits = convertCommitDates(commits);
 
-                var template = "<table class='git-history-list bottom-panel-table table table-striped table-condensed row-highlight'>";
-                template += "<tbody>";
-                template += gitPanelHistoryTemplate;
-                template += "</tbody>";
-                template += "</table>";
+                var partials = {gitPanelHistoryCommits: gitPanelHistoryCommitsTemplate, gitDiffDetails: gitDiffDetailsTemplate};
 
-                $tableContainer.append(Mustache.render(template, {
-                    commits: commits
-                }));
+                $tableContainer
+                    .append(Mustache.render(gitPanelHistoryTemplate, {commits: commits}, partials))
+                      .find(".history-commits-list")
+                          .prepend("<h1>" + Strings.HISTORY + "</h1>");
 
                 $historyList = $tableContainer.find(".git-history-list")
                     .data("file", file ? file.absolute : null)
                     .data("file-relative", file ? file.relative : null);
+
+                renderHistoryCommit(commits[0]);
             });
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to get history");

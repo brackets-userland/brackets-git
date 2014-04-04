@@ -34,13 +34,12 @@ define(function (require, exports) {
         SettingsDialog     = require("./SettingsDialog"),
         PANEL_COMMAND_ID   = "brackets-git.panel";
 
-    var gitPanelTemplate            = require("text!templates/git-panel.html"),
-        gitPanelResultsTemplate     = require("text!templates/git-panel-results.html"),
-        gitAuthorsDialogTemplate    = require("text!templates/authors-dialog.html"),
-        gitCommitDialogTemplate     = require("text!templates/git-commit-dialog.html"),
-        gitDiffDialogTemplate       = require("text!templates/git-diff-dialog.html"),
-        gitCommitDiffDialogTemplate = require("text!templates/git-commit-diff-dialog.html"),
-        questionDialogTemplate      = require("text!templates/git-question-dialog.html");
+    var gitPanelTemplate                = require("text!templates/git-panel.html"),
+        gitPanelResultsTemplate         = require("text!templates/git-panel-results.html"),
+        gitAuthorsDialogTemplate        = require("text!templates/authors-dialog.html"),
+        gitCommitDialogTemplate         = require("text!templates/git-commit-dialog.html"),
+        gitDiffDialogTemplate           = require("text!templates/git-diff-dialog.html"),
+        questionDialogTemplate          = require("text!templates/git-question-dialog.html");
 
     var showFileWhiteList = /^\.gitignore$/;
 
@@ -312,14 +311,21 @@ define(function (require, exports) {
         });
     }
 
-    function handleGitDiff(file) {
+    function handleGitDiff(commit, file) {
         Main.gitControl.gitDiffSingle(file).then(function (diff) {
-            // show the dialog with the diff
-            var compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file: file, Strings: Strings }),
-                dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-                $dialog          = dialog.getElement();
-            _makeDialogBig($dialog);
-            $dialog.find(".commit-diff").append(Utils.formatDiff(diff));
+
+            // Prepare variables for template
+            var variables = commit;
+            variables.file = file;
+            variables.Strings = Strings;
+
+            // Render and inject the diff template into git-panel
+            var compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file: file, Strings: Strings });
+            gitPanel.$panel.find(".history-diff")
+                 .html(compiledTemplate)
+                 .find(".commit-diff")
+                     .append(Utils.formatDiff(diff));
+
         }).catch(function (err) {
             ErrorHandler.showError(err, "Git Diff failed");
         });
@@ -686,115 +692,6 @@ define(function (require, exports) {
         refresh();
     }
 
-    // Render the dialog with the modified files list and the diff commited
-    function _showCommitDiffDialog(hashCommit, files, selectedFile) {
-        var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, {
-                hashCommit: hashCommit,
-                files: files,
-                Strings: Strings
-            }),
-            dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-            $dialog          = dialog.getElement(),
-            refreshCallback  = function () {
-                dialog.close();
-                EventEmitter.emit(Events.REFRESH_ALL);
-            };
-        _makeDialogBig($dialog);
-
-        var firstFile = selectedFile || $dialog.find(".commit-files ul li:first-child").text().trim();
-        if (firstFile) {
-            Main.gitControl.getDiffOfFileFromCommit(hashCommit, firstFile).then(function (diff) {
-                var $fileEntry = $dialog.find(".commit-files a[data-file='" + firstFile + "']").first(),
-                    $commitFiles = $dialog.find(".commit-files");
-                $fileEntry.addClass("active");
-                $commitFiles.animate({ scrollTop: $fileEntry.offset().top - $commitFiles.height() });
-                $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
-            });
-        }
-
-        $dialog.find(".commit-files a").on("click", function () {
-            $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
-            var self = $(this);
-            Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).text().trim()).then(function (diff) {
-                $dialog.find(".commit-files a").removeClass("active");
-                self.addClass("active");
-                $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
-                $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
-            });
-        });
-
-        if (!Preferences.get("enableAdvancedFeatures")) {
-            $dialog.find(".git-advanced-features").hide();
-            return;
-        }
-        // advanced features follow
-
-        $dialog.find(".btn-checkout").on("click", function () {
-            var cmd = "git checkout " + hashCommit;
-            Utils.askQuestion(Strings.TITLE_CHECKOUT,
-                              Strings.DIALOG_CHECKOUT + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
-                .then(function (response) {
-                    if (response === true) {
-                        return Git.checkout(hashCommit).then(refreshCallback);
-                    }
-                });
-        });
-
-        $dialog.find(".btn-reset-hard").on("click", function () {
-            var cmd = "git reset --hard " + hashCommit;
-            Utils.askQuestion(Strings.TITLE_RESET,
-                              Strings.DIALOG_RESET_HARD + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
-                .then(function (response) {
-                    if (response === true) {
-                        return Git.reset("--hard", hashCommit).then(refreshCallback);
-                    }
-                });
-        });
-
-        $dialog.find(".btn-reset-mixed").on("click", function () {
-            var cmd = "git reset --mixed " + hashCommit;
-            Utils.askQuestion(Strings.TITLE_RESET,
-                              Strings.DIALOG_RESET_MIXED + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
-                .then(function (response) {
-                    if (response === true) {
-                        return Git.reset("--mixed", hashCommit).then(refreshCallback);
-                    }
-                });
-        });
-
-        $dialog.find(".btn-reset-soft").on("click", function () {
-            var cmd = "git reset --soft " + hashCommit;
-            Utils.askQuestion(Strings.TITLE_RESET,
-                              Strings.DIALOG_RESET_SOFT + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
-                .then(function (response) {
-                    if (response === true) {
-                        return Git.reset("--soft", hashCommit).then(refreshCallback);
-                    }
-                });
-        });
-    }
-
-    // show a commit with given hash in a dialog
-    function showHistoryCommitDialog(hash) {
-        Main.gitControl.getFilesFromCommit(hash).then(function (files) {
-            var list = $.map(files, function (file) {
-                // FUTURE: Remove extensionFunction one day (always use getSmartFileExtension, needs Sprint 38)
-                var extensionFunction = FileUtils.getSmartFileExtension || FileUtils.getFileExtension,
-                    fileExtension = extensionFunction(file),
-                    i = file.lastIndexOf("." + fileExtension),
-                    fileName = file.substring(0, fileExtension && i >= 0 ? i : file.length);
-                return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
-            });
-            _showCommitDiffDialog(hash, list, $tableContainer.find(".git-history-list").data("file-relative"));
-        }).catch(function (err) {
-            ErrorHandler.showError(err, "Failed to load list of diff files");
-        });
-    }
-
     function commitCurrentFile() {
         return Promise.cast(CommandManager.execute("file.save")).then(function () {
             return handleGitReset();
@@ -887,9 +784,6 @@ define(function (require, exports) {
                     return;
                 }
                 FileViewController.addToWorkingSetAndSelect(Utils.getProjectRoot() + $this.data("file"));
-            })
-            .on("click", ".history-commit", function () {
-                showHistoryCommitDialog($(this).attr("data-hash"));
             });
     }
 
