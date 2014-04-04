@@ -62,7 +62,7 @@ define({
     TITLE_RESET:                        "Do you really wish to reset?",
     DIALOG_RESET_HARD:                  "You will lose all changes after this commit!",
     DIALOG_RESET_MIXED:                 "Changes after this commit will be unstaged.",
-    DIALOG_RESET_SOFT:                  "Changes after this commit will be staged for another commmit.",
+    DIALOG_RESET_SOFT:                  "Changes after this commit will be staged for a new commmit.",
     DIFF:                               "Diff",
     DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     ENTER_PASSWORD:                     "Enter password:",
