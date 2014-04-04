@@ -11,7 +11,9 @@ define(function (require, exports, module) {
         EventEmitter    = require("./EventEmitter"),
         ErrorHandler    = require("./ErrorHandler"),
         ExpectedError   = require("./ExpectedError"),
-        Preferences     = require("./Preferences");
+        Preferences     = require("./Preferences"),
+        md5             = require("thirdparty/md5"),
+        marked          = require("marked");
 
     var FILE_STATUS = {
         STAGED: "FILE_STAGED",

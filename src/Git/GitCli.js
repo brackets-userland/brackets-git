@@ -279,8 +279,27 @@ define(function (require, exports) {
 
     function getHistory(branch, skipCommits, file) {
         var separator = "_._",
-            items  = ["hashShort", "hash", "author", "date", "message"],
-            format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
+        newline   = "_.nw._",
+        format    = [
+            "%h",  // abbreviated commit hash
+            "%H",  // commit hash
+            "%an", // author name
+            "%ai", // author date, ISO 8601 format
+            "%ae", // author email
+            "%s",  // subject
+            "%b"   // body
+        ].join(separator) + newline,
+        items     = [
+            "hashShort",
+            "hash",
+            "author",
+            "date",
+            "email",
+            "emailHash",
+            "subject",
+            "body",
+            "commit"
+        ];
 
         var args = ["log", "-100"];
         if (skipCommits) { args.push("--skip=" + skipCommits); }
@@ -291,13 +310,18 @@ define(function (require, exports) {
         if (file) { args.push(file); }
 
         return git(args).then(function (stdout) {
-            return !stdout ? [] : stdout.split("\n").map(function (line) {
-                var result = {},
-                    data = line.split(separator);
+            // Remove trailing separator
+            stdout = stdout.substring(0, stdout.length - 5);
+
+            // Prepare object with commit informations
+            return !stdout ? [] : stdout.split(newline).map(function (line) {
+                var commit  = {},
+                    data    = line.split(separator);
+
                 items.forEach(function (name, i) {
-                    result[name] = data[i];
+                    commit[name] = data[i];
                 });
-                return result;
+                return commit;
             });
         });
     }

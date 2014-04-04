@@ -1,0 +1,46 @@
+<!-- Header -->
+<div class="diff-header">
+    <h1 class="diff-title">{{subject}}</h1>
+    <span class="commit-author">
+        <img class="commit-author-avatar" src="http://gravatar.com/avatar/{{emailHash}}?size=20px" alt="{{email}}">
+        {{author}}
+    </span>
+    <span class="commit-hash" data-hash="{{hash}}">
+        <i class="octicon octicon-git-commit"></i>{{hashShort}}
+    </span>
+</div>
+<!-- Content -->
+<div class="scrollbox">
+    <span class="message">{{{body}}}</span>
+    <!-- Files list -->
+    <div class="table-striped tab-content">
+        <div class="commit-files">
+            <ul class="nav nav-tabs nav-stacked">
+            {{#files}}
+                <li>
+                    <a>
+                        <i class="octicon closed octicon-triangle-right"></i>
+                        <i class="octicon opened octicon-triangle-down"></i>
+                        {{name}}<span class="extension">{{extension}}</span>
+                        {{#enableAdvancedFeatures}}
+                        <button class="git-advanced-features btn-checkout btn left" title="{{Strings.TOOLTIP_CHECKOUT_COMMIT}}">{{Strings.BUTTON_CHECKOUT_COMMIT}}</button>
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" title="{{Strings.TOOLTIP_RESET}}">
+                                <span class="git-reset-label">{{Strings.BUTTON_RESET}}</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu git-dropdown">
+                                <li><a href="#" class="btn-reset-hard">{{Strings.BUTTON_RESET_HARD}}</a></li>
+                                <li><a href="#" class="btn-reset-mixed">{{Strings.BUTTON_RESET_MIXED}}</a></li>
+                                <li><a href="#" class="btn-reset-soft">{{Strings.BUTTON_RESET_SOFT}}</a></li>
+                            </ul>
+                        <div class="git-advanced-features dropup left"></div>
+                        {{/enableAdvancedFeatures}}
+                    </a>
+                    <div class="commit-diff"></div>
+
+                </li>
+            {{/files}}
+            </ul>
+        </div>
+    </div>
+</div>
