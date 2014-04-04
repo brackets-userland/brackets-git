@@ -1,6 +1,7 @@
 define(function (require, exports) {
     "use strict";
 
+    // Brackets modules
     var _                       = brackets.getModule("thirdparty/lodash"),
         CommandManager          = brackets.getModule("command/CommandManager"),
         Dialogs                 = brackets.getModule("widgets/Dialogs"),

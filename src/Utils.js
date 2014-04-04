@@ -20,7 +20,6 @@ define(function (require, exports, module) {
         writeTestResults        = {};
 
     // Implementation
-
     function getProjectRoot() {
         return ProjectManager.getProjectRoot().fullPath;
     }
@@ -174,11 +173,11 @@ define(function (require, exports, module) {
             });
         });
     }
-    
+
     function setLoading($btn) {
         $btn.prop("disabled", true).addClass("btn-loading");
     }
-    
+
     function unsetLoading($btn) {
         $btn.prop("disabled", false).removeClass("btn-loading");
     }

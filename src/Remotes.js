@@ -1,4 +1,5 @@
 define(function (require) {
+    "use strict";
 
     // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),

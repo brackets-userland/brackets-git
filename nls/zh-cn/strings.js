@@ -1,4 +1,5 @@
 /*jshint maxlen:false */
+
 define({
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "在文件末尾添加空行",
     ADD_TO_GITIGNORE:                   "添加到 .gitignore",

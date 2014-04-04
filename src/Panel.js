@@ -486,14 +486,14 @@ define(function (require, exports) {
     function handleGitCommit() {
         var codeInspectionEnabled = Preferences.get("useCodeInspection");
         var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
-        
+
         // Disable button (it will be enabled when selecting files after reset)
         Utils.setLoading(gitPanel.$panel.find(".git-commit"));
-        
+
         /*
         // Get checked files
         var $checked = gitPanel.$panel.find(".check-one:checked");
-        
+
         // TODO: probably some user friendly message that no files are checked for commit.
         if ($checked.length === 0) { return; }
 
@@ -528,11 +528,11 @@ define(function (require, exports) {
             files = _.filter(files, function (file) {
                 return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
             });
-            
+
             if (files.length === 0) {
                 return ErrorHandler.showError(new Error("Commit button should have been disabled"), "Nothing staged to commit");
             }
-            
+
             var lintResults = [],
                 promises = [];
             files.forEach(function (fileObj) {
@@ -609,7 +609,7 @@ define(function (require, exports) {
         }
         return ProjectManager.shouldShow(fileObj);
     }
-    
+
     function _refreshTableContainer(files) {
         if (!gitPanel.isVisible()) {
             return;
@@ -624,7 +624,7 @@ define(function (require, exports) {
         gitPanel.$panel.find(".check-all").prop("checked", allStaged).prop("disabled", files.length === 0);
 
         $tableContainer.empty();
-        
+
         if (files.length === 0) {
             $tableContainer.append($("<p class='git-edited-list nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
         } else {
@@ -654,7 +654,7 @@ define(function (require, exports) {
             refreshCurrentFile();
         }
     }
-    
+
     function refresh() {
         // set the history panel to false and remove the class that show the button history active when refresh
         gitPanel.$panel.find(".git-history").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
@@ -873,12 +873,12 @@ define(function (require, exports) {
         var anyStaged = _.any(files, function (file) { return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1; });
         gitPanel.$panel.find(".git-commit").prop("disabled", !anyStaged);
     }
-    
+
     EventEmitter.on(Events.GIT_STATUS_RESULTS, function (results) {
         _refreshTableContainer(results);
         _toggleCommitButton(results);
     });
-    
+
     function undoLastLocalCommit() {
         Main.gitControl.undoLastLocalCommit().catch(function (err) { ErrorHandler.showError(err, "Impossible undo last commit");  });
         refresh();

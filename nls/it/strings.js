@@ -1,4 +1,5 @@
 /*jshint maxlen:false */
+
 define({
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Aggiungi fine riga alla fine del file",
     ADD_TO_GITIGNORE:                   "Aggiungi al .gitignore",
