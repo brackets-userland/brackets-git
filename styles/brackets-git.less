@@ -135,14 +135,16 @@
     .brackets-git-gutter-modified {
         background-color: @orange;
     }
-    .brackets-git-gutter-modified.brackets-git-gutter-hover {
+    .brackets-git-gutter-modified.brackets-git-gutter-hover:before {
         background-color: lighten(@orange, 15%);
+        content: "\d7";
     }
     .brackets-git-gutter-removed {
         background-color: @red;
     }
-    .brackets-git-gutter-removed.brackets-git-gutter-hover {
+    .brackets-git-gutter-removed.brackets-git-gutter-hover:before {
         background-color: lighten(@red, 15%);
+        content: "-";
     }
     .brackets-git-gutter-deleted-lines {
         color: @red;
