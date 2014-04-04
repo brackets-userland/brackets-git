@@ -315,11 +315,25 @@ define(function (require, exports) {
             }
 
             return Main.gitControl.getBranchName().then(function (branchName) {
-                $gitBranchName.text(branchName)
-                    .off("click")
-                    .on("click", toggleDropdown)
-                    .append($("<span class='dropdown-arrow' />"));
-                Panel.enable();
+
+                // TODO: why this is launched twice on startup?
+                Git.getMergeInfo().then(function (mergeInfo) {
+
+                    if (mergeInfo.mergeMode) {
+                        // TODO: check if anyone is not reading the text if $gitBranchName
+                        branchName += "|MERGING";
+                    }
+
+                    $gitBranchName.text(branchName)
+                        .off("click")
+                        .on("click", toggleDropdown)
+                        .append($("<span class='dropdown-arrow' />"));
+                    Panel.enable();
+
+                }).catch(function (err) {
+                    ErrorHandler.showError(err, "Reading .git state failed");
+                });
+
             }).catch(function (ex) {
                 if (ErrorHandler.contains(ex, "unknown revision")) {
                     $gitBranchName

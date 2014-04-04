@@ -6,7 +6,9 @@
 define(function (require, exports) {
 
     // Local modules
-    var GitCli = require("src/Git/GitCli");
+    var Promise = require("bluebird"),
+        GitCli  = require("src/Git/GitCli"),
+        Utils   = require("src/Utils");
 
     // Implementation
     function pushToNewUpstream(remoteName, remoteBranch) {
@@ -74,6 +76,22 @@ define(function (require, exports) {
         return GitCli.reset("--hard");
     }
 
+    function getMergeInfo() {
+        var gitFolder = Utils.getProjectRoot() + "/.git/",
+            mergeFiles = ["MERGE_HEAD", "MERGE_MODE", "MERGE_MSG"];
+        return Promise.all(mergeFiles.map(function (fileName) {
+            return Utils.loadPathContent(gitFolder + fileName);
+        })).spread(function (head, mode, msg) {
+            var msgSplit = msg ? msg.trim().split(/conflicts:/i) : [];
+            return {
+                headCommit: head ? head.trim() : null,
+                mergeMode: mode !== null,
+                message: msgSplit[0] ? msgSplit[0].trim() : null,
+                conflicts: msgSplit[1] ? msgSplit[1].trim().split("\n").map(function (line) { return line.trim(); }) : []
+            };
+        });
+    }
+
     // Public API
     exports.pushToNewUpstream = pushToNewUpstream;
     exports.getBranches       = getBranches;
@@ -82,6 +100,7 @@ define(function (require, exports) {
     exports.getFileHistory    = getFileHistory;
     exports.resetIndex        = resetIndex;
     exports.discardAllChanges = discardAllChanges;
+    exports.getMergeInfo      = getMergeInfo;
 
     Object.keys(GitCli).forEach(function (method) {
         if (!exports[method]) {

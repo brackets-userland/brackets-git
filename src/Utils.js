@@ -154,6 +154,27 @@ define(function (require, exports, module) {
         });
     }
 
+    function loadPathContent(path) {
+        return new Promise(function (resolve) {
+            FileSystem.resolve(path, function (err, entry) {
+                if (err) {
+                    return resolve(null);
+                }
+                if (entry.isFile) {
+                    entry.read(function (err, content) {
+                        if (err) {
+                            return resolve(null);
+                        }
+                        resolve(content);
+                    });
+                } else {
+                    // TODO: load contents when this is a directory
+                    throw "NOT IMPLEMENTED";
+                }
+            });
+        });
+    }
+
     // Public API
     exports.formatDiff            = formatDiff;
     exports.getProjectRoot        = getProjectRoot;
@@ -162,5 +183,6 @@ define(function (require, exports, module) {
     exports.showOutput            = showOutput;
     exports.isProjectRootWritable = isProjectRootWritable;
     exports.pathExists            = pathExists;
+    exports.loadPathContent       = loadPathContent;
 
 });
