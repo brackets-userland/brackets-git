@@ -936,6 +936,10 @@ define(function (require, exports) {
             });
     }
 
+    EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
+        gitPanel.$panel.find(".git-user-name").text(userName);
+    });
+
     EventEmitter.on(Events.GIT_EMAIL_CHANGED, function (email) {
         gitPanel.$panel.find(".git-user-email").text(email);
     });
