@@ -59,15 +59,3 @@ langs.forEach(function (lang) {
     console.log(lang + " done!");
 
 });
-
-
-
-
-/*
-
-fs.readFile('/etc/passwd', function (err, data) {
-  if (err) throw err;
-  console.log(data);
-});
-
-*/
