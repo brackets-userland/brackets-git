@@ -623,7 +623,9 @@ define(function (require, exports) {
         var allStaged = files.length > 0 && _.all(files, function (file) { return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1; });
         gitPanel.$panel.find(".check-all").prop("checked", allStaged).prop("disabled", files.length === 0);
 
-        $tableContainer.empty();
+        var $editedList = $tableContainer.find(".git-edited-list");
+        var visibleBefore = $editedList.length ? $editedList.is(":visible") : true;
+        $editedList.remove();
 
         if (files.length === 0) {
             $tableContainer.append($("<p class='git-edited-list nothing-to-commit' />").text(Strings.NOTHING_TO_COMMIT));
@@ -653,6 +655,7 @@ define(function (require, exports) {
 
             refreshCurrentFile();
         }
+        $tableContainer.find(".git-edited-list").toggle(visibleBefore);
     }
 
     function refresh() {
@@ -664,6 +667,9 @@ define(function (require, exports) {
             $tableContainer.empty();
             return Promise.resolve();
         }
+
+        $tableContainer.find(".git-history-list").remove();
+        $tableContainer.find(".git-edited-list").show();
 
         var p1 = Git.status();
 
@@ -1174,6 +1180,9 @@ define(function (require, exports) {
     });
     EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
         refreshCurrentFile();
+    });
+    EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, function () {
+        refresh();
     });
 
     exports.init = init;
