@@ -620,7 +620,7 @@ define(function (require, exports) {
             return shouldShow(file);
         });
 
-        var allStaged = _.all(files, function (file) { return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1; });
+        var allStaged = files.length > 0 && _.all(files, function (file) { return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1; });
         gitPanel.$panel.find(".check-all").prop("checked", allStaged).prop("disabled", files.length === 0);
 
         $tableContainer.empty();
