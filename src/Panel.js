@@ -668,6 +668,9 @@ define(function (require, exports) {
             return Promise.resolve();
         }
 
+        $tableContainer.find(".git-history-list").remove();
+        $tableContainer.find(".git-edited-list").show();
+
         var p1 = Git.status();
 
         //- push button
@@ -1177,6 +1180,9 @@ define(function (require, exports) {
     });
     EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
         refreshCurrentFile();
+    });
+    EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, function () {
+        refresh();
     });
 
     exports.init = init;

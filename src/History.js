@@ -167,13 +167,11 @@ define(function (require) {
             currentFile = $historyList.data("file") || null,
             currentHistoryMode = historyEnabled ? (currentFile ? "FILE" : "GLOBAL") : "DISABLED",
             $spinner = $(".spinner", $gitPanel),
-            file,
-            modeChange;
+            file;
 
         if (currentHistoryMode !== newHistoryMode) {
             // we are switching the modes so enable
             historyEnabled = true;
-            modeChange = true;
         } else if (!newDocument) {
             // we are not changing the mode and we are not switching to a new document
             historyEnabled = !historyEnabled;
@@ -192,7 +190,7 @@ define(function (require) {
         }
 
         // Render .git-history-list if is not already generated or if the viewed file for file history has changed
-        if (historyEnabled && ($historyList.length === 0 || modeChange || currentFile !== (file ? file.absolute : null))) {
+        if (historyEnabled && ($historyList.length === 0 || currentFile !== (file ? file.absolute : null))) {
             if ($historyList.length > 0) {
                 $historyList.remove();
             }

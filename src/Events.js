@@ -8,6 +8,7 @@ define(function (require, exports) {
 
     // Brackets events
     exports.BRACKETS_CURRENT_DOCUMENT_CHANGE = "brackets.current.document.change";
+    exports.BRACKETS_PROJECT_CHANGE = "brackets.project.change";
     exports.HANDLE_PROJECT_REFRESH = "handle.project.refresh";
 
     // Git events

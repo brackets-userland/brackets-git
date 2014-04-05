@@ -63,6 +63,9 @@ define(function (require, exports) {
         $(DocumentManager).on("currentDocumentChange", function () {
             EventEmitter.emit(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE);
         });
+        $(ProjectManager).on("projectOpen", function () {
+            EventEmitter.emit(Events.BRACKETS_PROJECT_CHANGE);
+        });
     }
 
     function _addRemoveItemInGitignore(selectedEntry, method) {
