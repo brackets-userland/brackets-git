@@ -58,8 +58,8 @@ define(function (require, exports) {
      */
     function _reloadDoc(doc) {
         return Promise.cast(FileUtils.readAsText(doc.file))
-            .then(function (text, readTimestamp) {
-                doc.refreshText(text, readTimestamp);
+            .then(function (text) {
+                doc.refreshText(text, new Date());
             })
             .catch(function (err) {
                 ErrorHandler.logError("Error reloading contents of " + doc.file.fullPath);
