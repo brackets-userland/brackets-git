@@ -220,6 +220,10 @@ define(function (require) {
     EventEmitter.on(Events.GIT_ENABLED, function () {
         initVariables();
     });
+    EventEmitter.on(Events.GIT_DISABLED, function () {
+        $historyList.remove();
+        $historyList = $();
+    });
     EventEmitter.on(Events.HISTORY_SHOW, function (mode) {
         handleToggleHistory(mode === "FILE" ? "FILE" : "GLOBAL");
     });
