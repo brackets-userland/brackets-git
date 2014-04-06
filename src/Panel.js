@@ -53,7 +53,7 @@ define(function (require, exports) {
      * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
      *
      * @param {!Document} doc
-     * @return {$.Promise} Resolved after editor has been refreshed; rejected if unable to load the
+     * @return {Promise} Resolved after editor has been refreshed; rejected if unable to load the
      *      file's new content. Errors are logged but no UI is shown.
      */
     function _reloadDoc(doc) {
