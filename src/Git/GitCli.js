@@ -453,8 +453,15 @@ define(function (require, exports) {
                         throw new Error("Unexpected status: " + statusChar);
                 }
 
+                var display = file,
+                    io = file.indexOf("->");
+                if (io !== -1) {
+                    file = file.substring(io + 2).trim();
+                }
+
                 results.push({
                     status: status,
+                    display: display,
                     file: file,
                     name: file.substring(file.lastIndexOf("/") + 1)
                 });
@@ -517,6 +524,16 @@ define(function (require, exports) {
         return git(["clean", "-f", "-d"]);
     }
 
+    function getFilesFromCommit(hash) {
+        return git(["diff", "--name-only", hash + "^!"]).then(function (stdout) {
+            return !stdout ? [] : stdout.split("\n");
+        });
+    }
+
+    function getDiffOfFileFromCommit(hash, file) {
+        return git(["diff", "--no-color", hash + "^!", "--", file]);
+    }
+
     // Public API
     exports._git                      = git;
     exports.FILE_STATUS               = FILE_STATUS;
@@ -550,5 +567,7 @@ define(function (require, exports) {
     exports.diffFile                  = diffFile;
     exports.diffFileNice              = diffFileNice;
     exports.clean                     = clean;
+    exports.getFilesFromCommit        = getFilesFromCommit;
+    exports.getDiffOfFileFromCommit   = getDiffOfFileFromCommit;
 
 });
