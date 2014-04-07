@@ -1,6 +1,55 @@
+<div id="history-viewer">
+    <div class="header">
+        <h1 class="commit-title">{{commit.subject}}</h1>
+        <span class="commit-author">
+            <div class="commit-author-avatar">
+                {{#useGravatar}}<img src="http://gravatar.com/avatar/{{commit.emailHash}}?size=100px">{{/useGravatar}}
+                {{^useGravatar}}<span>{{commit.avatarLetter}}</span>{{/useGravatar}}
+            </div>
+            <span class="commit-author-name">{{commit.author}}</span>
+        </span>
+        <span class="commit-hash" data-hash="{{commit.hash}}">
+            <i class="octicon octicon-git-commit"></i>{{commit.hashShort}}
+        </span>
+    </div>
+    <div class="body">
+        <div class="commitBody">{{{bodyMarkdown}}}</div>
+        <div class="table-striped tab-content">
+            <div class="commit-files">
+                <ul class="nav nav-tabs nav-stacked">
+                {{#files}}
+                    <li>
+                        <a>
+                            <i class="caret caret-right closed"></i>
+                            <i class="caret opened"></i>
+                            {{name}}<span class="extension">{{extension}}</span>
+                        </a>
+                        <div class="commit-diff"></div>
+                    </li>
+                {{/files}}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <button class="git-advanced-features btn-checkout btn left" title="{{Strings.TOOLTIP_CHECKOUT_COMMIT}}">{{Strings.BUTTON_CHECKOUT_COMMIT}}</button>
+        <div class="git-advanced-features dropup left">
+            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" title="{{Strings.TOOLTIP_RESET}}">
+                <span class="git-reset-label">{{Strings.BUTTON_RESET}}</span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu git-dropdown">
+                <li><a href="#" class="btn-reset-hard">{{Strings.BUTTON_RESET_HARD}}</a></li>
+                <li><a href="#" class="btn-reset-mixed">{{Strings.BUTTON_RESET_MIXED}}</a></li>
+                <li><a href="#" class="btn-reset-soft">{{Strings.BUTTON_RESET_SOFT}}</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--
 <div id="git-commit-diff-dialog" class="modal">
     <div class="modal-header">
-        <h1 class="dialog-title">{{Strings.COMMIT}} <span class="selectable-text">{{hashCommit}}</span></h1>
+        <h1 class="dialog-title">{{Strings.COMMIT}} <span class="selectable-text">{{commit.hash}}</span></h1>
     </div>
     <div class="modal-body table-striped tab-content">
         <div class="commit-files">
@@ -18,18 +67,7 @@
         <div style="clear: both;"></div>
     </div>
     <div class="modal-footer">
-        <button class="git-advanced-features btn-checkout btn left" title="{{Strings.TOOLTIP_CHECKOUT_COMMIT}}">{{Strings.BUTTON_CHECKOUT_COMMIT}}</button>
-        <div class="git-advanced-features dropup left">
-            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" title="{{Strings.TOOLTIP_RESET}}">
-                <span class="git-reset-label">{{Strings.BUTTON_RESET}}</span>
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu git-dropdown">
-                <li><a href="#" class="btn-reset-hard">{{Strings.BUTTON_RESET_HARD}}</a></li>
-                <li><a href="#" class="btn-reset-mixed">{{Strings.BUTTON_RESET_MIXED}}</a></li>
-                <li><a href="#" class="btn-reset-soft">{{Strings.BUTTON_RESET_SOFT}}</a></li>
-            </ul>
-        </div>
-        <button data-button-id="close" class="dialog-button btn btn-80">{{Strings.BUTTON_CLOSE}}</button>
+
     </div>
 </div>
+-->

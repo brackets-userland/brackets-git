@@ -4,7 +4,8 @@ define(function (require, exports) {
     var EditorManager = brackets.getModule("editor/EditorManager"),
         FileUtils = brackets.getModule("file/FileUtils");
 
-    var ErrorHandler = require("./ErrorHandler"),
+    var marked = require("marked"),
+        ErrorHandler = require("src/ErrorHandler"),
         Events = require("src/Events"),
         EventEmitter = require("src/EventEmitter"),
         Git = require("src/Git/Git"),
@@ -12,15 +13,15 @@ define(function (require, exports) {
         Strings = require("strings"),
         Utils = require("src/Utils");
 
-    var historyViewerTemplate = require("text!templates/history-viewer.html"),
-        commitDiffTemplate = require("text!templates/git-commit-diff.html"),
-        commitDiffDetailsTemplate = require("text!templates/git-diff-details.html");
+    var historyViewerTemplate = require("text!templates/history-viewer.html");
 
-    function attachEvents($viewer, hashCommit) {
+    var commit = null;
+
+    function attachEvents($viewer) {
         $viewer.find(".commit-files a").on("click", function () {
             $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
             var self = $(this);
-            Git.getDiffOfFileFromCommit(hashCommit, $(this).text().trim()).then(function (diff) {
+            Git.getDiffOfFileFromCommit(commit.hash, $(this).text().trim()).then(function (diff) {
                 $viewer.find(".commit-files a").removeClass("active");
                 self.addClass("active");
                 $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
@@ -29,71 +30,75 @@ define(function (require, exports) {
         });
 
         if (Preferences.get("enableAdvancedFeatures")) {
-            attachAdvancedEvents($viewer, hashCommit);
+            attachAdvancedEvents($viewer);
         } else {
             // TODO: put this into template
             $viewer.find(".git-advanced-features").hide();
         }
     }
 
-    function attachAdvancedEvents($viewer, hashCommit) {
+    function attachAdvancedEvents($viewer) {
         var refreshCallback  = function () {
             // dialog.close();
             EventEmitter.emit(Events.REFRESH_ALL);
         };
 
         $viewer.find(".btn-checkout").on("click", function () {
-            var cmd = "git checkout " + hashCommit;
+            var cmd = "git checkout " + commit.hash;
             Utils.askQuestion(Strings.TITLE_CHECKOUT,
                               Strings.DIALOG_CHECKOUT + "<br><br>" + cmd,
                               {booleanResponse: true, noescape: true})
                 .then(function (response) {
                     if (response === true) {
-                        return Git.checkout(hashCommit).then(refreshCallback);
+                        return Git.checkout(commit.hash).then(refreshCallback);
                     }
                 });
         });
 
         $viewer.find(".btn-reset-hard").on("click", function () {
-            var cmd = "git reset --hard " + hashCommit;
+            var cmd = "git reset --hard " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_HARD + "<br><br>" + cmd,
                               {booleanResponse: true, noescape: true})
                 .then(function (response) {
                     if (response === true) {
-                        return Git.reset("--hard", hashCommit).then(refreshCallback);
+                        return Git.reset("--hard", commit.hash).then(refreshCallback);
                     }
                 });
         });
 
         $viewer.find(".btn-reset-mixed").on("click", function () {
-            var cmd = "git reset --mixed " + hashCommit;
+            var cmd = "git reset --mixed " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_MIXED + "<br><br>" + cmd,
                               {booleanResponse: true, noescape: true})
                 .then(function (response) {
                     if (response === true) {
-                        return Git.reset("--mixed", hashCommit).then(refreshCallback);
+                        return Git.reset("--mixed", commit.hash).then(refreshCallback);
                     }
                 });
         });
 
         $viewer.find(".btn-reset-soft").on("click", function () {
-            var cmd = "git reset --soft " + hashCommit;
+            var cmd = "git reset --soft " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_SOFT + "<br><br>" + cmd,
                               {booleanResponse: true, noescape: true})
                 .then(function (response) {
                     if (response === true) {
-                        return Git.reset("--soft", hashCommit).then(refreshCallback);
+                        return Git.reset("--soft", commit.hash).then(refreshCallback);
                     }
                 });
         });
     }
 
-    function renderViewerContent($viewer, hashCommit, files, selectedFile) {
+    function renderViewerContent($viewer, files, selectedFile) {
+        var bodyMarkdown = marked(commit.body, {gfm: true, breaks: true});
+
         $viewer.append(Mustache.render(historyViewerTemplate, {
-            hashCommit: hashCommit,
+            commit: commit,
+            bodyMarkdown: bodyMarkdown,
+            useGravatar: Preferences.get("useGravatar"),
             files: files,
             Strings: Strings,
             enableAdvancedFeatures: Preferences.get("enableAdvancedFeatures")
@@ -101,7 +106,7 @@ define(function (require, exports) {
 
         var firstFile = selectedFile || $viewer.find(".commit-files ul li:first-child").text().trim();
         if (firstFile) {
-            Git.getDiffOfFileFromCommit(hashCommit, firstFile).then(function (diff) {
+            Git.getDiffOfFileFromCommit(commit.hash, firstFile).then(function (diff) {
                 var $fileEntry = $viewer.find(".commit-files a[data-file='" + firstFile + "']").first(),
                     $commitFiles = $viewer.find(".commit-files");
                 $fileEntry.addClass("active");
@@ -110,12 +115,12 @@ define(function (require, exports) {
             });
         }
 
-        attachEvents($viewer, hashCommit);
+        attachEvents($viewer);
     }
 
     function render(hash, $editorHolder) {
         var $container = $("<div>").addClass("git spinner large spin");
-        Git.getFilesFromCommit(hash).then(function (files) {
+        Git.getFilesFromCommit(commit.hash).then(function (files) {
             var list = files.map(function (file) {
                 var fileExtension = FileUtils.getSmartFileExtension(file),
                     i = file.lastIndexOf("." + fileExtension),
@@ -123,7 +128,7 @@ define(function (require, exports) {
                 return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
             });
             var file = $("#git-panel .git-history-list").data("file-relative");
-            return renderViewerContent($container, hash, list, file);
+            return renderViewerContent($container, list, file);
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to load list of diff files");
         }).finally(function () {
@@ -136,12 +141,13 @@ define(function (require, exports) {
         // detach events that were added by this viewer to another element than one added to $editorHolder
     }
 
-    function show(hash) {
+    function show(commitInfo) {
+        commit = commitInfo;
         // this is a "private" API but it's so convienient it's a sin not to use it
         EditorManager._showCustomViewer({
             render: render,
             onRemove: onRemove
-        }, hash);
+        }, commit.hash);
     }
 
     // Public API
@@ -150,12 +156,6 @@ define(function (require, exports) {
 });
 
 /*
-TODO: new files:
-var gitPanelHistoryTemplate         = require("text!templates/git-panel-history.html"),
-        gitPanelHistoryCommitsTemplate  = require("text!templates/git-panel-history-commits.html"),
-        gitDiffDetailsTemplate          = require("text!templates/git-diff-details.html"),
-        gitCommitDiffTemplate           = require("text!templates/git-commit-diff.html"),
-
 // Render view with the modified files list and the diff commited
     function _renderCommitDiff(commit, files) {
 

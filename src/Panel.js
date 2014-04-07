@@ -20,7 +20,6 @@ define(function (require, exports) {
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         StringUtils        = brackets.getModule("utils/StringUtils"),
         Git                = require("src/Git/Git"),
-        HistoryViewer      = require("src/HistoryViewer"),
         Events             = require("./Events"),
         EventEmitter       = require("./EventEmitter"),
         Preferences        = require("./Preferences"),
@@ -547,18 +546,17 @@ define(function (require, exports) {
             files.forEach(function (fileObj) {
                 var queue = Promise.resolve();
 
-                var updateIndex = false;
-                if (fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1) {
-                    updateIndex = true;
-                }
+                var isDeleted = fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1,
+                    updateIndex = isDeleted;
 
                 // strip whitespace if configured to do so and file was not deleted
-                if (stripWhitespace && updateIndex === false) {
+                if (stripWhitespace && !isDeleted) {
                     // strip whitespace only for recognized languages so binary files won't get corrupted
                     var langId = LanguageManager.getLanguageForPath(fileObj.file).getId();
                     if (["unknown", "binary", "image", "markdown"].indexOf(langId) === -1) {
                         queue = queue.then(function () {
-                            var clearWholeFile = fileObj.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1;
+                            var clearWholeFile = fileObj.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
+                                                 fileObj.status.indexOf(Git.FILE_STATUS.RENAMED) !== -1;
                             return stripWhitespaceFromFile(fileObj.file, clearWholeFile);
                         });
                     }
@@ -566,11 +564,14 @@ define(function (require, exports) {
 
                 queue = queue.then(function () {
                     // stage the files again to include stripWhitespace changes
-                    return Git.stage(fileObj.file, updateIndex);
+                    // do not stage deleted files
+                    if (!isDeleted) {
+                        return Git.stage(fileObj.file, updateIndex);
+                    }
                 });
 
                 // do a code inspection for the file, if it was not deleted
-                if (codeInspectionEnabled && updateIndex === false) {
+                if (codeInspectionEnabled && !isDeleted) {
                     queue = queue.then(function () {
                         return lintFile(fileObj.file).then(function (result) {
                             if (result) {
@@ -795,9 +796,11 @@ define(function (require, exports) {
             .off()
             .on("click", ".check-one", function (e) {
                 e.stopPropagation();
-                var file = $(this).closest("tr").attr("x-file");
+                var $tr = $(this).closest("tr"),
+                    file = $tr.attr("x-file"),
+                    status = $tr.attr("x-status");
                 if ($(this).is(":checked")) {
-                    Git.stage(file).then(function () {
+                    Git.stage(file, status === Git.FILE_STATUS.DELETED).then(function () {
                         Git.status();
                     });
                 } else {

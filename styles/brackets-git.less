@@ -1,9 +1,9 @@
 @import "colors.less";
 @import "components.less";
 @import "editor-holder.less";
+@import "history.less";
 
 @gutterWidth: 0.65em; // using ems so that it'll be scalable on cmd +/-
-
 
 // TODO: copy from Brackets later once imports are fixed
 @tc-control-border-radius: 3px;
@@ -183,10 +183,12 @@
         margin-left: 7px;
         margin-right: 10px;
     }
-    .btn-group {
-        line-height: 1;
-        button {
-            height: 26px;
+    .mainToolbar {
+        .btn-group {
+            line-height: 1;
+            button {
+                height: 26px;
+            }
         }
     }
     .btn-git-diff, .btn-git-undo, .btn-git-delete {
