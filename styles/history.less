@@ -24,8 +24,6 @@
         border-radius: 3px;
         text-align: center;
         span {
-            font-size: @size;
-            line-height: @size;
             text-transform: capitalize;
             position: absolute;
             top: 0;
@@ -33,13 +31,21 @@
             right: 0;
             bottom: 0;
             text-align: center;
+            background: #FFFFFF;
             .text {
-                -webkit-filter: invert(100%);
-                -webkit-background-clip: text !important;
-                color: transparent;
+                font-size: @size;
+                line-height: @size;
+                color: @defaultText;
+                &.colored {
+                    -webkit-filter: invert(100%);
+                    // FIXME: if someone with some free time can remove this `!important` from the line below...
+                    -webkit-background-clip: text !important;
+                    color: transparent;
+                }
             }
         }
         img {
+            position: absolute;
             left: 0;
             top: 0;
         }

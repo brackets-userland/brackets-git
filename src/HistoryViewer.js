@@ -125,7 +125,9 @@ define(function (require, exports) {
         $viewer.append(Mustache.render(historyViewerTemplate, {
             commit: commit,
             bodyMarkdown: bodyMarkdown,
-            useGravatar: Preferences.get("useGravatar"),
+            useGravatar: (Preferences.get("avatarType") == "gravatar") ? true : false,
+            useBwAvatar: (Preferences.get("avatarType") == "bwAvatar") ? true : false,
+            useColoredAvatar: (Preferences.get("avatarType") == "coloredAvatar") ? true : false,
             files: files,
             Strings: Strings,
             enableAdvancedFeatures: Preferences.get("enableAdvancedFeatures")

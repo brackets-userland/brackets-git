@@ -15,7 +15,7 @@ define(function (require, exports, module) {
         "markModifiedInTree": {             "type": "boolean",           "value": true          },
         "useCodeInspection": {              "type": "boolean",           "value": true          },
         "useGitFtp": {                      "type": "boolean",           "value": false         },
-        "useGravatar": {                    "type": "boolean",           "value": false         },
+        "avatarType": {                     "type": "string",            "value": "bwAvatar"    },
         "showBashButton": {                 "type": "boolean",           "value": true          },
         "dateMode": {                       "type": "number",            "value": 1             },
         "dateFormat": {                     "type": "string",            "value": null          },

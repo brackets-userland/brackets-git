@@ -3,8 +3,9 @@
         <h1 class="commit-title">{{commit.subject}}</h1>
         <span class="commit-author">
             <div class="commit-author-avatar">
-                {{#useGravatar}}<img src="http://gravatar.com/avatar/{{commit.emailHash}}?size=100px">{{/useGravatar}}
-                {{^useGravatar}}<span style="{{commit.cssAvatar}}"><span class="text" style="{{commit.cssAvatar}}">{{commit.avatarLetter}}</span></span>{{/useGravatar}}
+                {{#useBwAvatar}}<span><span class="text">{{commit.avatarLetter}}</span></span>{{/useBwAvatar}}
+                {{#useColoredAvatar}}<span style="{{commit.cssAvatar}}"><span class="text colored" style="{{commit.cssAvatar}}">{{commit.avatarLetter}}</span></span>{{/useColoredAvatar}}
+                {{#useGravatar}}<img src="http://gravatar.com/avatar/{{commit.emailHash}}?size=30px">{{/useGravatar}}
             </div>
             <span class="commit-author-name">{{commit.author}}</span>
         </span>

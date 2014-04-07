@@ -67,7 +67,9 @@ define(function (require) {
 
                 var templateData = {
                     commits: commits,
-                    useGravatar: Preferences.get("useGravatar"),
+                    useGravatar: (Preferences.get("avatarType") == "gravatar") ? true : false,
+                    useBwAvatar: (Preferences.get("avatarType") == "bwAvatar") ? true : false,
+                    useColoredAvatar: (Preferences.get("avatarType") == "coloredAvatar") ? true : false,
                     Strings: Strings
                 };
 
@@ -111,7 +113,9 @@ define(function (require) {
 
                         var templateData = {
                             commits: commits,
-                            useGravatar: Preferences.get("useGravatar"),
+                            useGravatar: (Preferences.get("avatarType") == "gravatar") ? true : false,
+                            useBwAvatar: (Preferences.get("avatarType") == "bwAvatar") ? true : false,
+                            useColoredAvatar: (Preferences.get("avatarType") == "coloredAvatar") ? true : false,
                             Strings: Strings
                         };
                         var commitsHtml = Mustache.render(gitPanelHistoryCommitsTemplate, templateData);
@@ -137,15 +141,18 @@ define(function (require) {
 
         _.forEach(commits, function (commit) {
 
-            // email hash for gravatars or CSS avatar
+            // email hash for gravatars or colored avatars
             commit.emailHash = md5(commit.email);
-            if (!Preferences.get("useGravatar")) {
+            var avatarType = Preferences.get("avatarType");
+            if (avatarType == "coloredAvatar" || avatarType == "bwAvatar") {
                 commit.avatarLetter = commit.author.substring(0, 1);
-                commit.cssAvatar  = "background: linear-gradient(";
-                commit.cssAvatar += "to left,";
-                commit.cssAvatar += "#" + commit.emailHash.substring(0, 6)  + " 50%,";
-                commit.cssAvatar += "#" + commit.emailHash.substring(6, 12) + " 50%";
-                commit.cssAvatar += ")";
+                if (avatarType == "coloredAvatar") {
+                    commit.cssAvatar  = "background: linear-gradient(";
+                    commit.cssAvatar += "to left,";
+                    commit.cssAvatar += "#" + commit.emailHash.substring(0, 6)  + " 50%,";
+                    commit.cssAvatar += "#" + commit.emailHash.substring(6, 12) + " 50%";
+                    commit.cssAvatar += ")";
+                }
             }
 
             // do not shorten the strings, use https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow instead
