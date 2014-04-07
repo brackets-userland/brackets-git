@@ -40,5 +40,11 @@
     "requireLineFeedAtFileEnd":                     true,
     "requireCapitalizedConstructors":               true,
     "safeContextKeyword":                           ["self"],
-    "disallowYodaConditions":                       true
+    "disallowYodaConditions":                       true,
+
+    "additionalRules":                              ["tools/jscs-rules/*.js"],
+    "forbiddenFunctions":                           [
+                                                        "$.",
+                                                        ["$.map","_.map"], ["$.each","_.each"]
+                                                    ]
 }

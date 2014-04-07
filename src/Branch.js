@@ -1,6 +1,3 @@
-/*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, define, Mustache */
-
 define(function (require, exports) {
     "use strict";
 
@@ -64,6 +61,15 @@ define(function (require, exports) {
             var $dialog = dialog.getElement();
             $dialog.find("input").focus();
 
+            var $toBranch = $dialog.find("[name='branch-target']");
+            var $useRebase = $dialog.find("[name='use-rebase']");
+            if (fromBranch === "master") {
+                $useRebase.prop("checked", true);
+            }
+            if ($toBranch.val() === "master") {
+                $useRebase.prop("checked", false).prop("disabled", true);
+            }
+
             var $mergeMessage = $dialog.find("[name='merge-message']");
             $mergeMessage.attr("placeholder", "Merge branch '" + fromBranch + "'");
             $dialog.find(".fill-pr").on("click", function () {
@@ -76,15 +82,28 @@ define(function (require, exports) {
                 if (buttonId === "ok") {
                     // right now only merge to current branch without any configuration
                     // later delete merge branch and so ...
+                    var useRebase = $useRebase.prop("checked");
                     var mergeMsg = $mergeMessage.val();
-                    Main.gitControl.mergeBranch(fromBranch, mergeMsg).catch(function (err) {
-                        throw ErrorHandler.showError(err, "Merge failed");
-                    }).then(function (stdout) {
-                        // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
-                        CommandManager.execute("file.refresh");
-                        // show merge output
-                        Utils.showOutput(stdout, Strings.MERGE_RESULT);
-                    });
+
+                    if (useRebase) {
+
+                        Git.rebaseInit(fromBranch).catch(function (err) {
+                            throw ErrorHandler.showError(err, "Rebase failed");
+                        }).then(function (stdout) {
+                            Utils.showOutput(stdout, Strings.REBASE_RESULT);
+                            EventEmitter.emit(Events.REFRESH_ALL);
+                        });
+
+                    } else {
+
+                        Main.gitControl.mergeBranch(fromBranch, mergeMsg).catch(function (err) {
+                            throw ErrorHandler.showError(err, "Merge failed");
+                        }).then(function (stdout) {
+                            Utils.showOutput(stdout, Strings.MERGE_RESULT);
+                            EventEmitter.emit(Events.REFRESH_ALL);
+                        });
+
+                    }
                 }
             });
         });
@@ -110,8 +129,7 @@ define(function (require, exports) {
                     DocumentManager.closeFullEditor(oFile);
                 }
             });
-            // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
-            CommandManager.execute("file.refresh");
+            EventEmitter.emit(Events.REFRESH_ALL);
         }).catch(function (err) {
             ErrorHandler.showError(err, "Getting list of deleted files failed.");
         });
@@ -178,8 +196,7 @@ define(function (require, exports) {
                             ErrorHandler.showError(err, "Creating new branch failed");
                         }).then(function () {
                             closeDropdown();
-                            // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
-                            CommandManager.execute("file.refresh");
+                            EventEmitter.emit(Events.REFRESH_ALL);
                         });
                     }
                 });
@@ -324,7 +341,20 @@ define(function (require, exports) {
                         branchName += "|MERGING";
                     }
 
-                    $gitBranchName.text(branchName)
+                    if (mergeInfo.rebaseMode) {
+                        if (mergeInfo.rebaseHead) {
+                            branchName = mergeInfo.rebaseHead;
+                        }
+                        branchName += "|REBASE";
+                        if (mergeInfo.rebaseNext && mergeInfo.rebaseLast) {
+                            branchName += "(" + mergeInfo.rebaseNext + "/" + mergeInfo.rebaseLast + ")";
+                        }
+                    }
+                    EventEmitter.emit(Events.REBASE_MODE, mergeInfo.rebaseMode);
+
+                    $gitBranchName
+                        .text(branchName)
+                        .attr("title", branchName.length > 15 ? branchName : null)
                         .off("click")
                         .on("click", toggleDropdown)
                         .append($("<span class='dropdown-arrow' />"));
@@ -365,6 +395,7 @@ define(function (require, exports) {
     }
 
     EventEmitter.on(Events.REFRESH_ALL, function () {
+        CommandManager.execute("file.refresh");
         refresh();
     });
 

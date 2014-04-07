@@ -4,11 +4,12 @@
 
 ## 0.13.0
 * `Q` library has been completely removed and replaced by `bluebird`
+* Rebasing is now possible with this extension.
+* You can fill in a merge message while merging a branch.
+* Improved new branch dialog.
 * Clone won't timeout anymore when cloning large repositories.
 * Switching between branches will never timeout.
-* Improved new branch dialog.
 * Git processes that timeouted (waiting for password) will no longer stay opened in your OS.
-* You can fill in a merge message while merging a branch.
 * Fixed some console errors when not working in a Git repository.
 * Modified files are now also marked in working files list.
 * Fixed a bug when an empty repository is opened (without master branch)
@@ -22,6 +23,7 @@
 * Added French translation by [rainje](https://github.com/rainje)
 * Fixed some errors in translations by [Fez Vrasta](https://github.com/FezVrasta)
 * Various UI improvements by [Fez Vrasta](https://github.com/FezVrasta), [Marcel Gerber](https://github.com/SAPlayer) and [Larz](https://github.com/larz0)
+* Redesigned history by [Fez Vrasta](https://github.com/FezVrasta)
 
 ## 0.12.2
 * Top menu has been removed - you can access settings through panel or File > Git settings...

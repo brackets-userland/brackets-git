@@ -79,18 +79,54 @@ define(function (require, exports) {
     }
 
     function getMergeInfo() {
-        var gitFolder = Utils.getProjectRoot() + "/.git/",
-            mergeFiles = ["MERGE_HEAD", "MERGE_MODE", "MERGE_MSG"];
-        return Promise.all(mergeFiles.map(function (fileName) {
+        var baseCheck  = ["MERGE_MODE", "rebase-apply"],
+            mergeCheck = ["MERGE_HEAD", "MERGE_MSG"],
+            rebaseCheck = ["rebase-apply/next", "rebase-apply/last", "rebase-apply/head-name"],
+            gitFolder  = Utils.getProjectRoot() + "/.git/";
+
+        return Promise.all(baseCheck.map(function (fileName) {
             return Utils.loadPathContent(gitFolder + fileName);
-        })).spread(function (head, mode, msg) {
-            var msgSplit = msg ? msg.trim().split(/conflicts:/i) : [];
-            return {
-                headCommit: head ? head.trim() : null,
-                mergeMode: mode !== null,
-                message: msgSplit[0] ? msgSplit[0].trim() : null,
-                conflicts: msgSplit[1] ? msgSplit[1].trim().split("\n").map(function (line) { return line.trim(); }) : []
+        })).spread(function (mergeMode, rebaseMode) {
+            var obj = {
+                mergeMode: mergeMode !== null,
+                rebaseMode: rebaseMode !== null
             };
+            if (obj.mergeMode) {
+
+                return Promise.all(mergeCheck.map(function (fileName) {
+                    return Utils.loadPathContent(gitFolder + fileName);
+                })).spread(function (head, msg) {
+
+                    if (head) {
+                        obj.headCommit = head.trim();
+                    }
+                    var msgSplit = msg ? msg.trim().split(/conflicts:/i) : [];
+                    if (msgSplit[0]) {
+                        obj.message = msgSplit[0].trim();
+                    }
+                    if (msgSplit[1]) {
+                        obj.conflicts = msgSplit[1].trim().split("\n").map(function (line) { return line.trim(); });
+                    }
+                    return obj;
+
+                });
+
+            }
+            if (obj.rebaseMode) {
+
+                return Promise.all(rebaseCheck.map(function (fileName) {
+                    return Utils.loadPathContent(gitFolder + fileName);
+                })).spread(function (next, last, head) {
+
+                    if (next) { obj.rebaseNext = next.trim(); }
+                    if (last) { obj.rebaseLast = last.trim(); }
+                    if (head) { obj.rebaseHead = head.trim().substring("refs/heads/".length); }
+                    return obj;
+
+                });
+
+            }
+            return obj;
         });
     }
 

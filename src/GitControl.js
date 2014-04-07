@@ -261,22 +261,6 @@ define(function (require, exports, module) {
             return this.executeCommand(this._git, args);
         },
 
-        getFilesFromCommit: function (hash) {
-            var args = [
-                "diff",
-                "--name-only",
-                escapeShellArg(hash + "^!")
-            ];
-            return this.executeCommand(this._git, args).then(function (stdout) {
-                return !stdout ? [] : stdout.split("\n");
-            });
-        },
-
-        getDiffOfFileFromCommit: function (hash, file) {
-            var args = ["diff", "--no-color", escapeShellArg(hash + "^!"), "--", escapeShellArg(file)];
-            return this.executeCommand(this._git, args);
-        },
-
         getBlame: function (file, from, to) {
             var args = ["blame", "-w", "--line-porcelain"];
             if (from || to) { args.push("-L" + from + "," + to); }

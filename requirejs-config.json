@@ -3,6 +3,7 @@
         "bluebird": "./thirdparty/bluebird",
         "eventemitter2": "./thirdparty/eventemitter2",
         "marked": "./thirdparty/marked",
+        "md5": "./thirdparty/md5",
         "moment": "./thirdparty/moment",
         "URI": "./thirdparty/URI"
     },

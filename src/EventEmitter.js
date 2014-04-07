@@ -19,10 +19,21 @@ define(function (require, exports, module) {
     if (debugOn) {
         emInstance._emit = emInstance.emit;
         emInstance.emit = function () {
-            if (!arguments[0]) {
+
+            var args = _.toArray(arguments);
+            var eventName = args.shift();
+            if (!eventName) {
                 throw new Error("no event has been thrown!");
             }
-            console.log("[brackets-git] Event invoked: " + arguments[0]);
+            var listenersCount = this.listeners(eventName).length;
+            var argsString = args.map(function (arg) {
+                if (typeof arg === "function") { return "function(){...}"; }
+                return arg.toString();
+            }).join(", ");
+            if (argsString) { argsString = " - " + argsString; }
+            argsString = argsString + " (" + listenersCount + " listeners)";
+            console.log("[brackets-git] Event invoked: " + eventName + argsString);
+
             return this._emit.apply(this, arguments);
         };
     }

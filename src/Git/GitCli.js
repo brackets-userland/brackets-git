@@ -83,10 +83,7 @@ define(function (require, exports) {
     }
 
     function fetchAllRemotes() {
-        return git(["fetch", "--all"]).then(function (stdout) {
-            // TODO: parse?
-            return stdout;
-        });
+        return git(["fetch", "--all"]);
     }
 
     function getRemotes() {
@@ -294,8 +291,16 @@ define(function (require, exports) {
 
     function getHistory(branch, skipCommits, file) {
         var separator = "_._",
-            items  = ["hashShort", "hash", "author", "date", "message"],
-            format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
+            newline   = "_.nw._",
+            format = [
+                "%h",  // abbreviated commit hash
+                "%H",  // commit hash
+                "%an", // author name
+                "%ai", // author date, ISO 8601 format
+                "%ae", // author email
+                "%s",  // subject
+                "%b"   // body
+            ].join(separator) + newline;
 
         var args = ["log", "-100"];
         if (skipCommits) { args.push("--skip=" + skipCommits); }
@@ -306,13 +311,22 @@ define(function (require, exports) {
         if (file) { args.push(file); }
 
         return git(args).then(function (stdout) {
-            return !stdout ? [] : stdout.split("\n").map(function (line) {
-                var result = {},
-                    data = line.split(separator);
-                items.forEach(function (name, i) {
-                    result[name] = data[i];
-                });
-                return result;
+            stdout = stdout.substring(0, stdout.length - newline.length);
+            return !stdout ? [] : stdout.split(newline).map(function (line) {
+
+                var data = line.split(separator),
+                    commit = {};
+
+                commit.hashShort  = data[0];
+                commit.hash       = data[1];
+                commit.author     = data[2];
+                commit.date       = data[3];
+                commit.email      = data[4];
+                commit.subject    = data[5];
+                commit.body       = data[6];
+
+                return commit;
+
             });
         });
     }
@@ -453,8 +467,15 @@ define(function (require, exports) {
                         throw new Error("Unexpected status: " + statusChar);
                 }
 
+                var display = file,
+                    io = file.indexOf("->");
+                if (io !== -1) {
+                    file = file.substring(io + 2).trim();
+                }
+
                 results.push({
                     status: status,
+                    display: display,
                     file: file,
                     name: file.substring(file.lastIndexOf("/") + 1)
                 });
@@ -462,6 +483,9 @@ define(function (require, exports) {
 
             if (needReset.length > 0) {
                 return Promise.all(needReset.map(function (fileName) {
+                    if (fileName.indexOf("->") !== -1) {
+                        fileName = fileName.split("->")[1].trim();
+                    }
                     return unstage(fileName);
                 })).then(function () {
                     if (type === "RECURSIVE_CALL") {
@@ -517,6 +541,24 @@ define(function (require, exports) {
         return git(["clean", "-f", "-d"]);
     }
 
+    function getFilesFromCommit(hash) {
+        return git(["diff", "--name-only", hash + "^!"]).then(function (stdout) {
+            return !stdout ? [] : stdout.split("\n");
+        });
+    }
+
+    function getDiffOfFileFromCommit(hash, file) {
+        return git(["diff", "--no-color", hash + "^!", "--", file]);
+    }
+
+    function rebaseInit(branchName) {
+        return git(["rebase", "--ignore-date", branchName]);
+    }
+
+    function rebase(whatToDo) {
+        return git(["rebase", "--" + whatToDo]);
+    }
+
     // Public API
     exports._git                      = git;
     exports.FILE_STATUS               = FILE_STATUS;
@@ -550,5 +592,9 @@ define(function (require, exports) {
     exports.diffFile                  = diffFile;
     exports.diffFileNice              = diffFileNice;
     exports.clean                     = clean;
+    exports.getFilesFromCommit        = getFilesFromCommit;
+    exports.getDiffOfFileFromCommit   = getDiffOfFileFromCommit;
+    exports.rebase                    = rebase;
+    exports.rebaseInit                = rebaseInit;
 
 });

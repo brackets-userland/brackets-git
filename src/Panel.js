@@ -38,7 +38,6 @@ define(function (require, exports) {
         gitAuthorsDialogTemplate    = require("text!templates/authors-dialog.html"),
         gitCommitDialogTemplate     = require("text!templates/git-commit-dialog.html"),
         gitDiffDialogTemplate       = require("text!templates/git-diff-dialog.html"),
-        gitCommitDiffDialogTemplate = require("text!templates/git-commit-diff-dialog.html"),
         questionDialogTemplate      = require("text!templates/git-question-dialog.html");
 
     var showFileWhiteList = /^\.gitignore$/;
@@ -53,7 +52,7 @@ define(function (require, exports) {
      * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
      *
      * @param {!Document} doc
-     * @return {$.Promise} Resolved after editor has been refreshed; rejected if unable to load the
+     * @return {Promise} Resolved after editor has been refreshed; rejected if unable to load the
      *      file's new content. Errors are logged but no UI is shown.
      */
     function _reloadDoc(doc) {
@@ -483,6 +482,15 @@ define(function (require, exports) {
         });
     }
 
+    // whatToDo gets values "continue" "skip" "abort"
+    function handleRebase(whatToDo) {
+        Git.rebase(whatToDo).then(function () {
+            Branch.refresh();
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Rebase " + whatToDo + " failed");
+        });
+    }
+
     function handleGitCommit() {
         var codeInspectionEnabled = Preferences.get("useCodeInspection");
         var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
@@ -538,18 +546,17 @@ define(function (require, exports) {
             files.forEach(function (fileObj) {
                 var queue = Promise.resolve();
 
-                var updateIndex = false;
-                if (fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1) {
-                    updateIndex = true;
-                }
+                var isDeleted = fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1,
+                    updateIndex = isDeleted;
 
                 // strip whitespace if configured to do so and file was not deleted
-                if (stripWhitespace && updateIndex === false) {
+                if (stripWhitespace && !isDeleted) {
                     // strip whitespace only for recognized languages so binary files won't get corrupted
                     var langId = LanguageManager.getLanguageForPath(fileObj.file).getId();
                     if (["unknown", "binary", "image", "markdown"].indexOf(langId) === -1) {
                         queue = queue.then(function () {
-                            var clearWholeFile = fileObj.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1;
+                            var clearWholeFile = fileObj.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
+                                                 fileObj.status.indexOf(Git.FILE_STATUS.RENAMED) !== -1;
                             return stripWhitespaceFromFile(fileObj.file, clearWholeFile);
                         });
                     }
@@ -557,11 +564,14 @@ define(function (require, exports) {
 
                 queue = queue.then(function () {
                     // stage the files again to include stripWhitespace changes
-                    return Git.stage(fileObj.file, updateIndex);
+                    // do not stage deleted files
+                    if (!isDeleted) {
+                        return Git.stage(fileObj.file, updateIndex);
+                    }
                 });
 
                 // do a code inspection for the file, if it was not deleted
-                if (codeInspectionEnabled && updateIndex === false) {
+                if (codeInspectionEnabled && !isDeleted) {
                     queue = queue.then(function () {
                         return lintFile(fileObj.file).then(function (result) {
                             if (result) {
@@ -720,113 +730,6 @@ define(function (require, exports) {
         refresh();
     }
 
-    // Render the dialog with the modified files list and the diff commited
-    function _showCommitDiffDialog(hashCommit, files, selectedFile) {
-        var compiledTemplate = Mustache.render(gitCommitDiffDialogTemplate, {
-                hashCommit: hashCommit,
-                files: files,
-                Strings: Strings
-            }),
-            dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-            $dialog          = dialog.getElement(),
-            refreshCallback  = function () {
-                dialog.close();
-                EventEmitter.emit(Events.REFRESH_ALL);
-            };
-        _makeDialogBig($dialog);
-
-        var firstFile = selectedFile || $dialog.find(".commit-files ul li:first-child").text().trim();
-        if (firstFile) {
-            Main.gitControl.getDiffOfFileFromCommit(hashCommit, firstFile).then(function (diff) {
-                var $fileEntry = $dialog.find(".commit-files a[data-file='" + firstFile + "']").first(),
-                    $commitFiles = $dialog.find(".commit-files");
-                $fileEntry.addClass("active");
-                $commitFiles.animate({ scrollTop: $fileEntry.offset().top - $commitFiles.height() });
-                $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
-            });
-        }
-
-        $dialog.find(".commit-files a").on("click", function () {
-            $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
-            var self = $(this);
-            Main.gitControl.getDiffOfFileFromCommit(hashCommit, $(this).text().trim()).then(function (diff) {
-                $dialog.find(".commit-files a").removeClass("active");
-                self.addClass("active");
-                $dialog.find(".commit-diff").html(Utils.formatDiff(diff));
-                $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
-            });
-        });
-
-        if (!Preferences.get("enableAdvancedFeatures")) {
-            $dialog.find(".git-advanced-features").hide();
-            return;
-        }
-        // advanced features follow
-
-        $dialog.find(".btn-checkout").on("click", function () {
-            var cmd = "git checkout " + hashCommit;
-            Utils.askQuestion(Strings.TITLE_CHECKOUT,
-                              Strings.DIALOG_CHECKOUT + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
-                .then(function (response) {
-                    if (response === true) {
-                        return Git.checkout(hashCommit).then(refreshCallback);
-                    }
-                });
-        });
-
-        $dialog.find(".btn-reset-hard").on("click", function () {
-            var cmd = "git reset --hard " + hashCommit;
-            Utils.askQuestion(Strings.TITLE_RESET,
-                              Strings.DIALOG_RESET_HARD + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
-                .then(function (response) {
-                    if (response === true) {
-                        return Git.reset("--hard", hashCommit).then(refreshCallback);
-                    }
-                });
-        });
-
-        $dialog.find(".btn-reset-mixed").on("click", function () {
-            var cmd = "git reset --mixed " + hashCommit;
-            Utils.askQuestion(Strings.TITLE_RESET,
-                              Strings.DIALOG_RESET_MIXED + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
-                .then(function (response) {
-                    if (response === true) {
-                        return Git.reset("--mixed", hashCommit).then(refreshCallback);
-                    }
-                });
-        });
-
-        $dialog.find(".btn-reset-soft").on("click", function () {
-            var cmd = "git reset --soft " + hashCommit;
-            Utils.askQuestion(Strings.TITLE_RESET,
-                              Strings.DIALOG_RESET_SOFT + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
-                .then(function (response) {
-                    if (response === true) {
-                        return Git.reset("--soft", hashCommit).then(refreshCallback);
-                    }
-                });
-        });
-    }
-
-    // show a commit with given hash in a dialog
-    function showHistoryCommitDialog(hash) {
-        Main.gitControl.getFilesFromCommit(hash).then(function (files) {
-            var list = $.map(files, function (file) {
-                var fileExtension = FileUtils.getSmartFileExtension(file),
-                    i = file.lastIndexOf("." + fileExtension),
-                    fileName = file.substring(0, fileExtension && i >= 0 ? i : file.length);
-                return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
-            });
-            _showCommitDiffDialog(hash, list, $tableContainer.find(".git-history-list").data("file-relative"));
-        }).catch(function (err) {
-            ErrorHandler.showError(err, "Failed to load list of diff files");
-        });
-    }
-
     function commitCurrentFile() {
         return Promise.cast(CommandManager.execute("file.save"))
             .then(function () {
@@ -893,9 +796,11 @@ define(function (require, exports) {
             .off()
             .on("click", ".check-one", function (e) {
                 e.stopPropagation();
-                var file = $(this).closest("tr").attr("x-file");
+                var $tr = $(this).closest("tr"),
+                    file = $tr.attr("x-file"),
+                    status = $tr.attr("x-status");
                 if ($(this).is(":checked")) {
-                    Git.stage(file).then(function () {
+                    Git.stage(file, status === Git.FILE_STATUS.DELETED).then(function () {
                         Git.status();
                     });
                 } else {
@@ -934,10 +839,8 @@ define(function (require, exports) {
                     return;
                 }
                 FileViewController.addToWorkingSetAndSelect(Utils.getProjectRoot() + $this.attr("x-file"));
-            })
-            .on("click", ".history-commit", function () {
-                showHistoryCommitDialog($(this).attr("data-hash"));
             });
+
     }
 
     function changeUserName() {
@@ -1053,6 +956,9 @@ define(function (require, exports) {
             })
             .on("click", ".git-reset", handleGitReset)
             .on("click", ".git-commit", handleGitCommit)
+            .on("click", ".git-rebase-continue", function (e) { handleRebase("continue", e); })
+            .on("click", ".git-rebase-skip", function (e) { handleRebase("skip", e); })
+            .on("click", ".git-rebase-abort", function (e) { handleRebase("abort", e); })
             .on("click", ".git-prev-gutter", GutterManager.goToPrev)
             .on("click", ".git-next-gutter", GutterManager.goToNext)
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
@@ -1164,6 +1070,11 @@ define(function (require, exports) {
         refresh();
     }
 
+    function toggleRebase(enabled) {
+        getPanel().find("button.git-commit").toggle(!enabled);
+        getPanel().find(".git-rebase").toggle(enabled);
+    }
+
     function getPanel() {
         return gitPanel.$panel;
     }
@@ -1183,6 +1094,9 @@ define(function (require, exports) {
     });
     EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, function () {
         refresh();
+    });
+    EventEmitter.on(Events.REBASE_MODE, function (enabled) {
+        toggleRebase(enabled);
     });
 
     exports.init = init;

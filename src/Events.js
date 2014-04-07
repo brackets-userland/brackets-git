@@ -20,6 +20,7 @@ define(function (require, exports) {
     exports.REFRESH_ALL = "git.refresh.all";
     exports.GIT_ENABLED = "git.enabled";
     exports.GIT_DISABLED = "git.disabled";
+    exports.REBASE_MODE = "rebase.mode";
 
     // Panel.js
     exports.HANDLE_GIT_INIT = "handle.git.init";

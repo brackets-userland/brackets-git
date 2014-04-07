@@ -12,15 +12,25 @@ define(function (require) {
         Events = require("src/Events"),
         EventEmitter = require("src/EventEmitter"),
         Git = require("src/Git/Git"),
+        HistoryViewer = require("src/HistoryViewer"),
         Preferences = require("src/Preferences");
 
+    if (Preferences.get("useGravatar")) {
+        var md5;
+        require(["md5"], function (_md5) {
+            md5 = _md5;
+        });
+    }
+
     // Templates
-    var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html");
+    var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html"),
+        gitPanelHistoryCommitsTemplate = require("text!templates/git-panel-history-commits.html");
 
     // Module variables
     var $gitPanel       = $(null),
         $tableContainer = $(null),
-        $historyList    = $(null);
+        $historyList    = $(null),
+        commitCache     = [];
 
     // Implementation
 
@@ -35,25 +45,36 @@ define(function (require) {
             .off(".history")
             .on("scroll.history", function () {
                 loadMoreHistory();
+            })
+            .on("click.history", ".history-commit", function () {
+                var hash = $(this).attr("x-hash");
+                var commit = _.find(commitCache, function (commit) { return commit.hash === hash; });
+                HistoryViewer.show(commit);
             });
     }
 
     // Render history list the first time
     function renderHistory(file) {
+        // clear cache
+        commitCache = [];
+
         return Git.getCurrentBranchName().then(function (branchName) {
             // Get the history commits of the current branch
             var p = file ? Git.getFileHistory(file.relative, branchName) : Git.getHistory(branchName);
             return p.then(function (commits) {
-                commits = convertCommitDates(commits);
 
-                var template = "<table class='git-history-list bottom-panel-table table table-striped table-condensed row-highlight'>";
-                template += "<tbody>";
-                template += gitPanelHistoryTemplate;
-                template += "</tbody>";
-                template += "</table>";
+                // calculate some missing stuff like gravatars
+                commits = addAdditionalCommitInfo(commits);
+                commitCache = commitCache.concat(commits);
 
-                $tableContainer.append(Mustache.render(template, {
-                    commits: commits
+                var templateData = {
+                    commits: commits,
+                    useGravatar: Preferences.get("useGravatar"),
+                    Strings: Strings
+                };
+
+                $tableContainer.append(Mustache.render(gitPanelHistoryTemplate, templateData, {
+                    commits: gitPanelHistoryCommitsTemplate
                 }));
 
                 $historyList = $tableContainer.find(".git-history-list")
@@ -86,9 +107,17 @@ define(function (require) {
                             $historyList.attr("x-finished", "true");
                             return;
                         }
-                        commits = convertCommitDates(commits);
-                        $tableContainer.find(".git-history-list > tbody")
-                            .append(Mustache.render(gitPanelHistoryTemplate, {commits: commits}));
+
+                        commits = addAdditionalCommitInfo(commits);
+                        commitCache = commitCache.concat(commits);
+
+                        var templateData = {
+                            commits: commits,
+                            useGravatar: Preferences.get("useGravatar"),
+                            Strings: Strings
+                        };
+                        var commitsHtml = Mustache.render(gitPanelHistoryCommitsTemplate, templateData);
+                        $historyList.children("tbody").append(commitsHtml);
                     })
                     .catch(function (err) {
                         ErrorHandler.showError(err, "Failed to load more history rows");
@@ -101,7 +130,7 @@ define(function (require) {
         }
     }
 
-    function convertCommitDates(commits) {
+    function addAdditionalCommitInfo(commits) {
         var mode        = Preferences.get("dateMode"),
             format      = Strings.DATE_FORMAT,
             now         = moment(),
@@ -109,6 +138,17 @@ define(function (require) {
             ownFormat   = Preferences.get("dateFormat") || Strings.DATE_FORMAT;
 
         _.forEach(commits, function (commit) {
+
+            if (Preferences.get("useGravatar")) {
+                // email hash for gravatars
+                commit.emailHash = md5(commit.email);
+            } else {
+                commit.avatarLetter = commit.author.substring(0, 1);
+            }
+
+            // shorten the commit subject
+            commit.subject = commit.subject.substring(0, 49) + ((commit.subject.length > 50) ? "\u2026" : "");
+
             if (mode === 4) {
                 // mode 4: Original Git date
                 commit.date = {
@@ -149,6 +189,7 @@ define(function (require) {
                 /* mode 4 (Original Git date) is handled above */
             }
         });
+
         return commits;
     }
 
@@ -190,7 +231,9 @@ define(function (require) {
         }
 
         // Render .git-history-list if is not already generated or if the viewed file for file history has changed
-        if (historyEnabled && ($historyList.length === 0 || currentFile !== (file ? file.absolute : null))) {
+        var isEmpty = $historyList.find("tr").length === 0,
+            fileChanged = currentFile !== (file ? file.absolute : null);
+        if (historyEnabled && (isEmpty || fileChanged)) {
             if ($historyList.length > 0) {
                 $historyList.remove();
             }
