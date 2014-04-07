@@ -1,4 +1,5 @@
 @import "colors.less";
+@import "components.less";
 @import "editor-holder.less";
 
 @gutterWidth: 0.65em; // using ems so that it'll be scalable on cmd +/-
@@ -184,6 +185,9 @@
     }
     .btn-group {
         line-height: 1;
+        button {
+            height: 26px;
+        }
     }
     .btn-git-diff, .btn-git-undo, .btn-git-delete {
         padding: 2px 5px;

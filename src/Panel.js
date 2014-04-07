@@ -1075,7 +1075,7 @@ define(function (require, exports) {
     
     function toggleRebase(enabled) {
         getPanel().find("button.git-commit").toggle(!enabled);
-        getPanel().find("git-rebase").toggle(enabled);
+        getPanel().find(".git-rebase").toggle(enabled);
     }
 
     function getPanel() {
