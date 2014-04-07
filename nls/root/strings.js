@@ -143,6 +143,7 @@ define({
     RESTART:                            "Restart",
     RESET_LOCAL_REPO:                   "Discard all changes since last commit",
     RESET_LOCAL_REPO_CONFIRM:           "Do you wish to discard all changes done since last commit? This action can't be reverted.",
+    REQ_INTERNET:                       "Requires internet connection",
     SAVE_PASSWORD_QUESTION:             "Save username/password?",
     SET_ORIGIN_URL:                     "Set origin URL",
     SHORTCUTS:                          "Shortcuts",
