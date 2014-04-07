@@ -317,13 +317,13 @@ define(function (require, exports) {
                 var data = line.split(separator),
                     commit = {};
 
-                commit.hashShort    = data[0];
-                commit.hash         = data[1];
-                commit.author       = data[2];
-                commit.date         = data[3];
-                commit.email        = data[4];
-                commit.subject      = data[5];
-                commit.body         = data[6];
+                commit.hashShort  = data[0];
+                commit.hash       = data[1];
+                commit.author     = data[2];
+                commit.date       = data[3];
+                commit.email      = data[4];
+                commit.subject    = data[5];
+                commit.body       = data[6];
 
                 return commit;
 

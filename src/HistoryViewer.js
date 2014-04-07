@@ -2,6 +2,7 @@ define(function (require, exports) {
     "use strict";
 
     var EditorManager = brackets.getModule("editor/EditorManager"),
+        CommandManager = brackets.getModule("command/CommandManager"),
         FileUtils = brackets.getModule("file/FileUtils");
 
     var marked = require("marked"),
@@ -15,7 +16,7 @@ define(function (require, exports) {
 
     var historyViewerTemplate = require("text!templates/history-viewer.html");
 
-    var commit     = null;
+    var commit = null;
 
     function attachEvents($viewer) {
         $viewer
@@ -30,10 +31,11 @@ define(function (require, exports) {
                             self.addClass("active loaded");
                             $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
                             $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
+                        }).catch(function (err) {
+                            ErrorHandler.showError(err, "Failed to get diff");
                         });
-                    }
-                    // If this diff was previously loaded just open it
-                    else {
+                    } else {
+                        // If this diff was previously loaded just open it
                         self.addClass("active");
                     }
                 })
@@ -167,8 +169,6 @@ define(function (require, exports) {
 
     function onRemove() {
         // detach events that were added by this viewer to another element than one added to $editorHolder
-        // FIXME: What is $viewer? It's not defined anywhere :(
-        //$viewer.off(".HistoryViewer");
     }
 
     function show(commitInfo) {
@@ -182,10 +182,7 @@ define(function (require, exports) {
     }
 
     function remove() {
-
-        // FIXME: I'd like to use `_removeCustomViewer()` but seems like it's not exposed by Brackets API...
-        // EditorManager._removeCustomViewer();
-
+        CommandManager.execute("navigate.prevDoc");
     }
 
     // Public API
