@@ -53,8 +53,7 @@ define(function (require, exports) {
             .on("scroll.HistoryViewer", function () {
                 if ($viewer.find(".body").scrollTop() > 0) {
                     $viewer.find(".header").addClass("shadow");
-                }
-                else {
+                } else {
                     $viewer.find(".header").removeClass("shadow");
                 }
             });
