@@ -146,8 +146,9 @@ define(function (require) {
                 commit.avatarLetter = commit.author.substring(0, 1);
             }
 
+            // do not shorten the strings, use https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow instead
             // shorten the commit subject
-            commit.subject = commit.subject.substring(0, 49) + ((commit.subject.length > 50) ? "\u2026" : "");
+            // commit.subject = commit.subject.substring(0, 49) + ((commit.subject.length > 50) ? "\u2026" : "");
 
             if (mode === 4) {
                 // mode 4: Original Git date
