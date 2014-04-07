@@ -83,10 +83,7 @@ define(function (require, exports) {
     }
 
     function fetchAllRemotes() {
-        return git(["fetch", "--all"]).then(function (stdout) {
-            // TODO: parse?
-            return stdout;
-        });
+        return git(["fetch", "--all"]);
     }
 
     function getRemotes() {
@@ -294,8 +291,16 @@ define(function (require, exports) {
 
     function getHistory(branch, skipCommits, file) {
         var separator = "_._",
-            items  = ["hashShort", "hash", "author", "date", "message"],
-            format = ["%h",        "%H",   "%an",    "%ai",  "%s"     ].join(separator);
+            newline   = "_.nw._",
+            format = [
+                "%h",  // abbreviated commit hash
+                "%H",  // commit hash
+                "%an", // author name
+                "%ai", // author date, ISO 8601 format
+                "%ae", // author email
+                "%s",  // subject
+                "%b"   // body
+            ].join(separator) + newline;
 
         var args = ["log", "-100"];
         if (skipCommits) { args.push("--skip=" + skipCommits); }
@@ -306,60 +311,35 @@ define(function (require, exports) {
         if (file) { args.push(file); }
 
         return git(args).then(function (stdout) {
-            return !stdout ? [] : stdout.split("\n").map(function (line) {
-                var result = {},
-                    data = line.split(separator);
-                items.forEach(function (name, i) {
-                    result[name] = data[i];
-                });
-                return result;
+            stdout = stdout.substring(0, stdout.length - newline.length);
+            return !stdout ? [] : stdout.split(newline).map(function (line) {
+
+                var data = line.split(separator),
+                    commit = {};
+
+                commit.hashShort            = data[0];
+                commit.hash                 = data[1];
+                commit.author               = data[2];
+                commit.date                 = data[3];
+                commit.email                = data[4];
+                // TODO: md5 doesn't belong here
+                // commit.emailHash         = md5(data[4]);
+                // TODO: shortening doesn't belong here
+                // commit.subject              = data[5].substring(0, 49) + ((data[5].length > 50) ? "…" : "");
+                commit.subject              = data[5];
+                // TODO: marked doesn't belong here
+                // commit.body              = marked(data[6], {gfm: true, breaks: true});
+                commit.body                 = data[6];
+                // TODO: do this elsewhere
+                // commit.avatarColor       = commit.emailHash.substring(0, 6);
+                // commit.avatarLetter      = commit.author.substring(0, 1);
+                // TODO: why would we stringify this ???
+                // commit.commit            = JSON.stringify(commit);
+                return commit;
+
             });
         });
     }
-    
-    /*
-    TODO: 
-    getHistory: function (branch, skipCommits) {
-            var separator = "_._",
-                newline   = "_.nw._",
-                format    = [
-                    "%h",  // abbreviated commit hash
-                    "%H",  // commit hash
-                    "%an", // author name
-                    "%ai", // author date, ISO 8601 format
-                    "%ae", // author email
-                    "%s",  // subject
-                    "%b"   // body
-                ].join(separator) + newline;
-
-            var args = ["log", "-100"];
-            if (skipCommits) { args.push("--skip=" + skipCommits); }
-            args.push("--format=" + escapeShellArg(format));
-            args.push(escapeShellArg(branch));
-
-            return this.executeCommand(this._git, args).then(function (stdout) {
-                stdout = stdout.substring(0, stdout.length - 5);
-                return !stdout ? [] : stdout.split(newline).map(function (line) {
-                    var data    = line.split(separator),
-                        commit = {};
-
-                    commit.hashShort        = data[0];
-                    commit.hash             = data[1];
-                    commit.author           = data[2];
-                    commit.date             = data[3];
-                    commit.email            = data[4];
-                    commit.emailHash        = md5(data[4]);
-                    commit.subject          = data[5].substring(0, 49) + ((data[5].length > 50) ? "…" : "");
-                    commit.body             = marked(data[6], {gfm: true, breaks: true});
-                    commit.avatarColor      = commit.emailHash.substring(0, 6);
-                    commit.avatarLetter     = commit.author.substring(0, 1);
-                    commit.commit           = JSON.stringify(commit);
-
-                    return commit;
-                });
-            });
-        }
-    */
 
     function init() {
         return git(["init"]);
