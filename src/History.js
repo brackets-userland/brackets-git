@@ -147,11 +147,11 @@ define(function (require) {
             if (avatarType == "coloredAvatar" || avatarType == "bwAvatar") {
                 commit.avatarLetter = commit.author.substring(0, 1);
                 if (avatarType == "coloredAvatar") {
-                    commit.cssAvatar  = "background: linear-gradient(";
-                    commit.cssAvatar += "to left,";
-                    commit.cssAvatar += "#" + commit.emailHash.substring(0, 6)  + " 50%,";
-                    commit.cssAvatar += "#" + commit.emailHash.substring(6, 12) + " 50%";
-                    commit.cssAvatar += ")";
+                    var colors = [
+                        "#FF9900", "#FF2200", "#66CC00", "#006600", "#000099", "#0099EC", "#660000", "#F0F000",
+                        "#68228B", "#9062EC", "#F1EDC2", "#008080", "#DC143C", "#708090", "#ADFF2F", "#40E0D0"
+                    ];
+                    commit.cssAvatar  = "background-color: " + colors[parseInt(commit.emailHash.substring(0, 1), 16)];
                 }
             }
 
