@@ -481,7 +481,7 @@ define(function (require, exports) {
             return diff;
         });
     }
-    
+
     // whatToDo gets values "continue" "skip" "abort"
     function handleRebase(whatToDo) {
         Git.rebase(whatToDo).then(function () {
@@ -1069,7 +1069,7 @@ define(function (require, exports) {
         }
         refresh();
     }
-    
+
     function toggleRebase(enabled) {
         getPanel().find("button.git-commit").toggle(!enabled);
         getPanel().find(".git-rebase").toggle(enabled);

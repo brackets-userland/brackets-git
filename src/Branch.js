@@ -1,6 +1,3 @@
-/*jslint plusplus: true, vars: true, nomen: true */
-/*global $, brackets, define, Mustache */
-
 define(function (require, exports) {
     "use strict";
 
@@ -132,8 +129,7 @@ define(function (require, exports) {
                     DocumentManager.closeFullEditor(oFile);
                 }
             });
-            // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
-            CommandManager.execute("file.refresh");
+            EventEmitter.emit(Events.REFRESH_ALL);
         }).catch(function (err) {
             ErrorHandler.showError(err, "Getting list of deleted files failed.");
         });
@@ -200,8 +196,7 @@ define(function (require, exports) {
                             ErrorHandler.showError(err, "Creating new branch failed");
                         }).then(function () {
                             closeDropdown();
-                            // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
-                            CommandManager.execute("file.refresh");
+                            EventEmitter.emit(Events.REFRESH_ALL);
                         });
                     }
                 });
@@ -345,7 +340,7 @@ define(function (require, exports) {
                         // FIXME: check if anyone is not reading the text if $gitBranchName
                         branchName += "|MERGING";
                     }
-                    
+
                     if (mergeInfo.rebaseMode) {
                         if (mergeInfo.rebaseHead) {
                             branchName = mergeInfo.rebaseHead;
@@ -356,7 +351,7 @@ define(function (require, exports) {
                         }
                     }
                     EventEmitter.emit(Events.REBASE_MODE, mergeInfo.rebaseMode);
-                    
+
                     $gitBranchName
                         .text(branchName)
                         .attr("title", branchName.length > 15 ? branchName : null)

@@ -33,7 +33,7 @@ define(function (require, exports, module) {
             if (argsString) { argsString = " - " + argsString; }
             argsString = argsString + " (" + listenersCount + " listeners)";
             console.log("[brackets-git] Event invoked: " + eventName + argsString);
-            
+
             return this._emit.apply(this, arguments);
         };
     }

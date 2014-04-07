@@ -550,7 +550,7 @@ define(function (require, exports) {
     function getDiffOfFileFromCommit(hash, file) {
         return git(["diff", "--no-color", hash + "^!", "--", file]);
     }
-    
+
     function rebaseInit(branchName) {
         return git(["rebase", "--ignore-date", branchName]);
     }
