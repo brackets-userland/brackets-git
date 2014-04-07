@@ -15,12 +15,10 @@ define(function (require) {
         HistoryViewer = require("src/HistoryViewer"),
         Preferences = require("src/Preferences");
 
-    if (Preferences.get("useGravatar")) {
-        var md5;
-        require(["md5"], function (_md5) {
-            md5 = _md5;
-        });
-    }
+    var md5;
+    require(["md5"], function (_md5) {
+        md5 = _md5;
+    });
 
     // Templates
     var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html"),
@@ -139,11 +137,15 @@ define(function (require) {
 
         _.forEach(commits, function (commit) {
 
-            if (Preferences.get("useGravatar")) {
-                // email hash for gravatars
-                commit.emailHash = md5(commit.email);
-            } else {
+            // email hash for gravatars or CSS avatar
+            commit.emailHash = md5(commit.email);
+            if (!Preferences.get("useGravatar")) {
                 commit.avatarLetter = commit.author.substring(0, 1);
+                commit.cssAvatar  = "background: linear-gradient(";
+                commit.cssAvatar += "to left,";
+                commit.cssAvatar += "#" + commit.emailHash.substring(0, 6)  + " 50%,";
+                commit.cssAvatar += "#" + commit.emailHash.substring(6, 12) + " 50%";
+                commit.cssAvatar += ")";
             }
 
             // do not shorten the strings, use https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow instead

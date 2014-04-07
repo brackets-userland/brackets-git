@@ -15,25 +15,51 @@ define(function (require, exports) {
 
     var historyViewerTemplate = require("text!templates/history-viewer.html");
 
-    var commit = null;
+    var commit     = null;
 
     function attachEvents($viewer) {
-        $viewer.find(".commit-files a").on("click", function () {
-            $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
-            var self = $(this);
-            Git.getDiffOfFileFromCommit(commit.hash, $(this).text().trim()).then(function (diff) {
-                $viewer.find(".commit-files a").removeClass("active");
-                self.addClass("active");
-                $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
-                $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
+        $viewer
+            .on("click.HistoryViewer", ".commit-files a:not(.active)", function () {
+                    // Open the clicked diff
+                    $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
+                    var self = $(this);
+                    // If this diff was not previously loaded then load it
+                    if (!self.is(".loaded")) {
+                        Git.getDiffOfFileFromCommit(commit.hash, $(this).text().trim()).then(function (diff) {
+                            $viewer.find(".commit-files a").removeClass("active");
+                            self.addClass("active loaded");
+                            $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
+                            $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
+                        });
+                    }
+                    // If this diff was previously loaded just open it
+                    else {
+                        self.addClass("active");
+                    }
+                })
+            .on("click.HistoryViewer", ".commit-files a.active", function () {
+                // Close the clicked diff
+                $(this).removeClass("active");
+            })
+            .on("click.HistoryViewer", ".close", function () {
+                // Close history viewer
+                remove();
             });
-        });
 
+        // Add/Remove shadown on bottom of header
+        $viewer.find(".body")
+            .on("scroll.HistoryViewer", function () {
+                if ($viewer.find(".body").scrollTop() > 0) {
+                    $viewer.find(".header").addClass("shadow");
+                }
+                else {
+                    $viewer.find(".header").removeClass("shadow");
+                }
+            });
+
+        // Enable actions on advanced buttons if requested by user's preferences
         if (Preferences.get("enableAdvancedFeatures")) {
             attachAdvancedEvents($viewer);
-        } else {
-            // TODO: put this into template
-            $viewer.find(".git-advanced-features").hide();
         }
     }
 
@@ -43,7 +69,7 @@ define(function (require, exports) {
             EventEmitter.emit(Events.REFRESH_ALL);
         };
 
-        $viewer.find(".btn-checkout").on("click", function () {
+        $viewer.on("click.HistoryViewer", ".btn-checkout", function () {
             var cmd = "git checkout " + commit.hash;
             Utils.askQuestion(Strings.TITLE_CHECKOUT,
                               Strings.DIALOG_CHECKOUT + "<br><br>" + cmd,
@@ -55,7 +81,7 @@ define(function (require, exports) {
                 });
         });
 
-        $viewer.find(".btn-reset-hard").on("click", function () {
+        $viewer.on("click.HistoryViewer", ".btn-reset-hard", function () {
             var cmd = "git reset --hard " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_HARD + "<br><br>" + cmd,
@@ -67,7 +93,7 @@ define(function (require, exports) {
                 });
         });
 
-        $viewer.find(".btn-reset-mixed").on("click", function () {
+        $viewer.on("click.HistoryViewer", ".btn-reset-mixed", function () {
             var cmd = "git reset --mixed " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_MIXED + "<br><br>" + cmd,
@@ -79,7 +105,7 @@ define(function (require, exports) {
                 });
         });
 
-        $viewer.find(".btn-reset-soft").on("click", function () {
+        $viewer.on("click.HistoryViewer", ".btn-reset-soft", function () {
             var cmd = "git reset --soft " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_SOFT + "<br><br>" + cmd,
@@ -110,7 +136,9 @@ define(function (require, exports) {
                 var $fileEntry = $viewer.find(".commit-files a[data-file='" + firstFile + "']").first(),
                     $commitFiles = $viewer.find(".commit-files");
                 $fileEntry.addClass("active");
-                $commitFiles.animate({ scrollTop: $fileEntry.offset().top - $commitFiles.height() });
+                if ($commitFiles.length) {
+                    $commitFiles.animate({ scrollTop: $fileEntry.offset().top - $commitFiles.height() });
+                }
                 $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
             });
         }
@@ -139,15 +167,25 @@ define(function (require, exports) {
 
     function onRemove() {
         // detach events that were added by this viewer to another element than one added to $editorHolder
+        // FIXME: What is $viewer? It's not defined anywhere :(
+        //$viewer.off(".HistoryViewer");
     }
 
     function show(commitInfo) {
+
         commit = commitInfo;
         // this is a "private" API but it's so convienient it's a sin not to use it
         EditorManager._showCustomViewer({
             render: render,
             onRemove: onRemove
         }, commit.hash);
+    }
+
+    function remove() {
+
+        // FIXME: I'd like to use `_removeCustomViewer()` but seems like it's not exposed by Brackets API...
+        // EditorManager._removeCustomViewer();
+
     }
 
     // Public API
