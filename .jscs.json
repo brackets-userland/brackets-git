@@ -43,5 +43,9 @@
     "disallowYodaConditions":                       true,
 
     "additionalRules":                              ["tools/jscs-rules/*.js"],
-    "forbiddenFunctions":                           ["$.", ["$.map","_.map"], ["$.each","_.each"]]
+    "forbiddenFunctions":                           [
+                                                        "$.",
+                                                        ["$.map","_.map"], ["$.each","_.each"],
+                                                        [".execute(\"file.refresh\")", "EventEmitter.emit(Events.REFRESH_ALL);"]
+                                                    ]
 }

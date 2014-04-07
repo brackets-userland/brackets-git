@@ -578,6 +578,10 @@ define(function (require, exports) {
         return git(["diff", "--no-color", hash + "^!", "--", file]);
     }
     
+    function rebaseInit(branchName) {
+        return git(["rebase", "--ignore-date", branchName]);
+    }
+
     function rebase(whatToDo) {
         return git(["rebase", "--" + whatToDo]);
     }
@@ -618,5 +622,6 @@ define(function (require, exports) {
     exports.getFilesFromCommit        = getFilesFromCommit;
     exports.getDiffOfFileFromCommit   = getDiffOfFileFromCommit;
     exports.rebase                    = rebase;
+    exports.rebaseInit                = rebaseInit;
 
 });

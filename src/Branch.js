@@ -64,6 +64,15 @@ define(function (require, exports) {
             var $dialog = dialog.getElement();
             $dialog.find("input").focus();
 
+            var $toBranch = $dialog.find("[name='branch-target']");
+            var $useRebase = $dialog.find("[name='use-rebase']");
+            if (fromBranch === "master") {
+                $useRebase.prop("checked", true);
+            }
+            if ($toBranch.val() === "master") {
+                $useRebase.prop("checked", false).prop("disabled", true);
+            }
+
             var $mergeMessage = $dialog.find("[name='merge-message']");
             $mergeMessage.attr("placeholder", "Merge branch '" + fromBranch + "'");
             $dialog.find(".fill-pr").on("click", function () {
@@ -76,15 +85,28 @@ define(function (require, exports) {
                 if (buttonId === "ok") {
                     // right now only merge to current branch without any configuration
                     // later delete merge branch and so ...
+                    var useRebase = $useRebase.prop("checked");
                     var mergeMsg = $mergeMessage.val();
-                    Main.gitControl.mergeBranch(fromBranch, mergeMsg).catch(function (err) {
-                        throw ErrorHandler.showError(err, "Merge failed");
-                    }).then(function (stdout) {
-                        // refresh should not be necessary in the future and trigerred automatically by Brackets, remove then
-                        CommandManager.execute("file.refresh");
-                        // show merge output
-                        Utils.showOutput(stdout, Strings.MERGE_RESULT);
-                    });
+
+                    if (useRebase) {
+
+                        Git.rebaseInit(fromBranch).catch(function (err) {
+                            throw ErrorHandler.showError(err, "Rebase failed");
+                        }).then(function (stdout) {
+                            Utils.showOutput(stdout, Strings.REBASE_RESULT);
+                            EventEmitter.emit(Events.REFRESH_ALL);
+                        });
+
+                    } else {
+
+                        Main.gitControl.mergeBranch(fromBranch, mergeMsg).catch(function (err) {
+                            throw ErrorHandler.showError(err, "Merge failed");
+                        }).then(function (stdout) {
+                            Utils.showOutput(stdout, Strings.MERGE_RESULT);
+                            EventEmitter.emit(Events.REFRESH_ALL);
+                        });
+
+                    }
                 }
             });
         });
@@ -378,6 +400,7 @@ define(function (require, exports) {
     }
 
     EventEmitter.on(Events.REFRESH_ALL, function () {
+        CommandManager.execute("file.refresh");
         refresh();
     });
 
