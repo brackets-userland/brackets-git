@@ -9,9 +9,7 @@ define(function (require, exports, module) {
         Utils           = require("src/Utils"),
         ErrorHandler    = require("./ErrorHandler"),
         ExpectedError   = require("./ExpectedError"),
-        Preferences     = require("./Preferences"),
-        md5             = require("thirdparty/md5"),
-        marked          = require("marked");
+        Preferences     = require("./Preferences");
 
     function escapeShellArg(str) {
         if (typeof str !== "string") {
