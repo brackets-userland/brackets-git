@@ -836,12 +836,6 @@ define(function (require, exports) {
                     return;
                 }
                 FileViewController.addToWorkingSetAndSelect(Utils.getProjectRoot() + $this.attr("x-file"));
-            })
-            .on("click", ".history-commit", function () {
-                // TODO: FezVrasta's handler: renderHistoryCommit(JSON.parse($(this).attr("data-commit")), $(this));
-                HistoryViewer.show($(this).attr("data-hash"));
-                // TODO: remove this and all dependents
-                // showHistoryCommitDialog($(this).attr("data-hash"));
             });
 
     }

@@ -12,10 +12,12 @@ define(function (require) {
         Events = require("src/Events"),
         EventEmitter = require("src/EventEmitter"),
         Git = require("src/Git/Git"),
+        HistoryViewer = require("src/HistoryViewer"),
         Preferences = require("src/Preferences");
 
     // Templates
-    var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html");
+    var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html"),
+        panelHistoryTemplate = require("text!templates/git-panel-history-commits.html");
 
     // Module variables
     var $gitPanel       = $(null),
@@ -35,6 +37,9 @@ define(function (require) {
             .off(".history")
             .on("scroll.history", function () {
                 loadMoreHistory();
+            })
+            .on("click.history", ".history-commit", function () {
+                HistoryViewer.show($(this).data("history-commit"));
             });
     }
 

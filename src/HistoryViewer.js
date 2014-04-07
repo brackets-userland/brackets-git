@@ -12,7 +12,9 @@ define(function (require, exports) {
         Strings = require("strings"),
         Utils = require("src/Utils");
 
-    var historyViewerTemplate = require("text!templates/history-viewer.html");
+    var historyViewerTemplate = require("text!templates/history-viewer.html"),
+        commitDiffTemplate = require("text!templates/git-commit-diff.html"),
+        commitDiffDetailsTemplate = require("text!templates/git-diff-details.html");
 
     function attachEvents($viewer, hashCommit) {
         $viewer.find(".commit-files a").on("click", function () {
