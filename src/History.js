@@ -232,3 +232,129 @@ define(function (require) {
     });
 
 });
+
+/*
+// Render history list the first time
+    function renderHistory() {
+        return Main.gitControl.getBranchName().then(function (branchName) {
+            // Get the history commit of the current branch
+            return Main.gitControl.getHistory(branchName).then(function (commits) {
+                commits = convertCommitDates(commits);
+
+                var partials = {gitPanelHistoryCommits: gitPanelHistoryCommitsTemplate, gitDiffDetails: gitDiffDetailsTemplate},
+                    variables = {commits: commits, useGravatar: Preferences.get("useGravatar")};
+
+                $tableContainer
+                    .append(Mustache.render(gitPanelHistoryTemplate, variables, partials))
+                    .find(".history-commits-list")
+                        .off("scroll.history")
+                        .on("scroll.history", function () {
+                            loadMoreHistory();
+                        });
+
+                renderHistoryCommit(commits[0], $tableContainer.find(".history-commits-list .history-commit").first());
+
+            });
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Failed to get history");
+        });
+    }
+    
+    // Load more rows in the history list on scroll
+    function loadMoreHistory() {
+        if ($tableContainer.find(".git-history-list").is(":visible")) {
+            var $commitsList = $tableContainer.find(".history-commits-list");
+            if (($commitsList.prop("scrollHeight") - $commitsList.scrollTop()) === $commitsList.height()) {
+                return Main.gitControl.getBranchName().then(function (branchName) {
+                    return Main.gitControl.getHistory(branchName, $commitsList.find(".history-commit").length).then(function (commits) {
+                        if (commits.length === 0) {
+                            return;
+                        }
+                        commits = convertCommitDates(commits);
+                        var variables = {commits: commits, useGravatar: Preferences.get("useGravatar")};
+
+                        $commitsList.append(Mustache.render(gitPanelHistoryCommitsTemplate, variables));
+                    })
+                    .catch(function (err) {
+                        ErrorHandler.showError(err, "Failed to load more history rows");
+                    });
+                })
+                .catch(function (err) {
+                    ErrorHandler.showError(err, "Failed to get branch name");
+                });
+            }
+        }
+    }
+    
+    function convertCommitDates(commits) {
+        var mode        = Preferences.get("dateMode"),
+            format      = Strings.DATE_FORMAT,
+            now         = moment(),
+            yesterday   = moment().subtract("d", 1).startOf("d"),
+            ownFormat   = Preferences.get("dateFormat") || Strings.DATE_FORMAT;
+
+        _.forEach(commits, function (commit) {
+            if (mode === 4) {
+                // mode 4: Original Git date
+                commit.date = {
+                    shown: commit.date
+                };
+                return;
+            }
+
+            var date = moment(commit.date);
+            commit.date = {
+                title: ""
+            };
+            switch (mode) {
+                // mode 0 (default): formatted with Strings.DATE_FORMAT
+                default:
+                case 0:
+                    commit.date.shown = date.format(format);
+                    break;
+                // mode 1: always relative
+                case 1:
+                    commit.date.shown = date.fromNow();
+                    commit.date.title = date.format(format);
+                    break;
+                // mode 2: intelligent relative/formatted
+                case 2:
+                    if (date.diff(yesterday) > 0) {
+                        commit.date.shown = moment.duration(Math.max(date.diff(now), -24 * 60 * 60 * 1000), "ms").humanize(true);
+                        commit.date.title = date.format(format);
+                    } else {
+                        commit.date.shown = date.format(format);
+                    }
+                    break;
+                // mode 3: formatted with own format (as pref)
+                case 3:
+                    commit.date.shown = date.format(ownFormat);
+                    commit.date.title = date.format(format);
+                    break;
+                // mode 4 (Original Git date) is handled above
+            }
+        });
+        return commits;
+    }
+    
+    // Show or hide the history list on click of .history button
+    function handleToggleHistory() {
+
+        var $panel = gitPanel.$panel,
+            historyEnabled = !$panel.find(".git-history-list").is(":visible");
+
+        // Render .git-history-list if is not already generated
+        if ($tableContainer.find(".git-history-list").length === 0) { renderHistory(); }
+
+        // Toggle commit button and check-all checkbox
+        $panel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
+
+        // Toggle visibility of .git-edited-list and .git-history-list
+        $tableContainer.find(".git-edited-list, .git-history-list").toggle();
+
+        // Toggle history button
+        $panel.find(".git-history").toggleClass("active")
+        .attr("title", historyEnabled ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
+
+    }
+*/

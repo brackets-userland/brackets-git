@@ -482,6 +482,15 @@ define(function (require, exports) {
             return diff;
         });
     }
+    
+    // whatToDo gets values "continue" "skip" "abort"
+    function handleRebase(whatToDo) {
+        Git.rebase(whatToDo).then(function () {
+            Branch.refresh();
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Rebase " + whatToDo + " failed");
+        });
+    }
 
     function handleGitCommit() {
         var codeInspectionEnabled = Preferences.get("useCodeInspection");
@@ -829,10 +838,12 @@ define(function (require, exports) {
                 FileViewController.addToWorkingSetAndSelect(Utils.getProjectRoot() + $this.attr("x-file"));
             })
             .on("click", ".history-commit", function () {
+                // TODO: FezVrasta's handler: renderHistoryCommit(JSON.parse($(this).attr("data-commit")), $(this));
                 HistoryViewer.show($(this).attr("data-hash"));
                 // TODO: remove this and all dependents
                 // showHistoryCommitDialog($(this).attr("data-hash"));
             });
+
     }
 
     function changeUserName() {
@@ -948,6 +959,9 @@ define(function (require, exports) {
             })
             .on("click", ".git-reset", handleGitReset)
             .on("click", ".git-commit", handleGitCommit)
+            .on("click", ".git-rebase-continue", function (e) { handleRebase("continue", e); })
+            .on("click", ".git-rebase-skip", function (e) { handleRebase("skip", e); })
+            .on("click", ".git-rebase-abort", function (e) { handleRebase("abort", e); })
             .on("click", ".git-prev-gutter", GutterManager.goToPrev)
             .on("click", ".git-next-gutter", GutterManager.goToNext)
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
@@ -1058,6 +1072,11 @@ define(function (require, exports) {
         }
         refresh();
     }
+    
+    function toggleRebase(enabled) {
+        getPanel().find("button.git-commit").toggle(!enabled);
+        getPanel().find("git-rebase").toggle(enabled);
+    }
 
     function getPanel() {
         return gitPanel.$panel;
@@ -1078,6 +1097,9 @@ define(function (require, exports) {
     });
     EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, function () {
         refresh();
+    });
+    EventEmitter.on(Events.REBASE_MODE, function (enabled) {
+        toggleRebase(enabled);
     });
 
     exports.init = init;

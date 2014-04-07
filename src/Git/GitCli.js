@@ -316,6 +316,50 @@ define(function (require, exports) {
             });
         });
     }
+    
+    /*
+    TODO: 
+    getHistory: function (branch, skipCommits) {
+            var separator = "_._",
+                newline   = "_.nw._",
+                format    = [
+                    "%h",  // abbreviated commit hash
+                    "%H",  // commit hash
+                    "%an", // author name
+                    "%ai", // author date, ISO 8601 format
+                    "%ae", // author email
+                    "%s",  // subject
+                    "%b"   // body
+                ].join(separator) + newline;
+
+            var args = ["log", "-100"];
+            if (skipCommits) { args.push("--skip=" + skipCommits); }
+            args.push("--format=" + escapeShellArg(format));
+            args.push(escapeShellArg(branch));
+
+            return this.executeCommand(this._git, args).then(function (stdout) {
+                stdout = stdout.substring(0, stdout.length - 5);
+                return !stdout ? [] : stdout.split(newline).map(function (line) {
+                    var data    = line.split(separator),
+                        commit = {};
+
+                    commit.hashShort        = data[0];
+                    commit.hash             = data[1];
+                    commit.author           = data[2];
+                    commit.date             = data[3];
+                    commit.email            = data[4];
+                    commit.emailHash        = md5(data[4]);
+                    commit.subject          = data[5].substring(0, 49) + ((data[5].length > 50) ? "…" : "");
+                    commit.body             = marked(data[6], {gfm: true, breaks: true});
+                    commit.avatarColor      = commit.emailHash.substring(0, 6);
+                    commit.avatarLetter     = commit.author.substring(0, 1);
+                    commit.commit           = JSON.stringify(commit);
+
+                    return commit;
+                });
+            });
+        }
+    */
 
     function init() {
         return git(["init"]);
@@ -533,6 +577,10 @@ define(function (require, exports) {
     function getDiffOfFileFromCommit(hash, file) {
         return git(["diff", "--no-color", hash + "^!", "--", file]);
     }
+    
+    function rebase(whatToDo) {
+        return git(["rebase", "--" + whatToDo]);
+    }
 
     // Public API
     exports._git                      = git;
@@ -569,5 +617,6 @@ define(function (require, exports) {
     exports.clean                     = clean;
     exports.getFilesFromCommit        = getFilesFromCommit;
     exports.getDiffOfFileFromCommit   = getDiffOfFileFromCommit;
+    exports.rebase                    = rebase;
 
 });

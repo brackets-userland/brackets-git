@@ -323,8 +323,21 @@ define(function (require, exports) {
                         // FIXME: check if anyone is not reading the text if $gitBranchName
                         branchName += "|MERGING";
                     }
-
-                    $gitBranchName.text(branchName)
+                    
+                    if (mergeInfo.rebaseMode) {
+                        if (mergeInfo.rebaseHead) {
+                            branchName = mergeInfo.rebaseHead;
+                        }
+                        branchName += "|REBASE";
+                        if (mergeInfo.rebaseNext && mergeInfo.rebaseLast) {
+                            branchName += "(" + mergeInfo.rebaseNext + "/" + mergeInfo.rebaseLast + ")";
+                        }
+                    }
+                    EventEmitter.emit(Events.REBASE_MODE, mergeInfo.rebaseMode);
+                    
+                    $gitBranchName
+                        .text(branchName)
+                        .attr("title", branchName.length > 15 ? branchName : null)
                         .off("click")
                         .on("click", toggleDropdown)
                         .append($("<span class='dropdown-arrow' />"));

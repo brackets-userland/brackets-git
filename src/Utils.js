@@ -167,8 +167,12 @@ define(function (require, exports, module) {
                         resolve(content);
                     });
                 } else {
-                    // FIXME: load contents when this is a directory
-                    throw "NOT IMPLEMENTED";
+                    entry.getContents(function (err, contents) {
+                        if (err) {
+                            return resolve(null);
+                        }
+                        resolve(contents);
+                    });
                 }
             });
         });

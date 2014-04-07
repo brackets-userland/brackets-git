@@ -146,3 +146,78 @@ define(function (require, exports) {
     exports.show = show;
 
 });
+
+/*
+TODO: new files:
+var gitPanelHistoryTemplate         = require("text!templates/git-panel-history.html"),
+        gitPanelHistoryCommitsTemplate  = require("text!templates/git-panel-history-commits.html"),
+        gitDiffDetailsTemplate          = require("text!templates/git-diff-details.html"),
+        gitCommitDiffTemplate           = require("text!templates/git-commit-diff.html"),
+
+// Render view with the modified files list and the diff commited
+    function _renderCommitDiff(commit, files) {
+
+        var variables = commit;
+        variables.files = files;
+        variables.Strings = Strings;
+        variables.useGravatar = Preferences.get("useGravatar");
+        var compiledTemplate = Mustache.render(gitCommitDiffTemplate, variables);
+
+        var $historyDiff = gitPanel.$panel.find(".history-diff");
+        $historyDiff.html(compiledTemplate);
+
+        $historyDiff
+            .off("click.historyDiff")
+            .on("click.historyDiff", ".commit-files a", function () {
+                var self = $(this),
+                    file = $(this).text().trim();
+
+                if (self.parent().is(".active")) {
+                    self.parent().removeClass("active");
+                }
+                else {
+                    $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
+                    Main.gitControl.getDiffOfFileFromCommit(commit.hash, file).then(function (diff) {
+                        $historyDiff.find(".commit-files li").removeClass("active");
+                        self.parent().addClass("active");
+                        $historyDiff.parent().find(".commit-diff").html(Utils.formatDiff(diff));
+                        $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
+                    });
+                }
+            });
+
+        $(window)
+            .off("resize.historyDiff")
+            .on("resize.historyDiff", function () {
+                gitPanel.$panel.find(".diff-header").width(gitPanel.$panel.find(".history-diff").width() - 12);
+            })
+            .trigger("resize.historyDiff");
+
+        $historyDiff
+            .on("scroll", function () {
+                if ($historyDiff.scrollTop() > 0) {
+                    $(".diff-header").addClass("shadow");
+                }
+                else {
+                    $(".diff-header").removeClass("shadow");
+                }
+            });
+    }
+    
+    // show a commit with given hash
+    function renderHistoryCommit(commit, self) {
+        gitPanel.$panel.find(".history-commits-list .active").removeClass("active");
+        self.addClass("active");
+        Main.gitControl.getFilesFromCommit(commit.hash).then(function (files) {
+            var list = $.map(files, function (file) {
+                var dotPosition = file.lastIndexOf("."),
+                    fileName = file.substring(0, dotPosition),
+                    fileExtension = file.substring(dotPosition, file.length);
+                return {name: fileName, extension: fileExtension};
+            });
+            _renderCommitDiff(commit, list);
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Failed to load list of diff files");
+        });
+    }
+*/

@@ -1,0 +1,150 @@
+// History tab stylesheet
+    .git-history-list {
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+        .history-commits-list {
+            width: 400px;
+            overflow-y: scroll;
+            height: 100%;
+            display: inline-block;
+            position: absolute;
+            line-height: 15px;
+            h1 {
+                font-size: 30px;
+                font-weight: 400;
+                padding: 0 20px;
+            }
+            .history-commit {
+                padding: 7px;
+                overflow: hidden;
+                &.active, &.active:hover {
+                    background-color: @lightGrey;
+                }
+            }
+            .history-commit:hover {
+                background: @slightBlue;
+            }
+            .commit-author-avatar {
+                float: left;
+                margin-right: 10px;
+                border-radius: 4px;
+                width: 30px;
+                height: 30px;
+                overflow: hidden;
+                position: relative;
+                span {
+                    font-size: 35px;
+                    -webkit-filter: invert(100%);
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    text-align: center;
+                    line-height: 30px;
+                    text-transform: capitalize;
+                }
+            }
+            .commit-title, .commit-details {
+                display: block;
+            }
+            .commit-details {
+                color: @darkGrey;
+            }
+            .commit-author {
+                font-weight: bold;
+                color: @defaultText;
+            }
+        }
+        .history-diff {
+            box-sizing: border-box;
+            display: inline-block;
+            width:  ~"calc(100% - 400px)";
+            margin-left: 400px;
+            height: 100%;
+            overflow-y: scroll;
+            padding-left: 5px;
+            padding-right: 5px;
+            .commit-author-avatar {
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+                position: relative;
+                top: 3px;
+                img {
+                    position: absolute;
+                }
+                span {
+                    font-size: 18px;
+                    -webkit-filter: invert(100%);
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    text-align: center;
+                    line-height: 16px;
+                    text-transform: capitalize;
+                }
+            }
+            .diff-header {
+                position: fixed;
+                background: #dfe2e2;
+                height: 66px;
+                margin-left: -5px;
+                padding-left: 10px;
+                &.shadow {
+                    box-shadow: 0 4px 3px -3px rgba(0,0,0,0.3);
+                }
+                h1 {
+                    font-size: 20px;
+                    font-weight: 400;
+                    padding: 0;
+                    margin: 0;
+                }
+                .commit-hash, .commit-author {
+                    padding: 5px;
+                    display: inline-block;
+                    i {
+                        margin-right: 5px;
+                    }
+                }
+            }
+            .scrollbox {
+                padding-top: 66px;
+                .message {
+                    display: block;
+                    padding: 10px;
+                }
+                .commit-diff {
+                    display: none;
+                    margin: 10px;
+                }
+                .active a+.commit-diff {
+                    display: block;
+                }
+                .opened {
+                    display: none;
+                    margin-top: 7px;
+                }
+                .closed {
+                    display: inline-block;
+                    margin-top: 5px;
+                }
+                .active {
+                    border: 1px solid #ddd;
+                    background: @almostWhite;
+                    border-radius: 4px;
+                    a {
+                        border: none;
+                        background-color: transparent;
+                    }
+                    .opened {
+                        display: inline-block;
+                    }
+                    .closed {
+                        display: none;
+                    }
+                }
+            }

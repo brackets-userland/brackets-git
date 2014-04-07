@@ -80,16 +80,21 @@ define(function (require, exports) {
 
     function getMergeInfo() {
         var gitFolder = Utils.getProjectRoot() + "/.git/",
-            mergeFiles = ["MERGE_HEAD", "MERGE_MODE", "MERGE_MSG"];
+            mergeFiles = ["MERGE_HEAD", "MERGE_MODE", "MERGE_MSG",
+                          "rebase-apply", "rebase-apply/next", "rebase-apply/last", "rebase-apply/head-name"];
         return Promise.all(mergeFiles.map(function (fileName) {
             return Utils.loadPathContent(gitFolder + fileName);
-        })).spread(function (head, mode, msg) {
+        })).spread(function (head, mode, msg, rebase, rebaseNext, rebaseLast, rebaseHead) {
             var msgSplit = msg ? msg.trim().split(/conflicts:/i) : [];
             return {
                 headCommit: head ? head.trim() : null,
                 mergeMode: mode !== null,
                 message: msgSplit[0] ? msgSplit[0].trim() : null,
-                conflicts: msgSplit[1] ? msgSplit[1].trim().split("\n").map(function (line) { return line.trim(); }) : []
+                conflicts: msgSplit[1] ? msgSplit[1].trim().split("\n").map(function (line) { return line.trim(); }) : [],
+                rebaseMode: !!rebase,
+                rebaseNext: rebaseNext ? rebaseNext.trim() : null,
+                rebaseLast: rebaseLast ? rebaseLast.trim() : null,
+                rebaseHead: rebaseHead ? rebaseHead.trim().substring("refs/heads/".length) : null
             };
         });
     }
