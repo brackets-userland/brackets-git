@@ -16,6 +16,7 @@ define(function (require, exports) {
         LanguageManager    = brackets.getModule("language/LanguageManager"),
         FileSystem         = brackets.getModule("filesystem/FileSystem"),
         Menus              = brackets.getModule("command/Menus"),
+        FindInFiles        = brackets.getModule("search/FindInFiles"),
         PanelManager       = brackets.getModule("view/PanelManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         StringUtils        = brackets.getModule("utils/StringUtils"),
@@ -491,6 +492,10 @@ define(function (require, exports) {
         });
     }
 
+    function findConflicts() {
+        FindInFiles.doSearch(/^<<<<<<<\s|^=======\s|^>>>>>>>\s/gm);
+    }
+
     function handleGitCommit() {
         var codeInspectionEnabled = Preferences.get("useCodeInspection");
         var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
@@ -959,6 +964,7 @@ define(function (require, exports) {
             .on("click", ".git-rebase-continue", function (e) { handleRebase("continue", e); })
             .on("click", ".git-rebase-skip", function (e) { handleRebase("skip", e); })
             .on("click", ".git-rebase-abort", function (e) { handleRebase("abort", e); })
+            .on("click", ".git-find-conflicts", findConflicts)
             .on("click", ".git-prev-gutter", GutterManager.goToPrev)
             .on("click", ".git-next-gutter", GutterManager.goToNext)
             .on("click", ".git-toggle-untracked", handleToggleUntracked)
