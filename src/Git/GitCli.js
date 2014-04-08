@@ -84,9 +84,103 @@ define(function (require, exports) {
         return rv.promise;
     }
 
+    /*
+        git branch
+        -d --delete Delete a branch.
+        -D Delete a branch irrespective of its merged status.
+        --no-color Turn off branch colors
+        -r --remotes List or delete (if used with -d) the remote-tracking branches.
+        -a --all List both remote-tracking branches and local branches.
+        --track When creating a new branch, set up branch.<name>.remote and branch.<name>.merge
+        --set-upstream If specified branch does not exist yet or if --force has been given, acts exactly like --track
+    */
+
+    function setUpstreamBranch(remoteName, remoteBranch) {
+        if (!remoteName) { throw new TypeError("remoteName argument is missing!"); }
+        if (!remoteBranch) { throw new TypeError("remoteBranch argument is missing!"); }
+        return git(["branch", "--no-color", "-u", remoteName + "/" + remoteBranch]);
+    }
+
+    function branchDelete(branchName) {
+        return git(["branch", "--no-color", "-d", branchName]);
+    }
+
+    function forceBranchDelete(branchName) {
+        return git(["branch", "--no-color", "-D", branchName]);
+    }
+
+    function getBranches(moreArgs) {
+        var args = ["branch", "--no-color"];
+        if (moreArgs) { args = args.concat(moreArgs); }
+
+        return git(args).then(function (stdout) {
+            if (!stdout) { return []; }
+            return stdout.split("\n").reduce(function (arr, l) {
+                var name = l.trim(),
+                    currentBranch = false,
+                    remote = null,
+                    sortPrefix = "";
+
+                if (name.indexOf("->") !== -1) {
+                    return arr;
+                }
+
+                if (name.indexOf("* ") === 0) {
+                    name = name.substring(2);
+                    currentBranch = true;
+                }
+
+                if (name.indexOf("remotes/") === 0) {
+                    name = name.substring("remotes/".length);
+                    remote = name.substring(0, name.indexOf("/"));
+                }
+
+                var sortName = name.toLowerCase();
+                if (remote) {
+                    sortName = sortName.substring(remote.length + 1);
+                }
+                if (sortName.indexOf("#") !== -1) {
+                    sortPrefix = sortName.slice(0, sortName.indexOf("#"));
+                }
+
+                arr.push({
+                    name: name,
+                    sortPrefix: sortPrefix,
+                    sortName: sortName,
+                    currentBranch: currentBranch,
+                    remote: remote
+                });
+                return arr;
+            }, []);
+        });
+    }
+
+    function getAllBranches() {
+        return getBranches(["-a"]);
+    }
+
+    /*
+        git fetch
+        --all Fetch all remotes.
+        --dry-run Show what would be done, without making any changes.
+        --multiple Allow several <repository> and <group> arguments to be specified. No <refspec>s may be specified.
+        --prune After fetching, remove any remote-tracking references that no longer exist on the remote.
+        --progress This flag forces progress status even if the standard error stream is not directed to a terminal.
+    */
+
     function fetchAllRemotes() {
         return git(["fetch", "--all", "--progress"]);
     }
+
+    /*
+        git remote
+        add Adds a remote named <name> for the repository at <url>.
+        rename Rename the remote named <old> to <new>.
+        remove Remove the remote named <name>.
+        show Gives some information about the remote <name>.
+        prune Deletes all stale remote-tracking branches under <name>.
+
+    */
 
     function getRemotes() {
         return git(["remote", "-v"])
@@ -117,6 +211,12 @@ define(function (require, exports) {
             });
     }
 
+    /*
+        git pull
+        --no-commit Do not commit result after merge
+        --ff-only Refuse to merge and exit with a non-zero status unless the current HEAD is already up-to-date or the merge can be resolved as a fast-forward.
+    */
+
     function pull(remoteName) {
         return git(["pull", "--ff-only", "--progress", remoteName])
             .then(function (stdout) {
@@ -124,6 +224,15 @@ define(function (require, exports) {
                 return stdout;
             });
     }
+
+    /*
+        git push
+        --porcelain Produce machine-readable output.
+        --delete All listed refs are deleted from the remote repository. This is the same as prefixing all refs with a colon.
+        --force Usually, the command refuses to update a remote ref that is not an ancestor of the local ref used to overwrite it.
+        --set-upstream For every branch that is up to date or successfully pushed, add upstream (tracking) reference
+        --progress This flag forces progress status even if the standard error stream is not directed to a terminal.
+    */
 
     /*
         returns parsed push response in this format:
@@ -190,68 +299,12 @@ define(function (require, exports) {
             });
     }
 
-    function setUpstreamBranch(remoteName, remoteBranch) {
-        if (!remoteName) { throw new TypeError("remoteName argument is missing!"); }
-        if (!remoteBranch) { throw new TypeError("remoteBranch argument is missing!"); }
-        return git(["branch", "-u", remoteName + "/" + remoteBranch]);
-    }
-
     function getCurrentBranchHash() {
         return git(["rev-parse", "--abbrev-ref", "HEAD"]);
     }
 
     function getCurrentBranchName() {
         return git(["symbolic-ref", "--short", "HEAD"]);
-    }
-
-    function getBranches(moreArgs) {
-        var args = ["branch"];
-        if (moreArgs) { args = args.concat(moreArgs); }
-
-        return git(args).then(function (stdout) {
-            if (!stdout) { return []; }
-            return stdout.split("\n").reduce(function (arr, l) {
-                var name = l.trim(),
-                    currentBranch = false,
-                    remote = null,
-                    sortPrefix = "";
-
-                if (name.indexOf("->") !== -1) {
-                    return arr;
-                }
-
-                if (name.indexOf("* ") === 0) {
-                    name = name.substring(2);
-                    currentBranch = true;
-                }
-
-                if (name.indexOf("remotes/") === 0) {
-                    name = name.substring("remotes/".length);
-                    remote = name.substring(0, name.indexOf("/"));
-                }
-
-                var sortName = name.toLowerCase();
-                if (remote) {
-                    sortName = sortName.substring(remote.length + 1);
-                }
-                if (sortName.indexOf("#") !== -1) {
-                    sortPrefix = sortName.slice(0, sortName.indexOf("#"));
-                }
-
-                arr.push({
-                    name: name,
-                    sortPrefix: sortPrefix,
-                    sortName: sortName,
-                    currentBranch: currentBranch,
-                    remote: remote
-                });
-                return arr;
-            }, []);
-        });
-    }
-
-    function getAllBranches() {
-        return getBranches(["-a"]);
     }
 
     function getCurrentUpstreamBranch() {
@@ -281,14 +334,6 @@ define(function (require, exports) {
 
     function setConfig(key, value) {
         return git(["config", key.replace(/\s/g, ""), value]);
-    }
-
-    function branchDelete(branchName) {
-        return git(["branch", "-d", branchName]);
-    }
-
-    function forceBranchDelete(branchName) {
-        return git(["branch", "-D", branchName]);
     }
 
     function getHistory(branch, skipCommits, file) {

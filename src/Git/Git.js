@@ -98,14 +98,14 @@ define(function (require, exports) {
                 })).spread(function (head, msg) {
 
                     if (head) {
-                        obj.headCommit = head.trim();
+                        obj.mergeHead = head.trim();
                     }
                     var msgSplit = msg ? msg.trim().split(/conflicts:/i) : [];
                     if (msgSplit[0]) {
-                        obj.message = msgSplit[0].trim();
+                        obj.mergeMessage = msgSplit[0].trim();
                     }
                     if (msgSplit[1]) {
-                        obj.conflicts = msgSplit[1].trim().split("\n").map(function (line) { return line.trim(); });
+                        obj.mergeConflicts = msgSplit[1].trim().split("\n").map(function (line) { return line.trim(); });
                     }
                     return obj;
 
