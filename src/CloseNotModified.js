@@ -28,7 +28,7 @@ define(function (require, exports) {
                     DocumentManager.closeFullEditor(openFile);
                 }
             });
-            EditorManager.focus();
+            EditorManager.focusEditor();
         });
     }
 

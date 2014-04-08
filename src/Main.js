@@ -144,10 +144,13 @@ define(function (require, exports) {
         [ ["#project-files-container", "entry"], ["#open-files-container", "file"] ].forEach(function (arr) {
             $(arr[0]).find("li").each(function () {
                 var $li = $(this),
-                    fullPath = $li.data(arr[1]).fullPath,
-                    isModified = fullPaths.indexOf(fullPath) !== -1;
-                $li.toggleClass("git-ignored", isIgnored(fullPath))
-                   .toggleClass("git-modified", isModified);
+                    data = $li.data(arr[1]);
+                if (data) {
+                    var fullPath = data.fullPath,
+                        isModified = fullPaths.indexOf(fullPath) !== -1;
+                    $li.toggleClass("git-ignored", isIgnored(fullPath))
+                       .toggleClass("git-modified", isModified);
+                }
             });
         });
     }

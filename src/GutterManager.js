@@ -127,6 +127,8 @@ define(function (require, exports) {
     }
 
     function refresh() {
+        // TODO: this might be called too often, do not call if previous refresh isn't finished?
+
         if (!guttersEnabled) {
             return;
         }
