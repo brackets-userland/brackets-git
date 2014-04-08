@@ -95,16 +95,6 @@ define(function (require, exports) {
         return { width: desiredWidth, height: desiredHeight };
     }
 
-    function handleGitReset() {
-        return Git.resetIndex().then(function () {
-            // Branch.refresh will refresh also Panel
-            return Branch.refresh();
-        }).catch(function (err) {
-            // reset is executed too often so just log this error, but do not display a dialog
-            ErrorHandler.logError(err);
-        });
-    }
-
     function _showCommitDialog(stagedDiff, lintResults) {
         // Flatten the error structure from various providers
         lintResults.forEach(function (lintResult) {
@@ -959,7 +949,7 @@ define(function (require, exports) {
                     });
                 }
             })
-            .on("click", ".git-reset", handleGitReset)
+            .on("click", ".git-refresh", EventEmitter.emitFactory(Events.REFRESH_ALL))
             .on("click", ".git-commit", handleGitCommit)
             .on("click", ".git-rebase-continue", function (e) { handleRebase("continue", e); })
             .on("click", ".git-rebase-skip", function (e) { handleRebase("skip", e); })
