@@ -7,6 +7,7 @@ define(function (require, exports) {
     var _               = brackets.getModule("thirdparty/lodash"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
         EditorManager   = brackets.getModule("editor/EditorManager"),
+        ErrorHandler    = require("src/ErrorHandler"),
         Events          = require("src/Events"),
         EventEmitter    = require("src/EventEmitter"),
         Git             = require("src/Git/Git"),
@@ -213,6 +214,8 @@ define(function (require, exports) {
             });
 
             showGutters(editor._codeMirror, [].concat(added, removed, modified));
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Refreshing gutter failed!");
         });
     }
 
