@@ -4,7 +4,7 @@ define(function (require) {
     // Local modules
     var Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
-        Git           = require("src/Git/Git");
+        Git           = require("src/git/Git");
 
     function refreshStatus() {
         // Extension parts should listen to GIT_STATUS_RESULTS

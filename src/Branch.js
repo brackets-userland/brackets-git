@@ -11,13 +11,13 @@ define(function (require, exports) {
         SidebarView             = brackets.getModule("project/SidebarView"),
         DocumentManager         = brackets.getModule("document/DocumentManager");
 
-    var Git                     = require("src/Git/Git"),
+    var Git                     = require("src/git/Git"),
         Events                  = require("src/Events"),
         EventEmitter            = require("src/EventEmitter"),
         ErrorHandler            = require("./ErrorHandler"),
         Main                    = require("./Main"),
         Panel                   = require("./Panel"),
-        ProgressDialog          = require("src/Dialogs/Progress"),
+        ProgressDialog          = require("src/dialogs/Progress"),
         Strings                 = require("../strings"),
         Utils                   = require("./Utils"),
         branchesMenuTemplate    = require("text!templates/git-branches-menu.html"),

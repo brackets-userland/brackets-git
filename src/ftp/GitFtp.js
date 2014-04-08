@@ -4,7 +4,7 @@
 define(function (require, exports) {
 
     // Local modules
-    var GitCli        = require("src/Git/GitCli"),
+    var GitCli        = require("src/git/GitCli"),
         Promise       = require("bluebird"),
         URI           = require("URI");
 

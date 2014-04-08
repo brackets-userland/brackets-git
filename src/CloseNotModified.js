@@ -9,7 +9,7 @@ define(function (require, exports) {
 
     var Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
-        Git           = require("src/Git/Git"),
+        Git           = require("src/git/Git"),
         Utils         = require("src/Utils"),
         Strings       = require("strings");
 

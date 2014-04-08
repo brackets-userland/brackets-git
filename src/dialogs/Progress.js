@@ -8,7 +8,7 @@ define(function (require, exports) {
     var Strings = require("strings");
 
     // Templates
-    var template = require("text!src/Dialogs/templates/progress-dialog.html");
+    var template = require("text!src/dialogs/templates/progress-dialog.html");
 
     // Module variables
     var lines,

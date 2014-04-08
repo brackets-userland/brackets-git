@@ -7,7 +7,7 @@ define(function (require, exports) {
 
     // Local modules
     var Promise = require("bluebird"),
-        GitCli  = require("src/Git/GitCli"),
+        GitCli  = require("src/git/GitCli"),
         Utils   = require("src/Utils");
 
     // Implementation

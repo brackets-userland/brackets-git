@@ -12,10 +12,10 @@ define(function (require) {
         EventEmitter  = require("src/EventEmitter"),
         Strings       = require("strings"),
         Utils         = require("src/Utils"),
-        GitFtp        = require("./GitFtp");
+        GitFtp        = require("src/ftp/GitFtp");
 
     // Module variables
-    var ftpScopesTemplate = require("text!src/Ftp/templates/remotes-picker.html"),
+    var ftpScopesTemplate = require("text!src/ftp/templates/remotes-picker.html"),
         $gitPanel = null,
         $remotesDropdown = null;
 

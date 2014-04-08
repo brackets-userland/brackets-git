@@ -29,7 +29,7 @@ define(function (require, exports, module) {
         "src/History",
         "src/Remotes"
     ];
-    if (Preferences.get("useGitFtp")) { modules.push("src/Ftp/Ftp"); }
+    if (Preferences.get("useGitFtp")) { modules.push("src/ftp/Ftp"); }
     require(modules);
 
     // Load CSS

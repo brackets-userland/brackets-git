@@ -8,7 +8,7 @@ define(function (require, exports) {
         ErrorHandler = require("src/ErrorHandler"),
         Events = require("src/Events"),
         EventEmitter = require("src/EventEmitter"),
-        Git = require("src/Git/Git"),
+        Git = require("src/git/Git"),
         Preferences = require("src/Preferences"),
         Strings = require("strings"),
         Utils = require("src/Utils");

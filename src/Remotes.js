@@ -11,9 +11,9 @@ define(function (require) {
     var ErrorHandler    = require("src/ErrorHandler"),
         Events          = require("src/Events"),
         EventEmitter    = require("src/EventEmitter"),
-        Git             = require("src/Git/Git"),
+        Git             = require("src/git/Git"),
         Preferences     = require("src/Preferences"),
-        ProgressDialog  = require("src/Dialogs/Progress"),
+        ProgressDialog  = require("src/dialogs/Progress"),
         Promise         = require("bluebird"),
         Strings         = require("strings"),
         Utils           = require("src/Utils");

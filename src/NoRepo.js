@@ -12,8 +12,8 @@ define(function (require) {
         Events          = require("src/Events"),
         EventEmitter    = require("src/EventEmitter"),
         ExpectedError   = require("src/ExpectedError"),
-        ProgressDialog  = require("src/Dialogs/Progress"),
-        Git             = require("src/Git/Git"),
+        ProgressDialog  = require("src/dialogs/Progress"),
+        Git             = require("src/git/Git"),
         Utils           = require("src/Utils");
 
     // Templates
