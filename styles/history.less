@@ -1,29 +1,50 @@
-.git-history-list {
+// main: brackets-git.less
+
+.git-history {
     .history-commit > td {
+        &:nth-child(1) {
+            width: 30px;
+            .commit-author-avatar {
+                margin-left: 15px;
+            }
+        }
+        &:nth-child(2) {
+            width: 250px;
+        }
         position: relative;
         overflow: hidden;
     }
     .commit-author-avatar {
         @size: 20px;
-
         position: absolute;
         top: 2px;
         left: 2px;
         right: 2px;
         bottom: 2px;
-
         width: @size;
         height: @size;
-
-        border: 1px solid @defaultText;
-        border-radius: 0;
-
+        box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.4);
+        border-radius: 3px;
         text-align: center;
         span {
-            color: @defaultText;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            text-align: center;
             font-size: @size;
             line-height: @size;
-            text-transform: capitalize;
+            color: #FEFEFE;
+            text-transform: uppercase;
+            &.avatar-bw {
+                -webkit-filter: grayscale(100%);
+            }
+        }
+        img {
+            position: absolute;
+            left: 0;
+            top: 0;
         }
     }
     .commit-author {
@@ -37,113 +58,107 @@
     bottom: 0px;
     left: 0px;
     overflow: hidden;
+    background: #dfe2e2;
     .flex-box(column);
     > .header {
         .flex-item(0, 0);
-        border-bottom: 1px solid @darkGrey;
-    }
-    > .footer {
-        .flex-item(0, 0);
-        border-top: 1px solid @darkGrey;
+        .commit-author-avatar {
+            @size: 15px;
+            margin-left: 5px;
+            margin-right: 5px;
+            position: relative;
+            display: inline-block;
+            width: @size;
+            height: @size;
+            .text {
+                font-size: @size;
+                line-height: @size;
+            }
+        }
+        padding-left: 10px;
+        &.shadow {
+            box-shadow: 0 -1px 3px 3px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+        h1 {
+            font-size: 20px;
+            font-weight: 400;
+            padding: 0;
+            margin: 0;
+        }
+        .commit-hash, .commit-author {
+            padding: 5px;
+            display: inline-block;
+            i {
+                margin-right: 5px;
+            }
+        }
+        .actions {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 10px;
+            >* {
+                margin-right: 15px;
+                display: inline-block;
+            }
+            .close {
+                margin-top: -22px;
+                margin-right: 7px;
+            }
+            .dropdown-menu {
+
+            }
+        }
+
     }
     > .body {
         .flex-item(1, 1);
         position: relative;
         overflow-y: scroll;
+        li>a {
+            margin: 10px;
+            background: #E6E6E6;
+        }
     }
-}
-/*
-// History tab stylesheet
-    .git-history-list {
-        .history-diff {
-            box-sizing: border-box;
+    .message {
+        display: block;
+        padding: 10px;
+    }
+    .commit-diff {
+        display: none;
+        margin: 10px;
+    }
+    .active+.commit-diff {
+        display: block;
+    }
+    .opened {
+        display: none;
+        margin-top: 7px;
+    }
+    .closed {
+        display: inline-block;
+        margin-top: 5px;
+    }
+    .active {
+        border: 1px solid #ddd;
+        background: @almostWhite;
+        border-radius: 4px;
+        a {
+            border: none;
+            background-color: transparent;
+        }
+        .opened {
             display: inline-block;
-            width:  ~"calc(100% - 400px)";
-            margin-left: 400px;
-            height: 100%;
-            overflow-y: scroll;
-            padding-left: 5px;
-            padding-right: 5px;
-            .commit-author-avatar {
-                display: inline-block;
-                width: 16px;
-                height: 16px;
-                position: relative;
-                top: 3px;
-                img {
-                    position: absolute;
-                }
-                span {
-                    font-size: 18px;
-                    -webkit-filter: invert(100%);
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    text-align: center;
-                    line-height: 16px;
-                    text-transform: capitalize;
-                }
-            }
-            .diff-header {
-                position: fixed;
-                background: #dfe2e2;
-                height: 66px;
-                margin-left: -5px;
-                padding-left: 10px;
-                &.shadow {
-                    box-shadow: 0 4px 3px -3px rgba(0,0,0,0.3);
-                }
-                h1 {
-                    font-size: 20px;
-                    font-weight: 400;
-                    padding: 0;
-                    margin: 0;
-                }
-                .commit-hash, .commit-author {
-                    padding: 5px;
-                    display: inline-block;
-                    i {
-                        margin-right: 5px;
-                    }
-                }
-            }
-            .scrollbox {
-                padding-top: 66px;
-                .message {
-                    display: block;
-                    padding: 10px;
-                }
-                .commit-diff {
-                    display: none;
-                    margin: 10px;
-                }
-                .active a+.commit-diff {
-                    display: block;
-                }
-                .opened {
-                    display: none;
-                    margin-top: 7px;
-                }
-                .closed {
-                    display: inline-block;
-                    margin-top: 5px;
-                }
-                .active {
-                    border: 1px solid #ddd;
-                    background: @almostWhite;
-                    border-radius: 4px;
-                    a {
-                        border: none;
-                        background-color: transparent;
-                    }
-                    .opened {
-                        display: inline-block;
-                    }
-                    .closed {
-                        display: none;
-                    }
-                }
-            }
-*/
+        }
+        .closed {
+            display: none;
+        }
+    }
+    .caret.caret-right {
+        border-bottom: 4px solid transparent;
+        border-top: 4px solid transparent;
+        border-left: 4px solid #000000;
+    }
+    .dropdown-menu();
+}

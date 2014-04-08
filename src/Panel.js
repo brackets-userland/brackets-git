@@ -670,7 +670,7 @@ define(function (require, exports) {
 
     function refresh() {
         // set the history panel to false and remove the class that show the button history active when refresh
-        gitPanel.$panel.find(".git-history").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
+        gitPanel.$panel.find(".git-history-toggle").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
         gitPanel.$panel.find(".git-file-history").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_FILE_HISTORY);
 
         if (gitPanelMode === "not-repo") {
@@ -678,7 +678,7 @@ define(function (require, exports) {
             return Promise.resolve();
         }
 
-        $tableContainer.find(".git-history-list").remove();
+        $tableContainer.find("#git-history-list").remove();
         $tableContainer.find(".git-edited-list").show();
 
         var p1 = Git.status();
@@ -965,7 +965,7 @@ define(function (require, exports) {
             .on("click", ".authors-selection", handleAuthorsSelection)
             .on("click", ".authors-file", handleAuthorsFile)
             .on("click", ".git-file-history", EventEmitter.emitFactory(Events.HISTORY_SHOW, "FILE"))
-            .on("click", ".git-history", EventEmitter.emitFactory(Events.HISTORY_SHOW, "GLOBAL"))
+            .on("click", ".git-history-toggle", EventEmitter.emitFactory(Events.HISTORY_SHOW, "GLOBAL"))
             .on("click", ".git-push", EventEmitter.emitFactory(Events.HANDLE_PUSH))
             .on("click", ".git-pull", EventEmitter.emitFactory(Events.HANDLE_PULL))
             .on("click", ".git-bug", ErrorHandler.reportBug)

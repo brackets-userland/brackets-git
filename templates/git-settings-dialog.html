@@ -86,10 +86,15 @@
                 </div>
                 <div class="row-fluid">
                     <div class="span6">
-                        <label for="git-settings-useGravatar">
-                            <input id="git-settings-useGravatar" type="checkbox" settingsProperty="useGravatar" />
-                            {{USE_GRAVATAR}}
+                        <label for="git-settings-avatarType">
+                            {{AVATAR_TYPE}}:
                         </label>
+                        <select id="git-settings-avatarType" settingsProperty="avatarType">
+                            <option value="AVATAR_BW">{{BLACK_WHITE_AVATAR}}</option>
+                            <option value="AVATAR_COLOR">{{COLORED_AVATAR}}</option>
+                            <option value="IDENTICON">{{IDENTICON}} ({{REQ_INTERNET}})</option>
+                            <option value="PICTURE">{{PICTURE}} ({{REQ_INTERNET}})</option>
+                        </select>
                     </div>
                 </div>
                 <hr></hr>
