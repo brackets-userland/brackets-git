@@ -13,10 +13,15 @@ define(function (require) {
         EventEmitter = require("src/EventEmitter"),
         Git = require("src/Git/Git"),
         HistoryViewer = require("src/HistoryViewer"),
-        Preferences = require("src/Preferences"),
-        md5 = require("thirdparty/md5");
+        Preferences = require("src/Preferences");
 
-    var avatarType = Preferences.get("avatarType");
+    var avatarType   = Preferences.get("avatarType");
+
+    // Check if the current repository is part of GitHub network
+    var isGitHubRepo = false;
+    Git.getConfig("remote.origin.url").then(function (stdout) {
+        isGitHubRepo = stdout.indexOf("://github.com/") !== -1;
+    });
 
     // Templates
     var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html"),
@@ -59,13 +64,13 @@ define(function (require) {
             var p = file ? Git.getFileHistory(file.relative, branchName) : Git.getHistory(branchName);
             return p.then(function (commits) {
 
-                // calculate some missing stuff like gravatars
+                // calculate some missing stuff like avatars
                 commits = addAdditionalCommitInfo(commits);
                 commitCache = commitCache.concat(commits);
 
                 var templateData = {
                     commits: commits,
-                    useGravatar: avatarType === "GRAVATAR",
+                    usePicture: avatarType === "PICTURE",
                     useIdenticon: avatarType === "IDENTICON",
                     useBwAvatar: avatarType === "AVATAR_BW",
                     useColoredAvatar: avatarType === "AVATAR_COLOR",
@@ -112,7 +117,7 @@ define(function (require) {
 
                         var templateData = {
                             commits: commits,
-                            useGravatar: avatarType === "GRAVATAR",
+                            usePicture: avatarType === "PICTURE",
                             useIdenticon: avatarType === "IDENTICON",
                             useBwAvatar: avatarType === "AVATAR_BW",
                             useColoredAvatar: avatarType === "AVATAR_COLOR",
@@ -141,16 +146,39 @@ define(function (require) {
 
         _.forEach(commits, function (commit) {
 
-            // email hash for gravatars or colored avatars
-            // TODO: banchmark `md5()` and if needed, optimize it.
-            commit.emailHash = md5(commit.email);
+            // Get color for AVATAR_BW and AVATAR_COLOR
             if (avatarType === "AVATAR_COLOR" || avatarType === "AVATAR_BW") {
-                commit.avatarLetter = commit.author.substring(0, 1);
+
+                // Source: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
+                Math.seededRandom = function (max, min) {
+                    max = max || 1;
+                    min = min || 0;
+
+                    Math.seed = (Math.seed * 9301 + 49297) % 233280;
+                    var rnd = Math.seed / 233280.0;
+
+                    return min + rnd * (max - min);
+                };
+
+                // Use `seededRandom()` to generate a pseudo-random number [0-16] to pick a color from the list
+                var seed = parseInt(commit.author.charCodeAt(3).toString(), commit.email.length);
+                Math.seed = parseInt(commit.email.charCodeAt(seed.toString().substring(1, 2)).toString(), 16);
                 var colors = [
                     "#ffb13b", "#ff6750", "#8dd43a", "#2f7e2f", "#4141b9", "#3dafea", "#7e3e3e", "#f2f26b",
                     "#864ba3", "#ac8aef", "#f2f2ce", "#379d9d", "#dd5f7a", "#8691a2", "#d2fd8d", "#88eadf"
                 ];
-                commit.cssAvatar = "background-color: " + colors[parseInt(commit.emailHash.substring(0, 1), 16)];
+                commit.cssAvatar = "background-color: " + colors[Math.floor(Math.seededRandom(0, 16))];
+
+                commit.avatarLetter = commit.author.substring(0, 1);
+
+            }
+            if (avatarType === "PICTURE") {
+
+                if (isGitHubRepo) {
+                    commit.picture = "https://avatars.githubusercontent.com/" + commit.email + "?s=20";
+                } else {
+                    commit.picture = "http://avatars.io/email/" + commit.email + "?s=20";
+                }
             }
 
             if (mode === 4) {
@@ -257,7 +285,7 @@ define(function (require) {
         // Toggle history button
         var globalButtonActive  = historyEnabled && newHistoryMode === "GLOBAL",
             fileButtonActive    = historyEnabled && newHistoryMode === "FILE";
-        $gitPanel.find(".git-history").toggleClass("active", globalButtonActive)
+        $gitPanel.find(".git-history-toggle").toggleClass("active", globalButtonActive)
             .attr("title", globalButtonActive ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
         $gitPanel.find(".git-file-history").toggleClass("active", fileButtonActive)
             .attr("title", fileButtonActive ? Strings.TOOLTIP_HIDE_FILE_HISTORY : Strings.TOOLTIP_SHOW_FILE_HISTORY);

@@ -110,7 +110,7 @@ define({
     GITFTP_SCOPES:                      "Git-FTP remotes",
     GOTO_PREVIOUS_GIT_CHANGE:           "Go to previous Git change",
     GOTO_NEXT_GIT_CHANGE:               "Go to next Git change",
-    GRAVATAR:                           "Gravatars",
+    PICTURE:                            "Personal user picture",
     HIDE_UNTRACKED:                     "Hide untracked",
     HISTORY:                            "History",
     INIT_GITFTP_SCOPE:                  "Initialize Git-FTP remote",
