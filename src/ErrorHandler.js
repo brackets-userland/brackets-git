@@ -133,4 +133,10 @@ define(function (require, exports) {
         return err;
     };
 
+    exports.toError = function (arg) {
+        // TODO: use this everywhere and have a custom error class for this extension
+        if (arg instanceof Error) { return arg; }
+        return new Error(arg);
+    };
+
 });

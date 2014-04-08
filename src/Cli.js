@@ -55,10 +55,10 @@ define(function (require, exports, module) {
                     attachEventHandlers();
                     resolve(false);
                 }).fail(function (err) { // jQuery promise - .fail is fine
-                    reject(err);
+                    reject(ErrorHandler.toError(err));
                 });
             }).fail(function (err) { // jQuery promise - .fail is fine
-                reject(err);
+                reject(ErrorHandler.toError(err));
             });
         });
     }
@@ -162,7 +162,7 @@ define(function (require, exports, module) {
                             logDebug(domainOpts, debugInfo, method, "fail", err);
                         }
                         delete deferredMap[cliId];
-                        deferred.reject(err);
+                        deferred.reject(ErrorHandler.toError(err));
                     }
                 })
                 .then(function (out) {
@@ -196,7 +196,7 @@ define(function (require, exports, module) {
                     });
 
                 delete deferredMap[cliId];
-                deferred.reject(err);
+                deferred.reject(ErrorHandler.toError(err));
                 resolved = true;
             }
 

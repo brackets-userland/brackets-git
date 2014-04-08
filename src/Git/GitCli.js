@@ -67,6 +67,8 @@ define(function (require, exports) {
                 defer.resolve(r);
             })
             .catch(function (e) {
+                var call = "call: git " + args.join(" ");
+                e.stack = [call, e.stack].join("\n");
                 defer.reject(e);
             })
             .finally(function () {
