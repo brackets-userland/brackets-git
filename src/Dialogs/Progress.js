@@ -11,7 +11,7 @@ define(function (require, exports) {
     var template = require("text!src/Dialogs/templates/progress-dialog.html");
 
     // Module variables
-    var lines = [],
+    var lines,
         $textarea;
 
     // Implementation
@@ -26,6 +26,7 @@ define(function (require, exports) {
     }
 
     function show(promise, title) {
+        lines = [];
 
         if (!promise || !promise.finally || !promise.progressed) {
             throw new Error("Invalid argument for progress dialog!");
