@@ -85,7 +85,7 @@ define(function (require, exports) {
     }
 
     function fetchAllRemotes() {
-        return git(["fetch", "--all"]);
+        return git(["fetch", "--all", "--progress"]);
     }
 
     function getRemotes() {
@@ -118,7 +118,7 @@ define(function (require, exports) {
     }
 
     function pull(remoteName) {
-        return git(["pull", "--ff-only", remoteName])
+        return git(["pull", "--ff-only", "--progress", remoteName])
             .then(function (stdout) {
                 // stdout contains currently non-parseable message
                 return stdout;
@@ -140,7 +140,7 @@ define(function (require, exports) {
     function push(remoteName, remoteBranch, additionalArgs) {
         if (!remoteName) { throw new TypeError("remoteName argument is missing!"); }
 
-        var args = ["push", "--porcelain"];
+        var args = ["push", "--porcelain", "--progress"];
         if (Array.isArray(additionalArgs)) {
             args = args.concat(additionalArgs);
         }

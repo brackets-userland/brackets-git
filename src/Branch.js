@@ -17,6 +17,7 @@ define(function (require, exports) {
         ErrorHandler            = require("./ErrorHandler"),
         Main                    = require("./Main"),
         Panel                   = require("./Panel"),
+        ProgressDialog          = require("src/Dialogs/Progress"),
         Strings                 = require("../strings"),
         Utils                   = require("./Utils"),
         branchesMenuTemplate    = require("text!templates/git-branches-menu.html"),
@@ -171,14 +172,15 @@ define(function (require, exports) {
                 _reloadBranchSelect($select, branches);
                 dialog.getElement().find(".fetchBranches").on("click", function () {
                     var $this = $(this);
-                    Git.fetchAllRemotes().then(function () {
-                        return Git.getAllBranches().then(function (branches) {
-                            $this.prop("disabled", true).attr("title", "Already fetched");
-                            _reloadBranchSelect($select, branches);
+                    ProgressDialog.show(Git.fetchAllRemotes())
+                        .then(function () {
+                            return Git.getAllBranches().then(function (branches) {
+                                $this.prop("disabled", true).attr("title", "Already fetched");
+                                _reloadBranchSelect($select, branches);
+                            });
+                        }).catch(function (err) {
+                            throw ErrorHandler.showError(err, "Fetching remote information failed");
                         });
-                    }).catch(function (err) {
-                        throw ErrorHandler.showError(err, "Fetching remote information failed");
-                    });
                 });
 
                 dialog.getElement().find("input").focus();

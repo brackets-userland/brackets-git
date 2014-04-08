@@ -8,14 +8,15 @@ define(function (require) {
         StringUtils     = brackets.getModule("utils/StringUtils");
 
     // Local modules
-    var ErrorHandler  = require("src/ErrorHandler"),
-        Events        = require("src/Events"),
-        EventEmitter  = require("src/EventEmitter"),
-        Git           = require("src/Git/Git"),
-        Preferences   = require("src/Preferences"),
-        Promise       = require("bluebird"),
-        Strings       = require("strings"),
-        Utils         = require("src/Utils");
+    var ErrorHandler    = require("src/ErrorHandler"),
+        Events          = require("src/Events"),
+        EventEmitter    = require("src/EventEmitter"),
+        Git             = require("src/Git/Git"),
+        Preferences     = require("src/Preferences"),
+        ProgressDialog  = require("src/Dialogs/Progress"),
+        Promise         = require("bluebird"),
+        Strings         = require("strings"),
+        Utils           = require("src/Utils");
 
     // Templates
     var gitRemotesPickerTemplate = require("text!templates/git-remotes-picker.html");
@@ -149,13 +150,14 @@ define(function (require) {
 
         EventEmitter.emit(Events.PULL_STARTED);
 
-        Git.pull(remoteName).then(function (result) {
-            Utils.showOutput(result, Strings.GIT_PULL_RESPONSE);
-        }).catch(function (err) {
-            ErrorHandler.showError(err, "Pulling from remote repository failed.");
-        }).finally(function () {
-            EventEmitter.emit(Events.PULL_FINISHED);
-        });
+        ProgressDialog.show(Git.pull(remoteName))
+            .then(function (result) {
+                Utils.showOutput(result, Strings.GIT_PULL_RESPONSE);
+            }).catch(function (err) {
+                ErrorHandler.showError(err, "Pulling from remote repository failed.");
+            }).finally(function () {
+                EventEmitter.emit(Events.PULL_FINISHED);
+            });
     }
 
     function decideRemoteBranch(remoteName) {
@@ -251,14 +253,15 @@ define(function (require) {
                     var io = remoteUrl.indexOf("@");
                     remoteUrl = remoteUrl.substring(0, io) + ":" + password + remoteUrl.substring(io);
                 }
-                return Git.push(remoteUrl, branchHash).then(function (pushResponse) {
-                    if (shouldSave) {
-                        return Git.setConfig("remote." + remoteName + ".url", remoteUrl).then(function () {
-                            return pushResponse;
-                        });
-                    }
-                    return pushResponse;
-                });
+                return ProgressDialog.show(Git.push(remoteUrl, branchHash))
+                    .then(function (pushResponse) {
+                        if (shouldSave) {
+                            return Git.setConfig("remote." + remoteName + ".url", remoteUrl).then(function () {
+                                return pushResponse;
+                            });
+                        }
+                        return pushResponse;
+                    });
             });
         });
     }
@@ -277,6 +280,7 @@ define(function (require) {
             } else {
                 p = Git.push(remoteName, remoteBranch);
             }
+            p = ProgressDialog.show(p);
             return p.catch(function (err) {
 
                 if (!ErrorHandler.contains(err, "git remote add <name> <url>")) {
@@ -291,7 +295,7 @@ define(function (require) {
                     Utils.askQuestion(Strings.SET_ORIGIN_URL, _.escape(Strings.URL)).then(function (url) {
                         Git.createRemote("origin", url)
                             .then(function () {
-                                return Git.push("origin");
+                                return ProgressDialog.show(Git.push("origin"));
                             })
                             .then(resolve)
                             .catch(reject);

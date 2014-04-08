@@ -6,14 +6,15 @@ define(function (require) {
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
     // Local modules
-    var Promise       = require("bluebird"),
-        Strings       = require("strings"),
-        ErrorHandler  = require("src/ErrorHandler"),
-        Events        = require("src/Events"),
-        EventEmitter  = require("src/EventEmitter"),
-        ExpectedError = require("src/ExpectedError"),
-        Git           = require("src/Git/Git"),
-        Utils         = require("src/Utils");
+    var Promise         = require("bluebird"),
+        Strings         = require("strings"),
+        ErrorHandler    = require("src/ErrorHandler"),
+        Events          = require("src/Events"),
+        EventEmitter    = require("src/EventEmitter"),
+        ExpectedError   = require("src/ExpectedError"),
+        ProgressDialog  = require("src/Dialogs/Progress"),
+        Git             = require("src/Git/Git"),
+        Utils           = require("src/Utils");
 
     // Templates
     var gitignoreTemplate = require("text!templates/default-gitignore");
@@ -72,10 +73,7 @@ define(function (require) {
             if (isEmpty) {
                 return Utils.askQuestion(Strings.CLONE_REPOSITORY, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
                     $gitPanel.find(".git-clone").prop("disabled", true);
-                    return Git.clone(remoteGitUrl, ".")
-                        .progressed(function (msg) {
-                            console.log(msg);
-                        })
+                    return ProgressDialog.show(Git.clone(remoteGitUrl, "."))
                         .then(function () {
                             EventEmitter.emit(Events.REFRESH_ALL);
                         });

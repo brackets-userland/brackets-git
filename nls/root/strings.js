@@ -122,6 +122,7 @@ define({
     MERGE_MESSAGE:                      "Merge message",
     NORMALIZE_LINE_ENDINGS:             "Normalize line endings (to \\n)",
     NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
+    OPERATION_IN_PROGRESS_TITLE:        "Git operation in progress\u2026",
     ORIGIN_BRANCH:                      "Origin branch",
     PANEL_COMMAND:                      "Show Git panel",
     PANEL_SHORTCUT:                     "Toggle panel",

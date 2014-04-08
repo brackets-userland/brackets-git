@@ -112,6 +112,8 @@ define(function (require, exports, module) {
         deferredMap[cliId] = deferred;
         opts = opts || {};
 
+        var watchProgress = args.indexOf("--progress") !== -1;
+
         // it is possible to set a custom working directory in options
         // otherwise the current project root is used to execute commands
         if (opts.cwd) {
@@ -131,7 +133,9 @@ define(function (require, exports, module) {
         // log all cli communication into console when debug mode is on
         if (debugOn) {
             var startTime = (new Date()).getTime();
-            console.log(extName + "cmd-" + method + ": " + (opts.customCwd ? opts.cwd + "\\" : "") + cmd + " " + args.join(" "));
+            console.log(extName + "cmd-" + method + (watchProgress ? "-watch" : "") + ": " +
+                        (opts.customCwd ? opts.cwd + "\\" : "") +
+                        cmd + " " + args.join(" "));
         }
 
         // we connect to node (promise is returned immediately if we are already connected)
@@ -145,13 +149,17 @@ define(function (require, exports, module) {
 
             var domainOpts = {
                 cliId: cliId,
-                watchProgress: args.indexOf("--progress") !== -1
+                watchProgress: watchProgress
             };
 
             var debugInfo = {
                 startTime: startTime,
                 wasConnected: wasConnected
             };
+
+            if (watchProgress) {
+                deferred.progress("Running command: git " + args.join(" "));
+            }
 
             // nodeConnection returns jQuery deferred
             nodeConnection.domains[domainName][method](opts.cwd, cmd, args, domainOpts)
