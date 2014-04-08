@@ -13,12 +13,10 @@ define(function (require) {
         EventEmitter = require("src/EventEmitter"),
         Git = require("src/Git/Git"),
         HistoryViewer = require("src/HistoryViewer"),
-        Preferences = require("src/Preferences");
+        Preferences = require("src/Preferences"),
+        md5 = require("thirdparty/md5");
 
-    var md5;
-    require(["md5"], function (_md5) {
-        md5 = _md5;
-    });
+    var avatarType = Preferences.get("avatarType");
 
     // Templates
     var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html"),
@@ -67,9 +65,10 @@ define(function (require) {
 
                 var templateData = {
                     commits: commits,
-                    useGravatar: (Preferences.get("avatarType") == "gravatar") ? true : false,
-                    useBwAvatar: (Preferences.get("avatarType") == "bwAvatar") ? true : false,
-                    useColoredAvatar: (Preferences.get("avatarType") == "coloredAvatar") ? true : false,
+                    useGravatar: avatarType === "GRAVATAR",
+                    useIdenticon: avatarType === "IDENTICON",
+                    useBwAvatar: avatarType === "AVATAR_BW",
+                    useColoredAvatar: avatarType === "AVATAR_COLOR",
                     Strings: Strings
                 };
 
@@ -77,7 +76,7 @@ define(function (require) {
                     commits: gitPanelHistoryCommitsTemplate
                 }));
 
-                $historyList = $tableContainer.find(".git-history-list")
+                $historyList = $tableContainer.find("#git-history-list")
                     .data("file", file ? file.absolute : null)
                     .data("file-relative", file ? file.relative : null);
             });
@@ -113,9 +112,10 @@ define(function (require) {
 
                         var templateData = {
                             commits: commits,
-                            useGravatar: (Preferences.get("avatarType") == "gravatar") ? true : false,
-                            useBwAvatar: (Preferences.get("avatarType") == "bwAvatar") ? true : false,
-                            useColoredAvatar: (Preferences.get("avatarType") == "coloredAvatar") ? true : false,
+                            useGravatar: avatarType === "GRAVATAR",
+                            useIdenticon: avatarType === "IDENTICON",
+                            useBwAvatar: avatarType === "AVATAR_BW",
+                            useColoredAvatar: avatarType === "AVATAR_COLOR",
                             Strings: Strings
                         };
                         var commitsHtml = Mustache.render(gitPanelHistoryCommitsTemplate, templateData);
@@ -142,22 +142,16 @@ define(function (require) {
         _.forEach(commits, function (commit) {
 
             // email hash for gravatars or colored avatars
+            // TODO: banchmark `md5()` and if needed, optimize it.
             commit.emailHash = md5(commit.email);
-            var avatarType = Preferences.get("avatarType");
-            if (avatarType == "coloredAvatar" || avatarType == "bwAvatar") {
+            if (avatarType === "AVATAR_COLOR" || avatarType === "AVATAR_BW") {
                 commit.avatarLetter = commit.author.substring(0, 1);
-                if (avatarType == "coloredAvatar") {
-                    var colors = [
-                        "#FF9900", "#FF2200", "#66CC00", "#006600", "#000099", "#0099EC", "#660000", "#F0F000",
-                        "#68228B", "#9062EC", "#F1EDC2", "#008080", "#DC143C", "#708090", "#ADFF2F", "#40E0D0"
-                    ];
-                    commit.cssAvatar  = "background-color: " + colors[parseInt(commit.emailHash.substring(0, 1), 16)];
-                }
+                var colors = [
+                    "#ffb13b", "#ff6750", "#8dd43a", "#2f7e2f", "#4141b9", "#3dafea", "#7e3e3e", "#f2f26b",
+                    "#864ba3", "#ac8aef", "#f2f2ce", "#379d9d", "#dd5f7a", "#8691a2", "#d2fd8d", "#88eadf"
+                ];
+                commit.cssAvatar = "background-color: " + colors[parseInt(commit.emailHash.substring(0, 1), 16)];
             }
-
-            // do not shorten the strings, use https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow instead
-            // shorten the commit subject
-            // commit.subject = commit.subject.substring(0, 49) + ((commit.subject.length > 50) ? "\u2026" : "");
 
             if (mode === 4) {
                 // mode 4: Original Git date
@@ -240,7 +234,7 @@ define(function (require) {
             }
         }
 
-        // Render .git-history-list if is not already generated or if the viewed file for file history has changed
+        // Render #git-history-list if is not already generated or if the viewed file for file history has changed
         var isEmpty = $historyList.find("tr").length === 0,
             fileChanged = currentFile !== (file ? file.absolute : null);
         if (historyEnabled && (isEmpty || fileChanged)) {
@@ -256,7 +250,7 @@ define(function (require) {
         // Toggle commit button and check-all checkbox
         $gitPanel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
 
-        // Toggle visibility of .git-edited-list and .git-history-list
+        // Toggle visibility of .git-edited-list and #git-history-list
         $tableContainer.find(".git-edited-list").toggle(!historyEnabled);
         $historyList.toggle(historyEnabled);
 

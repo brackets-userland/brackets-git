@@ -1,9 +1,12 @@
 // main: brackets-git.less
 
-.git-history-list, .git-history-viewer {
+.git-history {
     .history-commit > td {
         &:nth-child(1) {
-            width: 15px;
+            width: 30px;
+            .commit-author-avatar {
+                margin-left: 15px;
+            }
         }
         &:nth-child(2) {
             width: 250px;
@@ -24,22 +27,18 @@
         border-radius: 3px;
         text-align: center;
         span {
-            text-transform: capitalize;
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             text-align: center;
-            background: #FFFFFF;
-            .text {
-                font-size: @size;
-                line-height: @size;
-                color: @defaultText;
-                &.colored {
-                    color: #FEFEFE;
-                    text-transform: uppercase;
-                }
+            font-size: @size;
+            line-height: @size;
+            color: #FEFEFE;
+            text-transform: uppercase;
+            &.avatar-bw {
+                -webkit-filter: grayscale(100%);
             }
         }
         img {

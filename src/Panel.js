@@ -678,7 +678,7 @@ define(function (require, exports) {
             return Promise.resolve();
         }
 
-        $tableContainer.find(".git-history-list").remove();
+        $tableContainer.find("#git-history-list").remove();
         $tableContainer.find(".git-edited-list").show();
 
         var p1 = Git.status();

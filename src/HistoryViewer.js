@@ -16,11 +16,13 @@ define(function (require, exports) {
 
     var historyViewerTemplate = require("text!templates/history-viewer.html");
 
-    var commit = null;
+    var commit                 = null,
+        avatarType             = Preferences.get("avatarType"),
+        enableAdvancedFeatures = Preferences.get("enableAdvancedFeatures");
 
     function attachEvents($viewer) {
         $viewer
-            .on("click.HistoryViewer", ".commit-files a:not(.active)", function () {
+            .on("click", ".commit-files a:not(.active)", function () {
                     // Open the clicked diff
                     $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
                     var self = $(this);
@@ -39,18 +41,18 @@ define(function (require, exports) {
                         self.addClass("active");
                     }
                 })
-            .on("click.HistoryViewer", ".commit-files a.active", function () {
+            .on("click", ".commit-files a.active", function () {
                 // Close the clicked diff
                 $(this).removeClass("active");
             })
-            .on("click.HistoryViewer", ".close", function () {
+            .on("click", ".close", function () {
                 // Close history viewer
                 remove();
             });
 
         // Add/Remove shadown on bottom of header
         $viewer.find(".body")
-            .on("scroll.HistoryViewer", function () {
+            .on("scroll", function () {
                 if ($viewer.find(".body").scrollTop() > 0) {
                     $viewer.find(".header").addClass("shadow");
                 } else {
@@ -59,7 +61,7 @@ define(function (require, exports) {
             });
 
         // Enable actions on advanced buttons if requested by user's preferences
-        if (Preferences.get("enableAdvancedFeatures")) {
+        if (enableAdvancedFeatures) {
             attachAdvancedEvents($viewer);
         }
     }
@@ -70,7 +72,7 @@ define(function (require, exports) {
             EventEmitter.emit(Events.REFRESH_ALL);
         };
 
-        $viewer.on("click.HistoryViewer", ".btn-checkout", function () {
+        $viewer.on("click", ".btn-checkout", function () {
             var cmd = "git checkout " + commit.hash;
             Utils.askQuestion(Strings.TITLE_CHECKOUT,
                               Strings.DIALOG_CHECKOUT + "<br><br>" + cmd,
@@ -82,7 +84,7 @@ define(function (require, exports) {
                 });
         });
 
-        $viewer.on("click.HistoryViewer", ".btn-reset-hard", function () {
+        $viewer.on("click", ".btn-reset-hard", function () {
             var cmd = "git reset --hard " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_HARD + "<br><br>" + cmd,
@@ -94,7 +96,7 @@ define(function (require, exports) {
                 });
         });
 
-        $viewer.on("click.HistoryViewer", ".btn-reset-mixed", function () {
+        $viewer.on("click", ".btn-reset-mixed", function () {
             var cmd = "git reset --mixed " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_MIXED + "<br><br>" + cmd,
@@ -106,7 +108,7 @@ define(function (require, exports) {
                 });
         });
 
-        $viewer.on("click.HistoryViewer", ".btn-reset-soft", function () {
+        $viewer.on("click", ".btn-reset-soft", function () {
             var cmd = "git reset --soft " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_SOFT + "<br><br>" + cmd,
@@ -125,23 +127,19 @@ define(function (require, exports) {
         $viewer.append(Mustache.render(historyViewerTemplate, {
             commit: commit,
             bodyMarkdown: bodyMarkdown,
-            useGravatar: (Preferences.get("avatarType") == "gravatar") ? true : false,
-            useBwAvatar: (Preferences.get("avatarType") == "bwAvatar") ? true : false,
-            useColoredAvatar: (Preferences.get("avatarType") == "coloredAvatar") ? true : false,
+            useGravatar: avatarType === "GRAVATAR",
+            useIdenticon: avatarType === "IDENTICON",
+            useBwAvatar: avatarType === "AVATAR_BW",
+            useColoredAvatar: avatarType === "AVATAR_COLOR",
             files: files,
             Strings: Strings,
-            enableAdvancedFeatures: Preferences.get("enableAdvancedFeatures")
+            enableAdvancedFeatures: enableAdvancedFeatures
         }));
 
         var firstFile = selectedFile || $viewer.find(".commit-files ul li:first-child").text().trim();
         if (firstFile) {
             Git.getDiffOfFileFromCommit(commit.hash, firstFile).then(function (diff) {
-                var $fileEntry = $viewer.find(".commit-files a[data-file='" + firstFile + "']").first(),
-                    $commitFiles = $viewer.find(".commit-files");
-                $fileEntry.addClass("active");
-                if ($commitFiles.length) {
-                    $commitFiles.animate({ scrollTop: $fileEntry.offset().top - $commitFiles.height() });
-                }
+                $viewer.find(".commit-files a[data-file='" + firstFile + "']").first().addClass("active");
                 $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
             });
         }
@@ -158,7 +156,7 @@ define(function (require, exports) {
                     fileName = file.substring(0, fileExtension && i >= 0 ? i : file.length);
                 return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
             });
-            var file = $("#git-panel .git-history-list").data("file-relative");
+            var file = $("#git-history-list").data("file-relative");
             return renderViewerContent($container, list, file);
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to load list of diff files");
@@ -173,7 +171,6 @@ define(function (require, exports) {
     }
 
     function show(commitInfo) {
-
         commit = commitInfo;
         // this is a "private" API but it's so convienient it's a sin not to use it
         EditorManager._showCustomViewer({
