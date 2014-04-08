@@ -3,27 +3,28 @@
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
 ## 0.13.0
-* `Q` library has been completely removed and replaced by `bluebird`
+* Long running operations like pull and push now have progress dialog.
 * Rebasing is now possible with this extension.
 * You can fill in a merge message while merging a branch.
-* Improved new branch dialog.
-* Clone won't timeout anymore when cloning large repositories.
-* Switching between branches will never timeout.
-* Git processes that timeouted (waiting for password) will no longer stay opened in your OS.
-* Fixed some console errors when not working in a Git repository.
+* Improved new branch dialog with ability to fetch remote branches.
 * Modified files are now also marked in working files list.
-* Fixed a bug when an empty repository is opened (without master branch)
 * Whitespace cleanup now removes byte order mark and normalizes line endings to LF (configurable in settings).
+* `Q` library has been completely removed and replaced by `bluebird`
 * History can now also be viewed for a particular file by [Marcel Gerber](https://github.com/SAPlayer)
 * Feature to discard all changes since last commit by [Fez Vrasta](https://github.com/FezVrasta)
 * Feature to checkout a commit in history, or reset to a commit in history by [Zhi](https://github.com/yfwz100)
-* Opened files that do not exist in a newly switched branch are now automatically closed by [Fez Vrasta](https://github.com/FezVrasta)
 * Hover for the expandable gutters has been added by [Miguel Castillo](https://github.com/MiguelCastillo)
 * Improved Git-FTP support by [Fez Vrasta](https://github.com/FezVrasta)
 * Added French translation by [rainje](https://github.com/rainje)
 * Fixed some errors in translations by [Fez Vrasta](https://github.com/FezVrasta)
 * Various UI improvements by [Fez Vrasta](https://github.com/FezVrasta), [Marcel Gerber](https://github.com/SAPlayer) and [Larz](https://github.com/larz0)
 * Redesigned history by [Fez Vrasta](https://github.com/FezVrasta)
+* BUGFIX: Clone won't timeout anymore when cloning large repositories.
+* BUGFIX: Switching between branches will never timeout.
+* BUGFIX: Git processes that timeouted (waiting for password) will no longer stay opened in your OS.
+* BUGFIX: Fixed some console errors when not working in a Git repository.
+* BUGFIX: Fixed a bug when an empty repository is opened (without master branch)
+* BUGFIX: Opened files that do not exist in a newly switched branch are now automatically closed by [Fez Vrasta](https://github.com/FezVrasta)
 
 ## 0.12.2
 * Top menu has been removed - you can access settings through panel or File > Git settings...
