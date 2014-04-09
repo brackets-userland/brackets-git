@@ -185,6 +185,9 @@ define(function (require) {
                         })
                         .then(function (result) {
                             Utils.showOutput(result, Strings.GIT_PULL_RESPONSE);
+                        })
+                        .catch(function (err) {
+                            ErrorHandler.showError(err, "Pulling from remote failed");
                         });
                 });
                 // restore original url if desired
