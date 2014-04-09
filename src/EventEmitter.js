@@ -27,6 +27,7 @@ define(function (require, exports, module) {
             }
             var listenersCount = this.listeners(eventName).length;
             var argsString = args.map(function (arg) {
+                if (typeof arg === "undefined") { return "undefined"; }
                 if (typeof arg === "function") { return "function(){...}"; }
                 return arg.toString();
             }).join(", ");

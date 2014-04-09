@@ -95,7 +95,7 @@ define(function (require, exports) {
         return { width: desiredWidth, height: desiredHeight };
     }
 
-    function _showCommitDialog(stagedDiff, lintResults) {
+    function _showCommitDialog(stagedDiff, lintResults, prefilledMessage) {
         // Flatten the error structure from various providers
         lintResults.forEach(function (lintResult) {
             lintResult.errors = [];
@@ -170,6 +170,8 @@ define(function (require, exports) {
             return r;
         }
 
+        var $commitMessageCount = $dialog.find("input[name='commit-message-count']");
+
         // Add event to count characters in commit message
         var recalculateMessageLength = function () {
             var length = getCommitMessageElement().val().replace("\n", "").trim().length;
@@ -200,7 +202,12 @@ define(function (require, exports) {
 
         $dialog.find("button.extendedCommit").on("click", switchCommitMessageElement);
 
-        var $commitMessageCount = $dialog.find("input[name='commit-message-count']");
+        if (prefilledMessage) {
+            if (prefilledMessage.indexOf("\n") !== -1) {
+                switchCommitMessageElement();
+            }
+            $dialog.find("[name='commit-message']:visible").val(prefilledMessage);
+        }
 
         // Add focus to commit message input
         getCommitMessageElement().focus();
@@ -476,9 +483,17 @@ define(function (require, exports) {
     // whatToDo gets values "continue" "skip" "abort"
     function handleRebase(whatToDo) {
         Git.rebase(whatToDo).then(function () {
-            Branch.refresh();
+            EventEmitter.emit(Events.REFRESH_ALL);
         }).catch(function (err) {
             ErrorHandler.showError(err, "Rebase " + whatToDo + " failed");
+        });
+    }
+
+    function abortMerge() {
+        Git.abortMerge().then(function () {
+            EventEmitter.emit(Events.REFRESH_ALL);
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Merge abort failed");
         });
     }
 
@@ -486,7 +501,15 @@ define(function (require, exports) {
         FindInFiles.doSearch(/^<<<<<<<\s|^=======\s|^>>>>>>>\s/gm);
     }
 
-    function handleGitCommit() {
+    function commitMerge() {
+        Utils.loadPathContent(Utils.getProjectRoot() + "/.git/MERGE_MSG").then(function (msg) {
+            handleGitCommit(msg);
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Merge commit failed");
+        });
+    }
+
+    function handleGitCommit(prefilledMessage) {
         var codeInspectionEnabled = Preferences.get("useCodeInspection");
         var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
 
@@ -584,7 +607,7 @@ define(function (require, exports) {
             return Promise.all(promises).then(function () {
                 // All files are in the index now, get the diff and show dialog.
                 return _getStagedDiff().then(function (diff) {
-                    return _showCommitDialog(diff, lintResults);
+                    return _showCommitDialog(diff, lintResults, prefilledMessage);
                 });
             });
         }).catch(function (err) {
@@ -941,10 +964,12 @@ define(function (require, exports) {
                 }
             })
             .on("click", ".git-refresh", EventEmitter.emitFactory(Events.REFRESH_ALL))
-            .on("click", ".git-commit", handleGitCommit)
+            .on("click", ".git-commit", function () { handleGitCommit(); })
             .on("click", ".git-rebase-continue", function (e) { handleRebase("continue", e); })
             .on("click", ".git-rebase-skip", function (e) { handleRebase("skip", e); })
             .on("click", ".git-rebase-abort", function (e) { handleRebase("abort", e); })
+            .on("click", ".git-commit-merge", commitMerge)
+            .on("click", ".git-merge-abort", abortMerge)
             .on("click", ".git-find-conflicts", findConflicts)
             .on("click", ".git-prev-gutter", GutterManager.goToPrev)
             .on("click", ".git-next-gutter", GutterManager.goToNext)
@@ -1057,11 +1082,6 @@ define(function (require, exports) {
         refresh();
     }
 
-    function toggleRebase(enabled) {
-        getPanel().find("button.git-commit").toggle(!enabled);
-        getPanel().find(".git-rebase").toggle(enabled);
-    }
-
     function getPanel() {
         return gitPanel.$panel;
     }
@@ -1082,8 +1102,10 @@ define(function (require, exports) {
     EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, function () {
         refresh();
     });
-    EventEmitter.on(Events.REBASE_MODE, function (enabled) {
-        toggleRebase(enabled);
+    EventEmitter.on(Events.REBASE_MERGE_MODE, function (rebaseEnabled, mergeEnabled) {
+        getPanel().find(".git-rebase").toggle(rebaseEnabled);
+        getPanel().find(".git-merge").toggle(mergeEnabled);
+        getPanel().find("button.git-commit").toggle(!rebaseEnabled && !mergeEnabled);
     });
 
     exports.init = init;

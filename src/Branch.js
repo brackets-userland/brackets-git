@@ -352,7 +352,8 @@ define(function (require, exports) {
                             branchName += "(" + mergeInfo.rebaseNext + "/" + mergeInfo.rebaseLast + ")";
                         }
                     }
-                    EventEmitter.emit(Events.REBASE_MODE, mergeInfo.rebaseMode);
+
+                    EventEmitter.emit(Events.REBASE_MERGE_MODE, mergeInfo.rebaseMode, mergeInfo.mergeMode);
 
                     $gitBranchName
                         .text(branchName)

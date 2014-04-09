@@ -86,6 +86,11 @@ define(function (require, exports) {
         });
     }
 
+    function abortMerge() {
+        // TODO: maybe --merge
+        return GitCli.reset("--hard");
+    }
+
     function getMergeInfo() {
         var baseCheck  = ["MERGE_MODE", "rebase-apply"],
             mergeCheck = ["MERGE_HEAD", "MERGE_MSG"],
@@ -156,6 +161,7 @@ define(function (require, exports) {
     exports.discardFileChanges  = discardFileChanges;
     exports.getRemoteUrl        = getRemoteUrl;
     exports.setRemoteUrl        = setRemoteUrl;
+    exports.abortMerge          = abortMerge;
 
     Object.keys(GitCli).forEach(function (method) {
         if (!exports[method]) {
