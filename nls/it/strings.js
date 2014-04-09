@@ -213,7 +213,7 @@ define({
     // INIT_GITFTP_SCOPE:                  "Initialize Git-FTP remote",
     INIT_GITFTP_SCOPE:                     "Inizializza il remote di Git-FTP",
     // INIT_GITFTP_SCOPE_NAME:             "Initialize Git-FTP remote \"{0}\"?",
-    INIT_GITFTP_SCOPE:                     "Inizializzare il remote \"{0}\" di Git-FTP?",
+    INIT_GITFTP_SCOPE_NAME:                "Inizializzare il remote \"{0}\" di Git-FTP?",
     // LAUNCH_BASH_SHORTCUT:               "Bash/Terminal shortcut",
     LAUNCH_BASH_SHORTCUT:                  "Scorciatoia del terminale bash",
     // LOADING:                            "Loading\u2026",
