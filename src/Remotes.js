@@ -166,6 +166,7 @@ define(function (require) {
                     var uri = new URI(pullConfig.remoteUrl);
                     uri.username(pullConfig.remoteUsername);
                     uri.password(pullConfig.remotePassword);
+                    // FIXME: I wan't a merge conflict here
                     return Git.setRemoteUrl(pullConfig.remote, uri.toString());
                 });
                 // do the pull itself (we are not using pull command)
