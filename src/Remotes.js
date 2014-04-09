@@ -166,7 +166,7 @@ define(function (require) {
                     var uri = new URI(pullConfig.remoteUrl);
                     uri.username(pullConfig.remoteUsername);
                     uri.password(pullConfig.remotePassword);
-                    // FIXME: I wan't a merge conflict here
+                    // FIXME: refactor this to not set when not needed
                     return Git.setRemoteUrl(pullConfig.remote, uri.toString());
                 });
                 // do the pull itself (we are not using pull command)
@@ -193,6 +193,7 @@ define(function (require) {
                 });
                 // restore original url if desired
                 if (!pullConfig.saveToUrl) {
+                    // FIXME: refactor this to not set when not needed
                     q = q.finally(function () {
                         return Git.setRemoteUrl(pullConfig.remote, pullConfig.remoteUrl);
                     });
