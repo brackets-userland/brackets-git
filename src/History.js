@@ -65,8 +65,8 @@ define(function (require) {
         var seedBase = parseInt(author.charCodeAt(3).toString(), email.length),
             seed = parseInt(email.charCodeAt(seedBase.toString().substring(1, 2)).toString(), 16),
             colors = [
-                "#ffb13b", "#ff6750", "#8dd43a", "#2f7e2f", "#4141b9", "#3dafea", "#7e3e3e", "#f2f26b",
-                "#864ba3", "#ac8aef", "#f2f2ce", "#379d9d", "#dd5f7a", "#8691a2", "#d2fd8d", "#88eadf"
+                "#ffb13b", "#dd5f7a", "#8dd43a", "#2f7e2f", "#4141b9", "#3dafea", "#7e3e3e", "#f2f26b",
+                "#864ba3", "#ac8aef", "#f2f2ce", "#379d9d", "#ff6750", "#8691a2", "#d2fd8d", "#88eadf"
             ],
             texts = [
                 "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#333333",
