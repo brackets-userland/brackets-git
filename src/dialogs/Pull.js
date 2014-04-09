@@ -93,7 +93,24 @@ define(function (require, exports) {
 
         pullConfig.remoteUsername = $dialog.find("input[name='username']").val();
         pullConfig.remotePassword = $dialog.find("input[name='password']").val();
-        pullConfig.saveToUrl = $dialog.find("input[name='saveToUrl']").is(":checked");
+
+        // new url that has to be set for merging
+        var uri = new URI(pullConfig.remoteUrl);
+        uri.username(pullConfig.remoteUsername);
+        uri.password(pullConfig.remotePassword);
+        var remoteUrlNew = uri.toString();
+
+        // assign remoteUrlNew only if it's different from the original url
+        if (pullConfig.remoteUrl !== remoteUrlNew) {
+            pullConfig.remoteUrlNew = remoteUrlNew;
+        }
+
+        // old url that has to be put back after merging
+        var saveToUrl = $dialog.find("input[name='saveToUrl']").is(":checked");
+        // assign restore branch only if remoteUrlNew has some value
+        if (pullConfig.remoteUrlNew && !saveToUrl) {
+            pullConfig.remoteUrlRestore = pullConfig.remoteUrl;
+        }
     }
 
     function _show() {

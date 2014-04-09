@@ -17,8 +17,7 @@ define(function (require) {
         Promise         = require("bluebird"),
         PullDialog      = require("src/dialogs/Pull"),
         Strings         = require("strings"),
-        Utils           = require("src/Utils"),
-        URI             = require("URI");
+        Utils           = require("src/Utils");
 
     // Templates
     var gitRemotesPickerTemplate = require("text!templates/git-remotes-picker.html");
@@ -162,13 +161,11 @@ define(function (require) {
                     });
                 }
                 // put username and password into remote url
-                q = q.then(function () {
-                    var uri = new URI(pullConfig.remoteUrl);
-                    uri.username(pullConfig.remoteUsername);
-                    uri.password(pullConfig.remotePassword);
-                    // FIXME: refactor this to not set when not needed
-                    return Git.setRemoteUrl(pullConfig.remote, uri.toString());
-                });
+                if (pullConfig.remoteUrlNew) {
+                    q = q.then(function () {
+                        return Git.setRemoteUrl(pullConfig.remote, pullConfig.remoteUrlNew);
+                    });
+                }
                 // do the pull itself (we are not using pull command)
                 q = q.then(function () {
                     // fetch the remote first
@@ -192,10 +189,9 @@ define(function (require) {
                         });
                 });
                 // restore original url if desired
-                if (!pullConfig.saveToUrl) {
-                    // FIXME: refactor this to not set when not needed
+                if (pullConfig.remoteUrlRestore) {
                     q = q.finally(function () {
-                        return Git.setRemoteUrl(pullConfig.remote, pullConfig.remoteUrl);
+                        return Git.setRemoteUrl(pullConfig.remote, pullConfig.remoteUrlRestore);
                     });
                 }
 
