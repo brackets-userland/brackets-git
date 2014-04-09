@@ -62,6 +62,13 @@ define(function (require, exports) {
         $dialog.on("change", "input[name='action']", handleRadioChange);
         handleRadioChange();
 
+        // if we're pulling from another remote than current tracking remote
+        var remote = pullConfig.currentTrackingBranch.substring(0, pullConfig.currentTrackingBranch.indexOf("/"));
+        if (remote !== pullConfig.remote) {
+            $dialog.find("input[value='PULL_FROM_CURRENT']").prop("disabled", true);
+            $dialog.find("input[value='PULL_FROM_SELECTED']").prop("checked", true).trigger("change");
+        }
+
         $dialog.on("click", ".fetchBranches", function () {
             ProgressDialog.show(Git.fetchRemote(pullConfig.remote))
                 .then(function () {
