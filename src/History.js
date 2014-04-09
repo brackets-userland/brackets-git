@@ -17,11 +17,7 @@ define(function (require) {
 
     var avatarType   = Preferences.get("avatarType");
 
-    // Check if the current repository is part of GitHub network
     var isGitHubRepo = false;
-    Git.getConfig("remote.origin.url").then(function (stdout) {
-        isGitHubRepo = stdout.indexOf("://github.com/") !== -1;
-    });
 
     // Templates
     var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html"),
@@ -53,6 +49,43 @@ define(function (require) {
                 HistoryViewer.show(commit);
             });
     }
+
+    var generateCssAvatar = _.memoize(function (author, email) {
+
+        // Original source: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
+        var seededRandom = function (max, min, seed) {
+            max = max || 1;
+            min = min || 0;
+
+            seed = (seed * 9301 + 49297) % 233280;
+            var rnd = seed / 233280.0;
+
+            return min + rnd * (max - min);
+        };
+
+        // Use `seededRandom()` to generate a pseudo-random number [0-16] to pick a color from the list
+        var seedBase = parseInt(author.charCodeAt(3).toString(), email.length),
+            seed = parseInt(email.charCodeAt(seedBase.toString().substring(1, 2)).toString(), 16),
+            colors = [
+                "#ffb13b", "#ff6750", "#8dd43a", "#2f7e2f", "#4141b9", "#3dafea", "#7e3e3e", "#f2f26b",
+                "#864ba3", "#ac8aef", "#f2f2ce", "#379d9d", "#dd5f7a", "#8691a2", "#d2fd8d", "#88eadf"
+            ],
+            texts = [
+                "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#333333",
+                "#FEFEFE", "#FEFEFE", "#333333", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#333333", "#333333"
+            ],
+            picked = Math.floor(seededRandom(0, 16, seed));
+
+        return "background-color: " + colors[picked] + "; color: " + texts[picked];
+
+    });
+
+    EventEmitter.on(Events.GIT_ENABLED, function () {
+        // Check if the current repository is part of GitHub network
+        Git.getConfig("remote.origin.url").then(function (stdout) {
+            isGitHubRepo = (stdout.indexOf("://github.com/") !== -1 || stdout.indexOf("@github.com:") !== -1);
+        });
+    });
 
     // Render history list the first time
     function renderHistory(file) {
@@ -148,36 +181,14 @@ define(function (require) {
 
             // Get color for AVATAR_BW and AVATAR_COLOR
             if (avatarType === "AVATAR_COLOR" || avatarType === "AVATAR_BW") {
-
-                // Source: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
-                Math.seededRandom = function (max, min) {
-                    max = max || 1;
-                    min = min || 0;
-
-                    Math.seed = (Math.seed * 9301 + 49297) % 233280;
-                    var rnd = Math.seed / 233280.0;
-
-                    return min + rnd * (max - min);
-                };
-
-                // Use `seededRandom()` to generate a pseudo-random number [0-16] to pick a color from the list
-                var seed = parseInt(commit.author.charCodeAt(3).toString(), commit.email.length);
-                Math.seed = parseInt(commit.email.charCodeAt(seed.toString().substring(1, 2)).toString(), 16);
-                var colors = [
-                    "#ffb13b", "#ff6750", "#8dd43a", "#2f7e2f", "#4141b9", "#3dafea", "#7e3e3e", "#f2f26b",
-                    "#864ba3", "#ac8aef", "#f2f2ce", "#379d9d", "#dd5f7a", "#8691a2", "#d2fd8d", "#88eadf"
-                ];
-                commit.cssAvatar = "background-color: " + colors[Math.floor(Math.seededRandom(0, 16))];
-
+                commit.cssAvatar = generateCssAvatar(commit.author, commit.email);
                 commit.avatarLetter = commit.author.substring(0, 1);
-
             }
             if (avatarType === "PICTURE") {
-
                 if (isGitHubRepo) {
-                    commit.picture = "https://avatars.githubusercontent.com/" + commit.email + "?s=20";
+                    commit.picture = "https://avatars.githubusercontent.com/" + commit.author + "?s=20";
                 } else {
-                    commit.picture = "http://avatars.io/email/" + commit.email + "?s=20";
+                    commit.picture = "http://avatars.io/email/" + encodeURIComponent(commit.email) + "?s=20";
                 }
             }
 
