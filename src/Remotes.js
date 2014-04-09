@@ -174,9 +174,9 @@ define(function (require) {
                     return ProgressDialog.show(Git.fetchRemote(pullConfig.remote))
                         .then(function () {
                             if (pullConfig.strategy === "CLASSIC") {
-                                return ProgressDialog.show(Git.mergeRemote(pullConfig.remote, pullConfig.branch));
+                                return Git.mergeRemote(pullConfig.remote, pullConfig.branch);
                             } else if (pullConfig.strategy === "AVOID") {
-                                return ProgressDialog.show(Git.mergeRemote(pullConfig.remote, pullConfig.branch, true));
+                                return Git.mergeRemote(pullConfig.remote, pullConfig.branch, true);
                             } else if (pullConfig.strategy === "REBASE") {
                                 return Git.rebaseRemote(pullConfig.remote, pullConfig.branch);
                             } else if (pullConfig.strategy === "RESET") {

@@ -224,7 +224,7 @@ define(function (require, exports) {
     */
 
     function mergeRemote(remote, branch, safe) {
-        var args = ["merge", "--progress"];
+        var args = ["merge"];
         if (safe) { args.push("--ff-only"); }
         args.push(remote + "/" + branch);
         return git(args);
