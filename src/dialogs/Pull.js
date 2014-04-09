@@ -72,9 +72,11 @@ define(function (require, exports) {
         });
         _fillBranches($dialog);
 
-        // load from state
-        var defaultStrategy = Preferences.get("pull.strategy") || "CLASSIC";
-        $dialog.find("input[name='strategy']").val(defaultStrategy);
+        // load last used
+        $dialog
+            .find("input[name='strategy']")
+            .filter("[value='" + (Preferences.get("pull.strategy") || "CLASSIC") + "']")
+            .prop("checked", true);
     }
 
     function _collectValues($dialog) {

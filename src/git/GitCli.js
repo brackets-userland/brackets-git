@@ -235,7 +235,9 @@ define(function (require, exports) {
     }
 
     function resetRemote(remote, branch) {
-        return git(["reset", "--soft", remote + "/" + branch]);
+        return git(["reset", "--soft", remote + "/" + branch]).then(function (stdout) {
+            return stdout || "Current branch was resetted to branch " + branch + " from " + remote;
+        });
     }
 
     /*
