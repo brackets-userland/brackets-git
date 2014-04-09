@@ -4,7 +4,7 @@
 
 ## 0.13.0
 * Long running operations like pull and push now have progress dialog.
-* Rebasing is now possible with this extension.
+* Rebasing and merging is now possible with this extension.
 * You can fill in a merge message while merging a branch.
 * Improved new branch dialog with ability to fetch remote branches.
 * New pull dialog where you can specify different pulling strategies.
