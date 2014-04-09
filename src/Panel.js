@@ -490,7 +490,7 @@ define(function (require, exports) {
     }
 
     function abortMerge() {
-        Git.abortMerge().then(function () {
+        Git.discardAllChanges().then(function () {
             EventEmitter.emit(Events.REFRESH_ALL);
         }).catch(function (err) {
             ErrorHandler.showError(err, "Merge abort failed");

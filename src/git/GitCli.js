@@ -227,15 +227,29 @@ define(function (require, exports) {
         var args = ["merge"];
         if (safe) { args.push("--ff-only"); }
         args.push(remote + "/" + branch);
-        return git(args).then(function (stdout) {
-            // return stdout if available - usually not
-            if (stdout) { return stdout; }
+
+        var readMergeMessage = function () {
             return Utils.loadPathContent(Utils.getProjectRoot() + "/.git/MERGE_MSG").then(function (msg) {
-                // return merge message if available
-                if (msg) { return msg; }
-                return "Remote branch " + branch + " from " + remote + " was merged to current branch";
+                return msg;
             });
-        });
+        };
+
+        return git(args)
+            .then(function (stdout) {
+                // return stdout if available - usually not
+                if (stdout) { return stdout; }
+
+                return readMergeMessage().then(function (msg) {
+                    if (msg) { return msg; }
+                    return "Remote branch " + branch + " from " + remote + " was merged to current branch";
+                });
+            })
+            .catch(function (error) {
+                return readMergeMessage().then(function (msg) {
+                    if (msg) { return msg; }
+                    throw error;
+                });
+            });
     }
 
     function rebaseRemote(remote, branch) {
