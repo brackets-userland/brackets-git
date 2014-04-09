@@ -82,7 +82,7 @@ define(function (require, exports) {
         // load last used
         $dialog
             .find("input[name='strategy']")
-            .filter("[value='" + (Preferences.get("pull.strategy") || "CLASSIC") + "']")
+            .filter("[value='" + (Preferences.get("pull.strategy") || "DEFAULT") + "']")
             .prop("checked", true);
     }
 

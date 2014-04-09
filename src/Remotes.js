@@ -171,10 +171,12 @@ define(function (require) {
                     // fetch the remote first
                     return ProgressDialog.show(Git.fetchRemote(pullConfig.remote))
                         .then(function () {
-                            if (pullConfig.strategy === "CLASSIC") {
+                            if (pullConfig.strategy === "DEFAULT") {
                                 return Git.mergeRemote(pullConfig.remote, pullConfig.branch);
-                            } else if (pullConfig.strategy === "AVOID") {
+                            } else if (pullConfig.strategy === "AVOID_MERGING") {
                                 return Git.mergeRemote(pullConfig.remote, pullConfig.branch, true);
+                            } else if (pullConfig.strategy === "MERGE_NOCOMMIT") {
+                                return Git.mergeRemote(pullConfig.remote, pullConfig.branch, false, true);
                             } else if (pullConfig.strategy === "REBASE") {
                                 return Git.rebaseRemote(pullConfig.remote, pullConfig.branch);
                             } else if (pullConfig.strategy === "RESET") {

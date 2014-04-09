@@ -15,13 +15,6 @@ define(function (require) {
         HistoryViewer = require("src/HistoryViewer"),
         Preferences = require("src/Preferences");
 
-    if (Preferences.get("useGravatar")) {
-        var md5;
-        require(["md5"], function (_md5) {
-            md5 = _md5;
-        });
-    }
-
     // Templates
     var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html"),
         gitPanelHistoryCommitsTemplate = require("text!templates/git-panel-history-commits.html");
@@ -30,7 +23,9 @@ define(function (require) {
     var $gitPanel       = $(null),
         $tableContainer = $(null),
         $historyList    = $(null),
-        commitCache     = [];
+        commitCache     = [],
+        avatarType      = Preferences.get("avatarType"),
+        isGitHubRepo    = false;
 
     // Implementation
 
@@ -53,6 +48,47 @@ define(function (require) {
             });
     }
 
+    var generateCssAvatar = _.memoize(function (author, email) {
+
+        // Original source: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
+        var seededRandom = function (max, min, seed) {
+            max = max || 1;
+            min = min || 0;
+
+            seed = (seed * 9301 + 49297) % 233280;
+            var rnd = seed / 233280.0;
+
+            return min + rnd * (max - min);
+        };
+
+        // Use `seededRandom()` to generate a pseudo-random number [0-16] to pick a color from the list
+        var seedBase = parseInt(author.charCodeAt(3).toString(), email.length),
+            seed = parseInt(email.charCodeAt(seedBase.toString().substring(1, 2)).toString(), 16),
+            colors = [
+                "#ffb13b", "#ff6750", "#8dd43a", "#2f7e2f", "#4141b9", "#3dafea", "#7e3e3e", "#f2f26b",
+                "#864ba3", "#ac8aef", "#f2f2ce", "#379d9d", "#dd5f7a", "#8691a2", "#d2fd8d", "#88eadf"
+            ],
+            texts = [
+                "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#333333",
+                "#FEFEFE", "#FEFEFE", "#333333", "#FEFEFE", "#FEFEFE", "#FEFEFE", "#333333", "#333333"
+            ],
+            picked = Math.floor(seededRandom(0, 16, seed));
+
+        return "background-color: " + colors[picked] + "; color: " + texts[picked];
+
+    }, function (author, email) {
+        // calculate hash for memoize - both are strings so we don't need to convert
+        return author + email;
+    });
+
+    EventEmitter.on(Events.GIT_ENABLED, function () {
+        // Check if the current repository is part of GitHub network
+        // TODO: what if origin doesn't exist?
+        Git.getRemoteUrl("origin").then(function (url) {
+            isGitHubRepo = (url.indexOf("://github.com/") !== -1 || url.indexOf("@github.com:") !== -1);
+        });
+    });
+
     // Render history list the first time
     function renderHistory(file) {
         // clear cache
@@ -63,13 +99,16 @@ define(function (require) {
             var p = file ? Git.getFileHistory(file.relative, branchName) : Git.getHistory(branchName);
             return p.then(function (commits) {
 
-                // calculate some missing stuff like gravatars
+                // calculate some missing stuff like avatars
                 commits = addAdditionalCommitInfo(commits);
                 commitCache = commitCache.concat(commits);
 
                 var templateData = {
                     commits: commits,
-                    useGravatar: Preferences.get("useGravatar"),
+                    usePicture: avatarType === "PICTURE",
+                    useIdenticon: avatarType === "IDENTICON",
+                    useBwAvatar: avatarType === "AVATAR_BW",
+                    useColoredAvatar: avatarType === "AVATAR_COLOR",
                     Strings: Strings
                 };
 
@@ -77,7 +116,7 @@ define(function (require) {
                     commits: gitPanelHistoryCommitsTemplate
                 }));
 
-                $historyList = $tableContainer.find(".git-history-list")
+                $historyList = $tableContainer.find("#git-history-list")
                     .data("file", file ? file.absolute : null)
                     .data("file-relative", file ? file.relative : null);
             });
@@ -113,7 +152,10 @@ define(function (require) {
 
                         var templateData = {
                             commits: commits,
-                            useGravatar: Preferences.get("useGravatar"),
+                            usePicture: avatarType === "PICTURE",
+                            useIdenticon: avatarType === "IDENTICON",
+                            useBwAvatar: avatarType === "AVATAR_BW",
+                            useColoredAvatar: avatarType === "AVATAR_COLOR",
                             Strings: Strings
                         };
                         var commitsHtml = Mustache.render(gitPanelHistoryCommitsTemplate, templateData);
@@ -139,17 +181,20 @@ define(function (require) {
 
         _.forEach(commits, function (commit) {
 
-            if (Preferences.get("useGravatar")) {
-                // email hash for gravatars
-                commit.emailHash = md5(commit.email);
-            } else {
+            // Get color for AVATAR_BW and AVATAR_COLOR
+            if (avatarType === "AVATAR_COLOR" || avatarType === "AVATAR_BW") {
+                commit.cssAvatar = generateCssAvatar(commit.author, commit.email);
                 commit.avatarLetter = commit.author.substring(0, 1);
             }
+            if (avatarType === "PICTURE") {
+                if (isGitHubRepo) {
+                    commit.picture = "https://avatars.githubusercontent.com/" + commit.author + "?s=20";
+                } else {
+                    commit.picture = "http://avatars.io/email/" + encodeURIComponent(commit.email) + "?s=20";
+                }
+            }
 
-            // do not shorten the strings, use https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow instead
-            // shorten the commit subject
-            // commit.subject = commit.subject.substring(0, 49) + ((commit.subject.length > 50) ? "\u2026" : "");
-
+            // TODO: convert date modes to sensible constant strings
             if (mode === 4) {
                 // mode 4: Original Git date
                 commit.date = {
@@ -231,7 +276,7 @@ define(function (require) {
             }
         }
 
-        // Render .git-history-list if is not already generated or if the viewed file for file history has changed
+        // Render #git-history-list if is not already generated or if the viewed file for file history has changed
         var isEmpty = $historyList.find("tr").length === 0,
             fileChanged = currentFile !== (file ? file.absolute : null);
         if (historyEnabled && (isEmpty || fileChanged)) {
@@ -247,14 +292,14 @@ define(function (require) {
         // Toggle commit button and check-all checkbox
         $gitPanel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
 
-        // Toggle visibility of .git-edited-list and .git-history-list
+        // Toggle visibility of .git-edited-list and #git-history-list
         $tableContainer.find(".git-edited-list").toggle(!historyEnabled);
         $historyList.toggle(historyEnabled);
 
         // Toggle history button
         var globalButtonActive  = historyEnabled && newHistoryMode === "GLOBAL",
             fileButtonActive    = historyEnabled && newHistoryMode === "FILE";
-        $gitPanel.find(".git-history").toggleClass("active", globalButtonActive)
+        $gitPanel.find(".git-history-toggle").toggleClass("active", globalButtonActive)
             .attr("title", globalButtonActive ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
         $gitPanel.find(".git-file-history").toggleClass("active", fileButtonActive)
             .attr("title", fileButtonActive ? Strings.TOOLTIP_HIDE_FILE_HISTORY : Strings.TOOLTIP_SHOW_FILE_HISTORY);

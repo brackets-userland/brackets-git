@@ -2,6 +2,7 @@ define(function (require, exports) {
     "use strict";
 
     var EditorManager = brackets.getModule("editor/EditorManager"),
+        CommandManager = brackets.getModule("command/CommandManager"),
         FileUtils = brackets.getModule("file/FileUtils");
 
     var marked = require("marked"),
@@ -15,25 +16,53 @@ define(function (require, exports) {
 
     var historyViewerTemplate = require("text!templates/history-viewer.html");
 
-    var commit = null;
+    var commit                 = null,
+        avatarType             = Preferences.get("avatarType"),
+        enableAdvancedFeatures = Preferences.get("enableAdvancedFeatures");
 
     function attachEvents($viewer) {
-        $viewer.find(".commit-files a").on("click", function () {
-            $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
-            var self = $(this);
-            Git.getDiffOfFileFromCommit(commit.hash, $(this).text().trim()).then(function (diff) {
-                $viewer.find(".commit-files a").removeClass("active");
-                self.addClass("active");
-                $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
-                $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
+        $viewer
+            .on("click", ".commit-files a:not(.active)", function () {
+                    // Open the clicked diff
+                    $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
+                    var self = $(this);
+                    // If this diff was not previously loaded then load it
+                    if (!self.is(".loaded")) {
+                        Git.getDiffOfFileFromCommit(commit.hash, $(this).text().trim()).then(function (diff) {
+                            $viewer.find(".commit-files a").removeClass("active");
+                            self.addClass("active loaded");
+                            $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
+                            $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
+                        }).catch(function (err) {
+                            ErrorHandler.showError(err, "Failed to get diff");
+                        });
+                    } else {
+                        // If this diff was previously loaded just open it
+                        self.addClass("active");
+                    }
+                })
+            .on("click", ".commit-files a.active", function () {
+                // Close the clicked diff
+                $(this).removeClass("active");
+            })
+            .on("click", ".close", function () {
+                // Close history viewer
+                remove();
             });
-        });
 
-        if (Preferences.get("enableAdvancedFeatures")) {
+        // Add/Remove shadown on bottom of header
+        $viewer.find(".body")
+            .on("scroll", function () {
+                if ($viewer.find(".body").scrollTop() > 0) {
+                    $viewer.find(".header").addClass("shadow");
+                } else {
+                    $viewer.find(".header").removeClass("shadow");
+                }
+            });
+
+        // Enable actions on advanced buttons if requested by user's preferences
+        if (enableAdvancedFeatures) {
             attachAdvancedEvents($viewer);
-        } else {
-            // TODO: put this into template
-            $viewer.find(".git-advanced-features").hide();
         }
     }
 
@@ -43,7 +72,7 @@ define(function (require, exports) {
             EventEmitter.emit(Events.REFRESH_ALL);
         };
 
-        $viewer.find(".btn-checkout").on("click", function () {
+        $viewer.on("click", ".btn-checkout", function () {
             var cmd = "git checkout " + commit.hash;
             Utils.askQuestion(Strings.TITLE_CHECKOUT,
                               Strings.DIALOG_CHECKOUT + "<br><br>" + cmd,
@@ -55,7 +84,7 @@ define(function (require, exports) {
                 });
         });
 
-        $viewer.find(".btn-reset-hard").on("click", function () {
+        $viewer.on("click", ".btn-reset-hard", function () {
             var cmd = "git reset --hard " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_HARD + "<br><br>" + cmd,
@@ -67,7 +96,7 @@ define(function (require, exports) {
                 });
         });
 
-        $viewer.find(".btn-reset-mixed").on("click", function () {
+        $viewer.on("click", ".btn-reset-mixed", function () {
             var cmd = "git reset --mixed " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_MIXED + "<br><br>" + cmd,
@@ -79,7 +108,7 @@ define(function (require, exports) {
                 });
         });
 
-        $viewer.find(".btn-reset-soft").on("click", function () {
+        $viewer.on("click", ".btn-reset-soft", function () {
             var cmd = "git reset --soft " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_SOFT + "<br><br>" + cmd,
@@ -98,19 +127,19 @@ define(function (require, exports) {
         $viewer.append(Mustache.render(historyViewerTemplate, {
             commit: commit,
             bodyMarkdown: bodyMarkdown,
-            useGravatar: Preferences.get("useGravatar"),
+            usePicture: avatarType === "PICTURE",
+            useIdenticon: avatarType === "IDENTICON",
+            useBwAvatar: avatarType === "AVATAR_BW",
+            useColoredAvatar: avatarType === "AVATAR_COLOR",
             files: files,
             Strings: Strings,
-            enableAdvancedFeatures: Preferences.get("enableAdvancedFeatures")
+            enableAdvancedFeatures: enableAdvancedFeatures
         }));
 
         var firstFile = selectedFile || $viewer.find(".commit-files ul li:first-child").text().trim();
         if (firstFile) {
             Git.getDiffOfFileFromCommit(commit.hash, firstFile).then(function (diff) {
-                var $fileEntry = $viewer.find(".commit-files a[data-file='" + firstFile + "']").first(),
-                    $commitFiles = $viewer.find(".commit-files");
-                $fileEntry.addClass("active");
-                $commitFiles.animate({ scrollTop: $fileEntry.offset().top - $commitFiles.height() });
+                $viewer.find(".commit-files a[data-file='" + firstFile + "']").first().addClass("active");
                 $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
             });
         }
@@ -127,7 +156,7 @@ define(function (require, exports) {
                     fileName = file.substring(0, fileExtension && i >= 0 ? i : file.length);
                 return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
             });
-            var file = $("#git-panel .git-history-list").data("file-relative");
+            var file = $("#git-history-list").data("file-relative");
             return renderViewerContent($container, list, file);
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to load list of diff files");
@@ -148,6 +177,10 @@ define(function (require, exports) {
             render: render,
             onRemove: onRemove
         }, commit.hash);
+    }
+
+    function remove() {
+        CommandManager.execute("navigate.prevDoc");
     }
 
     // Public API

@@ -223,9 +223,12 @@ define(function (require, exports) {
                   or the merge can be resolved as a fast-forward.
     */
 
-    function mergeRemote(remote, branch, safe) {
+    function mergeRemote(remote, branch, ffOnly, noCommit) {
         var args = ["merge"];
-        if (safe) { args.push("--ff-only"); }
+
+        if (ffOnly) { args.push("--ff-only"); }
+        if (noCommit) { args.push("--no-commit"); }
+
         args.push(remote + "/" + branch);
 
         var readMergeMessage = function () {
