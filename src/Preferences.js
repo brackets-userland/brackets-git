@@ -3,7 +3,8 @@ define(function (require, exports, module) {
 
     var _                   = brackets.getModule("thirdparty/lodash"),
         PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
-        prefs               = PreferencesManager.getExtensionPrefs("brackets-git");
+        StateManager        = PreferencesManager.stateManager,
+        prefix              = "brackets-git";
 
     var defaultPreferences = {
         // features
@@ -33,8 +34,6 @@ define(function (require, exports, module) {
         "gotoNextChangeShortcut": {         "type": "string",            "value": null          },
         // system
         "debugMode": {                      "type": "boolean",           "value": false         },
-        "lastVersion": {                    "type": "string",            "value": null          },
-        "panelEnabled": {                   "type": "boolean",           "value": true          },
         "TIMEOUT_VALUE": {                  "type": "number",            "value": 30000         },
         "gitIsInSystemPath": {              "type": "boolean",           "value": false         },
         "defaultRemotes": {                 "type": "object",            "value": {}            },
@@ -65,6 +64,7 @@ define(function (require, exports, module) {
         }
     };
 
+    var prefs = PreferencesManager.getExtensionPrefs(prefix);
     _.each(defaultPreferences, function (definition, key) {
         if (definition.os && definition.os[brackets.platform]) {
             prefs.definePreference(key, definition.type, definition.os[brackets.platform].value);
@@ -74,15 +74,27 @@ define(function (require, exports, module) {
     });
     prefs.save();
 
-    prefs.getAll = function () {
+    function get(key) {
+        var location = defaultPreferences[key] ? PreferencesManager : StateManager;
+        arguments[0] = prefix + "." + key;
+        return location.get.apply(location, arguments);
+    }
+
+    function set(key) {
+        var location = defaultPreferences[key] ? PreferencesManager : StateManager;
+        arguments[0] = prefix + "." + key;
+        return location.set.apply(location, arguments);
+    }
+
+    function getAll() {
         var obj = {};
         _.each(defaultPreferences, function (definition, key) {
-            obj[key] = this.get(key);
-        }, this);
+            obj[key] = get(key);
+        });
         return obj;
-    };
+    }
 
-    prefs.getDefaults = function () {
+    function getDefaults() {
         var obj = {};
         _.each(defaultPreferences, function (definition, key) {
             var defaultValue;
@@ -92,23 +104,38 @@ define(function (require, exports, module) {
                 defaultValue = definition.value;
             }
             obj[key] = defaultValue;
-        }, this);
+        });
         return obj;
-    };
+    }
 
-    prefs.getType = function (key) {
+    function getType(key) {
         return defaultPreferences[key].type;
-    };
+    }
 
-    prefs.getGlobal = function (key) {
+    function getGlobal(key) {
         return PreferencesManager.get(key);
-    };
+    }
 
-    prefs.persist = function (key, value) {
-        this.set(key, value);
-        this.save();
-    };
+    function persist(key, value) {
+        // TODO: remote this method
+        set(key, value);
+        save();
+    }
 
-    module.exports = prefs;
+    function save() {
+        PreferencesManager.save();
+        StateManager.save();
+    }
+
+    module.exports = {
+        get: get,
+        set: set,
+        getAll: getAll,
+        getDefaults: getDefaults,
+        getType: getType,
+        getGlobal: getGlobal,
+        persist: persist,
+        save: save
+    };
 
 });
