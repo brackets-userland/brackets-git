@@ -23,6 +23,8 @@ Alternatively you can use "File > Git Settings..." in the Brackets menu.
 
 ## Features and limitations
 
+You can find some samples of features [here](docs/FEATURES.md)
+
 Currently **Brackets-Git** supports these features (this list may be incomplete as we add new features regularely):
 
 - `init` / `clone` / `push` / `pull`
