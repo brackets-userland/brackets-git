@@ -39,8 +39,6 @@ define(function (require, exports) {
     // Remotes.js
     exports.GIT_REMOTE_AVAILABLE = "git.remote.available";
     exports.GIT_REMOTE_NOT_AVAILABLE = "git.remote.not.available";
-    exports.PULL_STARTED = "pull.started";
-    exports.PULL_FINISHED = "pull.finished";
     exports.PUSH_STARTED = "push.started";
     exports.PUSH_FINISHED = "push.finished";
     exports.REMOTES_REFRESH_PICKER = "remotes.refresh.picker";

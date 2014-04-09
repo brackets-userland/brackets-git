@@ -168,8 +168,12 @@ define(function (require, exports) {
         --progress This flag forces progress status even if the standard error stream is not directed to a terminal.
     */
 
+    function fetchRemote(remote) {
+        return git(["fetch", "--progress", remote]);
+    }
+
     function fetchAllRemotes() {
-        return git(["fetch", "--all", "--progress"]);
+        return git(["fetch", "--progress", "--all"]);
     }
 
     /*
@@ -214,15 +218,24 @@ define(function (require, exports) {
     /*
         git pull
         --no-commit Do not commit result after merge
-        --ff-only Refuse to merge and exit with a non-zero status unless the current HEAD is already up-to-date or the merge can be resolved as a fast-forward.
+        --ff-only Refuse to merge and exit with a non-zero status
+                  unless the current HEAD is already up-to-date
+                  or the merge can be resolved as a fast-forward.
     */
 
-    function pull(remoteName) {
-        return git(["pull", "--ff-only", "--progress", remoteName])
-            .then(function (stdout) {
-                // stdout contains currently non-parseable message
-                return stdout;
-            });
+    function mergeRemote(remote, branch, safe) {
+        var args = ["merge", "--progress"];
+        if (safe) { args.push("--ff-only"); }
+        args.push(remote + "/" + branch);
+        return git(args);
+    }
+
+    function rebaseRemote(remote, branch) {
+        return git(["rebase", remote + "/" + branch]);
+    }
+
+    function resetRemote(remote, branch) {
+        return git(["reset", "--soft", remote + "/" + branch]);
     }
 
     /*
@@ -609,11 +622,11 @@ define(function (require, exports) {
     // Public API
     exports._git                      = git;
     exports.FILE_STATUS               = FILE_STATUS;
+    exports.fetchRemote               = fetchRemote;
     exports.fetchAllRemotes           = fetchAllRemotes;
     exports.getRemotes                = getRemotes;
     exports.createRemote              = createRemote;
     exports.deleteRemote              = deleteRemote;
-    exports.pull                      = pull;
     exports.push                      = push;
     exports.setUpstreamBranch         = setUpstreamBranch;
     exports.getCurrentBranchHash      = getCurrentBranchHash;
@@ -643,5 +656,8 @@ define(function (require, exports) {
     exports.getDiffOfFileFromCommit   = getDiffOfFileFromCommit;
     exports.rebase                    = rebase;
     exports.rebaseInit                = rebaseInit;
+    exports.mergeRemote               = mergeRemote;
+    exports.rebaseRemote              = rebaseRemote;
+    exports.resetRemote               = resetRemote;
 
 });

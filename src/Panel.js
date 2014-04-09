@@ -899,15 +899,6 @@ define(function (require, exports) {
         gitPanel.$panel.find(".git-push").prop("disabled", true);
     });
 
-    EventEmitter.on(Events.PULL_STARTED, function () {
-        gitPanel.$panel.find(".git-pull").prop("disabled", true).addClass("btn-loading");
-    });
-
-    EventEmitter.on(Events.PULL_FINISHED, function () {
-        gitPanel.$panel.find(".git-pull").prop("disabled", false).removeClass("btn-loading");
-        refresh();
-    });
-
     EventEmitter.on(Events.PUSH_STARTED, function () {
         gitPanel.$panel.find(".git-push").prop("disabled", true).addClass("btn-loading");
     });

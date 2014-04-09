@@ -15,8 +15,10 @@ define(function (require) {
         Preferences     = require("src/Preferences"),
         ProgressDialog  = require("src/dialogs/Progress"),
         Promise         = require("bluebird"),
+        PullDialog      = require("src/dialogs/Pull"),
         Strings         = require("strings"),
-        Utils           = require("src/Utils");
+        Utils           = require("src/Utils"),
+        URI             = require("URI");
 
     // Templates
     var gitRemotesPickerTemplate = require("text!templates/git-remotes-picker.html");
@@ -142,21 +144,63 @@ define(function (require) {
             });
     }
 
-    function pullFromRemote(remoteName) {
-        if (!remoteName) {
-            ErrorHandler.showError("No remote has been selected for pull!");
-            return;
-        }
+    function pullFromRemote(remote) {
+        if (!remote) { return ErrorHandler.showError("No remote has been selected for pull!"); }
 
-        EventEmitter.emit(Events.PULL_STARTED);
+        var pullConfig = {
+            remote: remote
+        };
 
-        ProgressDialog.show(Git.pull(remoteName))
-            .then(function (result) {
-                Utils.showOutput(result, Strings.GIT_PULL_RESPONSE);
-            }).catch(function (err) {
-                ErrorHandler.showError(err, "Pulling from remote repository failed.");
-            }).finally(function () {
-                EventEmitter.emit(Events.PULL_FINISHED);
+        PullDialog.show(pullConfig)
+            .then(function (pullConfig) {
+                var q = Promise.resolve();
+
+                // set a new tracking branch if desired
+                if (pullConfig.branch && pullConfig.setBranchAsTracking) {
+                    q = q.then(function () {
+                        return Git.setUpstreamBranch(pullConfig.remote, pullConfig.branch);
+                    });
+                }
+                // put username and password into remote url
+                q = q.then(function () {
+                    var uri = new URI(pullConfig.remoteUrl);
+                    uri.username(pullConfig.remoteUsername);
+                    uri.password(pullConfig.remotePassword);
+                    return Git.setRemoteUrl(pullConfig.remote, uri.toString());
+                });
+                // do the pull itself (we are not using pull command)
+                q = q.then(function () {
+                    // fetch the remote first
+                    return ProgressDialog.show(Git.fetchRemote(pullConfig.remote))
+                        .then(function () {
+                            if (pullConfig.strategy === "CLASSIC") {
+                                return ProgressDialog.show(Git.mergeRemote(pullConfig.remote, pullConfig.branch));
+                            } else if (pullConfig.strategy === "AVOID") {
+                                return ProgressDialog.show(Git.mergeRemote(pullConfig.remote, pullConfig.branch, true));
+                            } else if (pullConfig.strategy === "REBASE") {
+                                return Git.rebaseRemote(pullConfig.remote, pullConfig.branch);
+                            } else if (pullConfig.strategy === "RESET") {
+                                return Git.resetRemote(pullConfig.remote, pullConfig.branch);
+                            }
+                        })
+                        .then(function (result) {
+                            Utils.showOutput(result, Strings.GIT_PULL_RESPONSE);
+                        });
+                });
+                // restore original url if desired
+                if (!pullConfig.saveToUrl) {
+                    q = q.finally(function () {
+                        return Git.setRemoteUrl(pullConfig.remote, pullConfig.remoteUrl);
+                    });
+                }
+
+                return q.finally(function () {
+                    EventEmitter.emit(Events.REFRESH_ALL);
+                });
+            })
+            .catch(function (err) {
+                // when dialog is cancelled, there's no error
+                if (err) { ErrorHandler.showError(err, "Pulling operation failed"); }
             });
     }
 

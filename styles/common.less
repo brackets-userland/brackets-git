@@ -1,0 +1,57 @@
+.git {
+    hr {
+        margin: 12px auto;
+        width: 95%;
+        height: 1px;
+        border: none;
+        background-color: #bfbfbf;
+    }
+
+    /* radio buttons until they are styled in brackets */
+    input[type="radio"] {
+        margin: 0;
+    }
+    input[type="radio"] {
+        height: 13px;
+        width: 13px;
+        vertical-align: middle;
+        border: 1px solid @tc-gray-component-border;
+        border-radius: 13px;
+        background-color: @tc-button-background;
+        -webkit-appearance: none;
+        box-shadow: @tc-button-highlight;
+    }
+    input[type="radio"]:active:not(:disabled) {
+        background-color: @tc-button-down-background;
+        box-shadow: @tc-button-down-shadow;
+    }
+    input[type="radio"]:focus {
+        outline:none;
+        border: 1px solid @tc-gray-component-focused-border;
+        box-shadow: @tc-input-glow;
+    }
+    input[type="radio"]:checked:before {
+        font-weight: bold;
+        color: @tc-text;
+        content: '\25cf';
+        -webkit-margin-start: 0;
+        position: relative;
+        left: 1px;
+        top: -6px;
+        font-size: 16px;
+    }
+    /* /radio buttons */
+
+    .text-bold {
+        font-weight: bold;
+    }
+    .text-quiet {
+        color: @tc-quiet-text;
+    }
+
+    @small: 5px;
+
+    .padding-right-small {
+        padding-right: @small;
+    }
+}
