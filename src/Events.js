@@ -9,12 +9,14 @@ define(function (require, exports) {
     // Brackets events
     exports.BRACKETS_CURRENT_DOCUMENT_CHANGE = "brackets.current.document.change";
     exports.BRACKETS_PROJECT_CHANGE = "brackets.project.change";
+    exports.BRACKETS_DOCUMENT_SAVED = "brackets.document.saved";
     exports.HANDLE_PROJECT_REFRESH = "handle.project.refresh";
 
     // Git events
     exports.GITIGNORE_MISSING = "gitignore.file.missing";
     exports.GIT_USERNAME_CHANGED = "git.username.changed";
     exports.GIT_EMAIL_CHANGED = "git.email.changed";
+    exports.GIT_COMMITED = "git.commited";
 
     // Startup events
     exports.REFRESH_ALL = "git.refresh.all";

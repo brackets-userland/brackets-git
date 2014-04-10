@@ -240,6 +240,7 @@ define(function (require, exports) {
                 }).catch(function (err) {
                     ErrorHandler.showError(err, "Git Commit failed");
                 }).finally(function () {
+                    EventEmitter.emit(Events.GIT_COMMITED);
                     refresh();
                 });
 
@@ -1107,6 +1108,10 @@ define(function (require, exports) {
         refreshCurrentFile();
     });
     EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, function () {
+        refresh();
+    });
+    // TODO: maybe look at the FileSystem event like GutterManager does?
+    EventEmitter.on(Events.BRACKETS_DOCUMENT_SAVED, function () {
         refresh();
     });
     EventEmitter.on(Events.REBASE_MERGE_MODE, function (rebaseEnabled, mergeEnabled) {

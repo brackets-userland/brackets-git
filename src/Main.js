@@ -16,7 +16,6 @@ define(function (require, exports) {
         Preferences       = require("./Preferences"),
         ErrorHandler      = require("./ErrorHandler"),
         GitControl        = require("./GitControl"),
-        GutterManager     = require("./GutterManager"),
         Panel             = require("./Panel"),
         Branch            = require("./Branch"),
         CloseNotModified  = require("./CloseNotModified"),
@@ -57,8 +56,7 @@ define(function (require, exports) {
             Branch.refresh();
         });
         $(DocumentManager).on("documentSaved", function () {
-            Panel.refresh();
-            GutterManager.refresh();
+            EventEmitter.emit(Events.BRACKETS_DOCUMENT_SAVED);
         });
         $(DocumentManager).on("currentDocumentChange", function () {
             EventEmitter.emit(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE);

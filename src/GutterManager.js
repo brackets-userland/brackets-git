@@ -7,6 +7,7 @@ define(function (require, exports) {
     var _               = brackets.getModule("thirdparty/lodash"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
         EditorManager   = brackets.getModule("editor/EditorManager"),
+        FileSystem      = brackets.getModule("filesystem/FileSystem"),
         ErrorHandler    = require("src/ErrorHandler"),
         Events          = require("src/Events"),
         EventEmitter    = require("src/EventEmitter"),
@@ -14,7 +15,8 @@ define(function (require, exports) {
         Preferences     = require("./Preferences"),
         Utils           = require("src/Utils");
 
-    var guttersEnabled = true,
+    var currentFilePath = null,
+        guttersEnabled = true,
         cm = null,
         results = null,
         gutterName = "brackets-git-gutter",
@@ -147,7 +149,8 @@ define(function (require, exports) {
         }
         prepareGutter(editor._codeMirror);
 
-        var filename = currentDoc.file.fullPath.substring(Utils.getProjectRoot().length);
+        currentFilePath = currentDoc.file.fullPath;
+        var filename = currentFilePath.substring(Utils.getProjectRoot().length);
         Git.diffFile(filename).then(function (diff) {
             var added = [],
                 removed = [],
@@ -306,6 +309,15 @@ define(function (require, exports) {
     });
     EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
         refresh();
+    });
+    EventEmitter.on(Events.GIT_COMMITED, function () {
+        refresh();
+    });
+    // TODO: move this to BracketsEvents
+    FileSystem.on("change", function (evt, file) {
+        if (file.fullPath === currentFilePath) {
+            refresh();
+        }
     });
 
     // API

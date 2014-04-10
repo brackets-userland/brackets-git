@@ -25,8 +25,9 @@ define(function (require, exports, module) {
     // Load extension modules that are not included by core
     var modules = [
         "src/BracketsEvents",
-        "src/NoRepo",
+        "src/GutterManager",
         "src/History",
+        "src/NoRepo",
         "src/Remotes"
     ];
     if (Preferences.get("useGitFtp")) { modules.push("src/ftp/Ftp"); }
