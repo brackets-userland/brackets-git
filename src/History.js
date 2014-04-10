@@ -24,7 +24,8 @@ define(function (require) {
         $tableContainer = $(null),
         $historyList    = $(null),
         commitCache     = [],
-        avatarType      = Preferences.get("avatarType");
+        avatarType      = Preferences.get("avatarType"),
+        lastHistoryDocument;
 
     if (avatarType === "PICTURE" || avatarType === "IDENTICON") {
         var md5;
@@ -239,6 +240,11 @@ define(function (require) {
 
     function handleFileChange() {
         var currentDocument = DocumentManager.getCurrentDocument();
+
+        if (HistoryViewer.isVisible()) {
+            currentDocument = lastHistoryDocument;
+        }
+
         if ($historyList.is(":visible") && $historyList.data("file")) {
             handleToggleHistory("FILE", currentDocument);
         }
@@ -252,6 +258,7 @@ define(function (require) {
             currentFile = $historyList.data("file") || null,
             currentHistoryMode = historyEnabled ? (currentFile ? "FILE" : "GLOBAL") : "DISABLED",
             $spinner = $(".spinner", $gitPanel),
+            doc,
             file;
 
         if (currentHistoryMode !== newHistoryMode) {
@@ -263,7 +270,7 @@ define(function (require) {
         }
 
         if (historyEnabled && newHistoryMode === "FILE") {
-            var doc = newDocument ? newDocument : DocumentManager.getCurrentDocument();
+            doc = newDocument ? newDocument : DocumentManager.getCurrentDocument();
             if (doc) {
                 file = {};
                 file.absolute = doc.file.fullPath;
@@ -273,6 +280,8 @@ define(function (require) {
                 historyEnabled = false;
             }
         }
+
+        lastHistoryDocument = doc;
 
         // Render #git-history-list if is not already generated or if the viewed file for file history has changed
         var isEmpty = $historyList.find("tr").length === 0,

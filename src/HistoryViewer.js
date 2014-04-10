@@ -172,12 +172,16 @@ define(function (require, exports) {
         });
         return $container.appendTo($editorHolder);
     }
+    
+    var isShown = false;
 
     function onRemove() {
+        isShown = false;
         // detach events that were added by this viewer to another element than one added to $editorHolder
     }
 
     function show(commitInfo) {
+        isShown = true;        
         commit = commitInfo;
         // this is a "private" API but it's so convienient it's a sin not to use it
         EditorManager._showCustomViewer({
@@ -189,8 +193,13 @@ define(function (require, exports) {
     function remove() {
         CommandManager.execute("navigate.prevDoc");
     }
+    
+    function isVisible() {
+        return isShown;
+    }
 
     // Public API
     exports.show = show;
+    exports.isVisible = isVisible;
 
 });
