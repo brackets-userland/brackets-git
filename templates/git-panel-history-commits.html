@@ -8,7 +8,7 @@
             {{#useIdenticon}}<img src="http://gravatar.com/avatar/{{emailHash}}?size=20px&default=identicon&f=y">{{/useIdenticon}}
         </div>
     </td>
-    <td><span title="{{date.title}}">{{date.shown}}</span> by <span class="commit-author">{{author}}</span></td>
+    <td><span title="{{date.title}}">{{date.shown}}</span> {{Strings.HISTORY_COMMIT_BY}} <span class="commit-author">{{author}}</span></td>
     <td class="commit-title">{{subject}}</td>
     <td>{{hashShort}}</td>
 </tr>
