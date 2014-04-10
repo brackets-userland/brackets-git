@@ -144,6 +144,14 @@ define(function (require, exports) {
         });
     }
 
+    function pushForced(remote, branch) {
+        return GitCli.push(remote, branch, ["--force"]);
+    }
+
+    function deleteRemoteBranch(remote, branch) {
+        return GitCli.push(remote, branch, ["--delete"]);
+    }
+
     // Public API
     exports.pushToNewUpstream   = pushToNewUpstream;
     exports.getBranches         = getBranches;
@@ -156,6 +164,8 @@ define(function (require, exports) {
     exports.discardFileChanges  = discardFileChanges;
     exports.getRemoteUrl        = getRemoteUrl;
     exports.setRemoteUrl        = setRemoteUrl;
+    exports.pushForced          = pushForced;
+    exports.deleteRemoteBranch  = deleteRemoteBranch;
 
     Object.keys(GitCli).forEach(function (method) {
         if (!exports[method]) {

@@ -10,7 +10,7 @@ define(function (require, exports) {
         Strings         = require("strings");
 
     // Templates
-    var template            = require("text!src/dialogs/templates/pull-dialog.html"),
+    var template            = require("text!src/dialogs/templates/push-dialog.html"),
         remotesTemplate     = require("text!src/dialogs/templates/remotes-template.html"),
         credentialsTemplate = require("text!src/dialogs/templates/credentials-template.html");
 

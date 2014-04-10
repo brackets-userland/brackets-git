@@ -16,6 +16,7 @@ define(function (require) {
         ProgressDialog  = require("src/dialogs/Progress"),
         Promise         = require("bluebird"),
         PullDialog      = require("src/dialogs/Pull"),
+        PushDialog      = require("src/dialogs/Push"),
         Strings         = require("strings"),
         Utils           = require("src/Utils");
 
@@ -140,6 +141,64 @@ define(function (require) {
             })
             .catch(function (err) {
                 ErrorHandler.logError(err);
+            });
+    }
+
+    function pushToRemote(remote) {
+        if (!remote) { return ErrorHandler.showError("No remote has been selected for push!"); }
+
+        var pushConfig = {
+            remote: remote
+        };
+
+        PushDialog.show(pushConfig)
+            .then(function (pushConfig) {
+                var q = Promise.resolve();
+
+                // set a new tracking branch if desired
+                if (pushConfig.branch && pushConfig.setBranchAsTracking) {
+                    q = q.then(function () {
+                        return Git.setUpstreamBranch(pushConfig.remote, pushConfig.branch);
+                    });
+                }
+                // put username and password into remote url
+                if (pushConfig.remoteUrlNew) {
+                    q = q.then(function () {
+                        return Git.setRemoteUrl(pushConfig.remote, pushConfig.remoteUrlNew);
+                    });
+                }
+                // do the pull itself (we are not using pull command)
+                q = q.then(function () {
+                    var op;
+                    if (pushConfig.strategy === "DEFAULT") {
+                        op = Git.push(pushConfig.remote, pushConfig.branch);
+                    } else if (pushConfig.strategy === "FORCED") {
+                        op = Git.pushForced(pushConfig.remote, pushConfig.branch);
+                    } else if (pushConfig.strategy === "DELETE_BRANCH") {
+                        op = Git.deleteRemoteBranch(pushConfig.remote, pushConfig.branch);
+                    }
+                    return ProgressDialog.show(op)
+                        .then(function (result) {
+                            Utils.showOutput(result, Strings.GIT_PUSH_RESPONSE);
+                        })
+                        .catch(function (err) {
+                            ErrorHandler.showError(err, "Pushing to remote failed");
+                        });
+                });
+                // restore original url if desired
+                if (pushConfig.remoteUrlRestore) {
+                    q = q.finally(function () {
+                        return Git.setRemoteUrl(pushConfig.remote, pushConfig.remoteUrlRestore);
+                    });
+                }
+
+                return q.finally(function () {
+                    EventEmitter.emit(Events.REFRESH_ALL);
+                });
+            })
+            .catch(function (err) {
+                // when dialog is cancelled, there's no error
+                if (err) { ErrorHandler.showError(err, "Pushing operation failed"); }
             });
     }
 
@@ -313,7 +372,7 @@ define(function (require) {
         });
     }
 
-    function pushToRemote(remoteName) {
+    function _pushToRemote(remoteName) {
         if (!remoteName) {
             ErrorHandler.showError("No remote has been selected for push!");
             return;
