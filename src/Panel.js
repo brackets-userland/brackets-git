@@ -193,7 +193,9 @@ define(function (require, exports) {
             var findStr = "[name='commit-message']",
                 currentValue = $dialog.find(findStr + ":visible").val();
             $dialog.find(findStr).toggle();
-            $dialog.find(findStr + ":visible").val(currentValue);
+            $dialog.find(findStr + ":visible")
+                .val(currentValue)
+                .focus();
             recalculateMessageLength();
         }
 
