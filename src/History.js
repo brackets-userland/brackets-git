@@ -24,8 +24,14 @@ define(function (require) {
         $tableContainer = $(null),
         $historyList    = $(null),
         commitCache     = [],
-        avatarType      = Preferences.get("avatarType"),
-        isGitHubRepo    = false;
+        avatarType      = Preferences.get("avatarType");
+
+    if (avatarType === "PICTURE" || avatarType === "IDENTICON") {
+        var md5;
+        require(["md5"], function (_md5) {
+            md5 = _md5;
+        });
+    }
 
     // Implementation
 
@@ -81,12 +87,8 @@ define(function (require) {
         return author + email;
     });
 
-    EventEmitter.on(Events.GIT_ENABLED, function () {
-        // Check if the current repository is part of GitHub network
-        // TODO: what if origin doesn't exist?
-        Git.getRemoteUrl("origin").then(function (url) {
-            isGitHubRepo = (url.indexOf("://github.com/") !== -1 || url.indexOf("@github.com:") !== -1);
-        });
+    var generateMd5 = _.memoize(function (string) {
+        return md5(string);
     });
 
     // Render history list the first time
@@ -186,12 +188,8 @@ define(function (require) {
                 commit.cssAvatar = generateCssAvatar(commit.author, commit.email);
                 commit.avatarLetter = commit.author.substring(0, 1);
             }
-            if (avatarType === "PICTURE") {
-                if (isGitHubRepo) {
-                    commit.picture = "https://avatars.githubusercontent.com/" + commit.author + "?s=20";
-                } else {
-                    commit.picture = "http://avatars.io/email/" + encodeURIComponent(commit.email) + "?s=20";
-                }
+            if (avatarType === "PICTURE" || avatarType === "IDENTICON") {
+                commit.emailHash = generateMd5(commit.email);
             }
 
             // TODO: convert date modes to sensible constant strings
