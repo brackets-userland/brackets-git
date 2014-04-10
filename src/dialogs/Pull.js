@@ -29,6 +29,7 @@ define(function (require, exports) {
 
             return Git.getRemoteUrl(pullConfig.remote).then(function (remoteUrl) {
                 pullConfig.remoteUrl = remoteUrl;
+                // FIXME: check if remoteUrl is a valid http/s and not SSH
                 var uri = new URI(remoteUrl);
                 pullConfig.remoteUsername = uri.username();
                 pullConfig.remotePassword = uri.password();
@@ -102,6 +103,7 @@ define(function (require, exports) {
         pullConfig.remotePassword = $dialog.find("input[name='password']").val();
 
         // new url that has to be set for merging
+        // FIXME: check if remoteUrl is a valid http/s and not SSH
         var uri = new URI(pullConfig.remoteUrl);
         uri.username(pullConfig.remoteUsername);
         uri.password(pullConfig.remotePassword);
