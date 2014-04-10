@@ -11,6 +11,10 @@
         &:nth-child(2) {
             width: 250px;
         }
+        .commit-title {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
         position: relative;
         overflow: hidden;
     }
@@ -63,7 +67,7 @@
     > .header {
         .flex-item(0, 0);
         .commit-author-avatar {
-            @size: 15px;
+            @size: 30px;
             margin-left: 5px;
             margin-right: 5px;
             position: relative;
@@ -83,8 +87,11 @@
         h1 {
             font-size: 20px;
             font-weight: 400;
-            padding: 0;
+            padding: 6px;
             margin: 0;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
         }
         .commit-hash, .commit-author {
             padding: 5px;
@@ -94,9 +101,7 @@
             }
         }
         .actions {
-            position: absolute;
-            top: 0;
-            right: 0;
+            float: right;
             margin: 10px;
             >* {
                 margin-right: 15px;
