@@ -91,7 +91,6 @@ define(function (require) {
         return md5(string);
     });
 
-
     // Render history list the first time
     function renderHistory(file) {
         // clear cache
