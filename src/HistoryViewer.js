@@ -181,13 +181,19 @@ define(function (require, exports) {
     }
 
     function show(commitInfo) {
-        isShown = true;        
+        isShown = true;
         commit = commitInfo;
         // this is a "private" API but it's so convienient it's a sin not to use it
         EditorManager._showCustomViewer({
             render: render,
             onRemove: onRemove
         }, commit.hash);
+    }
+
+    function hide() {
+        if (isShown) {
+            remove();
+        }
     }
 
     function remove() {
@@ -200,6 +206,7 @@ define(function (require, exports) {
 
     // Public API
     exports.show = show;
+    exports.hide = hide;
     exports.isVisible = isVisible;
 
 });

@@ -303,6 +303,8 @@ define(function (require) {
         $tableContainer.find(".git-edited-list").toggle(!historyEnabled);
         $historyList.toggle(historyEnabled);
 
+        if (!historyEnabled) { HistoryViewer.hide(); }
+
         // Toggle history button
         var globalButtonActive  = historyEnabled && newHistoryMode === "GLOBAL",
             fileButtonActive    = historyEnabled && newHistoryMode === "FILE";
