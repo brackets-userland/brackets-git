@@ -48,6 +48,13 @@ define(function (require, exports) {
             .on("click", ".close", function () {
                 // Close history viewer
                 remove();
+            })
+            .on("click", ".git-extend-sha", function () {
+                // Show complete commit SHA
+                var $parent = $(this).parent(),
+                    sha = $parent.data("hash");
+                $parent.find("span.selectable-text").text(sha);
+                $(this).remove();
             });
 
         // Add/Remove shadown on bottom of header

@@ -19,7 +19,7 @@
                 {{/enableAdvancedFeatures}}
                 <a href="#" class="close">×</a>
             </div>
-            <h1 class="commit-title">{{commit.subject}}</h1>
+            <h1 class="commit-title selectable-text">{{commit.subject}}</h1>
         </div>
         <span class="commit-author">
             <div class="commit-author-avatar">
@@ -31,7 +31,8 @@
             <span class="commit-author-name">{{commit.author}}</span>
         </span>
         <span class="commit-hash" data-hash="{{commit.hash}}">
-            <i class="octicon octicon-git-commit"></i>{{commit.hashShort}}
+            <i class="octicon octicon-git-commit"></i><span class="selectable-text">{{commit.hashShort}}</span>
+            <a href="#" class="git-extend-sha">&hellip;</a>
         </span>
         <div class="commitBody">{{{bodyMarkdown}}}</div>
     </div>
