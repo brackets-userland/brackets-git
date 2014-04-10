@@ -13,7 +13,8 @@ define(function (require, exports) {
         EventEmitter    = require("src/EventEmitter"),
         Git             = require("src/git/Git"),
         Preferences     = require("./Preferences"),
-        Utils           = require("src/Utils");
+        Utils           = require("src/Utils"),
+        Strings         = require("strings");
 
     var currentFilePath = null,
         guttersEnabled = true,
@@ -281,7 +282,7 @@ define(function (require, exports) {
             if ($gitGutterLines.hasClass("brackets-git-gutter-modified") ||
                 $gitGutterLines.hasClass("brackets-git-gutter-removed")) {
 
-                $line = $target.attr("title", "Click for more details");
+                $line = $target.attr("title", Strings.GUTTER_CLICK_DETAILS);
                 $target.addClass("brackets-git-gutter-hover");
             }
         })
