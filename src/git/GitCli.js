@@ -227,7 +227,7 @@ define(function (require, exports) {
         var args = ["merge"];
 
         if (ffOnly) { args.push("--ff-only"); }
-        if (noCommit) { args.push("--no-commit"); }
+        if (noCommit) { args.push("--no-commit", "--no-ff"); }
 
         args.push(remote + "/" + branch);
 
