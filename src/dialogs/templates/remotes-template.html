@@ -1,0 +1,36 @@
+<div class="row-fluid">
+    <label class="text-right span5">
+        {{Strings.CURRENT_TRACKING_BRANCH}}:
+    </label>
+    <label class="text-bold span7">
+        {{config.currentTrackingBranch}}
+    </label>
+</div>
+
+<div class="row-fluid">
+    <label class="text-right span5">
+        {{Strings.ACTION}}:
+    </label>
+    <label class="span7">
+        <input type="radio" name="action" value="{{mode}}_CURRENT" checked> {{modeLabel}} {{Strings._CURRENT_TRACKING_BRANCH}}
+    </label>
+</div>
+
+<div class="row-fluid">
+    <label class="span7 offset5">
+        <input type="radio" name="action" value="{{mode}}_SELECTED"> {{modeLabel}} {{Strings._ANOTHER_BRANCH}}
+    </label>
+</div>
+
+<div class="row-fluid only-from-selected">
+    <div class="span7 offset5 input-append">
+        <select class="span10 branchSelect" name="selectedBranch"></select>
+        <button class="btn fetchBranches" type="button"><i class="octicon octicon-sync"></i></button>
+    </div>
+</div>
+
+<div class="row-fluid only-from-selected">
+    <label class="span7 offset5">
+        <input type="checkbox" name="setBranchAsTracking"> {{Strings.SET_THIS_BRANCH_AS_TRACKING}}
+    </label>
+</div>

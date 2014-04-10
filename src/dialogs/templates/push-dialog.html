@@ -1,0 +1,38 @@
+<div id="git-pull-dialog" class="git modal">
+    <div class="modal-header">
+        <h1 class="dialog-title">{{Strings.DIALOG_PUSH_TITLE}} &mdash; {{config.remote}}</h1>
+    </div>
+    <div class="modal-body">
+
+        {{> remotes}}
+
+        <hr>
+
+        <div class="row-fluid">
+            <label class="span7 offset5">
+                <input type="radio" name="strategy" value="DEFAULT"> {{Strings.PUSH_DEFAULT}}
+            </label>
+        </div>
+
+        <div class="row-fluid">
+            <label class="span7 offset5">
+                <input type="radio" name="strategy" value="FORCED"> {{Strings.PUSH_FORCED}}
+            </label>
+        </div>
+
+        <div class="row-fluid">
+            <label class="span7 offset5">
+                <input type="radio" name="strategy" value="DELETE_BRANCH"> {{Strings.PUSH_DELETE_BRANCH}}
+            </label>
+        </div>
+
+        <hr>
+
+        {{> credentials}}
+
+    </div>
+    <div class="modal-footer">
+        <button class="dialog-button btn" data-button-id="cancel">{{Strings.CANCEL}}</button>
+        <button class="dialog-button btn primary" data-button-id="ok">{{Strings.OK}}</button>
+    </div>
+</div>

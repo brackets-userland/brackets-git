@@ -5,8 +5,7 @@ define(function (require, exports) {
     var Dialogs = brackets.getModule("widgets/Dialogs");
 
     // Local modules
-    var Preferences     = require("src/Preferences"),
-        Promise         = require("bluebird"),
+    var Promise         = require("bluebird"),
         RemoteCommon    = require("src/dialogs/RemoteCommon"),
         Strings         = require("strings");
 
@@ -17,24 +16,24 @@ define(function (require, exports) {
 
     // Module variables
     var defer,
-        pullConfig;
+        pushConfig;
 
     // Implementation
     function _attachEvents($dialog) {
-        RemoteCommon.attachCommonEvents(pullConfig, $dialog);
+        RemoteCommon.attachCommonEvents(pushConfig, $dialog);
 
-        // load last used
+        // select default - we don't want to remember forced or delete branch as default
         $dialog
             .find("input[name='strategy']")
-            .filter("[value='" + (Preferences.get("pull.strategy") || "DEFAULT") + "']")
+            .filter("[value='DEFAULT']")
             .prop("checked", true);
     }
 
     function _show() {
         var templateArgs = {
-            config: pullConfig,
-            mode: "PULL_FROM",
-            modeLabel: Strings.PULL_FROM,
+            config: pushConfig,
+            mode: "PUSH_TO",
+            modeLabel: Strings.PUSH_TO,
             Strings: Strings
         };
 
@@ -49,20 +48,19 @@ define(function (require, exports) {
 
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
-                RemoteCommon.collectValues(pullConfig, $dialog);
-                Preferences.set("pull.strategy", pullConfig.strategy);
-                defer.resolve(pullConfig);
+                RemoteCommon.collectValues(pushConfig, $dialog);
+                defer.resolve(pushConfig);
             } else {
                 defer.reject();
             }
         });
     }
 
-    function show(_pullConfig) {
+    function show(_pushConfig) {
         defer = Promise.defer();
-        pullConfig = _pullConfig;
-        pullConfig.pull = true;
-        RemoteCommon.collectInfo(pullConfig).then(_show);
+        pushConfig = _pushConfig;
+        pushConfig.push = true;
+        RemoteCommon.collectInfo(pushConfig).then(_show);
         return defer.promise;
     }
 

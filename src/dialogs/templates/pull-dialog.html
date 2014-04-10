@@ -4,72 +4,37 @@
     </div>
     <div class="modal-body">
 
-        <div class="row-fluid">
-            <label class="text-right span5">
-                Current tracking branch:
-            </label>
-            <label class="text-bold span7">
-                {{config.currentTrackingBranch}}
-            </label>
-        </div>
-
-        <div class="row-fluid">
-            <label class="text-right span5">
-                Action:
-            </label>
-            <label class="span7">
-                <input type="radio" name="action" value="PULL_FROM_CURRENT" checked> Pull from current tracking branch
-            </label>
-        </div>
-
-        <div class="row-fluid">
-            <label class="span7 offset5">
-                <input type="radio" name="action" value="PULL_FROM_SELECTED"> Pull from different branch
-            </label>
-        </div>
-
-        <div class="row-fluid pull-from-selected">
-            <div class="span7 offset5 input-append">
-                <select class="span10 branchSelect" name="selectedBranch"></select>
-                <button class="btn fetchBranches" type="button"><i class="octicon octicon-sync"></i></button>
-            </div>
-        </div>
-
-        <div class="row-fluid pull-from-selected">
-            <label class="span7 offset5">
-                <input type="checkbox" name="setBranchAsTracking"> Set this branch as a new tracking branch
-            </label>
-        </div>
+        {{> remotes}}
 
         <hr>
 
         <div class="row-fluid">
             <label class="span7 offset5">
-                <input type="radio" name="strategy" value="DEFAULT"> Default merge
+                <input type="radio" name="strategy" value="DEFAULT"> {{Strings.PULL_DEFAULT}}
             </label>
         </div>
 
         <div class="row-fluid">
             <label class="span7 offset5">
-                <input type="radio" name="strategy" value="AVOID_MERGING"> Avoid manual merging
+                <input type="radio" name="strategy" value="AVOID_MERGING"> {{Strings.PULL_AVOID_MERGING}}
             </label>
         </div>
 
         <div class="row-fluid">
             <label class="span7 offset5">
-                <input type="radio" name="strategy" value="MERGE_NOCOMMIT"> Merge without commit
+                <input type="radio" name="strategy" value="MERGE_NOCOMMIT"> {{Strings.PULL_MERGE_NOCOMMIT}}
             </label>
         </div>
 
         <div class="row-fluid">
             <label class="span7 offset5">
-                <input type="radio" name="strategy" value="REBASE"> Use rebase
+                <input type="radio" name="strategy" value="REBASE"> {{Strings.PULL_REBASE}}
             </label>
         </div>
 
         <div class="row-fluid">
             <label class="span7 offset5">
-                <input type="radio" name="strategy" value="RESET"> Use soft reset
+                <input type="radio" name="strategy" value="RESET"> {{Strings.PULL_RESET}}
             </label>
         </div>
 

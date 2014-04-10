@@ -172,7 +172,7 @@ define(function (require, exports) {
         });
         return $container.appendTo($editorHolder);
     }
-    
+
     var isShown = false;
 
     function onRemove() {
@@ -199,7 +199,7 @@ define(function (require, exports) {
     function remove() {
         CommandManager.execute("navigate.prevDoc");
     }
-    
+
     function isVisible() {
         return isShown;
     }
