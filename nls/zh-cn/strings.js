@@ -7,8 +7,6 @@ define({
     ADD_ENDLINE_TO_THE_END_OF_FILE:        "在文件末尾添加空行",
     // ADD_TO_GITIGNORE:                   "Add to .gitignore",
     ADD_TO_GITIGNORE:                      "添加到 .gitignore",
-    // AGREE_TO_STORE_PASSWORDS:           "I agree that password are stored in plain text on my computer",
-    AGREE_TO_STORE_PASSWORDS:              "同意以纯文本方式保存密码",
     // AMEND_COMMIT:                       "Amend last commit",
     AMEND_COMMIT:                          "修改上一次提交",
     // AMEND_COMMIT_FORBIDDEN:             "Cannot amend commit when there are no unpushed commits",

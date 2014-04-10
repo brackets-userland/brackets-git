@@ -4,7 +4,6 @@ define({
     ADVANCED_FEATURES_WARNING:          "Diese Funktionen sind für normale Git-Nutzer nicht zu empfehlen, da sie unter Umständen bei falscher Benutzung bewirken, dass bereits committeter Code verloren geht. Passen Sie auf.",
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Neue Zeile am Dateiende hinzufügen",
     ADD_TO_GITIGNORE:                   "Zu \".gitignore\" hinzufügen",
-    AGREE_TO_STORE_PASSWORDS:           "Ich stimme zu, dass Passwörter im Klartext auf meinem Computer gespeichert werden",
     AMEND_COMMIT:                       "Letzten Commit abändern",
     AMEND_COMMIT_FORBIDDEN:             "Es kann kein Commit abgeändert werden, da es keine noch nicht versendeten Commits gibt",
     AUTHOR:                             "Autoren",

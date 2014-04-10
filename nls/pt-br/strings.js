@@ -7,8 +7,6 @@ define({
     ADD_ENDLINE_TO_THE_END_OF_FILE:        "Adicionar endline no fim do arquivo",
     // ADD_TO_GITIGNORE:                   "Add to .gitignore",
     ADD_TO_GITIGNORE:                      "Adicionar ao .gitignore",
-    // AGREE_TO_STORE_PASSWORDS:           "I agree that password are stored in plain text on my computer",
-    AGREE_TO_STORE_PASSWORDS:              "Concordo com que a senha será armazenada como um texto simples no meu computador",
     // AMEND_COMMIT:                       "Amend last commit",
     AMEND_COMMIT:                          "Emendar no último commit",
     // AMEND_COMMIT_FORBIDDEN:             "Cannot amend commit when there are no unpushed commits",

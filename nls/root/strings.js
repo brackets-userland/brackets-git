@@ -5,7 +5,6 @@ define({
     ADVANCED_FEATURES_WARNING:          "This features are not recommended for basic Git users as they may cause you to lose code that has been already commited if used inproperly. Use with caution.",
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Add endline at the end of file",
     ADD_TO_GITIGNORE:                   "Add to .gitignore",
-    AGREE_TO_STORE_PASSWORDS:           "I agree that password are stored in plain text on my computer",
     AMEND_COMMIT:                       "Amend last commit",
     AMEND_COMMIT_FORBIDDEN:             "Cannot amend commit when there are no unpushed commits",
     _ANOTHER_BRANCH:                    "another branch",
