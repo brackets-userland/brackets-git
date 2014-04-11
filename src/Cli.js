@@ -73,9 +73,10 @@ define(function (require, exports, module) {
     // this functions prevents sensitive info from going further (like http passwords)
     function sanitizeOutput(str) {
         if (typeof str === "string") {
-            str = str.replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
-                return protocol + user + ":***@";
-            });
+            // TODO: if we do that, current pushing dialog stops to work with saved password
+            // str = str.replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
+            //    return protocol + user + ":***@";
+            // });
         } else {
             if (str != null) { // checks for both null & undefined
                 str = str.toString();
