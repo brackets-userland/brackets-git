@@ -2,10 +2,12 @@ define(function (require, exports) {
     "use strict";
 
     // Brackets modules
-    var Dialogs = brackets.getModule("widgets/Dialogs");
+    var _ = brackets.getModule("thirdparty/lodash"),
+        Dialogs = brackets.getModule("widgets/Dialogs");
 
     // Local modules
-    var Strings = require("strings");
+    var Promise = require("bluebird"),
+        Strings = require("strings");
 
     // Templates
     var template = require("text!src/dialogs/templates/progress-dialog.html");
@@ -51,6 +53,21 @@ define(function (require, exports) {
         return promise;
     }
 
+    function waitForClose() {
+        return new Promise(function (resolve) {
+            function check() {
+                var visible = $("#git-progress-dialog").is(":visible");
+                if (!visible) {
+                    resolve();
+                } else {
+                    _.defer(check);
+                }
+            }
+            _.defer(check);
+        });
+    }
+
     exports.show = show;
+    exports.waitForClose = waitForClose;
 
 });

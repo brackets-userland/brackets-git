@@ -199,7 +199,9 @@ define(function (require) {
                     }
                     return ProgressDialog.show(op)
                         .then(function (result) {
-                            showPushResult(result);
+                            return ProgressDialog.waitForClose().then(function () {
+                                showPushResult(result);
+                            });
                         })
                         .catch(function (err) {
                             ErrorHandler.showError(err, "Pushing to remote failed");
@@ -263,7 +265,9 @@ define(function (require) {
                             }
                         })
                         .then(function (result) {
-                            Utils.showOutput(result, Strings.GIT_PULL_RESPONSE);
+                            return ProgressDialog.waitForClose().then(function () {
+                                Utils.showOutput(result, Strings.GIT_PULL_RESPONSE);
+                            });
                         })
                         .catch(function (err) {
                             ErrorHandler.showError(err, "Pulling from remote failed");
