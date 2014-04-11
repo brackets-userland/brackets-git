@@ -38,6 +38,12 @@ define(function (require, exports) {
                 var uri = new URI(remoteUrl);
                 config.remoteUsername = uri.username();
                 config.remotePassword = uri.password();
+
+                if (!upstreamBranch) {
+                    return Git.getCurrentBranchName().then(function (currentBranchName) {
+                        config.currentBranchName = currentBranchName;
+                    });
+                }
             });
         }).catch(function (err) {
             ErrorHandler.showError(err, "Getting remote information failed");
@@ -52,9 +58,13 @@ define(function (require, exports) {
         $dialog.on("change", "input[name='action']", handleRadioChange);
         handleRadioChange();
 
+        var trackingBranchRemote = null;
+        if (config.currentTrackingBranch) {
+            trackingBranchRemote = config.currentTrackingBranch.substring(0, config.currentTrackingBranch.indexOf("/"));
+        }
+
         // if we're pulling from another remote than current tracking remote
-        var remote = config.currentTrackingBranch.substring(0, config.currentTrackingBranch.indexOf("/"));
-        if (remote !== config.remote) {
+        if (config.currentTrackingBranch && trackingBranchRemote !== config.remote) {
             if (config.pull) {
                 $dialog.find("input[value='PULL_FROM_CURRENT']").prop("disabled", true);
                 $dialog.find("input[value='PULL_FROM_SELECTED']").prop("checked", true).trigger("change");
@@ -78,7 +88,14 @@ define(function (require, exports) {
     exports.collectValues = function (config, $dialog) {
         var action = $dialog.find("input[name='action']:checked").val();
         if (action === "PULL_FROM_CURRENT" || action === "PUSH_TO_CURRENT") {
-            config.branch = config.currentTrackingBranch.substring(config.remote.length + 1);
+
+            if (config.currentTrackingBranch) {
+                config.branch = config.currentTrackingBranch.substring(config.remote.length + 1);
+            } else {
+                config.branch = config.currentBranchName;
+                config.pushToNew = true;
+            }
+
         } else if (action === "PULL_FROM_SELECTED" || action === "PUSH_TO_SELECTED") {
             config.branch = $dialog.find(".branchSelect").val().substring(config.remote.length + 1);
             config.setBranchAsTracking = $dialog.find("input[name='setBranchAsTracking']").is(":checked");

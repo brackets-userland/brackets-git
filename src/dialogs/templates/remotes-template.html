@@ -4,6 +4,9 @@
     </label>
     <label class="text-bold span7">
         {{config.currentTrackingBranch}}
+        {{^config.currentTrackingBranch}}
+            none - "{{config.currentBranchName}}" branch will be created on remote
+        {{/config.currentTrackingBranch}}
     </label>
 </div>
 

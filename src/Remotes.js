@@ -188,9 +188,9 @@ define(function (require) {
                 q = q.then(function () {
                     var op;
 
-                    // TODO: include Git.pushToNewUpstream(remoteName, remoteBranch);
-
-                    if (pushConfig.strategy === "DEFAULT") {
+                    if (pushConfig.pushToNew) {
+                        op = Git.pushToNewUpstream(pushConfig.remote, pushConfig.branch);
+                    } else if (pushConfig.strategy === "DEFAULT") {
                         op = Git.push(pushConfig.remote, pushConfig.branch);
                     } else if (pushConfig.strategy === "FORCED") {
                         op = Git.pushForced(pushConfig.remote, pushConfig.branch);
