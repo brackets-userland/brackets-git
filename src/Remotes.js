@@ -36,12 +36,12 @@ define(function (require) {
     // Implementation
 
     function getDefaultRemote() {
-        var defaultRemotes = Preferences.get("defaultRemotes");
+        var defaultRemotes = Preferences.get("defaultRemotes") || {};
         return defaultRemotes[Utils.getProjectRoot()] || "origin";
     }
 
     function setDefaultRemote(remoteName) {
-        var defaultRemotes = Preferences.get("defaultRemotes");
+        var defaultRemotes = Preferences.get("defaultRemotes") || {};
         defaultRemotes[Utils.getProjectRoot()] = remoteName;
         Preferences.persist("defaultRemotes", defaultRemotes);
     }

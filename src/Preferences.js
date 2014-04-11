@@ -35,7 +35,6 @@ define(function (require, exports, module) {
         "debugMode": {                      "type": "boolean",           "value": false             },
         "TIMEOUT_VALUE": {                  "type": "number",            "value": 30000             },
         "gitIsInSystemPath": {              "type": "boolean",           "value": false             },
-        "defaultRemotes": {                 "type": "object",            "value": {}                },
         // platform specific
         "gitPath": {
             "type": "string",
