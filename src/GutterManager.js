@@ -151,7 +151,15 @@ define(function (require, exports) {
         prepareGutter(editor._codeMirror);
 
         currentFilePath = currentDoc.file.fullPath;
-        var filename = currentFilePath.substring(Utils.getProjectRoot().length);
+
+        var currentProjectRoot = Utils.getProjectRoot();
+        if (currentFilePath.indexOf(currentProjectRoot) !== 0) {
+            // file is not in the current project
+            return;
+        }
+
+        var filename = currentFilePath.substring(currentProjectRoot.length);
+
         Git.diffFile(filename).then(function (diff) {
             var added = [],
                 removed = [],
