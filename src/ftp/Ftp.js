@@ -166,7 +166,9 @@ define(function (require) {
                 ftpScopes: ftpScopes,
                 hasFtpScopes: ftpScopes.length > 0
             });
-            $remotesDropdown.prepend(compiledTemplate);
+            if (!$gitPanel.find(".ftp-remotes-header").length) {
+                $remotesDropdown.prepend(compiledTemplate);
+            }
 
         }).catch(function (err) {
             ErrorHandler.showError(err, "Getting FTP remotes failed!");
