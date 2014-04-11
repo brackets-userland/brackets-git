@@ -159,17 +159,15 @@ define(function (require) {
 
     function addFtpScopesToPicker() {
         GitFtp.getScopes().then(function (ftpScopes) {
-
-            // Pass to Mustache the needed data
-            var compiledTemplate = Mustache.render(ftpScopesTemplate, {
-                Strings: Strings,
-                ftpScopes: ftpScopes,
-                hasFtpScopes: ftpScopes.length > 0
-            });
             if (!$gitPanel.find(".ftp-remotes-header").length) {
+                // Pass to Mustache the needed data
+                var compiledTemplate = Mustache.render(ftpScopesTemplate, {
+                    Strings: Strings,
+                    ftpScopes: ftpScopes,
+                    hasFtpScopes: ftpScopes.length > 0
+                });
                 $remotesDropdown.prepend(compiledTemplate);
             }
-
         }).catch(function (err) {
             ErrorHandler.showError(err, "Getting FTP remotes failed!");
         });
