@@ -7,7 +7,7 @@
 * Rebasing and merging is now possible with this extension.
 * You can fill in a merge message while merging a branch.
 * Improved new branch dialog with ability to fetch remote branches.
-* New pull dialog where you can specify different pulling strategies.
+* New push/pull dialog where you can specify different pulling/pushing strategies.
 * Modified files are now also marked in working files list.
 * Whitespace cleanup now removes byte order mark and normalizes line endings to LF (configurable in settings).
 * `Q` library has been completely removed and replaced by `bluebird`
