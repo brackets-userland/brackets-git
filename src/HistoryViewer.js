@@ -67,6 +67,10 @@ define(function (require, exports) {
                 }
             });
 
+        // Fix dropdown margin
+        var $dropdown = $viewer.find(".actions .git-dropdown");
+        $dropdown.css("margin-left", - $dropdown.width() + 107);
+
         // Enable actions on advanced buttons if requested by user's preferences
         if (enableAdvancedFeatures) {
             attachAdvancedEvents($viewer);
