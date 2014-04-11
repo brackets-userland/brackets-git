@@ -1,8 +1,9 @@
 /*jshint maxlen:false */
+// Some useful symbols: ’ … È
 
 define({
     // ADVANCED_FEATURES_WARNING:          "This features are not recommended for basic Git users as they may cause you to lose code that has been already commited if used inproperly. Use with caution.",
-    // TODO: localize ADVANCED_FEATURES_WARNING to it
+    ADVANCED_FEATURES_WARNING:             "Queste funzioni non sono consigliate per utenti di Git a livello base in quanto possono causare perdite di codice su di cui è già stato effettuato il commit se usate impropriamente. Usale con cautela.",
     // ADD_ENDLINE_TO_THE_END_OF_FILE:     "Add endline at the end of file",
     ADD_ENDLINE_TO_THE_END_OF_FILE:        "Aggiungi fine riga alla fine del file",
     // ADD_TO_GITIGNORE:                   "Add to .gitignore",
@@ -44,15 +45,15 @@ define({
     // BUTTON_CLONE:                       "Clone",
     BUTTON_CLONE:                          "Clona",
     // BUTTON_CHECKOUT_COMMIT:             "Checkout",
-    // TODO: localize BUTTON_CHECKOUT_COMMIT to it
+    BUTTON_CHECKOUT_COMMIT:                "Checkout",
     // BUTTON_RESET:                       "Reset index",
-    // TODO: localize BUTTON_RESET to it
+    BUTTON_RESET:                          "Resetta l’index",
     // BUTTON_RESET_HARD:                  "Reset to this commit and discard the changes that came after it. (reset --hard)",
-    // TODO: localize BUTTON_RESET_HARD to it
+    BUTTON_RESET_HARD:                     "Annulla questo commit e annulla le modifiche effettuate dopo di esso.",
     // BUTTON_RESET_SOFT:                  "Reset to this commit and retain changes that came after it staged for a new commit. (reset --soft)",
-    // TODO: localize BUTTON_RESET_SOFT to it
+    BUTTON_RESET_SOFT:                     "Annulla questo commit e conserva le modifiche effettuate dopo di esso preparandole per un nuovo commit.",
     // BUTTON_RESET_MIXED:                 "Reset to this commit and retain changes that came after it unstaged. (reset --mixed)",
-    // TODO: localize BUTTON_RESET_MIXED to it
+    BUTTON_RESET_MIXED:                    "Annulla questo commit e conserva le modifiche effettuate dopo di esso.",
     // CHANGELOG:                          "Changelog",
     CHANGELOG:                             "Changelog",
     // CHANGE_USER_NAME:                   "Change git username",
@@ -62,11 +63,11 @@ define({
     // CHECK_GIT_SETTINGS:                 "Check Git settings",
     CHECK_GIT_SETTINGS:                    "Controlla le impostazioni di Git",
     // CODE_INSPECTION_PROBLEMS:           "Code inspection problems:",
-    // TODO: localize CODE_INSPECTION_PROBLEMS to it
+    CODE_INSPECTION_PROBLEMS:              "Problemi rilevati durante l’ispezione del codice:",
     // COMMAND_ARGUMENTS:                  "Command arguments",
     COMMAND_ARGUMENTS:                     "Argomenti del comando",
     // COMMIT:                             "Commit",
-    // TODO: localize COMMIT to it
+    COMMIT:                                "Commit",
     // COMMIT_ALL_SHORTCUT:                "Commit all files",
     COMMIT_ALL_SHORTCUT:                   "Commit di tutti i file",
     // COMMIT_CURRENT_SHORTCUT:            "Commit current file",
@@ -80,23 +81,23 @@ define({
     // CREATE_NEW_REMOTE:                  "Create new remote\u2026",
     CREATE_NEW_REMOTE:                     "Crea un nuovo remote\u2026",
     // CREATE_NEW_GITFTP_SCOPE:            "Create new Git-FTP remote\u2026",
-    // TODO: localize CREATE_NEW_GITFTP_SCOPE to it
+    CREATE_NEW_GITFTP_SCOPE:               "Crea un nuovo remote di Git-FTP",
     // CUSTOM_TERMINAL_COMMAND:            "Custom terminal command (sample: gnome-terminal or complete path to executable)",
     CUSTOM_TERMINAL_COMMAND:               "Comando del terminale personalizzato (esempio: gnome-terminal o il percorso completo all’eseguibile)",
     // CUSTOM_TERMINAL_COMMAND_HINT:       "Sample arguments: --window --working-directory=$1<br>$1 in arguments will be replaced by current project directory.",
     CUSTOM_TERMINAL_COMMAND_HINT:          "Argomenti di esempio: --window --working-directory=$1<br>$1 negli argomenti verà rimpiazzato con il percorso della directory del progetto.",
     // DATE_FORMAT:                        "YYYY-MM-DD HH:mm:ss",
-    // TODO: localize DATE_FORMAT to it
+    DATE_FORMAT:                           "DD/MM/YYYY HH:mm:ss",
     // DATE_MODE_0:                        "Formatted using local date format",
-    // TODO: localize DATE_MODE_0 to it
+    DATE_MODE_0:                           "Formattato usando il formato di data locale",
     // DATE_MODE_1:                        "Relative time",
-    // TODO: localize DATE_MODE_1 to it
+    DATE_MODE_1:                           "Tempo relativo",
     // DATE_MODE_2:                        "Intelligent mode (relative/formatted)",
-    // TODO: localize DATE_MODE_2 to it
+    DATE_MODE_2:                           "Modalità intelligente (relativo/formattato)",
     // DATE_MODE_3:                        "Formatted using your own format",
-    // TODO: localize DATE_MODE_3 to it
+    DATE_MODE_3:                           "Formattata usando il formato definito dall’utente",
     // DATE_MODE_4:                        "Original Git date",
-    // TODO: localize DATE_MODE_4 to it
+    DATE_MODE_4:                           "Data originale di Git",
     // DEBUG:                              "Debug",
     DEBUG:                                 "Debug",
     // DEBUG_MODE_SETTING:                 "DEBUG mode &mdash; Leave this OFF unless you need to find a problem with the extension. All Git communication will be forwarded to Brackets console!",
@@ -108,21 +109,21 @@ define({
     // DELETE_REMOTE_NAME:                 "Do you really wish to delete remote \"{0}\"?",
     DELETE_REMOTE_NAME:                    "Vuoi veramente eliminare il remote \"{0}\"?",
     // DELETE_LOCAL_BRANCH:                "Delete local branch",
-    // TODO: localize DELETE_LOCAL_BRANCH to it
+    DELETE_LOCAL_BRANCH:                   "Cancella il branch locale",
     // DELETE_LOCAL_BRANCH_NAME:           "Do you really wish to delete local branch \"{0}\"?",
-    // TODO: localize DELETE_LOCAL_BRANCH_NAME to it
+    DELETE_LOCAL_BRANCH_NAME:              "Vuoi veramente eliminare il branch locale \"{0}\"?",
     // TITLE_CHECKOUT:                     "Do you really wish to checkout this commmit?",
-    // TODO: localize TITLE_CHECKOUT to it
+    TITLE_CHECKOUT:                        "Vuoi veramente effettuare il checkout di questo commit?",
     // DIALOG_CHECKOUT:                    "When checking out a commit, the repo will go into a DETACHED HEAD state. You can't make any commits unless you create a branch based on this.",
-    // TODO: localize DIALOG_CHECKOUT to it
+    DIALOG_CHECKOUT:                       "Quando fai il checkout di un commit, il repository andrà in DETACHED HEAD. Non potrai fare nessun commit a meno che creerai un branch basato su questo.",
     // TITLE_RESET:                        "Do you really wish to reset?",
-    // TODO: localize TITLE_RESET to it
+    TITLE_RESET:                           "Vuoi veramente effettuare il reset?",
     // DIALOG_RESET_HARD:                  "You will lose all changes after this commit!",
-    // TODO: localize DIALOG_RESET_HARD to it
+    DIALOG_RESET_HARD:                     "Perderai tutte le modifiche effettuate dopo questo commit!",
     // DIALOG_RESET_MIXED:                 "Changes after this commit will be unstaged.",
-    // TODO: localize DIALOG_RESET_MIXED to it
+    DIALOG_RESET_MIXED:                    "Le modifiche effettuate dopo questo commit verranno conservate",
     // DIALOG_RESET_SOFT:                  "Changes after this commit will be staged for a new commmit.",
-    // TODO: localize DIALOG_RESET_SOFT to it
+    DIALOG_RESET_SOFT:                     "Le modifiche effettuate dopo questo commit verranno preparate per un nuovo commit.",
     // DIFF:                               "Diff",
     DIFF:                                  "Differenze",
     // DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
@@ -136,15 +137,15 @@ define({
     // ENTER_REMOTE_NAME:                  "Enter name of the new remote:",
     ENTER_REMOTE_NAME:                     "Inserisci il nome del nuovo remote",
     // ENTER_GITFTP_SCOPE_NAME:            "Enter name of the new Git-FTP remote:",
-    // TODO: localize ENTER_GITFTP_SCOPE_NAME to it
+    ENTER_GITFTP_SCOPE_NAME:               "Inserisci il nome del nuovo remote di Git-FTP:",
     // ENTER_REMOTE_URL:                   "Enter URL of the new remote:",
     ENTER_REMOTE_URL:                      "Inserisci l’URL del nuovo remote",
     // ENTER_GITFTP_SCOPE_URL:             "Enter FTP URL of the new Git-FTP remote specifing username and password:",
-    // TODO: localize ENTER_GITFTP_SCOPE_URL to it
+    ENTER_GITFTP_SCOPE_URL:                "Inserisci l'url FTP del nuovo remote di Git-FTP specificando username e password:",
     // ERROR_TERMINAL_NOT_FOUND:           "Terminal was not found for your OS, you can define a custom Terminal command in the settings",
     ERROR_TERMINAL_NOT_FOUND:              "Il terminale non è stato trovato per il tuo sistema operativo, puoi definire un comando da terminale personalizzato nelle impostazioni",
     // ERROR_CONNECT_NODEJS:               "Failed to connect to NodeJS. If you just updated the extension close all instances of Brackets and try starting again.",
-    // TODO: localize ERROR_CONNECT_NODEJS to it
+    ERROR_CONNECT_NODEJS:                  "Impossibile connettersi a NodeJS. Se hai appena aggiornato l'estensione chiusi tutte le istanze di Brackets e prova a riavviarlo.",
     // EXTENDED_COMMIT_MESSAGE:            "EXTENDED",
     EXTENDED_COMMIT_MESSAGE:               "Forma estesa",
     // EXTENSION_WAS_UPDATED_TITLE:        "The extension was updated to {0}",
@@ -154,15 +155,15 @@ define({
     // ENTER_NEW_USER_EMAIL:               "Enter email",
     ENTER_NEW_USER_EMAIL:                  "Inserisci l’indirizzo email",
     // ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
-    // TODO: localize ENABLE_ADVANCED_FEATURES to it
+    ENABLE_ADVANCED_FEATURES:              "Abilita le funzioni avanzate",
     // FEATURES:                           "Features",
     FEATURES:                              "Funzionalità",
     // FILE_STAGED:                        "Staged",
     FILE_STAGED:                           "Staged",
     // FILE_UNMODIFIED:                    "Unmodified",
-    // TODO: localize FILE_UNMODIFIED to it
+    FILE_UNMODIFIED:                       "Non modificato",
     // FILE_IGNORED:                       "Ignored",
-    // TODO: localize FILE_IGNORED to it
+    FILE_IGNORED:                          "Ignorato",
     // FILE_UNTRACKED:                     "Untracked",
     FILE_UNTRACKED:                        "Non monitorato",
     // FILE_MODIFIED:                      "Modified",
@@ -174,7 +175,7 @@ define({
     // FILE_RENAMED:                       "Renamed",
     FILE_RENAMED:                          "Rinominato",
     // FILE_COPIED:                        "Copied",
-    // TODO: localize FILE_COPIED to it
+    FILE_COPIED:                           "Copiato",
     // FILE_UNMERGED:                      "Unmerged",
     FILE_UNMERGED:                         "Non mergato",
     // FOR_MAC_LINUX_USERS:                "For Mac/Linux users",
@@ -194,23 +195,23 @@ define({
     // GIT_PUSH_RESPONSE:                  "Git Push response",
     GIT_PUSH_RESPONSE:                     "Risposta del Git Push",
     // GITFTP_PUSH_RESPONSE:               "Git-FTP Push response",
-    // TODO: localize GITFTP_PUSH_RESPONSE to it
+    GITFTP_PUSH_RESPONSE:                  "Responso del risultato dell’azione push di Git-FTP",
     // GIT_SETTINGS:                       "Git Settings\u2026",
     GIT_SETTINGS:                          "Impostazioni di Git\u2026",
     // GIT_REMOTES:                        "Git remotes",
-    // TODO: localize GIT_REMOTES to it
+    GIT_REMOTES:                           "Git remote",
     // GITFTP_SCOPES:                      "Git-FTP remotes",
-    // TODO: localize GITFTP_SCOPES to it
+    GITFTP_SCOPES:                         "Git-FTP remotes",
     // GOTO_PREVIOUS_GIT_CHANGE:           "Go to previous Git change",
     GOTO_PREVIOUS_GIT_CHANGE:              "Vai alla modifica di Git precedente",
     // GOTO_NEXT_GIT_CHANGE:               "Go to next Git change",
     GOTO_NEXT_GIT_CHANGE:                  "Vai alla modifica di git successiva",
     // HIDE_UNTRACKED:                     "Hide untracked",
-    // TODO: localize HIDE_UNTRACKED to it
+    HIDE_UNTRACKED:                        "Nascondi i file non tracciati",
     // INIT_GITFTP_SCOPE:                  "Initialize Git-FTP remote",
-    // TODO: localize INIT_GITFTP_SCOPE to it
+    INIT_GITFTP_SCOPE:                     "Inizializza il remote di Git-FTP",
     // INIT_GITFTP_SCOPE_NAME:             "Initialize Git-FTP remote \"{0}\"?",
-    // TODO: localize INIT_GITFTP_SCOPE_NAME to it
+    INIT_GITFTP_SCOPE_NAME:                "Inizializzare il remote \"{0}\" di Git-FTP?",
     // LAUNCH_BASH_SHORTCUT:               "Bash/Terminal shortcut",
     LAUNCH_BASH_SHORTCUT:                  "Scorciatoia del terminale bash",
     // LOADING:                            "Loading\u2026",
@@ -224,17 +225,17 @@ define({
     // MARK_MODIFIED_FILES_IN_TREE:        "Mark modified files in file tree",
     MARK_MODIFIED_FILES_IN_TREE:           "Evidenzia i file modificati nell’elenco a sinistra",
     // MERGE_BRANCH:                       "Merge branch",
-    // TODO: localize MERGE_BRANCH to it
+    MERGE_BRANCH:                          "Effettua il merge del branch",
     // MERGE_RESULT:                       "Merge result",
-    // TODO: localize MERGE_RESULT to it
+    MERGE_RESULT:                          "Risultati del merge",
     // MERGE_MESSAGE:                      "Merge message",
-    // TODO: localize MERGE_MESSAGE to it
+    MERGE_MESSAGE:                         "Messaggio del merge",
     // NORMALIZE_LINE_ENDINGS:             "Normalize line endings (to \\n)",
-    // TODO: localize NORMALIZE_LINE_ENDINGS to it
+    NORMALIZE_LINE_ENDINGS:                "Normalizza i fine linea (a \\n)",
     // NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
     NOTHING_TO_COMMIT:                     "Nessun file su cui effettuare il commit, la cartella è pulita.",
     // ORIGIN_BRANCH:                      "Origin branch",
-    // TODO: localize ORIGIN_BRANCH to it
+    ORIGIN_BRANCH:                         "Branch di origine",
     // PANEL_COMMAND:                      "Show Git panel",
     PANEL_COMMAND:                         "Mostra il pannello di Git",
     // PANEL_SHORTCUT:                     "Toggle panel",
@@ -256,15 +257,15 @@ define({
     // Q_UNDO_CHANGES:                     "Reset changes to file <span class='dialog-filename'>{0}</span>?",
     Q_UNDO_CHANGES:                        "Revertire le modifiche al file <span class='dialog-filename'>{0}</span>?",
     // REMOVE_BOM:                         "Remove BOM from files",
-    // TODO: localize REMOVE_BOM to it
+    REMOVE_BOM:                            "Rimuovi i BOM dai file",
     // REMOVE_FROM_GITIGNORE:              "Remove from .gitignore",
     REMOVE_FROM_GITIGNORE:                 "Rimuovi dal .gitignore",
     // RESTART:                            "Restart",
     RESTART:                               "Riavvia",
     // RESET_LOCAL_REPO:                   "Discard all changes since last commit",
-    // TODO: localize RESET_LOCAL_REPO to it
+    RESET_LOCAL_REPO:                      "Annulla tutte le modifiche dall'ultimo commit",
     // RESET_LOCAL_REPO_CONFIRM:           "Do you wish to discard all changes done since last commit? This action can't be reverted.",
-    // TODO: localize RESET_LOCAL_REPO_CONFIRM to it
+    RESET_LOCAL_REPO_CONFIRM:              "Vuoi annullare tutte le modifiche fatte dall'ultimo commit? Quest'azione non può essere annullata.",
     // SAVE_PASSWORD_QUESTION:             "Save username/password?",
     SAVE_PASSWORD_QUESTION:                "Ricordare nome utente/password?",
     // SET_ORIGIN_URL:                     "Set origin URL",
@@ -276,15 +277,15 @@ define({
     // SHOW_BASH_TERMINAL_BUTTON:          "Show Bash/Terminal button in the panel",
     SHOW_BASH_TERMINAL_BUTTON:             "Visualizza il bottone del terminale bash nel pannello",
     // SHOWN_DATE_FORMAT:                  "Format of commit dates in history",
-    // TODO: localize SHOWN_DATE_FORMAT to it
+    SHOWN_DATE_FORMAT:                     "Formato delle date dei commit nella cronologia",
     // SHOW_REPORT_BUG_BUTTON:             "Show Report Bug button in the panel",
     SHOW_REPORT_BUG_BUTTON:                "Visualizza il bottone per segnalare un bug nel pannello",
     // SHOW_UNTRACKED:                     "Show untracked",
-    // TODO: localize SHOW_UNTRACKED to it
+    SHOW_UNTRACKED:                        "Mostra i files non tracciati",
     // STRIP_WHITESPACE_FROM_COMMITS:      "Strip trailing whitespace from commits",
     STRIP_WHITESPACE_FROM_COMMITS:         "Rimuovi spazi alla fine dei file dai commit",
     // TARGET_BRANCH:                      "Target branch",
-    // TODO: localize TARGET_BRANCH to it
+    TARGET_BRANCH:                         "Branch di destinazione",
     // TOOLTIP_BUG:                        "Report bug",
     TOOLTIP_BUG:                           "Segnala bug",
     // TOOLTIP_OPEN_BASH:                  "Open Bash/Terminal console",
@@ -294,13 +295,13 @@ define({
     // TOOLTIP_PUSH:                       "Git Push",
     TOOLTIP_PUSH:                          "Git Push",
     // TOOLTIP_GITPUSH:                    "Git-FTP Push",
-    // TODO: localize TOOLTIP_GITPUSH to it
+    TOOLTIP_GITPUSH:                       "Git-FTP Push",
     // TOOLTIP_CLOSE_NOT_MODIFIED:         "Close files not modified in Git",
     TOOLTIP_CLOSE_NOT_MODIFIED:            "Chiudi i file non modificati su Git",
     // TOOLTIP_INIT:                       "Initialize repository",
     TOOLTIP_INIT:                          "inizializza il repository",
     // TOOLTIP_CHECKOUT_COMMIT:            "Checkout a specific commit",
-    // TODO: localize TOOLTIP_CHECKOUT_COMMIT to it
+    TOOLTIP_CHECKOUT_COMMIT:               "Vai a uno specifico commit",
     // TOOLTIP_CLONE:                      "Clone existing repository",
     TOOLTIP_CLONE:                         "Clona un repository esistente",
     // TOOLTIP_COMMIT:                     "Commit the selected files",
@@ -308,19 +309,19 @@ define({
     // TOOLTIP_REFRESH_PANEL:              "Refresh panel",
     TOOLTIP_REFRESH_PANEL:                 "Aggiorna pannello",
     // TOOLTIP_HIDE_HISTORY:               "Hide history",
-    TOOLTIP_HIDE_HISTORY:                  "Nascondi la storia",
+    TOOLTIP_HIDE_HISTORY:                  "Nascondi la cronologia",
     // TOOLTIP_SHOW_HISTORY:               "Show history",
-    TOOLTIP_SHOW_HISTORY:                  "Mostra la storia",
+    TOOLTIP_SHOW_HISTORY:                  "Mostra la cronologia",
     // TOOLTIP_HIDE_FILE_HISTORY:          "Hide file history",
-    // TODO: localize TOOLTIP_HIDE_FILE_HISTORY to it
+    TOOLTIP_HIDE_FILE_HISTORY:             "Nascondi la cronologia del file",
     // TOOLTIP_SHOW_FILE_HISTORY:          "Show file history",
-    // TODO: localize TOOLTIP_SHOW_FILE_HISTORY to it
+    TOOLTIP_SHOW_FILE_HISTORY:             "Mostra la cronologia del file",
     // TOOLTIP_PICK_REMOTE:                "Pick preferred remote",
     TOOLTIP_PICK_REMOTE:                   "Seleziona il repository remoto preferito",
     // TOOLTIP_MORE:                       "More actions\u2026",
     TOOLTIP_MORE:                          "Più opzioni\u2026",
     // USER_ABORTED:                       "User aborted!",
-    // TODO: localize USER_ABORTED to it
+    USER_ABORTED:                          "Annullato dall'utente!",
     // UNDO_CHANGES:                       "Discard changes",
     UNDO_CHANGES:                          "Annulla modifiche",
     // UNDO_LAST_LOCAL_COMMIT:             "Undo last local (not pushed) commit",
@@ -332,9 +333,9 @@ define({
     // USE_GIT_GUTTER:                     "Use Git gutter marks",
     USE_GIT_GUTTER:                        "Usa la guida laterale di Git per mostrare gli indicatori",
     // USER_DATE_FORMAT:                   "Own date format (<a href='http://momentjs.com/docs/#/displaying/format/'>Syntax</a>)",
-    // TODO: localize USER_DATE_FORMAT to it
+    USER_DATE_FORMAT:                      "Formato della data personalizzato (<a href='http://momentjs.com/docs/#/displaying/format/'>Sintassi</a>):",
     // USE_GITFTP:                         "Use Git-FTP",
-    // TODO: localize USE_GITFTP to it
+    USE_GITFTP:                            "Usa Git-FTP",
     // USING_GIT_VERSION:                  "Git version",
     USING_GIT_VERSION:                     "Versione di Git",
     // VIEW_AUTHORS_SELECTION:             "View authors of selection",
