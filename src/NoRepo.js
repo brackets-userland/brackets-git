@@ -94,8 +94,5 @@ define(function (require) {
     EventEmitter.on(Events.HANDLE_GIT_CLONE, function () {
         handleGitClone();
     });
-    EventEmitter.on(Events.GITIGNORE_MISSING, function () {
-        commitGitIgnore();
-    });
 
 });

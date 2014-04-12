@@ -165,7 +165,6 @@ define(function (require, exports) {
             FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
                 if (err) {
                     _ignoreEntries = [];
-                    EventEmitter.emit(Events.GITIGNORE_MISSING);
                     return resolve();
                 }
 
