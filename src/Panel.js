@@ -1,3 +1,5 @@
+/*jshint maxstatements:false*/
+
 define(function (require, exports) {
     "use strict";
 
@@ -142,7 +144,7 @@ define(function (require, exports) {
                 .attr("title", !bool ? Strings.AMEND_COMMIT_FORBIDDEN : null);
         };
         toggleAmendCheckbox(false);
-        Main.gitControl.getCommitsAhead().then(function (commits) {
+        Git.getCommitsAhead().then(function (commits) {
             toggleAmendCheckbox(commits.length > 0);
         });
 
@@ -151,7 +153,7 @@ define(function (require, exports) {
             if ($(this).prop("checked") === false) {
                 $dialog.find("[name='commit-message']").val("");
             } else {
-                Main.gitControl.getLastCommitMessage().then(function (msg) {
+                Git.getLastCommitMessage().then(function (msg) {
                     $dialog.find("[name='commit-message']").val(msg);
                 });
             }
@@ -310,7 +312,7 @@ define(function (require, exports) {
             return;
         }
 
-        Main.gitControl.getBlame(filePath, fromLine, toLine).then(function (blame) {
+        Git.getBlame(filePath, fromLine, toLine).then(function (blame) {
             return _showAuthors(filePath, blame, fromLine, toLine);
         }).catch(function (err) {
             ErrorHandler.showError(err, "Git Blame failed");
@@ -319,7 +321,7 @@ define(function (require, exports) {
 
     function handleAuthorsFile() {
         var filePath = _getCurrentFilePath();
-        Main.gitControl.getBlame(filePath).then(function (blame) {
+        Git.getBlame(filePath).then(function (blame) {
             return _showAuthors(filePath, blame);
         }).catch(function (err) {
             ErrorHandler.showError(err, "Git Blame failed");
@@ -480,9 +482,9 @@ define(function (require, exports) {
     }
 
     function _getStagedDiff() {
-        return Main.gitControl.gitDiffStaged().then(function (diff) {
+        return Git.getDiffOfStagedFiles().then(function (diff) {
             if (!diff) {
-                return Main.gitControl.gitDiffStagedFiles().then(function (filesList) {
+                return Git.getListOfStagedFiles().then(function (filesList) {
                     return Strings.DIFF_FAILED_SEE_FILES + "\n\n" + filesList;
                 });
             }
@@ -713,7 +715,7 @@ define(function (require, exports) {
 
         //- push button
         var $pushBtn = gitPanel.$panel.find(".git-push");
-        var p2 = Main.gitControl.getCommitsAhead().then(function (commits) {
+        var p2 = Git.getCommitsAhead().then(function (commits) {
             $pushBtn.children("span").remove();
             if (commits.length > 0) {
                 $pushBtn.append($("<span/>").text(" (" + commits.length + ")"));
@@ -787,22 +789,6 @@ define(function (require, exports) {
             });
     }
 
-    function openBashConsole(event) {
-        var customTerminal = Preferences.get("terminalCommand"),
-            customTerminalArgs = Preferences.get("terminalCommandArgs");
-        Main.gitControl.terminalOpen(Utils.getProjectRoot(), customTerminal, customTerminalArgs).catch(function (err) {
-            if (event !== "retry" && ErrorHandler.contains(err, "Permission denied")) {
-                Main.gitControl.chmodTerminalScript().catch(function (err) {
-                    throw ErrorHandler.showError(err);
-                }).then(function () {
-                    openBashConsole("retry");
-                });
-                return;
-            }
-            throw ErrorHandler.showError(err);
-        });
-    }
-
     // Disable "commit" button if there aren't staged files to commit
     function _toggleCommitButton(files) {
         var anyStaged = _.any(files, function (file) { return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1; });
@@ -815,8 +801,13 @@ define(function (require, exports) {
     });
 
     function undoLastLocalCommit() {
-        Main.gitControl.undoLastLocalCommit().catch(function (err) { ErrorHandler.showError(err, "Impossible undo last commit");  });
-        refresh();
+        Git.undoLastLocalCommit()
+            .catch(function (err) {
+                ErrorHandler.showError(err, "Impossible to undo last commit");
+            })
+            .finally(function () {
+                refresh();
+            });
     }
 
     function attachDefaultTableHandlers() {
@@ -872,12 +863,11 @@ define(function (require, exports) {
     }
 
     function changeUserName() {
-        return Main.gitControl.getGitConfig("user.name")
-        .then(function (currentUserName) {
+        return Git.getConfig("user.name").then(function (currentUserName) {
             return Utils.askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, {defaultValue: currentUserName})
                 .then(function (userName) {
                     if (!userName.length) { userName = currentUserName; }
-                    return Main.gitControl.setUserName(userName).catch(function (err) {
+                    return Git.setConfig("user.name", userName).catch(function (err) {
                         ErrorHandler.showError(err, "Impossible change username");
                     }).then(function () {
                         EventEmitter.emit(Events.GIT_USERNAME_CHANGED, userName);
@@ -887,12 +877,11 @@ define(function (require, exports) {
     }
 
     function changeUserEmail() {
-        return Main.gitControl.getGitConfig("user.email")
-        .then(function (currentUserEmail) {
+        return Git.getConfig("user.email").then(function (currentUserEmail) {
             return Utils.askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, {defaultValue: currentUserEmail})
                 .then(function (userEmail) {
                     if (!userEmail.length) { userEmail = currentUserEmail; }
-                    return Main.gitControl.setUserEmail(userEmail).catch(function (err) {
+                    return Git.setConfig("user.email", userEmail).catch(function (err) {
                         ErrorHandler.showError(err, "Impossible change user email");
                     }).then(function () {
                         EventEmitter.emit(Events.GIT_EMAIL_CHANGED, userEmail);
@@ -994,7 +983,7 @@ define(function (require, exports) {
             .on("click", ".change-user-name", changeUserName)
             .on("click", ".change-user-email", changeUserEmail)
             .on("click", ".undo-last-commit", undoLastLocalCommit)
-            .on("click", ".git-bash", openBashConsole)
+            .on("click", ".git-bash", EventEmitter.emitFactory(Events.TERMINAL_OPEN))
             .on("click", ".reset-all", discardAllChanges);
 
         /* Put here event handlers for advanced actions
@@ -1029,7 +1018,7 @@ define(function (require, exports) {
         CommandManager.register(Strings.COMMIT_ALL_SHORTCUT, COMMIT_ALL_CMD, commitAllFiles);
         KeyBindingManager.addBinding(COMMIT_ALL_CMD, Preferences.get("commitAllShortcut"));
 
-        CommandManager.register(Strings.LAUNCH_BASH_SHORTCUT, BASH_CMD, openBashConsole);
+        CommandManager.register(Strings.LAUNCH_BASH_SHORTCUT, BASH_CMD, EventEmitter.emitFactory(Events.TERMINAL_OPEN));
         KeyBindingManager.addBinding(BASH_CMD, Preferences.get("bashShortcut"));
 
         CommandManager.register(Strings.PUSH_SHORTCUT, PUSH_CMD, EventEmitter.emitFactory(Events.HANDLE_PUSH));
@@ -1084,10 +1073,10 @@ define(function (require, exports) {
     // Event listeners
     EventEmitter.on(Events.GIT_ENABLED, function () {
         // Add info from Git to panel
-        Main.gitControl.getGitConfig("user.name").then(function (currentUserName) {
+        Git.getConfig("user.name").then(function (currentUserName) {
             EventEmitter.emit(Events.GIT_USERNAME_CHANGED, currentUserName);
         });
-        Main.gitControl.getGitConfig("user.email").then(function (currentEmail) {
+        Git.getConfig("user.email").then(function (currentEmail) {
             EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
         });
     });

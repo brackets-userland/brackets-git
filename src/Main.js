@@ -15,22 +15,21 @@ define(function (require, exports) {
         Strings           = require("../strings"),
         Preferences       = require("./Preferences"),
         ErrorHandler      = require("./ErrorHandler"),
-        GitControl        = require("./GitControl"),
+        Git               = require("src/git/Git"),
         Panel             = require("./Panel"),
         Branch            = require("./Branch"),
         CloseNotModified  = require("./CloseNotModified"),
-        Cli               = require("src/Cli"),
         Utils             = require("src/Utils");
 
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
-                                    .addClass("loading").appendTo($("#main-toolbar .buttons")),
-        gitControl              = null;
+                                    .addClass("loading").appendTo($("#main-toolbar .buttons"));
 
     // This only launches when Git is available
     function initUi() {
-        Panel.init(gitControl);
-        Branch.init(gitControl);
-        CloseNotModified.init(gitControl);
+        // TODO: do we really need to launch init from here?
+        Panel.init();
+        Branch.init();
+        CloseNotModified.init();
 
         // Attach events
         $icon.on("click", Panel.toggle);
@@ -209,17 +208,12 @@ define(function (require, exports) {
     }
 
     function init() {
-        // Creates an GitControl Instance
-        gitControl = exports.gitControl = new GitControl({
-            handler: Cli.cliHandler
-        });
-
         // Initialize items dependent on HTML DOM
         AppInit.htmlReady(function () {
             $icon.removeClass("loading").removeAttr("title");
 
             // Try to get Git version, if succeeds then Git works
-            gitControl.getVersion().then(function (version) {
+            Git.getVersion().then(function (version) {
                 Strings.GIT_VERSION = version;
                 initUi();
                 attachEventsToBrackets();

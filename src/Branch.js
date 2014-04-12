@@ -15,7 +15,6 @@ define(function (require, exports) {
         Events                  = require("src/Events"),
         EventEmitter            = require("src/EventEmitter"),
         ErrorHandler            = require("./ErrorHandler"),
-        Main                    = require("./Main"),
         Panel                   = require("./Panel"),
         ProgressDialog          = require("src/dialogs/Progress"),
         Strings                 = require("../strings"),
@@ -97,7 +96,7 @@ define(function (require, exports) {
 
                     } else {
 
-                        Main.gitControl.mergeBranch(fromBranch, mergeMsg).catch(function (err) {
+                        Git.mergeBranch(fromBranch, mergeMsg).catch(function (err) {
                             throw ErrorHandler.showError(err, "Merge failed");
                         }).then(function (stdout) {
                             Utils.showOutput(stdout, Strings.MERGE_RESULT);
@@ -194,7 +193,7 @@ define(function (require, exports) {
                             isRemote    = $option.attr("remote"),
                             track       = !!isRemote;
 
-                        Main.gitControl.createBranch(branchName, originName, track).catch(function (err) {
+                        Git.createBranch(branchName, originName, track).catch(function (err) {
                             ErrorHandler.showError(err, "Creating new branch failed");
                         }).then(function () {
                             closeDropdown();
@@ -208,7 +207,7 @@ define(function (require, exports) {
             e.stopPropagation();
             var newBranchName = $(this).parent().data("branch");
             return Git.getCurrentBranchName().then(function (oldBranchName) {
-                Main.gitControl.checkoutBranch(newBranchName).then(function () {
+                Git.checkout(newBranchName).then(function () {
                     closeDropdown();
                     return closeNotExistingFiles(oldBranchName, newBranchName);
 
@@ -333,7 +332,7 @@ define(function (require, exports) {
                 return;
             }
 
-            return Main.gitControl.getBranchName().then(function (branchName) {
+            return Git.getCurrentBranchHash().then(function (branchName) {
 
                 // FIXME: why this is launched twice on startup?
                 Git.getMergeInfo().then(function (mergeInfo) {

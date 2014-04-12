@@ -1,3 +1,5 @@
+/*jshint maxstatements:false*/
+
 /*
     This module is used to communicate with Git through Cli
     Output string from Git should always be parsed here
@@ -265,6 +267,13 @@ define(function (require, exports) {
         });
     }
 
+    function mergeBranch(branchName, mergeMessage) {
+        var args = ["merge", "--no-ff"];
+        if (mergeMessage && mergeMessage.trim()) { args.push("-m", mergeMessage); }
+        args.push(branchName);
+        return git(args);
+    }
+
     /*
         git push
         --porcelain Produce machine-readable output.
@@ -482,7 +491,22 @@ define(function (require, exports) {
     }
 
     function checkout(hash) {
-        return git(["checkout", hash]);
+        return git(["checkout", hash], {
+            timeout: false // never timeout this
+        });
+    }
+
+    function createBranch(branchName, originBranch, trackOrigin) {
+        var args = ["checkout", "-b", branchName];
+
+        if (originBranch) {
+            if (trackOrigin) {
+                args.push("--track");
+            }
+            args.push(originBranch);
+        }
+
+        return git(args);
     }
 
     function _unquote(str) {
@@ -606,6 +630,14 @@ define(function (require, exports) {
         });
     }
 
+    function getDiffOfStagedFiles() {
+        return git(["diff", "--no-color", "--staged"]);
+    }
+
+    function getListOfStagedFiles() {
+        return git(["diff", "--no-color", "--staged", "--name-only"]);
+    }
+
     function diffFile(file) {
         return _isFileStaged(file).then(function (staged) {
             var args = ["diff", "--no-color"];
@@ -646,6 +678,71 @@ define(function (require, exports) {
         return git(["rebase", "--" + whatToDo]);
     }
 
+    function getVersion() {
+        return git(["--version"]).then(function (stdout) {
+            var io = stdout.indexOf("git version");
+            return stdout.substring(io !== -1 ? io + "git version".length : 0).trim();
+        });
+    }
+
+    function getCommitsAhead() {
+        return git(["rev-list", "HEAD", "--not", "--remotes"]).then(function (stdout) {
+            return !stdout ? [] : stdout.split("\n");
+        });
+    }
+
+    function getLastCommitMessage() {
+        return git(["log", "-1", "--pretty=%B"]).then(function (stdout) {
+            return stdout.trim();
+        });
+    }
+
+    function getBlame(file, from, to) {
+        var args = ["blame", "-w", "--line-porcelain"];
+        if (from || to) { args.push("-L" + from + "," + to); }
+        args.push(file);
+
+        return git(args).then(function (stdout) {
+            if (!stdout) { return []; }
+
+            var sep  = "-@-BREAK-HERE-@-",
+                sep2 = "$$#-#$BREAK$$-$#";
+            stdout = stdout.replace(sep, sep2)
+                           .replace(/^\t(.*)$/gm, function (a, b) { return b + sep; });
+
+            return stdout.split(sep).reduce(function (arr, lineInfo) {
+                lineInfo = lineInfo.replace(sep2, sep).trimLeft();
+                if (!lineInfo) { return arr; }
+
+                var obj = {},
+                    lines = lineInfo.split("\n"),
+                    firstLine = _.first(lines).split(" ");
+
+                obj.hash = firstLine[0];
+                obj.num = firstLine[2];
+                obj.content = _.last(lines);
+
+                // process all but first and last lines
+                for (var i = 1, l = lines.length - 1; i < l; i++) {
+                    var line = lines[i],
+                        io = line.indexOf(" "),
+                        key = line.substring(0, io),
+                        val = line.substring(io + 1);
+                    obj[key] = val;
+                }
+
+                arr.push(obj);
+                return arr;
+            }, []);
+        }).catch(function (stderr) {
+            var m = stderr.match(/no such path (\S+)/);
+            if (m) {
+                throw new Error("File is not tracked by Git: " + m[1]);
+            }
+            throw stderr;
+        });
+    }
+
     // Public API
     exports._git                      = git;
     exports.FILE_STATUS               = FILE_STATUS;
@@ -675,6 +772,7 @@ define(function (require, exports) {
     exports.commit                    = commit;
     exports.reset                     = reset;
     exports.checkout                  = checkout;
+    exports.createBranch              = createBranch;
     exports.status                    = status;
     exports.diffFile                  = diffFile;
     exports.diffFileNice              = diffFileNice;
@@ -686,5 +784,12 @@ define(function (require, exports) {
     exports.mergeRemote               = mergeRemote;
     exports.rebaseRemote              = rebaseRemote;
     exports.resetRemote               = resetRemote;
+    exports.getVersion                = getVersion;
+    exports.getCommitsAhead           = getCommitsAhead;
+    exports.getLastCommitMessage      = getLastCommitMessage;
+    exports.mergeBranch               = mergeBranch;
+    exports.getDiffOfStagedFiles      = getDiffOfStagedFiles;
+    exports.getListOfStagedFiles      = getListOfStagedFiles;
+    exports.getBlame                  = getBlame;
 
 });

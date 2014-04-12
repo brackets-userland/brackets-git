@@ -28,7 +28,8 @@ define(function (require, exports, module) {
         "src/GutterManager",
         "src/History",
         "src/NoRepo",
-        "src/Remotes"
+        "src/Remotes",
+        "src/utils/Terminal"
     ];
     if (Preferences.get("useGitFtp")) { modules.push("src/ftp/Ftp"); }
     require(modules);

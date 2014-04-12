@@ -72,18 +72,19 @@ define(function (require, exports, module) {
 
     // this functions prevents sensitive info from going further (like http passwords)
     function sanitizeOutput(str) {
-        if (typeof str === "string") {
-            // TODO: if we do that, current pushing dialog stops to work with saved password
-            // str = str.replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
-            //    return protocol + user + ":***@";
-            // });
-        } else {
+        if (typeof str !== "string") {
             if (str != null) { // checks for both null & undefined
                 str = str.toString();
             } else {
                 str = "";
             }
         }
+
+        // TODO: if we do that, current pushing dialog stops to work with saved password
+        // str = str.replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
+        //    return protocol + user + ":***@";
+        // });
+
         return str;
     }
 
@@ -272,17 +273,42 @@ define(function (require, exports, module) {
         return deferred.promise;
     }
 
-    function executeCommand(cmd, args, opts) {
-        return cliHandler("execute", cmd, args, opts);
-    }
-
     function spawnCommand(cmd, args, opts) {
         return cliHandler("spawn", cmd, args, opts);
     }
 
+    function executeCommand(cmd, args, opts) {
+        return cliHandler("execute", cmd, args, opts);
+    }
+
+    // this is to be used together with executeCommand
+    // spawnCommand does the escaping automatically
+    function escapeShellArg(str) {
+        if (typeof str !== "string") {
+            throw new Error("escapeShellArg argument is not a string: " + typeof str);
+        }
+        if (str.length === 0) {
+            return str;
+        }
+        if (brackets.platform !== "win") {
+            // http://steve-parker.org/sh/escape.shtml
+            str = str.replace(/["$`\\]/g, function (m) {
+                return "\\" + m;
+            });
+            return "\"" + str + "\"";
+        } else {
+            // http://stackoverflow.com/questions/7760545/cmd-escape-double-quotes-in-parameter
+            str = str.replace(/"/g, function () {
+                return "\"\"\"";
+            });
+            return "\"" + str + "\"";
+        }
+    }
+
     // Public API
-    exports.cliHandler = cliHandler;
-    exports.executeCommand = executeCommand;
-    exports.spawnCommand = spawnCommand;
+    exports.cliHandler      = cliHandler;
+    exports.executeCommand  = executeCommand;
+    exports.spawnCommand    = spawnCommand;
+    exports.escapeShellArg  = escapeShellArg;
 
 });

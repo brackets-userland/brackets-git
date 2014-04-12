@@ -41,4 +41,7 @@ define(function (require, exports) {
     exports.GIT_REMOTE_AVAILABLE = "git.remote.available";
     exports.GIT_REMOTE_NOT_AVAILABLE = "git.remote.not.available";
     exports.REMOTES_REFRESH_PICKER = "remotes.refresh.picker";
+
+    // utils/Terminal.js
+    exports.TERMINAL_OPEN = "terminal.open";
 });

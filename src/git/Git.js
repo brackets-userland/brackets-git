@@ -152,6 +152,10 @@ define(function (require, exports) {
         return GitCli.push(remote, branch, ["--delete"]);
     }
 
+    function undoLastLocalCommit() {
+        return GitCli.reset("--soft", "HEAD~1");
+    }
+
     // Public API
     exports.pushToNewUpstream   = pushToNewUpstream;
     exports.getBranches         = getBranches;
@@ -166,6 +170,7 @@ define(function (require, exports) {
     exports.setRemoteUrl        = setRemoteUrl;
     exports.pushForced          = pushForced;
     exports.deleteRemoteBranch  = deleteRemoteBranch;
+    exports.undoLastLocalCommit = undoLastLocalCommit;
 
     Object.keys(GitCli).forEach(function (method) {
         if (!exports[method]) {
