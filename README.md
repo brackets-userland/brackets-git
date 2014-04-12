@@ -8,7 +8,7 @@ It's tested and works on any platform supported by Brackets (Windows, Mac OSx, G
 #### Dependencies:
 To make **Brackets-Git** work you'll need Git installed in your system:
 
-- **Windows**: [MsysGit](https://code.google.com/p/msysgit/) is reccomended with these ([settings](https://raw.github.com/zaggino/brackets-git/master/screenshots/gitInstall.png))
+- **Windows**: [MsysGit](https://code.google.com/p/msysgit/) is recommended with these ([settings](https://raw.github.com/zaggino/brackets-git/master/screenshots/gitInstall.png))
 - **Mac OS X**: [Git for OS X](https://code.google.com/p/git-osx-installer/) is reccomended.
 - **GNU/Linux**: Install the package `git`:  
    \- Debian/Ubuntu: `sudo apt-get install git`  
@@ -40,7 +40,7 @@ Most of the features available are configurable and is possible disable or enabl
 **Pull/Push to password protected repositories:**
 Push/Pull from and to password protected repositories is partially supported, currently it works only with `http` / `https` repositories.
 
-[Windows Credential Store for Git](http://gitcredentialstore.codeplex.com/) is reccomanded to better manage password protected repositories till **Brackets-Git** will provide a better support for them.  
+[Windows Credential Store for Git](http://gitcredentialstore.codeplex.com/) is recommended to better manage password protected repositories till **Brackets-Git** will provide a better support for them.  
 You'll need to push manually for the first time to setup your username/password into credentials helper.
 
 If you won't find the feature you were looking for, feel free to **open issues with your ideas**.
