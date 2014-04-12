@@ -11,9 +11,17 @@
         &:nth-child(2) {
             width: 250px;
         }
-        .commit-title {
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        &.commit-title {
+            @padLeft: 15px;
+            padding-left: @padLeft;
+            span {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                position: absolute;
+                left: @padLeft;
+                right: 0;
+            }
         }
         position: relative;
         overflow: hidden;
@@ -89,9 +97,6 @@
             font-weight: 400;
             padding: 6px;
             margin: 0;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
         }
         .commit-hash, .commit-author {
             padding: 5px;
