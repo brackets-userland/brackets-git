@@ -254,14 +254,15 @@ define(function (require) {
     // Show or hide the history list on click of .history button
     // newHistoryMode can be "FILE" or "GLOBAL"
     function handleToggleHistory(newHistoryMode, newDocument) {
+        // this is here to check that $historyList is still attached to the DOM
+        $historyList = $tableContainer.find("#git-history-list");
+
         var historyEnabled = $historyList.is(":visible"),
             currentFile = $historyList.data("file") || null,
             currentHistoryMode = historyEnabled ? (currentFile ? "FILE" : "GLOBAL") : "DISABLED",
             $spinner = $(".spinner", $gitPanel),
             doc,
             file;
-
-        $historyList = $tableContainer.find("#git-history-list");
 
         if (currentHistoryMode !== newHistoryMode) {
             // we are switching the modes so enable
