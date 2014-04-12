@@ -261,6 +261,8 @@ define(function (require) {
             doc,
             file;
 
+        $historyList = $tableContainer.find("#git-history-list");
+
         if (currentHistoryMode !== newHistoryMode) {
             // we are switching the modes so enable
             historyEnabled = true;
