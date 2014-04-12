@@ -20,12 +20,12 @@ define(function (require) {
         gitPanelHistoryCommitsTemplate = require("text!templates/git-panel-history-commits.html");
 
     // Module variables
-    var $gitPanel       = $(null),
-        $tableContainer = $(null),
-        $historyList    = $(null),
-        commitCache     = [],
-        avatarType      = Preferences.get("avatarType"),
-        lastHistoryDocument;
+    var $gitPanel         = $(null),
+        $tableContainer   = $(null),
+        $historyList      = $(null),
+        commitCache       = [],
+        avatarType        = Preferences.get("avatarType"),
+        lastDocumentSeen  = null;
 
     if (avatarType === "PICTURE" || avatarType === "IDENTICON") {
         var md5;
@@ -238,12 +238,19 @@ define(function (require) {
         return commits;
     }
 
-    function handleFileChange() {
-        var currentDocument = DocumentManager.getCurrentDocument();
-
+    function getCurrentDocument() {
         if (HistoryViewer.isVisible()) {
-            currentDocument = lastHistoryDocument;
+            return lastDocumentSeen;
         }
+        var doc = DocumentManager.getCurrentDocument();
+        if (doc) {
+            lastDocumentSeen = doc;
+        }
+        return doc || lastDocumentSeen;
+    }
+
+    function handleFileChange() {
+        var currentDocument = getCurrentDocument();
 
         if ($historyList.is(":visible") && $historyList.data("file")) {
             handleToggleHistory("FILE", currentDocument);
@@ -261,7 +268,7 @@ define(function (require) {
             currentFile = $historyList.data("file") || null,
             currentHistoryMode = historyEnabled ? (currentFile ? "FILE" : "GLOBAL") : "DISABLED",
             $spinner = $(".spinner", $gitPanel),
-            doc,
+            doc = newDocument ? newDocument : getCurrentDocument(),
             file;
 
         if (currentHistoryMode !== newHistoryMode) {
@@ -273,7 +280,6 @@ define(function (require) {
         }
 
         if (historyEnabled && newHistoryMode === "FILE") {
-            doc = newDocument ? newDocument : DocumentManager.getCurrentDocument();
             if (doc) {
                 file = {};
                 file.absolute = doc.file.fullPath;
@@ -283,8 +289,6 @@ define(function (require) {
                 historyEnabled = false;
             }
         }
-
-        lastHistoryDocument = doc;
 
         // Render #git-history-list if is not already generated or if the viewed file for file history has changed
         var isEmpty = $historyList.find("tr").length === 0,
