@@ -25,6 +25,7 @@
 * BUGFIX: Git processes that timeouted (waiting for password) will no longer stay opened in your OS.
 * BUGFIX: Fixed some console errors when not working in a Git repository.
 * BUGFIX: Fixed a bug when an empty repository is opened (without master branch)
+* BUGFIX: Fixed a bug when ammending multiline commit messages.
 * BUGFIX: Opened files that do not exist in a newly switched branch are now automatically closed by [Fez Vrasta](https://github.com/FezVrasta)
 
 ## 0.12.2
