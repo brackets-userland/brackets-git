@@ -44,6 +44,22 @@ module.exports = function (grunt) {
             options: {
                 config: ".jscs.json"
             }
+        },
+        compress: {
+            main: {
+                options: {
+                    archive: "brackets-git.zip"
+                },
+                files: [
+                    {src: ["nls/**"], dest: "/" },
+                    {src: ["shell/**"], dest: "/" },
+                    {src: ["src/**"], dest: "/" },
+                    {src: ["styles/**"], dest: "/" },
+                    {src: ["templates/**"], dest: "/" },
+                    {src: ["thirdparty/**"], dest: "/" },
+                    {src: ["LICENSE", "*.js", "*.json", "*.md"], dest: "/", filter: "isFile"}
+                ]
+            }
         }
     });
 
@@ -51,6 +67,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-lesslint");
     grunt.loadNpmTasks("grunt-jscs-checker");
+    grunt.loadNpmTasks("grunt-contrib-compress");
 
     grunt.registerTask("jslint-test", ["jslint"]);
     grunt.registerTask("jshint-test", ["jshint"]);
