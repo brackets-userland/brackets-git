@@ -44,6 +44,15 @@
             <button title="{{S.GOTO_NEXT_GIT_CHANGE}}" class="btn small git-next-gutter"><i class="octicon octicon-arrow-down"></i></button>
         </div>
         <div class="btn-group git-available">
+            <button title="{{S.TOOLTIP_SHOW_HISTORY}}" class="btn small git-history-toggle"><i class="octicon octicon-history"></i></button>
+            <button title="{{S.TOOLTIP_SHOW_FILE_HISTORY}}" class="btn small git-file-history"><i class="octicon octicon-file-text"></i></button>
+        </div>
+        <div class="btn-group git-not-available">
+          <button title="{{S.TOOLTIP_INIT}}" class="btn small git-init"><i class="octicon octicon-repo-create"></i><span>{{S.BUTTON_INIT}}</span></button>
+          <button title="{{S.TOOLTIP_CLONE}}" class="btn small git-clone"><i class="octicon octicon-repo-clone"></i><span>{{S.BUTTON_CLONE}}</span></button>
+        </div>
+        <!-- this should be last on left -->
+        <div class="btn-group git-available">
             <button title="{{S.TOOLTIP_REFRESH_PANEL}}" class="btn small git-refresh git-icon"><i class="octicon octicon-sync"></i></button>
             <div class="btn-group dropup">
                 <button type="button" class="git-more btn small dropdown-toggle" data-toggle="dropdown" title="{{S.TOOLTIP_MORE}}">
@@ -64,15 +73,6 @@
                 </ul>
             </div>
         </div>
-        <div class="btn-group git-available">
-            <button title="{{S.TOOLTIP_SHOW_HISTORY}}" class="btn small git-history-toggle"><i class="octicon octicon-history"></i></button>
-            <button title="{{S.TOOLTIP_SHOW_FILE_HISTORY}}" class="btn small git-file-history"><i class="octicon octicon-file-text"></i></button>
-        </div>
-        <div class="btn-group git-not-available">
-          <button title="{{S.TOOLTIP_INIT}}" class="btn small git-init"><i class="octicon octicon-repo-create"></i><span>{{S.BUTTON_INIT}}</span></button>
-          <button title="{{S.TOOLTIP_CLONE}}" class="btn small git-clone"><i class="octicon octicon-repo-clone"></i><span>{{S.BUTTON_CLONE}}</span></button>
-        </div>
-
         <!-- on right -->
         <div class="git-right-icons">
             <div class="btn-group git-available dropup">
