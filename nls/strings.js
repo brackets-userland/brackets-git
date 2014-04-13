@@ -10,6 +10,7 @@ define(function (require, exports, module) {
     // All other bundles for languages need to add a prefix to the exports below so i18n can find them.
     module.exports = {
         root: true,
+        "en-uk": true,
         "de": true,
         "pt-br": true,
         "zh-cn": true,

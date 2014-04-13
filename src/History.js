@@ -179,8 +179,13 @@ define(function (require) {
         var mode        = Preferences.get("dateMode"),
             format      = Strings.DATE_FORMAT,
             now         = moment(),
-            yesterday   = moment().subtract("d", 1).startOf("d"),
+            // yesterday   = moment().subtract("d", 1).startOf("d"),
             ownFormat   = Preferences.get("dateFormat") || Strings.DATE_FORMAT;
+
+        if (mode === 2 && format.indexOf(" ")) {
+            // only date part
+            format = format.substring(0, format.indexOf(" "));
+        }
 
         _.forEach(commits, function (commit) {
 
@@ -219,12 +224,17 @@ define(function (require) {
                     break;
                 // mode 2: intelligent relative/formatted
                 case 2:
+                    var relative = moment.duration(date.diff(now), "ms").humanize(true),
+                        formatted = commit.date.shown = date.format(format);
+                    commit.date.shown = relative + " (" + formatted + ")";
+                    /*
                     if (date.diff(yesterday) > 0) {
                         commit.date.shown = moment.duration(Math.max(date.diff(now), -24 * 60 * 60 * 1000), "ms").humanize(true);
                         commit.date.title = date.format(format);
                     } else {
                         commit.date.shown = date.format(format);
                     }
+                    */
                     break;
                 // mode 3: formatted with own format (as pref)
                 case 3:

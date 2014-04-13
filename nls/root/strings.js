@@ -56,7 +56,7 @@ define({
     CREATE_NEW_GITFTP_SCOPE:            "Create new Git-FTP remote\u2026",
     CUSTOM_TERMINAL_COMMAND:            "Custom terminal command (sample: gnome-terminal or complete path to executable)",
     CUSTOM_TERMINAL_COMMAND_HINT:       "Sample arguments: --window --working-directory=$1<br>$1 in arguments will be replaced by current project directory.",
-    DATE_FORMAT:                        "YYYY-MM-DD HH:mm:ss",
+    DATE_FORMAT:                        "MM/DD/YYYY HH:mm:ss",
     DATE_MODE_0:                        "Formatted using local date format",
     DATE_MODE_1:                        "Relative time",
     DATE_MODE_2:                        "Intelligent mode (relative/formatted)",
