@@ -148,17 +148,6 @@ define(function (require, exports) {
             toggleAmendCheckbox(commits.length > 0);
         });
 
-        // Assign action to amend checkbox
-        $dialog.find(".amend-commit").on("click", function () {
-            if ($(this).prop("checked") === false) {
-                $dialog.find("[name='commit-message']").val("");
-            } else {
-                Git.getLastCommitMessage().then(function (msg) {
-                    $dialog.find("[name='commit-message']").val(msg);
-                });
-            }
-        });
-
         function getCommitMessageElement() {
             var r = $dialog.find("[name='commit-message']:visible");
             if (r.length !== 1) {
@@ -190,8 +179,12 @@ define(function (require, exports) {
                 .toggleClass("over100", length > 100);
         };
 
+        var usingTextArea = false;
+
         // commit message handling
         function switchCommitMessageElement() {
+            usingTextArea = !usingTextArea;
+
             var findStr = "[name='commit-message']",
                 currentValue = $dialog.find(findStr + ":visible").val();
             $dialog.find(findStr).toggle();
@@ -211,13 +204,37 @@ define(function (require, exports) {
             }
         });
 
-        $dialog.find("button.extendedCommit").on("click", switchCommitMessageElement);
+        $dialog.find("button.extendedCommit").on("click", function () {
+            switchCommitMessageElement();
+            // this value will be set only when manually triggered
+            Preferences.set("useTextAreaForCommitByDefault", usingTextArea);
+        });
 
-        if (prefilledMessage) {
-            if (prefilledMessage.indexOf("\n") !== -1) {
+        function prefillMessage(msg) {
+            if (msg.indexOf("\n") !== -1 && !usingTextArea) {
                 switchCommitMessageElement();
             }
-            $dialog.find("[name='commit-message']:visible").val(prefilledMessage);
+            $dialog.find("[name='commit-message']:visible").val(msg);
+            recalculateMessageLength();
+        }
+
+        // Assign action to amend checkbox
+        $dialog.find(".amend-commit").on("click", function () {
+            if ($(this).prop("checked") === false) {
+                prefillMessage("");
+            } else {
+                Git.getLastCommitMessage().then(function (msg) {
+                    prefillMessage(msg);
+                });
+            }
+        });
+
+        if (Preferences.get("useTextAreaForCommitByDefault")) {
+            switchCommitMessageElement();
+        }
+
+        if (prefilledMessage) {
+            prefillMessage(prefilledMessage);
         }
 
         // Add focus to commit message input
@@ -233,6 +250,13 @@ define(function (require, exports) {
                 // this event won't launch when commit-message is empty so its safe to assume that it is not
                 var commitMessage = getCommitMessageElement().val(),
                     amendCommit = $dialog.find(".amend-commit").prop("checked");
+
+                // if commit message is extended and has a newline, put an empty line after first line to separate subject and body
+                var s = commitMessage.split("\n");
+                if (s.length > 1 && s[1].trim() !== "") {
+                    s.splice(1, 0, "");
+                }
+                commitMessage = s.join("\n");
 
                 // now we are going to be paranoid and we will check if some mofo didn't change our diff
                 _getStagedDiff().then(function (diff) {

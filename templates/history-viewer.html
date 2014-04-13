@@ -21,6 +21,7 @@
             </div>
             <h1 class="commit-title selectable-text"><span>{{commit.subject}}</span></h1>
         </div>
+        <div class="commitBody">{{{bodyMarkdown}}}</div>
         <span class="commit-author">
             <div class="commit-author-avatar">
                 {{#useBwAvatar}}<span class="avatar-bw text" style="{{commit.cssAvatar}}">{{commit.avatarLetter}}</span>{{/useBwAvatar}}
@@ -34,7 +35,6 @@
             <i class="octicon octicon-git-commit"></i><span class="selectable-text">{{commit.hashShort}}</span>
             <a href="#" class="git-extend-sha">&hellip;</a>
         </span>
-        <div class="commitBody">{{{bodyMarkdown}}}</div>
     </div>
     <div class="body">
         <div class="table-striped tab-content">
