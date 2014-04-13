@@ -7,6 +7,7 @@ define(function (require, exports) {
         ExpectedError              = require("./ExpectedError"),
         ExtensionInfo              = require("./ExtensionInfo"),
         Strings                    = require("../strings"),
+        Utils                      = require("src/Utils"),
         markdownReportTemplate     = require("text!templates/error-report.md"),
         errorDialogTemplate        = require("text!templates/git-error-dialog.html");
 
@@ -18,6 +19,10 @@ define(function (require, exports) {
             bracketsGit: "Brackets-Git " + ExtensionInfo.getSync().version,
             git: Strings.GIT_VERSION
         })).trim();
+    }
+
+    function errorToString(err) {
+        return Utils.encodeSensitiveInformation(err.toString());
     }
 
     exports.rewrapError = function (err, errNew) {
@@ -54,7 +59,7 @@ define(function (require, exports) {
     exports.reportBug = function () {
         var mdReport = getMdReport({
             errorStack: errorQueue.map(function (err, index) {
-                return "#" + (index + 1) + ". " + err.toString();
+                return "#" + (index + 1) + ". " + errorToString(err);
             }).join("\n")
         });
         _reportBug(ExtensionInfo.getSync().homepage + "/issues/new?body=" + encodeURIComponent(mdReport));
@@ -77,7 +82,7 @@ define(function (require, exports) {
 
     exports.logError = function (err) {
         var msg = err && err.stack ? err.stack : err;
-        console.error("[brackets-git] " + msg);
+        Utils.consoleLog("[brackets-git] " + msg, "error");
         errorQueue.push(err);
         return err;
     };
@@ -99,7 +104,7 @@ define(function (require, exports) {
         if (typeof err === "string") {
             errorBody = err;
         } else if (err instanceof Error) {
-            errorBody = err.toString();
+            errorBody = errorToString(err);
             errorStack = err.stack || "";
         } else {
             errorBody = JSON.stringify(err, null, 4);

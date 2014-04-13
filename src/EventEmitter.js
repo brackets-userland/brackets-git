@@ -6,7 +6,8 @@ define(function (require, exports, module) {
 
     // Local modules
     var EventEmitter2 = require("eventemitter2"),
-        Preferences   = require("src/Preferences");
+        Preferences   = require("src/Preferences"),
+        Utils         = require("src/Utils");
 
     // Module variables
     var debugOn = Preferences.get("debugMode");
@@ -33,7 +34,7 @@ define(function (require, exports, module) {
             }).join(", ");
             if (argsString) { argsString = " - " + argsString; }
             argsString = argsString + " (" + listenersCount + " listeners)";
-            console.log("[brackets-git] Event invoked: " + eventName + argsString);
+            Utils.consoleLog("[brackets-git] Event invoked: " + eventName + argsString);
 
             return this._emit.apply(this, arguments);
         };

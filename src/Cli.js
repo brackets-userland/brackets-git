@@ -79,12 +79,6 @@ define(function (require, exports, module) {
                 str = "";
             }
         }
-
-        // TODO: if we do that, current pushing dialog stops to work with saved password
-        // str = str.replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
-        //    return protocol + user + ":***@";
-        // });
-
         return str;
     }
 
@@ -104,7 +98,7 @@ define(function (require, exports, module) {
 
         var msg = extName + "cmd-" + method + "-" + type + " (" + processInfo.join(";") + ")";
         if (out) { msg += ": \"" + out + "\""; }
-        console.log(msg);
+        Utils.consoleLog(msg);
     }
 
     function cliHandler(method, cmd, args, opts) {
@@ -135,9 +129,9 @@ define(function (require, exports, module) {
         // log all cli communication into console when debug mode is on
         if (debugOn) {
             var startTime = (new Date()).getTime();
-            console.log(extName + "cmd-" + method + (watchProgress ? "-watch" : "") + ": " +
-                        (opts.customCwd ? opts.cwd + "\\" : "") +
-                        cmd + " " + args.join(" "));
+            Utils.consoleLog(extName + "cmd-" + method + (watchProgress ? "-watch" : "") + ": " +
+                             (opts.customCwd ? opts.cwd + "\\" : "") +
+                             cmd + " " + args.join(" "));
         }
 
         // we connect to node (promise is returned immediately if we are already connected)
@@ -235,12 +229,12 @@ define(function (require, exports, module) {
                             var diff = currentTime - lastProgressTime;
                             if (diff > timeoutLength) {
                                 if (debugOn) {
-                                    console.log(extName + "cmd(" + cliId + ") - last progress message was sent " + diff + "ms ago - timeout");
+                                    Utils.consoleLog(extName + "cmd(" + cliId + ") - last progress message was sent " + diff + "ms ago - timeout");
                                 }
                                 timeoutPromise();
                             } else {
                                 if (debugOn) {
-                                    console.log(extName + "cmd(" + cliId + ") - last progress message was sent " + diff + "ms ago - delay");
+                                    Utils.consoleLog(extName + "cmd(" + cliId + ") - last progress message was sent " + diff + "ms ago - delay");
                                 }
                                 timeoutCall();
                             }

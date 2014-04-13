@@ -186,16 +186,34 @@ define(function (require, exports, module) {
         $btn.prop("disabled", false).removeClass("btn-loading");
     }
 
+    function encodeSensitiveInformation(str) {
+        // should match passwords in http/https urls
+        str = str.replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
+            return protocol + user + ":***@";
+        });
+        // should match user name in windows user folders
+        str = str.replace(/(users)(\\|\/)([^\\\/]+)(\\|\/)/i, function (a, users, slash1, username, slash2) {
+            return users + slash1 + "***" + slash2;
+        });
+        return str;
+    }
+
+    function consoleLog(msg, type) {
+        console[type || "log"](encodeSensitiveInformation(msg));
+    }
+
     // Public API
-    exports.formatDiff            = formatDiff;
-    exports.getProjectRoot        = getProjectRoot;
-    exports.getExtensionDirectory = getExtensionDirectory;
-    exports.askQuestion           = askQuestion;
-    exports.showOutput            = showOutput;
-    exports.isProjectRootWritable = isProjectRootWritable;
-    exports.pathExists            = pathExists;
-    exports.loadPathContent       = loadPathContent;
-    exports.setLoading            = setLoading;
-    exports.unsetLoading          = unsetLoading;
+    exports.formatDiff                  = formatDiff;
+    exports.getProjectRoot              = getProjectRoot;
+    exports.getExtensionDirectory       = getExtensionDirectory;
+    exports.askQuestion                 = askQuestion;
+    exports.showOutput                  = showOutput;
+    exports.isProjectRootWritable       = isProjectRootWritable;
+    exports.pathExists                  = pathExists;
+    exports.loadPathContent             = loadPathContent;
+    exports.setLoading                  = setLoading;
+    exports.unsetLoading                = unsetLoading;
+    exports.consoleLog                  = consoleLog;
+    exports.encodeSensitiveInformation  = encodeSensitiveInformation;
 
 });

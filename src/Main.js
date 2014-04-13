@@ -72,7 +72,7 @@ define(function (require, exports) {
 
         gitignoreEntry.read(function (err, content) {
             if (err) {
-                console.warn(err);
+                Utils.consoleLog(err, "warn");
                 content = "";
             }
 

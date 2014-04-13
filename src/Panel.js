@@ -111,7 +111,7 @@ define(function (require, exports) {
                     });
                 });
             } else {
-                console.warn("[brackets-git] lintResults contain object in unexpected format: " + JSON.stringify(lintResult));
+                ErrorHandler.logError("[brackets-git] lintResults contain object in unexpected format: " + JSON.stringify(lintResult));
             }
             lintResult.hasErrors = lintResult.errors.length > 0;
         });

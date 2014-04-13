@@ -10,7 +10,7 @@ define(function (require, exports, module) {
         // features
         "stripWhitespaceFromCommits": {     "type": "boolean",           "value": true              },
         "addEndlineToTheEndOfFile": {       "type": "boolean",           "value": true              },
-        "removeByteOrderMark": {            "type": "boolean",           "value": false              },
+        "removeByteOrderMark": {            "type": "boolean",           "value": false             },
         "normalizeLineEndings": {           "type": "boolean",           "value": false             },
         "useGitGutter": {                   "type": "boolean",           "value": true              },
         "markModifiedInTree": {             "type": "boolean",           "value": true              },
