@@ -834,6 +834,8 @@ define(function (require, exports) {
             });
     }
 
+    var lastCheckOneClicked = null;
+
     function attachDefaultTableHandlers() {
         $tableContainer = gitPanel.$panel.find(".table-container")
             .off()
@@ -841,8 +843,41 @@ define(function (require, exports) {
                 e.stopPropagation();
                 var $tr = $(this).closest("tr"),
                     file = $tr.attr("x-file"),
-                    status = $tr.attr("x-status");
-                if ($(this).is(":checked")) {
+                    status = $tr.attr("x-status"),
+                    isChecked = $(this).is(":checked");
+
+                if (e.shiftKey) {
+                    // stage/unstage all file between
+                    var lc = lastCheckOneClicked.localeCompare(file),
+                        lcClickedSelector = "[x-file='" + lastCheckOneClicked + "']",
+                        sequence;
+
+                    if (lc < 0) {
+                        sequence = $tr.prevUntil(lcClickedSelector).andSelf();
+                    } else if (lc > 0) {
+                        sequence = $tr.nextUntil(lcClickedSelector).andSelf();
+                    }
+
+                    if (sequence) {
+                        sequence = sequence.add($tr.parent().children(lcClickedSelector));
+                        var promises = sequence.map(function () {
+                            var $this = $(this),
+                                method = isChecked ? "stage" : "unstage",
+                                file = $this.attr("x-file"),
+                                status = $this.attr("x-status");
+                            return Git[method](file, status === Git.FILE_STATUS.DELETED);
+                        }).toArray();
+                        return Promise.all(promises).then(function () {
+                            return Git.status();
+                        }).catch(function (err) {
+                            ErrorHandler.showError(err, "Modifying file status failed");
+                        });
+                    }
+                }
+
+                lastCheckOneClicked = file;
+
+                if (isChecked) {
                     Git.stage(file, status === Git.FILE_STATUS.DELETED).then(function () {
                         Git.status();
                     });
