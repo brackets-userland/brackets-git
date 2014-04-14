@@ -552,39 +552,6 @@ define(function (require, exports) {
         // Disable button (it will be enabled when selecting files after reset)
         Utils.setLoading(gitPanel.$panel.find(".git-commit"));
 
-        /*
-        // Get checked files
-        var $checked = gitPanel.$panel.find(".check-one:checked");
-
-        // TODO: probably some user friendly message that no files are checked for commit.
-        if ($checked.length === 0) { return; }
-
-        // Collect file information.
-        var files = $checked.closest("tr").map(function () {
-            return {
-                filename: $(this).attr("x-file"),
-                status:   $(this).attr("x-status")
-            };
-        }).toArray();
-
-        // Handle moved files, issue https://github.com/zaggino/brackets-git/issues/56
-        for (var i = 0; i < files.length; i++) {
-            var split = files[i].filename.split("->");
-            if (split.length > 1) {
-                var o1 = {
-                    filename: split[0].trim(),
-                    status: [Git.FILE_STATUS.DELETED]
-                };
-                var o2 = {
-                    filename: split[1].trim(),
-                    status: [Git.FILE_STATUS.ADDED]
-                };
-                files.splice(i, 1, o1, o2);
-                i += 1;
-            }
-        }
-        */
-
         // First reset staged files, then add selected files to the index.
         Git.status().then(function (files) {
             files = _.filter(files, function (file) {
@@ -751,7 +718,7 @@ define(function (require, exports) {
         //- Clone button
         gitPanel.$panel.find(".git-clone").prop("disabled", false);
 
-        // TODO: who listens for this?
+        // FUTURE: who listens for this?
         return Promise.all([p1, p2]);
     }
 
@@ -770,7 +737,7 @@ define(function (require, exports) {
         CommandManager.get(PANEL_COMMAND_ID).setChecked(bool);
 
         if (bool) {
-            Branch.refresh();
+            refresh();
         }
     }
 
@@ -1094,6 +1061,11 @@ define(function (require, exports) {
 
         // Init moment - use the correct language
         moment.lang(brackets.getLocale());
+
+        // Show gitPanel when appropriate
+        if (Preferences.get("panelEnabled")) {
+            toggle(true);
+        }
     }
 
     function enable() {
@@ -1145,8 +1117,7 @@ define(function (require, exports) {
     EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, function () {
         refresh();
     });
-    // TODO: maybe look at the FileSystem event like GutterManager does?
-    EventEmitter.on(Events.BRACKETS_DOCUMENT_SAVED, function () {
+    EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function () {
         refresh();
     });
     EventEmitter.on(Events.REBASE_MERGE_MODE, function (rebaseEnabled, mergeEnabled) {

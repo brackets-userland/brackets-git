@@ -334,11 +334,9 @@ define(function (require, exports) {
 
             return Git.getCurrentBranchHash().then(function (branchName) {
 
-                // FIXME: why this is launched twice on startup?
                 Git.getMergeInfo().then(function (mergeInfo) {
 
                     if (mergeInfo.mergeMode) {
-                        // FIXME: check if anyone is not reading the text if $gitBranchName
                         branchName += "|MERGING";
                     }
 

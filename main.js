@@ -37,7 +37,7 @@ define(function (require, exports, module) {
     // Load CSS
     ExtensionUtils.loadStyleSheet(module, "styles/brackets-git.less");
     ExtensionUtils.loadStyleSheet(module, "styles/fonts/octicon.less");
-    // TODO: load ftp.less on demand after Sprint 38
+    // FUTURE: load ftp.less on demand after Sprint 38
 
     // Display settings panel on first start / changelog dialog on version change
     ExtensionInfo.get().then(function (packageJson) {

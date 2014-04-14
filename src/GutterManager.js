@@ -2,12 +2,11 @@
 // @see https://github.com/MiguelCastillo/Brackets-InteractiveLinter
 
 define(function (require, exports) {
-    "use strict";
 
+    // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
         EditorManager   = brackets.getModule("editor/EditorManager"),
-        FileSystem      = brackets.getModule("filesystem/FileSystem"),
         ErrorHandler    = require("src/ErrorHandler"),
         Events          = require("src/Events"),
         EventEmitter    = require("src/EventEmitter"),
@@ -131,7 +130,7 @@ define(function (require, exports) {
     }
 
     function refresh() {
-        // TODO: this might be called too often, do not call if previous refresh isn't finished?
+        // FUTURE: this might be called too often, do not call if previous refresh isn't finished?
 
         if (!guttersEnabled) {
             return;
@@ -322,8 +321,7 @@ define(function (require, exports) {
     EventEmitter.on(Events.GIT_COMMITED, function () {
         refresh();
     });
-    // TODO: move this to BracketsEvents
-    FileSystem.on("change", function (evt, file) {
+    EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function (evt, file) {
         if (file.fullPath === currentFilePath) {
             refresh();
         }

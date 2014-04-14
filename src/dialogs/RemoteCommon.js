@@ -34,10 +34,15 @@ define(function (require, exports) {
 
             return Git.getRemoteUrl(config.remote).then(function (remoteUrl) {
                 config.remoteUrl = remoteUrl;
-                // FIXME: check if remoteUrl is a valid http/s and not SSH
-                var uri = new URI(remoteUrl);
-                config.remoteUsername = uri.username();
-                config.remotePassword = uri.password();
+
+                if (remoteUrl.match(/^https?:/)) {
+                    var uri = new URI(remoteUrl);
+                    config.remoteUsername = uri.username();
+                    config.remotePassword = uri.password();
+                } else {
+                    // disable the inputs
+                    config._usernamePasswordDisabled = true;
+                }
 
                 if (!upstreamBranch) {
                     return Git.getCurrentBranchName().then(function (currentBranchName) {
@@ -83,6 +88,10 @@ define(function (require, exports) {
                 });
         });
         fillBranches(config, $dialog);
+
+        if (config._usernamePasswordDisabled) {
+            $dialog.find("input[name='username'],input[name='password'],input[name='saveToUrl']").prop("disabled", true);
+        }
     };
 
     exports.collectValues = function (config, $dialog) {
@@ -107,14 +116,16 @@ define(function (require, exports) {
         config.remotePassword = $dialog.find("input[name='password']").val();
 
         // new url that has to be set for merging
-        // FIXME: check if remoteUrl is a valid http/s and not SSH
-        var uri = new URI(config.remoteUrl);
-        uri.username(config.remoteUsername);
-        uri.password(config.remotePassword);
-        var remoteUrlNew = uri.toString();
+        var remoteUrlNew;
+        if (config.remoteUrl.match(/^https?:/)) {
+            var uri = new URI(config.remoteUrl);
+            uri.username(config.remoteUsername);
+            uri.password(config.remotePassword);
+            remoteUrlNew = uri.toString();
+        }
 
         // assign remoteUrlNew only if it's different from the original url
-        if (config.remoteUrl !== remoteUrlNew) {
+        if (remoteUrlNew && config.remoteUrl !== remoteUrlNew) {
             config.remoteUrlNew = remoteUrlNew;
         }
 

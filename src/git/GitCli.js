@@ -459,7 +459,7 @@ define(function (require, exports) {
             return git(args);
         } else {
             return new Promise(function (resolve, reject) {
-                // TODO: maybe use git commit --file=-
+                // FUTURE: maybe use git commit --file=-
                 var fileEntry = FileSystem.getFileForPath(Utils.getProjectRoot() + ".bracketsGitTemp");
                 Promise.cast(FileUtils.writeText(fileEntry, message))
                     .then(function () {
@@ -517,7 +517,6 @@ define(function (require, exports) {
     }
 
     function status(type) {
-        // FIXME: this is called twice on startup!
         return git(["status", "-u", "--porcelain"]).then(function (stdout) {
             if (!stdout) { return []; }
 

@@ -115,7 +115,7 @@ define(function (require, exports, module) {
     }
 
     function persist(key, value) {
-        // TODO: remote this method
+        // FUTURE: remote this method
         set(key, value);
         save();
     }

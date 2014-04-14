@@ -198,7 +198,7 @@ define(function (require) {
                 commit.emailHash = generateMd5(commit.email);
             }
 
-            // TODO: convert date modes to sensible constant strings
+            // FUTURE: convert date modes to sensible constant strings
             if (mode === 4) {
                 // mode 4: Original Git date
                 commit.date = {

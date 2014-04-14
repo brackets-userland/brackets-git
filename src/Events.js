@@ -11,6 +11,7 @@ define(function (require, exports) {
     exports.BRACKETS_PROJECT_CHANGE = "brackets.project.change";
     exports.BRACKETS_DOCUMENT_SAVED = "brackets.document.saved";
     exports.HANDLE_PROJECT_REFRESH = "handle.project.refresh";
+    exports.BRACKETS_FILE_CHANGED = "brackets.file.changed";
 
     // Git events
     exports.GIT_USERNAME_CHANGED = "git.username.changed";

@@ -26,21 +26,16 @@ define(function (require, exports) {
 
     // This only launches when Git is available
     function initUi() {
-        // TODO: do we really need to launch init from here?
+        // FUTURE: do we really need to launch init from here?
         Panel.init();
         Branch.init();
         CloseNotModified.init();
-
         // Attach events
         $icon.on("click", Panel.toggle);
-
-        // Show gitPanel when appropriate
-        if (Preferences.get("panelEnabled")) {
-            Panel.toggle(true);
-        }
     }
 
     // Call this only when Git is available
+    // FUTURE: move this to BracketsEvents
     function attachEventsToBrackets() {
         $(ProjectManager).on("projectOpen projectRefresh", function () {
             // Branch.refresh will refresh also Panel

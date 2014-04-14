@@ -1,6 +1,9 @@
 define(function (require) {
     "use strict";
 
+    // Brackets modules
+    var FileSystem    = brackets.getModule("filesystem/FileSystem");
+
     // Local modules
     var Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
@@ -24,6 +27,9 @@ define(function (require) {
     });
     EventEmitter.on(Events.GIT_DISABLED, function () {
         detachGitOnlyEvents();
+    });
+    FileSystem.on("change", function (evt, file) {
+        EventEmitter.emit(Events.BRACKETS_FILE_CHANGED, evt, file);
     });
 
 });

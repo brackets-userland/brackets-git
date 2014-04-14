@@ -69,7 +69,7 @@ define(function (require) {
                         return GitFtp.addScope(name, url).then(function () {
 
                             // Render the list element of the new remote
-                            // TODO: replace this part with a way to call `Remotes.refreshRemotesPicker()`
+                            // FUTURE: replace this part with a way to call `Remotes.refreshRemotesPicker()`
                             var $newScope = $("<li/>")
                                                 .addClass("gitftp-remote")
                                                 .append("<a/>")
