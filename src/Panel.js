@@ -30,7 +30,6 @@ define(function (require, exports) {
         ExpectedError      = require("./ExpectedError"),
         Main               = require("./Main"),
         GutterManager      = require("./GutterManager"),
-        Branch             = require("./Branch"),
         Strings            = require("../strings"),
         Utils              = require("src/Utils"),
         SettingsDialog     = require("./SettingsDialog"),
