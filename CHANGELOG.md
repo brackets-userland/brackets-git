@@ -28,6 +28,8 @@
 * BUGFIX: Fixed a bug when ammending multiline commit messages.
 * BUGFIX: Opened files that do not exist in a newly switched branch are now automatically closed by [Fez Vrasta](https://github.com/FezVrasta)
 
+Little stats - 150 commits, 108 files changed, 8673 insertions(+), 6257 deletions(-) since `0.12.2`
+
 ## 0.12.2
 * Top menu has been removed - you can access settings through panel or File > Git settings...
 * Branch deletion handling has been improved and now you can delete also not fully merged branches.
