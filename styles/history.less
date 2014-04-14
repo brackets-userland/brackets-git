@@ -27,16 +27,14 @@
         overflow: hidden;
     }
     .commit-author-avatar {
-        @size: 20px;
+        @size: 13px;
         position: absolute;
-        top: 2px;
-        left: 2px;
+        top: 6px;
+        left: 0px;
         right: 2px;
         bottom: 2px;
         width: @size;
         height: @size;
-        box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.4);
-        border-radius: 3px;
         text-align: center;
         span {
             position: absolute;
@@ -44,11 +42,14 @@
             left: 0;
             right: 0;
             bottom: 0;
-            text-align: center;
+            bottom: 0;    
+            font-size: 11px;
+            font-weight: 500;
             font-size: @size;
             line-height: @size;
             color: #FEFEFE;
             text-transform: uppercase;
+            border-radius: 2px;
             &.avatar-bw {
                 -webkit-filter: grayscale(100%);
             }
@@ -60,7 +61,7 @@
         }
     }
     .commit-author {
-        font-weight: bold;
+        font-weight: 500;
     }
 }
 #history-viewer {
@@ -75,8 +76,8 @@
     > .header {
         .flex-item(0, 0);
         .commit-author-avatar {
-            @size: 30px;
-            margin-left: 5px;
+            @size: 18px;
+            top: 4px;
             margin-right: 5px;
             position: relative;
             display: inline-block;
@@ -87,19 +88,18 @@
                 line-height: @size;
             }
         }
-        padding-left: 10px;
+        padding: 17px 30px 30px;
         &.shadow {
             box-shadow: 0 -1px 3px 3px rgba(0, 0, 0, 0.3);
             z-index: 1;
         }
         h1 {
             font-size: 20px;
-            font-weight: 400;
-            padding: 6px;
+            font-weight: 500;
             margin: 0;
         }
         .commit-hash, .commit-author {
-            padding: 5px;
+            margin-right: 10px;
             display: inline-block;
             i {
                 margin-right: 5px;
@@ -127,9 +127,14 @@
         .flex-item(1, 1);
         position: relative;
         overflow-y: scroll;
-        li>a {
-            margin: 10px;
-            background: #E6E6E6;
+        li > a {
+            background: #E6E9E9;
+            border: none;
+            color: #000;
+            margin: 0 0 3px;
+            &:hover {
+                border: none;
+            }
         }
     }
     .message {
@@ -154,7 +159,7 @@
     .active {
         border: 1px solid #ddd;
         background: @almostWhite;
-        border-radius: 4px;
+        border-radius: 3px;
         a {
             border: none;
             background-color: transparent;
@@ -166,10 +171,18 @@
             display: none;
         }
     }
+    .caret {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 5px solid #454545;
+    }
     .caret.caret-right {
         border-bottom: 4px solid transparent;
         border-top: 4px solid transparent;
-        border-left: 4px solid #000000;
+        border-left: 5px solid #454545;
+    }
+    .commit-files {
+        padding: 0 20px;
     }
     .dropdown-menu();
 }
