@@ -2,12 +2,13 @@ define(function (require) {
     "use strict";
 
     // Brackets modules
-    var FileSystem    = brackets.getModule("filesystem/FileSystem");
+    var FileSystem   = brackets.getModule("filesystem/FileSystem");
 
     // Local modules
-    var Events        = require("src/Events"),
-        EventEmitter  = require("src/EventEmitter"),
-        Git           = require("src/git/Git");
+    var Events       = require("src/Events"),
+        EventEmitter = require("src/EventEmitter"),
+        Git          = require("src/git/Git"),
+        Utils        = require("src/Utils");
 
     function refreshStatus() {
         // Extension parts should listen to GIT_STATUS_RESULTS
@@ -28,8 +29,12 @@ define(function (require) {
     EventEmitter.on(Events.GIT_DISABLED, function () {
         detachGitOnlyEvents();
     });
+
     FileSystem.on("change", function (evt, file) {
-        EventEmitter.emit(Events.BRACKETS_FILE_CHANGED, evt, file);
+        // we care only for files in current project
+        if (file.fullPath.indexOf(Utils.getProjectRoot()) === 0) {
+            EventEmitter.emit(Events.BRACKETS_FILE_CHANGED, evt, file);
+        }
     });
 
 });
