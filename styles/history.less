@@ -130,46 +130,86 @@
         li>a {
             margin: 10px;
             background: #E6E6E6;
+            margin-bottom: 0;
+            &:hover:not(.active) {
+                background: #ebebeb;
+            }
+        }
+        .commit-diff {
+            overflow: hidden;
+            max-height: 0px;
+            margin: 10px;
+            opacity: 0;
+            transition: all ease 0.3s;
+            transition-property: padding, height, opacity;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-top: 0;
+            margin-top: 0px;
+            border-radius: 0 0 4px 4px;
+            border-color: #ddd;
+        }
+        .active+.commit-diff {
+            max-height: 99999px;
+            padding: 10px;
+            opacity: 1;
+            border-color: @tc-gray-component-border;
+        }
+        .opened {
+            display: none;
+            margin-top: 7px;
+        }
+        .closed {
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .active {
+            background: @almostWhite;
+            border: 1px solid @tc-gray-component-border;
+            margin-bottom: 0;
+            border-bottom: 0;
+            border-radius: 4px 4px 0 0;
+            a {
+                border: none;
+                background-color: transparent;
+            }
+            .opened {
+                display: inline-block;
+            }
+            .closed {
+                display: none;
+            }
+        }
+        .caret.caret-right {
+            border-bottom: 4px solid transparent;
+            border-top: 4px solid transparent;
+            border-left: 4px solid #000000;
         }
     }
     .message {
         display: block;
         padding: 10px;
     }
-    .commit-diff {
-        display: none;
-        margin: 10px;
-    }
-    .active+.commit-diff {
-        display: block;
-    }
-    .opened {
-        display: none;
-        margin-top: 7px;
-    }
-    .closed {
-        display: inline-block;
-        margin-top: 5px;
-    }
-    .active {
-        border: 1px solid #ddd;
-        background: @almostWhite;
-        border-radius: 4px;
-        a {
-            border: none;
-            background-color: transparent;
-        }
-        .opened {
-            display: inline-block;
-        }
-        .closed {
+    .dropdown-menu();
+
+    .toggle-diffs {
+        cursor: pointer;
+        float: right;
+        margin-right: 30px;
+        margin-top: 20px;
+        .collapse {
             display: none;
         }
+        span.collapse {
+                height: auto;
+        }
+        &.opened {
+            .expand {
+                display: none;
+            }
+            .collapse {
+                display: inline-block;
+            }
+        }
     }
-    .caret.caret-right {
-        border-bottom: 4px solid transparent;
-        border-top: 4px solid transparent;
-        border-left: 4px solid #000000;
-    }
-    .dropdown-menu();
 }

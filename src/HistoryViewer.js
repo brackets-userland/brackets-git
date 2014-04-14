@@ -29,7 +29,6 @@ define(function (require, exports) {
                     // If this diff was not previously loaded then load it
                     if (!self.is(".loaded")) {
                         Git.getDiffOfFileFromCommit(commit.hash, $(this).text().trim()).then(function (diff) {
-                            $viewer.find(".commit-files a").removeClass("active");
                             self.addClass("active loaded");
                             $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
                             $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
@@ -55,6 +54,14 @@ define(function (require, exports) {
                     sha = $parent.data("hash");
                 $parent.find("span.selectable-text").text(sha);
                 $(this).remove();
+            })
+            .on("click", ".toggle-diffs", function () {
+                $(this).addClass("opened");
+                $viewer.find(".commit-files a").not(".active").trigger("click");
+            })
+            .on("click", ".toggle-diffs.opened", function () {
+                $(this).removeClass("opened");
+                $viewer.find(".commit-files a.active").trigger("click");
             });
 
         // Add/Remove shadown on bottom of header

@@ -23,6 +23,7 @@
 * Fixed some errors in translations by [Fez Vrasta](https://github.com/FezVrasta)
 * Various UI improvements by [Fez Vrasta](https://github.com/FezVrasta), [Marcel Gerber](https://github.com/SAPlayer) and [Larz](https://github.com/larz0)
 * Redesigned history by [Fez Vrasta](https://github.com/FezVrasta)
+* Added button to expand/collapse every diff in history viewer of the selected commit by [Fez Vrasta](https://github.com/FezVrasta)
 * BUGFIX: Clone won't timeout anymore when cloning large repositories.
 * BUGFIX: Switching between branches will never timeout.
 * BUGFIX: Git processes that timeouted (waiting for password) will no longer stay opened in your OS.
