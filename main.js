@@ -35,7 +35,7 @@ define(function (require, exports, module) {
     require(modules);
 
     // Load CSS
-    ExtensionUtils.loadStyleSheet(module, "styles/brackets-git.less");
+    ExtensionUtils.loadStyleSheet(module, "styles/brackets-git.css");
     ExtensionUtils.loadStyleSheet(module, "styles/fonts/octicon.less");
     // FUTURE: load ftp.less on demand after Sprint 38
 

@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.1
+* Fix broken styles problem on Linux & Mac.
+
 ## 0.13.0
 * Long running operations like pull and push now have progress dialog.
 * Rebasing and merging is now possible with this extension.
