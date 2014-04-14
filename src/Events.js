@@ -9,6 +9,7 @@ define(function (require, exports) {
     // Brackets events
     exports.BRACKETS_CURRENT_DOCUMENT_CHANGE = "brackets.current.document.change";
     exports.BRACKETS_PROJECT_CHANGE = "brackets.project.change";
+    exports.BRACKETS_PROJECT_REFRESH = "brackets.project.refresh";
     exports.BRACKETS_DOCUMENT_SAVED = "brackets.document.saved";
     exports.HANDLE_PROJECT_REFRESH = "handle.project.refresh";
     exports.BRACKETS_FILE_CHANGED = "brackets.file.changed";

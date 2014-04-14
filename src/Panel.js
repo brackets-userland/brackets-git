@@ -928,24 +928,6 @@ define(function (require, exports) {
             });
     }
 
-    EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
-        gitPanel.$panel.find(".git-user-name").text(userName);
-    });
-
-    EventEmitter.on(Events.GIT_EMAIL_CHANGED, function (email) {
-        gitPanel.$panel.find(".git-user-email").text(email);
-    });
-
-    EventEmitter.on(Events.GIT_REMOTE_AVAILABLE, function () {
-        gitPanel.$panel.find(".git-pull").prop("disabled", false);
-        gitPanel.$panel.find(".git-push").prop("disabled", false);
-    });
-
-    EventEmitter.on(Events.GIT_REMOTE_NOT_AVAILABLE, function () {
-        gitPanel.$panel.find(".git-pull").prop("disabled", true);
-        gitPanel.$panel.find(".git-push").prop("disabled", true);
-    });
-
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, {
@@ -1101,6 +1083,24 @@ define(function (require, exports) {
     }
 
     // Event listeners
+    EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
+        gitPanel.$panel.find(".git-user-name").text(userName);
+    });
+
+    EventEmitter.on(Events.GIT_EMAIL_CHANGED, function (email) {
+        gitPanel.$panel.find(".git-user-email").text(email);
+    });
+
+    EventEmitter.on(Events.GIT_REMOTE_AVAILABLE, function () {
+        gitPanel.$panel.find(".git-pull").prop("disabled", false);
+        gitPanel.$panel.find(".git-push").prop("disabled", false);
+    });
+
+    EventEmitter.on(Events.GIT_REMOTE_NOT_AVAILABLE, function () {
+        gitPanel.$panel.find(".git-pull").prop("disabled", true);
+        gitPanel.$panel.find(".git-push").prop("disabled", true);
+    });
+
     EventEmitter.on(Events.GIT_ENABLED, function () {
         // Add info from Git to panel
         Git.getConfig("user.name").then(function (currentUserName) {
@@ -1110,15 +1110,17 @@ define(function (require, exports) {
             EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
         });
     });
+
     EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
+        if (!gitPanel) { return; }
         refreshCurrentFile();
     });
-    EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, function () {
-        refresh();
-    });
+
     EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function () {
+        if (!gitPanel) { return; }
         refresh();
     });
+
     EventEmitter.on(Events.REBASE_MERGE_MODE, function (rebaseEnabled, mergeEnabled) {
         getPanel().find(".git-rebase").toggle(rebaseEnabled);
         getPanel().find(".git-merge").toggle(mergeEnabled);

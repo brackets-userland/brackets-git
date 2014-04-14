@@ -2,6 +2,10 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.2
+* BUGFIX: Fixed an issue when extension refreshed on an external file change.
+* BUGFIX: Fixed an issue with history when switching projects.
+
 ## 0.13.1
 * Fix broken styles problem on Linux & Mac.
 

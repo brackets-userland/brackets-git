@@ -337,6 +337,7 @@ define(function (require) {
         initVariables();
     });
     EventEmitter.on(Events.GIT_DISABLED, function () {
+        lastDocumentSeen = null;
         $historyList.remove();
         $historyList = $();
     });
