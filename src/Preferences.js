@@ -22,6 +22,7 @@ define(function (require, exports, module) {
         "dateFormat": {                     "type": "string",            "value": null              },
         "showReportBugButton": {            "type": "boolean",           "value": true              },
         "enableAdvancedFeatures": {         "type": "boolean",           "value": false             },
+        "useVerboseDiff": {                 "type": "boolean",           "value": false             },
         // shortcuts
         "panelShortcut": {                  "type": "string",            "value": "Ctrl-Alt-G"      },
         "commitCurrentShortcut": {          "type": "string",            "value": null              },

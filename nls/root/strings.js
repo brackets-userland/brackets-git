@@ -213,6 +213,7 @@ define({
     USE_REBASE:                         "Use REBASE",
     USER_DATE_FORMAT:                   "Own date format (<a href='http://momentjs.com/docs/#/displaying/format/'>Syntax</a>)",
     USE_GITFTP:                         "Use Git-FTP",
+    USE_VERBOSE_DIFF:                   "Show verbose output in diffs",
     USING_GIT_VERSION:                  "Git version",
     VIEW_AUTHORS_SELECTION:             "View authors of selection",
     VIEW_AUTHORS_FILE:                  "View authors of file"
