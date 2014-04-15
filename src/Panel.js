@@ -45,10 +45,11 @@ define(function (require, exports) {
     var showFileWhiteList = /^\.gitignore$/;
 
     var gitPanel = null,
+        $gitPanel = $(null),
         gitPanelDisabled = null,
         gitPanelMode = null,
         showingUntracked = true,
-        $tableContainer = null;
+        $tableContainer = $(null);
 
     /**
      * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
@@ -552,7 +553,7 @@ define(function (require, exports) {
         var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
 
         // Disable button (it will be enabled when selecting files after reset)
-        Utils.setLoading(gitPanel.$panel.find(".git-commit"));
+        Utils.setLoading($gitPanel.find(".git-commit"));
 
         // First reset staged files, then add selected files to the index.
         Git.status().then(function (files) {
@@ -618,7 +619,7 @@ define(function (require, exports) {
         }).catch(function (err) {
             ErrorHandler.showError(err, "Preparing commit dialog failed");
         }).finally(function () {
-            Utils.unsetLoading(gitPanel.$panel.find(".git-commit"));
+            Utils.unsetLoading($gitPanel.find(".git-commit"));
         });
     }
 
@@ -626,13 +627,13 @@ define(function (require, exports) {
         var currentProjectRoot = Utils.getProjectRoot();
         var currentDoc = DocumentManager.getCurrentDocument();
         if (currentDoc) {
-            gitPanel.$panel.find("tr").each(function () {
+            $gitPanel.find("tr").each(function () {
                 var currentFullPath = currentDoc.file.fullPath,
                     thisFile = $(this).attr("x-file");
                 $(this).toggleClass("selected", currentProjectRoot + thisFile === currentFullPath);
             });
         } else {
-            gitPanel.$panel.find("tr").removeClass("selected");
+            $gitPanel.find("tr").removeClass("selected");
         }
     }
 
@@ -654,7 +655,7 @@ define(function (require, exports) {
         });
 
         var allStaged = files.length > 0 && _.all(files, function (file) { return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1; });
-        gitPanel.$panel.find(".check-all").prop("checked", allStaged).prop("disabled", files.length === 0);
+        $gitPanel.find(".check-all").prop("checked", allStaged).prop("disabled", files.length === 0);
 
         var $editedList = $tableContainer.find(".git-edited-list");
         var visibleBefore = $editedList.length ? $editedList.is(":visible") : true;
@@ -693,8 +694,8 @@ define(function (require, exports) {
 
     function refresh() {
         // set the history panel to false and remove the class that show the button history active when refresh
-        gitPanel.$panel.find(".git-history-toggle").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
-        gitPanel.$panel.find(".git-file-history").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_FILE_HISTORY);
+        $gitPanel.find(".git-history-toggle").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
+        $gitPanel.find(".git-file-history").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_FILE_HISTORY);
 
         if (gitPanelMode === "not-repo") {
             $tableContainer.empty();
@@ -707,7 +708,7 @@ define(function (require, exports) {
         var p1 = Git.status();
 
         //- push button
-        var $pushBtn = gitPanel.$panel.find(".git-push");
+        var $pushBtn = $gitPanel.find(".git-push");
         var p2 = Git.getCommitsAhead().then(function (commits) {
             $pushBtn.children("span").remove();
             if (commits.length > 0) {
@@ -718,7 +719,7 @@ define(function (require, exports) {
         });
 
         //- Clone button
-        gitPanel.$panel.find(".git-clone").prop("disabled", false);
+        $gitPanel.find(".git-clone").prop("disabled", false);
 
         // FUTURE: who listens for this?
         return Promise.all([p1, p2]);
@@ -746,7 +747,7 @@ define(function (require, exports) {
     function handleToggleUntracked() {
         showingUntracked = !showingUntracked;
 
-        gitPanel.$panel
+        $gitPanel
             .find(".git-toggle-untracked")
                 .text(showingUntracked ? Strings.HIDE_UNTRACKED : Strings.SHOW_UNTRACKED);
 
@@ -785,7 +786,7 @@ define(function (require, exports) {
     // Disable "commit" button if there aren't staged files to commit
     function _toggleCommitButton(files) {
         var anyStaged = _.any(files, function (file) { return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1; });
-        gitPanel.$panel.find(".git-commit").prop("disabled", !anyStaged);
+        $gitPanel.find(".git-commit").prop("disabled", !anyStaged);
     }
 
     EventEmitter.on(Events.GIT_STATUS_RESULTS, function (results) {
@@ -806,7 +807,7 @@ define(function (require, exports) {
     var lastCheckOneClicked = null;
 
     function attachDefaultTableHandlers() {
-        $tableContainer = gitPanel.$panel.find(".table-container")
+        $tableContainer = $gitPanel.find(".table-container")
             .off()
             .on("click", ".check-one", function (e) {
                 e.stopPropagation();
@@ -943,8 +944,9 @@ define(function (require, exports) {
         $panelHtml.find(".git-available, .git-not-available").hide();
 
         gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
+        $gitPanel = gitPanel.$panel;
 
-        gitPanel.$panel
+        $gitPanel
             .on("click", ".close", toggle)
             .on("click", ".check-all", function () {
                 if ($(this).is(":checked")) {
@@ -999,7 +1001,7 @@ define(function (require, exports) {
         /* Put here event handlers for advanced actions
         if (Preferences.get("enableAdvancedFeatures")) {
 
-            gitPanel.$panel
+            $gitPanel
                 .on("click", target, function);
 
          }
@@ -1057,8 +1059,8 @@ define(function (require, exports) {
         // this function is called after every Branch.refresh
         gitPanelMode = null;
         //
-        gitPanel.$panel.find(".git-available").show();
-        gitPanel.$panel.find(".git-not-available").hide();
+        $gitPanel.find(".git-available").show();
+        $gitPanel.find(".git-not-available").hide();
         //
         Main.$icon.removeClass("warning").removeAttr("title");
         gitPanelDisabled = false;
@@ -1071,8 +1073,8 @@ define(function (require, exports) {
         gitPanelMode = cause;
         // causes: not-repo
         if (gitPanelMode === "not-repo") {
-            gitPanel.$panel.find(".git-available").hide();
-            gitPanel.$panel.find(".git-not-available").show();
+            $gitPanel.find(".git-available").hide();
+            $gitPanel.find(".git-not-available").show();
         } else {
             Main.$icon.addClass("warning").attr("title", cause);
             toggle(false);
@@ -1081,27 +1083,23 @@ define(function (require, exports) {
         refresh();
     }
 
-    function getPanel() {
-        return gitPanel.$panel;
-    }
-
     // Event listeners
     EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
-        gitPanel.$panel.find(".git-user-name").text(userName);
+        $gitPanel.find(".git-user-name").text(userName);
     });
 
     EventEmitter.on(Events.GIT_EMAIL_CHANGED, function (email) {
-        gitPanel.$panel.find(".git-user-email").text(email);
+        $gitPanel.find(".git-user-email").text(email);
     });
 
     EventEmitter.on(Events.GIT_REMOTE_AVAILABLE, function () {
-        gitPanel.$panel.find(".git-pull").prop("disabled", false);
-        gitPanel.$panel.find(".git-push").prop("disabled", false);
+        $gitPanel.find(".git-pull").prop("disabled", false);
+        $gitPanel.find(".git-push").prop("disabled", false);
     });
 
     EventEmitter.on(Events.GIT_REMOTE_NOT_AVAILABLE, function () {
-        gitPanel.$panel.find(".git-pull").prop("disabled", true);
-        gitPanel.$panel.find(".git-push").prop("disabled", true);
+        $gitPanel.find(".git-pull").prop("disabled", true);
+        $gitPanel.find(".git-push").prop("disabled", true);
     });
 
     EventEmitter.on(Events.GIT_ENABLED, function () {
@@ -1125,9 +1123,9 @@ define(function (require, exports) {
     });
 
     EventEmitter.on(Events.REBASE_MERGE_MODE, function (rebaseEnabled, mergeEnabled) {
-        getPanel().find(".git-rebase").toggle(rebaseEnabled);
-        getPanel().find(".git-merge").toggle(mergeEnabled);
-        getPanel().find("button.git-commit").toggle(!rebaseEnabled && !mergeEnabled);
+        $gitPanel.find(".git-rebase").toggle(rebaseEnabled);
+        $gitPanel.find(".git-merge").toggle(mergeEnabled);
+        $gitPanel.find("button.git-commit").toggle(!rebaseEnabled && !mergeEnabled);
     });
 
     EventEmitter.on(Events.HANDLE_GIT_COMMIT, function () {
@@ -1139,6 +1137,6 @@ define(function (require, exports) {
     exports.toggle = toggle;
     exports.enable = enable;
     exports.disable = disable;
-    exports.getPanel = getPanel;
+    exports.getPanel = function () { return $gitPanel; };
 
 });
