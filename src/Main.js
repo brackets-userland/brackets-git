@@ -5,7 +5,6 @@ define(function (require, exports) {
         AppInit           = brackets.getModule("utils/AppInit"),
         CommandManager    = brackets.getModule("command/CommandManager"),
         Menus             = brackets.getModule("command/Menus"),
-        DocumentManager   = brackets.getModule("document/DocumentManager"),
         FileSystem        = brackets.getModule("filesystem/FileSystem"),
         ProjectManager    = brackets.getModule("project/ProjectManager");
 
@@ -32,32 +31,6 @@ define(function (require, exports) {
         CloseNotModified.init();
         // Attach events
         $icon.on("click", Panel.toggle);
-    }
-
-    // Call this only when Git is available
-    // FUTURE: move this to BracketsEvents
-    function attachEventsToBrackets() {
-        $(ProjectManager).on("projectOpen projectRefresh", function () {
-            // Branch.refresh will refresh also Panel
-            Branch.refresh();
-        });
-        $(ProjectManager).on("beforeProjectClose", function () {
-            // Disable Git when closing a project so listeners won't fire before new is opened
-            EventEmitter.emit(Events.GIT_DISABLED);
-        });
-        $(FileSystem).on("change rename", function () {
-            // Branch.refresh will refresh also Panel
-            Branch.refresh();
-        });
-        $(DocumentManager).on("documentSaved", function () {
-            EventEmitter.emit(Events.BRACKETS_DOCUMENT_SAVED);
-        });
-        $(DocumentManager).on("currentDocumentChange", function () {
-            EventEmitter.emit(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE);
-        });
-        $(ProjectManager).on("projectOpen", function () {
-            EventEmitter.emit(Events.BRACKETS_PROJECT_CHANGE);
-        });
     }
 
     function _addRemoveItemInGitignore(selectedEntry, method) {
@@ -211,7 +184,6 @@ define(function (require, exports) {
             Git.getVersion().then(function (version) {
                 Strings.GIT_VERSION = version;
                 initUi();
-                attachEventsToBrackets();
             }).catch(function (err) {
                 var errText = Strings.CHECK_GIT_SETTINGS + ": " + err.toString();
                 $icon.addClass("error").attr("title", errText);

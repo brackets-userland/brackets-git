@@ -233,7 +233,7 @@ define(function (require, exports) {
         }
 
         if (prefilledMessage) {
-            prefillMessage(prefilledMessage);
+            prefillMessage(prefilledMessage.trim());
         }
 
         // Add focus to commit message input
@@ -327,6 +327,9 @@ define(function (require, exports) {
             currentSelection = editor.getSelection(),
             fromLine = currentSelection.start.line + 1,
             toLine = currentSelection.end.line + 1;
+
+        // fix when nothing is selected on that line
+        if (currentSelection.end.ch === 0) { toLine = toLine - 1; }
 
         var isSomethingSelected = currentSelection.start.line !== currentSelection.end.line ||
                                   currentSelection.start.ch !== currentSelection.end.ch;
@@ -928,24 +931,6 @@ define(function (require, exports) {
             });
     }
 
-    EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
-        gitPanel.$panel.find(".git-user-name").text(userName);
-    });
-
-    EventEmitter.on(Events.GIT_EMAIL_CHANGED, function (email) {
-        gitPanel.$panel.find(".git-user-email").text(email);
-    });
-
-    EventEmitter.on(Events.GIT_REMOTE_AVAILABLE, function () {
-        gitPanel.$panel.find(".git-pull").prop("disabled", false);
-        gitPanel.$panel.find(".git-push").prop("disabled", false);
-    });
-
-    EventEmitter.on(Events.GIT_REMOTE_NOT_AVAILABLE, function () {
-        gitPanel.$panel.find(".git-pull").prop("disabled", true);
-        gitPanel.$panel.find(".git-push").prop("disabled", true);
-    });
-
     function init() {
         // Add panel
         var panelHtml = Mustache.render(gitPanelTemplate, {
@@ -973,7 +958,7 @@ define(function (require, exports) {
                 }
             })
             .on("click", ".git-refresh", EventEmitter.emitFactory(Events.REFRESH_ALL))
-            .on("click", ".git-commit", function () { handleGitCommit(); })
+            .on("click", ".git-commit", EventEmitter.emitFactory(Events.HANDLE_GIT_COMMIT))
             .on("click", ".git-rebase-continue", function (e) { handleRebase("continue", e); })
             .on("click", ".git-rebase-skip", function (e) { handleRebase("skip", e); })
             .on("click", ".git-rebase-abort", function (e) { handleRebase("abort", e); })
@@ -1101,6 +1086,24 @@ define(function (require, exports) {
     }
 
     // Event listeners
+    EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
+        gitPanel.$panel.find(".git-user-name").text(userName);
+    });
+
+    EventEmitter.on(Events.GIT_EMAIL_CHANGED, function (email) {
+        gitPanel.$panel.find(".git-user-email").text(email);
+    });
+
+    EventEmitter.on(Events.GIT_REMOTE_AVAILABLE, function () {
+        gitPanel.$panel.find(".git-pull").prop("disabled", false);
+        gitPanel.$panel.find(".git-push").prop("disabled", false);
+    });
+
+    EventEmitter.on(Events.GIT_REMOTE_NOT_AVAILABLE, function () {
+        gitPanel.$panel.find(".git-pull").prop("disabled", true);
+        gitPanel.$panel.find(".git-push").prop("disabled", true);
+    });
+
     EventEmitter.on(Events.GIT_ENABLED, function () {
         // Add info from Git to panel
         Git.getConfig("user.name").then(function (currentUserName) {
@@ -1110,19 +1113,25 @@ define(function (require, exports) {
             EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
         });
     });
+
     EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
+        if (!gitPanel) { return; }
         refreshCurrentFile();
     });
-    EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, function () {
+
+    EventEmitter.on(Events.BRACKETS_DOCUMENT_SAVED, function () {
+        if (!gitPanel) { return; }
         refresh();
     });
-    EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function () {
-        refresh();
-    });
+
     EventEmitter.on(Events.REBASE_MERGE_MODE, function (rebaseEnabled, mergeEnabled) {
         getPanel().find(".git-rebase").toggle(rebaseEnabled);
         getPanel().find(".git-merge").toggle(mergeEnabled);
         getPanel().find("button.git-commit").toggle(!rebaseEnabled && !mergeEnabled);
+    });
+
+    EventEmitter.on(Events.HANDLE_GIT_COMMIT, function () {
+        handleGitCommit();
     });
 
     exports.init = init;

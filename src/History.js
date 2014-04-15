@@ -51,7 +51,7 @@ define(function (require) {
             .on("click.history", ".history-commit", function () {
                 var hash = $(this).attr("x-hash");
                 var commit = _.find(commitCache, function (commit) { return commit.hash === hash; });
-                HistoryViewer.show(commit);
+                HistoryViewer.show(commit, getCurrentDocument());
             });
     }
 
@@ -178,7 +178,7 @@ define(function (require) {
     function addAdditionalCommitInfo(commits) {
         var mode        = Preferences.get("dateMode"),
             format      = Strings.DATE_FORMAT,
-            now         = moment(),
+            // now         = moment(),
             // yesterday   = moment().subtract("d", 1).startOf("d"),
             ownFormat   = Preferences.get("dateFormat") || Strings.DATE_FORMAT;
 
@@ -224,9 +224,10 @@ define(function (require) {
                     break;
                 // mode 2: intelligent relative/formatted
                 case 2:
-                    var relative = moment.duration(date.diff(now), "ms").humanize(true),
-                        formatted = commit.date.shown = date.format(format);
+                    var relative = date.fromNow(),
+                        formatted = date.format(format);
                     commit.date.shown = relative + " (" + formatted + ")";
+                    commit.date.title = date.format(Strings.DATE_FORMAT);
                     /*
                     if (date.diff(yesterday) > 0) {
                         commit.date.shown = moment.duration(Math.max(date.diff(now), -24 * 60 * 60 * 1000), "ms").humanize(true);
@@ -336,6 +337,7 @@ define(function (require) {
         initVariables();
     });
     EventEmitter.on(Events.GIT_DISABLED, function () {
+        lastDocumentSeen = null;
         $historyList.remove();
         $historyList = $();
     });

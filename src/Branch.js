@@ -399,6 +399,14 @@ define(function (require, exports) {
         refresh();
     });
 
+    EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, function () {
+        refresh();
+    });
+
+    EventEmitter.on(Events.BRACKETS_PROJECT_REFRESH, function () {
+        refresh();
+    });
+
     exports.init    = init;
     exports.refresh = refresh;
 

@@ -28,8 +28,10 @@ define(function (require, exports, module) {
             }
             var listenersCount = this.listeners(eventName).length;
             var argsString = args.map(function (arg) {
+                if (arg === null) { return "null"; }
                 if (typeof arg === "undefined") { return "undefined"; }
                 if (typeof arg === "function") { return "function(){...}"; }
+                if (!arg.toString) { return Object.prototype.toString.call(arg); }
                 return arg.toString();
             }).join(", ");
             if (argsString) { argsString = " - " + argsString; }

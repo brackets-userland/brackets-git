@@ -9,6 +9,7 @@ define(function (require, exports) {
     // Brackets events
     exports.BRACKETS_CURRENT_DOCUMENT_CHANGE = "brackets.current.document.change";
     exports.BRACKETS_PROJECT_CHANGE = "brackets.project.change";
+    exports.BRACKETS_PROJECT_REFRESH = "brackets.project.refresh";
     exports.BRACKETS_DOCUMENT_SAVED = "brackets.document.saved";
     exports.HANDLE_PROJECT_REFRESH = "handle.project.refresh";
     exports.BRACKETS_FILE_CHANGED = "brackets.file.changed";
@@ -27,6 +28,7 @@ define(function (require, exports) {
     // Panel.js
     exports.HANDLE_GIT_INIT = "handle.git.init";
     exports.HANDLE_GIT_CLONE = "handle.git.clone";
+    exports.HANDLE_GIT_COMMIT = "handle.git.commit";
     exports.HANDLE_PUSH = "handle.push";
     exports.HANDLE_PULL = "handle.pull";
     exports.HANDLE_REMOTE_PICK = "handle.remote.pick";

@@ -25,20 +25,23 @@ define(function (require, exports) {
             .on("click", ".commit-files a:not(.active)", function () {
                     // Open the clicked diff
                     $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
-                    var self = $(this);
+                    var $a = $(this);
                     // If this diff was not previously loaded then load it
-                    if (!self.is(".loaded")) {
-                        Git.getDiffOfFileFromCommit(commit.hash, $(this).text().trim()).then(function (diff) {
-                            $viewer.find(".commit-files a").removeClass("active");
-                            self.addClass("active loaded");
-                            $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
-                            $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
+                    if (!$a.is(".loaded")) {
+                        var $li = $a.closest("[x-file]"),
+                            relativeFilePath = $li.attr("x-file"),
+                            $diffContainer = $li.find(".commit-diff");
+
+                        Git.getDiffOfFileFromCommit(commit.hash, relativeFilePath).then(function (diff) {
+                            $a.addClass("active loaded");
+                            $diffContainer.html(Utils.formatDiff(diff));
+                            $diffContainer.scrollTop($a.attr("scrollPos") || 0);
                         }).catch(function (err) {
                             ErrorHandler.showError(err, "Failed to get diff");
                         });
                     } else {
                         // If this diff was previously loaded just open it
-                        self.addClass("active");
+                        $a.addClass("active");
                     }
                 })
             .on("click", ".commit-files a.active", function () {
@@ -55,6 +58,14 @@ define(function (require, exports) {
                     sha = $parent.data("hash");
                 $parent.find("span.selectable-text").text(sha);
                 $(this).remove();
+            })
+            .on("click", ".toggle-diffs", function () {
+                $(this).addClass("opened");
+                $viewer.find(".commit-files a").not(".active").trigger("click");
+            })
+            .on("click", ".toggle-diffs.opened", function () {
+                $(this).removeClass("opened");
+                $viewer.find(".commit-files a.active").trigger("click");
             });
 
         // Add/Remove shadown on bottom of header
@@ -161,7 +172,11 @@ define(function (require, exports) {
                 var fileExtension = FileUtils.getSmartFileExtension(file),
                     i = file.lastIndexOf("." + fileExtension),
                     fileName = file.substring(0, fileExtension && i >= 0 ? i : file.length);
-                return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
+                return {
+                    name: fileName,
+                    extension: fileExtension ? "." + fileExtension : "",
+                    file: file
+                };
             });
             var file = $("#git-history-list").data("file-relative");
             return renderViewerContent($container, list, file);
@@ -180,9 +195,12 @@ define(function (require, exports) {
         // detach events that were added by this viewer to another element than one added to $editorHolder
     }
 
-    function show(commitInfo) {
+    var previousFile = null;
+
+    function show(commitInfo, _previousFile) {
         isShown = true;
         commit = commitInfo;
+        previousFile = _previousFile;
         // this is a "private" API but it's so convienient it's a sin not to use it
         EditorManager._showCustomViewer({
             render: render,
@@ -197,7 +215,11 @@ define(function (require, exports) {
     }
 
     function remove() {
-        CommandManager.execute("navigate.prevDoc");
+        if (previousFile && previousFile.file) {
+            CommandManager.execute("file.open", previousFile.file);
+        } else {
+            EditorManager._closeCustomViewer();
+        }
     }
 
     function isVisible() {
