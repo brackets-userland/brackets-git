@@ -400,6 +400,13 @@
   position: absolute;
   margin-left: -4px;
 }
+.jstree-brackets li.git-new > a:before,
+#open-files-container li.git-new > a:before {
+  content: "|";
+  color: #91cc41;
+  position: absolute;
+  margin-left: -4px;
+}
 .jstree-brackets li.git-ignored > a,
 #open-files-container li.git-ignored > a {
   color: #868888 !important;

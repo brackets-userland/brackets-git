@@ -91,7 +91,7 @@ define(function (require, exports) {
 
     var _ignoreEntries = [];
 
-    function refreshProjectFiles(fullPaths) {
+    function refreshProjectFiles(modifiedPaths, newPaths) {
         if (!Preferences.get("markModifiedInTree")) {
             return;
         }
@@ -112,8 +112,11 @@ define(function (require, exports) {
                     data = $li.data(arr[1]);
                 if (data) {
                     var fullPath = data.fullPath,
-                        isModified = fullPaths.indexOf(fullPath) !== -1;
+                        isModified = modifiedPaths.indexOf(fullPath) !== -1,
+                        isNew = newPaths.indexOf(fullPath) !== -1;
+
                     $li.toggleClass("git-ignored", isIgnored(fullPath))
+                       .toggleClass("git-new", isNew)
                        .toggleClass("git-modified", isModified);
                 }
             });
@@ -223,10 +226,22 @@ define(function (require, exports) {
 
     EventEmitter.on(Events.GIT_STATUS_RESULTS, function (files) {
         var projectRoot = Utils.getProjectRoot(),
-            fullPaths = files.map(function (entry) {
-                return projectRoot + entry.file;
-            });
-        refreshProjectFiles(fullPaths);
+            modifiedPaths = [],
+            newPaths = [];
+
+        files.forEach(function (entry) {
+            var isNew = entry.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
+                        entry.status.indexOf(Git.FILE_STATUS.ADDED) !== -1;
+
+            var fullPath = projectRoot + entry.file;
+            if (isNew) {
+                newPaths.push(fullPath);
+            } else {
+                modifiedPaths.push(fullPath);
+            }
+        });
+
+        refreshProjectFiles(modifiedPaths, newPaths);
     });
 
     EventEmitter.on(Events.HANDLE_PROJECT_REFRESH, function () {
