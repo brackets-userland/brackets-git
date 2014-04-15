@@ -87,7 +87,7 @@
                 line-height: @size;
             }
         }
-        padding: 17px 30px 20px;
+        padding: 10px 30px;
         &.shadow {
             box-shadow: 0 -1px 3px 2px rgba(0, 0, 0, 0.15);
             z-index: 1;
@@ -107,18 +107,15 @@
         }
         .actions {
             float: right;
-            margin: 10px;
+            margin: 8px 0 10px 10px;
             >* {
                 margin-right: 15px;
                 display: inline-block;
             }
-            .close {
-                margin-top: -16px;
-                margin-right: -22px;
-            }
             .dropdown-menu {
                 left: auto;
                 right: 0;
+                line-height: 28px;
             }
         }
 
@@ -133,6 +130,9 @@
             color: #000;
         }
         .commit-diff {
+            > pre {
+                white-space: pre-line
+            }
             overflow: hidden;
             max-height: 0px;
             opacity: 0;
@@ -207,7 +207,7 @@
                 height: auto;
         }
         .expand {
-            vertical-align: top;
+            vertical-align: middle;
         }
         &.opened {
             .expand {
@@ -215,7 +215,7 @@
             }
             .collapse {
                 display: inline-block;
-                vertical-align: top;
+                vertical-align: middle;
             }
         }
     }

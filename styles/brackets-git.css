@@ -201,7 +201,7 @@
 #history-viewer > .header {
   -webkit-flex: 0 0 auto;
   flex: 0 0 auto;
-  padding: 17px 30px 20px;
+  padding: 10px 30px;
 }
 #history-viewer > .header .commit-author-avatar {
   top: 4px;
@@ -236,19 +236,16 @@
 }
 #history-viewer > .header .actions {
   float: right;
-  margin: 10px;
+  margin: 8px 0 10px 10px;
 }
 #history-viewer > .header .actions > * {
   margin-right: 15px;
   display: inline-block;
 }
-#history-viewer > .header .actions .close {
-  margin-top: -16px;
-  margin-right: -22px;
-}
 #history-viewer > .header .actions .dropdown-menu {
   left: auto;
   right: 0;
+  line-height: 28px;
 }
 #history-viewer > .body {
   -webkit-flex: 1 1 auto;
@@ -273,6 +270,9 @@
   margin-top: 0px;
   border-radius: 0 0 4px 4px;
   border-color: #ddd;
+}
+#history-viewer > .body .commit-diff > pre {
+  white-space: pre-line;
 }
 #history-viewer > .body .active + .commit-diff {
   max-height: 99999px;
@@ -366,14 +366,14 @@
   height: auto;
 }
 #history-viewer .toggle-diffs .expand {
-  vertical-align: top;
+  vertical-align: middle;
 }
 #history-viewer .toggle-diffs.opened .expand {
   display: none;
 }
 #history-viewer .toggle-diffs.opened .collapse {
   display: inline-block;
-  vertical-align: top;
+  vertical-align: middle;
 }
 #git-progress-dialog textarea {
   height: 300px;
