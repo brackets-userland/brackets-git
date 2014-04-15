@@ -87,7 +87,7 @@
                 line-height: @size;
             }
         }
-        padding: 17px 30px 30px;
+        padding: 17px 30px 20px;
         &.shadow {
             box-shadow: 0 -1px 3px 3px rgba(0, 0, 0, 0.3);
             z-index: 1;
@@ -101,6 +101,7 @@
             margin-right: 10px;
             display: inline-block;
             i {
+                color: #454545;
                 margin-right: 5px;
             }
         }
@@ -112,8 +113,8 @@
                 display: inline-block;
             }
             .close {
-                margin-top: -22px;
-                margin-right: 7px;
+                margin-top: -16px;
+                margin-right: -22px;
             }
             .dropdown-menu {
                 left: auto;
@@ -126,28 +127,14 @@
         .flex-item(1, 1);
         position: relative;
         overflow-y: scroll;
-<<<<<<< HEAD
         li > a {
             background: #E6E9E9;
             border: none;
             color: #000;
-            margin: 0 0 3px;
-            &:hover {
-                border: none;
-            }
-=======
-        li>a {
-            margin: 10px;
-            background: #E6E6E6;
-            margin-bottom: 0;
-            &:hover:not(.active) {
-                background: #ebebeb;
-            }
         }
         .commit-diff {
             overflow: hidden;
             max-height: 0px;
-            margin: 10px;
             opacity: 0;
             transition: all ease 0.3s;
             transition-property: padding, height, opacity;
@@ -160,7 +147,6 @@
         }
         .active+.commit-diff {
             max-height: 99999px;
-            padding: 10px;
             opacity: 1;
             border-color: @tc-gray-component-border;
         }
@@ -189,54 +175,40 @@
                 display: none;
             }
         }
+        .caret {
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid #454545;
+        }
         .caret.caret-right {
             border-bottom: 4px solid transparent;
             border-top: 4px solid transparent;
-            border-left: 4px solid #000000;
->>>>>>> 49624ff538fbe2a6b1e7c7d089f8f8e7a42aad08
+            border-left: 5px solid #454545;
+        }
+        .commit-files {
+            padding: 0 20px;
         }
     }
     .message {
         display: block;
         padding: 10px;
     }
-<<<<<<< HEAD
-    .commit-diff {
-        display: none;
-        margin: 10px;
-    }
-    .active+.commit-diff {
-        display: block;
-    }
-    .opened {
-        display: none;
-        margin-top: 7px;
-    }
-    .closed {
-        display: inline-block;
-        margin-top: 5px;
-    }
-    .active {
-        border: 1px solid #ddd;
-        background: @almostWhite;
-        border-radius: 3px;
-        a {
-            border: none;
-            background-color: transparent;
-=======
+
     .dropdown-menu();
 
     .toggle-diffs {
         cursor: pointer;
         float: right;
-        margin-right: 30px;
-        margin-top: 20px;
+        margin-right: -10px;
+        margin-top: 10px;
         .collapse {
             display: none;
->>>>>>> 49624ff538fbe2a6b1e7c7d089f8f8e7a42aad08
         }
         span.collapse {
                 height: auto;
+        }
+        .expand {
+            vertical-align: top;
         }
         &.opened {
             .expand {
@@ -244,24 +216,8 @@
             }
             .collapse {
                 display: inline-block;
+                vertical-align: top;
             }
         }
     }
-<<<<<<< HEAD
-    .caret {
-        border-left: 4px solid transparent;
-        border-right: 4px solid transparent;
-        border-top: 5px solid #454545;
-    }
-    .caret.caret-right {
-        border-bottom: 4px solid transparent;
-        border-top: 4px solid transparent;
-        border-left: 5px solid #454545;
-    }
-    .commit-files {
-        padding: 0 20px;
-    }
-    .dropdown-menu();
-=======
->>>>>>> 49624ff538fbe2a6b1e7c7d089f8f8e7a42aad08
 }

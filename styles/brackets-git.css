@@ -200,7 +200,7 @@
 #history-viewer > .header {
   -webkit-flex: 0 0 auto;
   flex: 0 0 auto;
-  padding: 17px 30px 30px;
+  padding: 17px 30px 20px;
 }
 #history-viewer > .header .commit-author-avatar {
   top: 4px;
@@ -230,6 +230,7 @@
 }
 #history-viewer > .header .commit-hash i,
 #history-viewer > .header .commit-author i {
+  color: #454545;
   margin-right: 5px;
 }
 #history-viewer > .header .actions {
@@ -241,8 +242,8 @@
   display: inline-block;
 }
 #history-viewer > .header .actions .close {
-  margin-top: -22px;
-  margin-right: 7px;
+  margin-top: -16px;
+  margin-right: -22px;
 }
 #history-viewer > .header .actions .dropdown-menu {
   left: auto;
@@ -255,27 +256,13 @@
   overflow-y: scroll;
 }
 #history-viewer > .body li > a {
-<<<<<<< HEAD
   background: #E6E9E9;
   border: none;
   color: #000;
-  margin: 0 0 3px;
-}
-#history-viewer > .body li > a:hover {
-  border: none;
-=======
-  margin: 10px;
-  background: #E6E6E6;
-  margin-bottom: 0;
->>>>>>> 49624ff538fbe2a6b1e7c7d089f8f8e7a42aad08
-}
-#history-viewer > .body li > a:hover:not(.active) {
-  background: #ebebeb;
 }
 #history-viewer > .body .commit-diff {
   overflow: hidden;
   max-height: 0px;
-  margin: 10px;
   opacity: 0;
   transition: all ease 0.3s;
   transition-property: padding, height, opacity;
@@ -288,7 +275,6 @@
 }
 #history-viewer > .body .active + .commit-diff {
   max-height: 99999px;
-  padding: 10px;
   opacity: 1;
   border-color: #b2b5b5;
 }
@@ -302,14 +288,10 @@
 }
 #history-viewer > .body .active {
   background: #f5f5f5;
-<<<<<<< HEAD
-  border-radius: 3px;
-=======
   border: 1px solid #b2b5b5;
   margin-bottom: 0;
   border-bottom: 0;
   border-radius: 4px 4px 0 0;
->>>>>>> 49624ff538fbe2a6b1e7c7d089f8f8e7a42aad08
 }
 #history-viewer > .body .active a {
   border: none;
@@ -321,21 +303,17 @@
 #history-viewer > .body .active .closed {
   display: none;
 }
-<<<<<<< HEAD
-#history-viewer .caret {
+#history-viewer > .body .caret {
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
   border-top: 5px solid #454545;
 }
-#history-viewer .caret.caret-right {
-=======
 #history-viewer > .body .caret.caret-right {
->>>>>>> 49624ff538fbe2a6b1e7c7d089f8f8e7a42aad08
   border-bottom: 4px solid transparent;
   border-top: 4px solid transparent;
   border-left: 5px solid #454545;
 }
-#history-viewer .commit-files {
+#history-viewer > .body .commit-files {
   padding: 0 20px;
 }
 #history-viewer .message {
@@ -378,8 +356,8 @@
 #history-viewer .toggle-diffs {
   cursor: pointer;
   float: right;
-  margin-right: 30px;
-  margin-top: 20px;
+  margin-right: -10px;
+  margin-top: 10px;
 }
 #history-viewer .toggle-diffs .collapse {
   display: none;
@@ -387,11 +365,15 @@
 #history-viewer .toggle-diffs span.collapse {
   height: auto;
 }
+#history-viewer .toggle-diffs .expand {
+  vertical-align: top;
+}
 #history-viewer .toggle-diffs.opened .expand {
   display: none;
 }
 #history-viewer .toggle-diffs.opened .collapse {
   display: inline-block;
+  vertical-align: top;
 }
 #git-progress-dialog textarea {
   height: 300px;
