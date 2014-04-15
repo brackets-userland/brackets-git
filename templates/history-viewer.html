@@ -2,12 +2,7 @@
     <div class="header">
         <div>
             <div class="actions">
-                <span class="toggle-diffs">
-                    <i class="octicon octicon-expand collapse"></i>
-                    <i class="octicon octicon-collapse expand"></i>
-                    <span class="expand">{{Strings.EXPAND_ALL}}</span>
-                    <span class="collapse">{{Strings.COLLAPSE_ALL}}</span>
-                </span>
+                <a href="#" class="close">&times;</a><br />
                 {{#enableAdvancedFeatures}}
                 <button class="git-advanced-features btn-checkout btn" title="{{Strings.TOOLTIP_CHECKOUT_COMMIT}}">{{Strings.BUTTON_CHECKOUT_COMMIT}}</button>
                 <div class="git-advanced-features dropdown">
@@ -22,7 +17,12 @@
                     </ul>
                 </div>
                 {{/enableAdvancedFeatures}}
-                <a href="#" class="close">&times;</a>
+                <span class="toggle-diffs">
+                    <i class="octicon octicon-expand collapse"></i>
+                    <i class="octicon octicon-collapse expand"></i>
+                    <span class="expand">{{Strings.EXPAND_ALL}}</span>
+                    <span class="collapse">{{Strings.COLLAPSE_ALL}}</span>
+                </span>
             </div>
             <h1 class="commit-title selectable-text"><span>{{commit.subject}}</span></h1>
         </div>

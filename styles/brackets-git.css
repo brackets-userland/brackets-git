@@ -237,14 +237,11 @@
 #history-viewer > .header .actions {
   float: right;
   margin: 10px;
+  margin-right: 0;
 }
 #history-viewer > .header .actions > * {
   margin-right: 15px;
   display: inline-block;
-}
-#history-viewer > .header .actions .close {
-  margin-top: -16px;
-  margin-right: -22px;
 }
 #history-viewer > .header .actions .dropdown-menu {
   left: auto;
@@ -358,6 +355,7 @@
   cursor: pointer;
   margin-right: -10px;
   margin-top: 10px;
+    line-height: 28px;
 }
 #history-viewer .toggle-diffs .collapse {
   display: none;
@@ -366,14 +364,14 @@
   height: auto;
 }
 #history-viewer .toggle-diffs .expand {
-  vertical-align: top;
+  vertical-align: middle;
 }
 #history-viewer .toggle-diffs.opened .expand {
   display: none;
 }
 #history-viewer .toggle-diffs.opened .collapse {
   display: inline-block;
-  vertical-align: top;
+  vertical-align: middle;
 }
 #git-progress-dialog textarea {
   height: 300px;
