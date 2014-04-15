@@ -25,19 +25,23 @@ define(function (require, exports) {
             .on("click", ".commit-files a:not(.active)", function () {
                     // Open the clicked diff
                     $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
-                    var self = $(this);
+                    var $a = $(this);
                     // If this diff was not previously loaded then load it
-                    if (!self.is(".loaded")) {
-                        Git.getDiffOfFileFromCommit(commit.hash, $(this).text().trim()).then(function (diff) {
-                            self.addClass("active loaded");
-                            $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
-                            $(".commit-diff").scrollTop(self.attr("scrollPos") || 0);
+                    if (!$a.is(".loaded")) {
+                        var $li = $a.closest("[x-file]"),
+                            relativeFilePath = $li.attr("x-file"),
+                            $diffContainer = $li.find(".commit-diff");
+
+                        Git.getDiffOfFileFromCommit(commit.hash, relativeFilePath).then(function (diff) {
+                            $a.addClass("active loaded");
+                            $diffContainer.html(Utils.formatDiff(diff));
+                            $diffContainer.scrollTop($a.attr("scrollPos") || 0);
                         }).catch(function (err) {
                             ErrorHandler.showError(err, "Failed to get diff");
                         });
                     } else {
                         // If this diff was previously loaded just open it
-                        self.addClass("active");
+                        $a.addClass("active");
                     }
                 })
             .on("click", ".commit-files a.active", function () {
@@ -168,7 +172,11 @@ define(function (require, exports) {
                 var fileExtension = FileUtils.getSmartFileExtension(file),
                     i = file.lastIndexOf("." + fileExtension),
                     fileName = file.substring(0, fileExtension && i >= 0 ? i : file.length);
-                return {name: fileName, extension: fileExtension ? "." + fileExtension : "", file: file};
+                return {
+                    name: fileName,
+                    extension: fileExtension ? "." + fileExtension : "",
+                    file: file
+                };
             });
             var file = $("#git-history-list").data("file-relative");
             return renderViewerContent($container, list, file);
