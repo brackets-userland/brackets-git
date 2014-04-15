@@ -328,6 +328,9 @@ define(function (require, exports) {
             fromLine = currentSelection.start.line + 1,
             toLine = currentSelection.end.line + 1;
 
+        // fix when nothing is selected on that line
+        if (currentSelection.end.ch === 0) { toLine = toLine - 1; }
+
         var isSomethingSelected = currentSelection.start.line !== currentSelection.end.line ||
                                   currentSelection.start.ch !== currentSelection.end.ch;
         if (!isSomethingSelected) {

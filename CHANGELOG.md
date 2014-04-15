@@ -6,6 +6,7 @@
 * History viewer now has close button.
 * BUGFIX: Fixed an issue when extension refreshed on an external file change.
 * BUGFIX: Fixed an issue with history when switching projects.
+* BUGFIX: View authors of selection doesn't fail when empty last line is selected.
 
 ## 0.13.1
 * Fix broken styles problem on Linux & Mac.
