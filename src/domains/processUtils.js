@@ -1,4 +1,8 @@
-var exec  = require("child_process").exec;
+var exec  = require("child_process").exec,
+    fs    = require("fs"),
+    Path  = require("path"),
+    which = require("../../thirdparty/which");
+
 var isWin = /^win/.test(process.platform);
 var noop = function () {};
 
@@ -79,5 +83,28 @@ function getChildrenOfPid(pid, callback) {
     }
 }
 
+function executableExists(filename, dir, callback) {
+    if (typeof dir === "function") { callback = dir; dir = ""; }
+    which(filename, function (err, path) {
+        if (err) {
+            return callback(err, false);
+        }
+
+        path = Path.normalize(path);
+
+        fs.stat(path, function (err, stats) {
+            if (err) {
+                return callback(err, false);
+            }
+
+            var exists = stats.isFile();
+            if (!exists) { path = undefined; }
+
+            return callback(null, exists, path);
+        });
+    });
+}
+
 exports.getChildrenOfPid = getChildrenOfPid;
 exports.killSingleProcess = killSingleProcess;
+exports.executableExists = executableExists;

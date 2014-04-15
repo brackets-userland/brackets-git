@@ -1,0 +1,30 @@
+{
+  "author": {
+    "name": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me"
+  },
+  "name": "which",
+  "description": "Like which(1) unix command. Find the first instance of an executable in the PATH.",
+  "version": "1.0.5",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/isaacs/node-which.git"
+  },
+  "main": "which.js",
+  "bin": {
+    "which": "./bin/which"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/isaacs/node-which/issues"
+  },
+  "readme": "ERROR: No README data found!",
+  "homepage": "https://github.com/isaacs/node-which",
+  "_id": "which@1.0.5",
+  "_from": "which@"
+}
