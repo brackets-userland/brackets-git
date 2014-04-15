@@ -3,6 +3,7 @@
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
 ## 0.13.3
+* UI tweaks for the History feature by [Larz](https://github.com/larz0)
 * BUGFIX: Fixed an error on Brackets startup when project is not a Git project.
 
 ## 0.13.2
