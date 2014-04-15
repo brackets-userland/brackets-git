@@ -271,6 +271,9 @@
   border-radius: 0 0 4px 4px;
   border-color: #ddd;
 }
+#history-viewer > .body .commit-diff > pre {
+  white-space: pre-line
+}
 #history-viewer > .body .active + .commit-diff {
   max-height: 99999px;
   opacity: 1;
