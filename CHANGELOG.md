@@ -4,6 +4,7 @@
 
 ## 0.13.4
 * New files are marked with green color instead of orange in the project tree.
+* Some history UI tweaks by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
 * BUGFIX: Do not launch gutters sometimes, when not in a Git repository.
 * BUGFIX: Invalid Git configuration shouldn't crash file watchers on linux anymore.
 
