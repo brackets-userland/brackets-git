@@ -1,3 +1,5 @@
+/*jshint maxparams:false*/
+
 (function () {
     "use strict";
 
@@ -5,7 +7,8 @@
         ProcessUtils  = require("./processUtils"),
         domainName    = "brackets-git",
         domainManager = null,
-        processMap    = {};
+        processMap    = {},
+        resolvedPaths = {};
 
     function fixEOL(str) {
         if (str[str.length - 1] === "\n") {
@@ -70,6 +73,30 @@
         child.stdin.end();
     }
 
+    function doIfExists(method, directory, command, args, opts, callback) {
+        // do not call executableExists if we already know it exists
+        if (resolvedPaths[command]) {
+            return method(directory, resolvedPaths[command], args, opts, callback);
+        }
+
+        ProcessUtils.executableExists(command, function (err, exists, resolvedPath) {
+            if (exists) {
+                resolvedPaths[command] = resolvedPath;
+                return method(directory, resolvedPath, args, opts, callback);
+            } else {
+                callback("ProcessUtils can't resolve the path requested: " + command);
+            }
+        });
+    }
+
+    function executeIfExists(directory, command, args, opts, callback) {
+        return doIfExists(execute, directory, command, args, opts, callback);
+    }
+
+    function spawnIfExists(directory, command, args, opts, callback) {
+        return doIfExists(spawn, directory, command, args, opts, callback);
+    }
+
     function kill(cliId, callback) {
         var process = processMap[cliId];
         if (!process) {
@@ -106,7 +133,7 @@
         domainManager.registerCommand(
             domainName,
             "execute", // command name
-            execute, // command handler function
+            executeIfExists, // command handler function
             true, // this command is async
             "Runs a command in a shell and buffers the output.",
             [
@@ -123,7 +150,7 @@
         domainManager.registerCommand(
             domainName,
             "spawn", // command name
-            spawn, // command handler function
+            spawnIfExists, // command handler function
             true, // this command is async
             "Launches a new process with the given command.",
             [

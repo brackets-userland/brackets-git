@@ -187,8 +187,7 @@ define(function (require, exports) {
             }).catch(function (err) {
                 var errText = Strings.CHECK_GIT_SETTINGS + ": " + err.toString();
                 $icon.addClass("error").attr("title", errText);
-                throw err;
-            }).done();
+            });
 
             // add command to project menu
             var projectCmenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
