@@ -111,7 +111,7 @@
 }
 .git-history .commit-author-avatar {
   position: absolute;
-  top: 6px;
+  top: 4px;
   left: 0px;
   right: 2px;
   bottom: 2px;
@@ -120,15 +120,12 @@
   text-align: center;
 }
 .git-history .commit-author-avatar span {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  font-family: 'SourceCodePro', monospace;
   font-size: 11px;
   font-weight: 500;
   font-size: 13px;
   line-height: 13px;
+  padding: 0 5px;
   color: #FEFEFE;
   text-transform: uppercase;
   border-radius: 2px;
@@ -139,7 +136,10 @@
 .git-history .commit-author-avatar img {
   position: absolute;
   left: 0;
-  top: 0;
+  top: -1px;
+  height: 16px;
+  width: 16px;
+  border-radius: 2px;
 }
 .git-history .commit-author {
   font-weight: 500;

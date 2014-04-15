@@ -29,7 +29,7 @@
     .commit-author-avatar {
         @size: 13px;
         position: absolute;
-        top: 6px;
+        top: 4px;
         left: 0px;
         right: 2px;
         bottom: 2px;
@@ -37,16 +37,12 @@
         height: @size;
         text-align: center;
         span {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            bottom: 0;    
+            font-family: 'SourceCodePro', monospace;
             font-size: 11px;
             font-weight: 500;
             font-size: @size;
             line-height: @size;
+            padding: 0 5px;
             color: #FEFEFE;
             text-transform: uppercase;
             border-radius: 2px;
@@ -57,7 +53,10 @@
         img {
             position: absolute;
             left: 0;
-            top: 0;
+            top: -1px;
+            height: 16px;
+            width: 16px;
+            border-radius: 2px;
         }
     }
     .commit-author {
