@@ -93,6 +93,8 @@ define({
     ENTER_NEW_USER_NAME:                "Enter username",
     ENTER_NEW_USER_EMAIL:               "Enter email",
     ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
+    EXPAND_ALL:                         "Expand all",
+    COLLAPSE_ALL:                       "Collapse all",
     FEATURES:                           "Features",
     FILE_STAGED:                        "Staged",
     FILE_UNMODIFIED:                    "Unmodified",

@@ -233,7 +233,7 @@ define(function (require, exports) {
         }
 
         if (prefilledMessage) {
-            prefillMessage(prefilledMessage);
+            prefillMessage(prefilledMessage.trim());
         }
 
         // Add focus to commit message input

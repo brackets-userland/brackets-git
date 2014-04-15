@@ -1,3 +1,4 @@
+// main: brackets-git.less
 .git {
     hr {
         margin: 12px auto;
@@ -53,5 +54,43 @@
 
     .padding-right-small {
         padding-right: @small;
+    }
+}
+
+// Additional icons for GitHub Octicon iconic font
+.octicon {
+    &.octicon-expand, &.octicon-collapse {
+        position: relative;
+        width: 12px;
+        height: 12px;
+        zoom: 1.3;
+        &:before, &:after {
+            position: absolute;
+        }
+        &:before {
+            -webkit-transform: rotate(135deg);
+        }
+        &:after {
+            -webkit-transform: rotate(315deg);
+        }
+    }
+    &.octicon-expand {
+        &:before, &:after {
+            content: "\F071";
+        }
+        &:before {
+            top: -5px;
+            left: 5px;
+        }
+    }
+    &.octicon-collapse {
+        -webkit-transform: translateY(1px);
+        &:before, &:after {
+            content: "\F0A1";
+        }
+        &:before {
+            top: -6px;
+            left: 6px;
+        }
     }
 }

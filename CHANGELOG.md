@@ -4,6 +4,7 @@
 
 ## 0.13.2
 * History viewer now has close button.
+* Added button to expand/collapse every diff in history viewer of the selected commit by [Fez Vrasta](https://github.com/FezVrasta)
 * BUGFIX: Fixed an issue when extension refreshed on an external file change.
 * BUGFIX: Fixed an issue with history when switching projects.
 * BUGFIX: View authors of selection doesn't fail when empty last line is selected.
