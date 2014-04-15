@@ -315,6 +315,8 @@ define(function (require, exports) {
     }
 
     function refresh() {
+        if ($gitBranchName.length === 0) { return; }
+
         // show info that branch is refreshing currently
         $gitBranchName
             .text("\u2026")

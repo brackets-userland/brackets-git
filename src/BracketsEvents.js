@@ -36,7 +36,7 @@ define(function (require) {
 
 	FileSystem.on("change", function (evt, file) {
         // we care only for files in current project
-        if (file.fullPath.indexOf(Utils.getProjectRoot()) === 0) {
+        if (file && file.fullPath.indexOf(Utils.getProjectRoot()) === 0) {
             EventEmitter.emit(Events.BRACKETS_FILE_CHANGED, evt, file);
         }
     });

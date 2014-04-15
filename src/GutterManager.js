@@ -16,7 +16,7 @@ define(function (require, exports) {
         Strings         = require("strings");
 
     var currentFilePath = null,
-        guttersEnabled = true,
+        guttersEnabled = false,
         cm = null,
         results = null,
         gutterName = "brackets-git-gutter",
