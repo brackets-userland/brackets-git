@@ -28,6 +28,7 @@ define(function (require, exports) {
     // Panel.js
     exports.HANDLE_GIT_INIT = "handle.git.init";
     exports.HANDLE_GIT_CLONE = "handle.git.clone";
+    exports.HANDLE_GIT_COMMIT = "handle.git.commit";
     exports.HANDLE_PUSH = "handle.push";
     exports.HANDLE_PULL = "handle.pull";
     exports.HANDLE_REMOTE_PICK = "handle.remote.pick";

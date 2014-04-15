@@ -955,7 +955,7 @@ define(function (require, exports) {
                 }
             })
             .on("click", ".git-refresh", EventEmitter.emitFactory(Events.REFRESH_ALL))
-            .on("click", ".git-commit", function () { handleGitCommit(); })
+            .on("click", ".git-commit", EventEmitter.emitFactory(Events.HANDLE_GIT_COMMIT))
             .on("click", ".git-rebase-continue", function (e) { handleRebase("continue", e); })
             .on("click", ".git-rebase-skip", function (e) { handleRebase("skip", e); })
             .on("click", ".git-rebase-abort", function (e) { handleRebase("abort", e); })
@@ -1116,7 +1116,7 @@ define(function (require, exports) {
         refreshCurrentFile();
     });
 
-    EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function () {
+    EventEmitter.on(Events.BRACKETS_DOCUMENT_SAVED, function () {
         if (!gitPanel) { return; }
         refresh();
     });
@@ -1125,6 +1125,10 @@ define(function (require, exports) {
         getPanel().find(".git-rebase").toggle(rebaseEnabled);
         getPanel().find(".git-merge").toggle(mergeEnabled);
         getPanel().find("button.git-commit").toggle(!rebaseEnabled && !mergeEnabled);
+    });
+
+    EventEmitter.on(Events.HANDLE_GIT_COMMIT, function () {
+        handleGitCommit();
     });
 
     exports.init = init;

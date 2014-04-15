@@ -41,14 +41,12 @@ define(function (require) {
         }
     });
 
-    /* this is now deprecated because of FileSystem.on("change" event
     $(DocumentManager).on("documentSaved", function (evt, doc) {
         // we care only for files in current project
         if (doc.file.fullPath.indexOf(Utils.getProjectRoot()) === 0) {
             EventEmitter.emit(Events.BRACKETS_DOCUMENT_SAVED, evt, doc);
         }
     });
-    */
 
     $(DocumentManager).on("currentDocumentChange", function (evt, currentDocument, previousDocument) {
         currentDocument = currentDocument || DocumentManager.getCurrentDocument();

@@ -180,9 +180,12 @@ define(function (require, exports) {
         // detach events that were added by this viewer to another element than one added to $editorHolder
     }
 
-    function show(commitInfo) {
+    var previousFile = null;
+
+    function show(commitInfo, _previousFile) {
         isShown = true;
         commit = commitInfo;
+        previousFile = _previousFile;
         // this is a "private" API but it's so convienient it's a sin not to use it
         EditorManager._showCustomViewer({
             render: render,
@@ -197,7 +200,11 @@ define(function (require, exports) {
     }
 
     function remove() {
-        CommandManager.execute("navigate.prevDoc");
+        if (previousFile && previousFile.file) {
+            CommandManager.execute("file.open", previousFile.file);
+        } else {
+            EditorManager._closeCustomViewer();
+        }
     }
 
     function isVisible() {

@@ -3,6 +3,7 @@
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
 ## 0.13.2
+* History viewer now has close button.
 * BUGFIX: Fixed an issue when extension refreshed on an external file change.
 * BUGFIX: Fixed an issue with history when switching projects.
 
