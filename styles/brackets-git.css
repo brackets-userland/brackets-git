@@ -136,7 +136,7 @@
 .git-history .commit-author-avatar img {
   position: absolute;
   left: 0;
-  top: -1px;
+  top: 1px;
   height: 16px;
   width: 16px;
   border-radius: 2px;
