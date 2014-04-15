@@ -83,6 +83,9 @@
   height: 12px;
   zoom: 1.3;
 }
+.octicon.octicon-expand {
+    top: 2px;
+}
 .octicon.octicon-expand:before,
 .octicon.octicon-collapse:before,
 .octicon.octicon-expand:after,
@@ -99,22 +102,22 @@
 }
 .octicon.octicon-expand:before,
 .octicon.octicon-expand:after {
-  content: "\F071";
+  content: "\F0A1";
 }
 .octicon.octicon-expand:before {
-  top: -5px;
-  left: 5px;
+  top: -6px;
+  left: 6px;
 }
 .octicon.octicon-collapse {
   -webkit-transform: translateY(1px);
 }
 .octicon.octicon-collapse:before,
 .octicon.octicon-collapse:after {
-  content: "\F0A1";
+  content: "\F071";
 }
 .octicon.octicon-collapse:before {
-  top: -6px;
-  left: 6px;
+  top: -5px;
+  left: 5px;
 }
 #editor-holder .git.spinner {
   display: none;
