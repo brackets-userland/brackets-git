@@ -212,6 +212,10 @@ define(function (require, exports) {
             workingCmenu.addMenuItem(cmdName);
             CommandManager.register(Strings.REMOVE_FROM_GITIGNORE, cmdName + "2", removeItemFromGitingoreFromPanel);
             panelCmenu.addMenuItem(cmdName + "2");
+
+            cmdName = "git.showFileHistory";
+            CommandManager.register("Show file history", cmdName, EventEmitter.emitFactory(Events.HISTORY_SHOW, "FILE"));
+            projectCmenu.addMenuItem(cmdName);
         });
     }
 
