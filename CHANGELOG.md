@@ -5,6 +5,8 @@
 ## 0.13.5
 * Performance optimizations on 'Close not modified files' feature.
 * Fixes in history UI by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
+* Updated contributing information by [Fez Vrasta](https://github.com/FezVrasta)
+* BUGFIX: Ambiguous argument error fixed when refreshing a gutter.
 
 ## 0.13.4
 * New files are marked with green color instead of orange in the project tree.
