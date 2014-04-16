@@ -20,6 +20,10 @@
     // handler with ChildProcess.exec
     // this won't handle cases where process outputs a large string
     function execute(directory, command, args, opts, callback) {
+        // execute commands have to be escaped, spawn does this automatically and will fail if cmd is escaped
+        if (command[0] !== "\"" || command[command.length - 1] !== "\"") {
+            command = "\"" + command + "\"";
+        }
         // http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
         var toExec = command + " " + args.join(" ");
         ChildProcess.exec(toExec, { cwd: directory }, function (err, stdout, stderr) {

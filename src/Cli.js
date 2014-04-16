@@ -121,11 +121,6 @@ define(function (require, exports, module) {
         // convert paths like c:/foo/bar to c:\foo\bar on windows
         opts.cwd = normalizePathForOs(opts.cwd);
 
-        // execute commands have to be escaped, spawn does this automatically and will fail if cmd is escaped
-        if (method === "execute") {
-            cmd = "\"" + cmd + "\"";
-        }
-
         // log all cli communication into console when debug mode is on
         if (debugOn) {
             var startTime = (new Date()).getTime();

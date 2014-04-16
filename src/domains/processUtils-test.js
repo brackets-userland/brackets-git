@@ -17,7 +17,8 @@ ProcessUtils.getChildrenOfPid(pid, function (err, children) {
     "C:/Program Files (x86)/Git/cmd/git.exe",
     "C:/Program Files (x86)/Git/cmd/git2.exe",
     "C:/Program Files (x86)/Git/cmd/",
-    "C:/Program Files (x86)/Git/cmd"
+    "C:/Program Files (x86)/Git/cmd",
+    "C:\\Program Files (x86)\\Git\\Git Bash.vbs"
 ].forEach(function (path) {
 
     ProcessUtils.executableExists(path, function (err, exists, resolvedPath) {
