@@ -2,6 +2,10 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.5
+* Performance optimizations on 'Close not modified files' feature.
+* Fixes in history UI by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
+
 ## 0.13.4
 * New files are marked with green color instead of orange in the project tree.
 * Some history UI tweaks by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
