@@ -2,7 +2,8 @@ define(function (require) {
     "use strict";
 
     // Brackets modules
-    var DocumentManager = brackets.getModule("document/DocumentManager"),
+    var _               = brackets.getModule("thirdparty/lodash"),
+        DocumentManager = brackets.getModule("document/DocumentManager"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
@@ -13,10 +14,16 @@ define(function (require) {
         HistoryViewer = require("src/HistoryViewer"),
         Utils         = require("src/Utils");
 
-    function refreshStatus() {
+    // first call to debounce will delay the execution of Git.status by 100ms
+    // any subsequent call until the function is executed
+    // will result in delaying the exectution to new 100ms
+    //
+    // so if this gets called 200 times, Git.status will execute only once
+    // and that is 100ms after the last call
+    var refreshStatus = _.debounce(function () {
         // Extension parts should listen to GIT_STATUS_RESULTS
         Git.status();
-    }
+    }, 100);
 
     function attachGitOnlyEvents() {
         $("#open-files-container").on("contentChanged", refreshStatus);
