@@ -641,7 +641,7 @@ define(function (require, exports) {
         return _isFileStaged(file).then(function (staged) {
             var args = ["diff", "--no-color"];
             if (staged) { args.push("--staged"); }
-            args.push("-U0", file);
+            args.push("-U0", "--", file);
             return git(args);
         });
     }
