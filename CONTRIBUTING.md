@@ -9,3 +9,12 @@ When creating a new functionality which isn't noted on GitHub, please open an is
 
 Always check for syntax errors with `grunt jshint` or use some JSHint extension while editing the code.
 Recommended are both [JSHint](https://github.com/cfjedimaster/brackets-jshint) and [InteractiveLinter](https://github.com/MiguelCastillo/Brackets-InteractiveLinter).
+
+## Developing
+
+To develop Brackets Git we use Brackets with some useful extension, we reccomand you to install these extensions to help you write your code in the right way:
+
+- [LESS AutoCompile](https://github.com/jdiehl/brackets-less-autocompile) (required)
+- [Interactive Linter](https://github.com/MiguelCastillo/Brackets-InteractiveLinter) (advised)
+- [Todo](https://github.com/mikaeljorhult/brackets-todo) (advised)
+- [Brackets Git](https://github.com/zaggino/brackets-git) (advised)
