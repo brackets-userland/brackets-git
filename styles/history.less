@@ -92,10 +92,16 @@
             box-shadow: 0 -1px 3px 2px rgba(0, 0, 0, 0.15);
             z-index: 1;
         }
-        h1 {
+        .commit-title {
             font-size: 20px;
+            line-height: 24px;
             font-weight: 500;
             margin: 0;
+            margin-bottom: 1em;
+            width: 90%
+        }
+        .close {
+            margin: 6px 5px 0 0;
         }
         .commit-hash, .commit-author {
             margin-right: 10px;
@@ -107,7 +113,7 @@
         }
         .actions {
             float: right;
-            margin: 8px 0 10px 10px;
+            margin: -10px;
             >* {
                 margin-right: 15px;
                 display: inline-block;
