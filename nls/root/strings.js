@@ -40,7 +40,7 @@ define({
     CHANGELOG:                          "Changelog",
     CHANGE_USER_NAME:                   "Change git username",
     CHANGE_USER_EMAIL:                  "Change git email",
-    CHECK_GIT_SETTINGS:                 "Check Git settings",
+    CHECK_GIT_SETTINGS:                 "Failed to launch Git executable - fix Git settings and restart Brackets",
     CODE_INSPECTION_PROBLEMS:           "Code inspection problems:",
     COMMAND_ARGUMENTS:                  "Command arguments",
     COMMIT:                             "Commit",

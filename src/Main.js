@@ -188,8 +188,8 @@ define(function (require, exports) {
                 Strings.GIT_VERSION = version;
                 initUi();
             }).catch(function (err) {
-                var errText = Strings.CHECK_GIT_SETTINGS + ": " + err.toString();
-                $icon.addClass("error").attr("title", errText);
+                $icon.addClass("error").attr("title", Strings.CHECK_GIT_SETTINGS + " - " + err.toString());
+                ErrorHandler.showError(err, Strings.CHECK_GIT_SETTINGS);
             });
 
             // add command to project menu
