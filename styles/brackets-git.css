@@ -219,10 +219,16 @@
   box-shadow: 0 -1px 3px 2px rgba(0, 0, 0, 0.15);
   z-index: 1;
 }
-#history-viewer > .header h1 {
+#history-viewer > .header .commit-title {
   font-size: 20px;
+  line-height: 24px;
   font-weight: 500;
   margin: 0;
+  margin-bottom: 1em;
+  width: 90%;
+}
+#history-viewer > .header .close {
+  margin: 6px 5px 0 0;
 }
 #history-viewer > .header .commit-hash,
 #history-viewer > .header .commit-author {
@@ -236,7 +242,7 @@
 }
 #history-viewer > .header .actions {
   float: right;
-  margin: 8px 0 10px 10px;
+  margin: -10px;
 }
 #history-viewer > .header .actions > * {
   margin-right: 15px;

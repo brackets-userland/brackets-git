@@ -1,8 +1,25 @@
 <div id="history-viewer" class="git-history">
     <div class="header">
         <div>
+            <a href="#" class="close">&times;</a>
+            <h1 class="commit-title selectable-text"><span>{{commit.subject}}</span></h1>
+        </div>
+        <div class="commitBody">{{{bodyMarkdown}}}</div>
+        <div>
+            <span class="commit-author">
+                <div class="commit-author-avatar">
+                    {{#useBwAvatar}}<span class="avatar-bw text" style="{{commit.cssAvatar}}">{{commit.avatarLetter}}</span>{{/useBwAvatar}}
+                    {{#useColoredAvatar}}<span class="text" style="{{commit.cssAvatar}}">{{commit.avatarLetter}}</span>{{/useColoredAvatar}}
+                    {{#usePicture}}<img src="http://gravatar.com/avatar/{{commit.emailHash}}?size=30px&default=identicon">{{/usePicture}}
+                    {{#useIdenticon}}<img src="http://gravatar.com/avatar/{{commit.emailHash}}?size=30px&default=identicon&f=y">{{/useIdenticon}}
+                </div>
+                <span class="commit-author-name">{{commit.author}}</span>
+            </span>
+            <span class="commit-hash" data-hash="{{commit.hash}}">
+                <i class="octicon octicon-git-commit"></i><span class="selectable-text">{{commit.hashShort}}</span>
+                <a href="#" class="git-extend-sha">&hellip;</a>
+            </span>
             <div class="actions">
-                <a href="#" class="close">&times;</a><br />
                 {{#enableAdvancedFeatures}}
                 <button class="git-advanced-features btn-checkout btn" title="{{Strings.TOOLTIP_CHECKOUT_COMMIT}}">{{Strings.BUTTON_CHECKOUT_COMMIT}}</button>
                 <div class="git-advanced-features dropdown">
@@ -24,22 +41,7 @@
                     <span class="collapse">{{Strings.COLLAPSE_ALL}}</span>
                 </span>
             </div>
-            <h1 class="commit-title selectable-text"><span>{{commit.subject}}</span></h1>
         </div>
-        <div class="commitBody">{{{bodyMarkdown}}}</div>
-        <span class="commit-author">
-            <div class="commit-author-avatar">
-                {{#useBwAvatar}}<span class="avatar-bw text" style="{{commit.cssAvatar}}">{{commit.avatarLetter}}</span>{{/useBwAvatar}}
-                {{#useColoredAvatar}}<span class="text" style="{{commit.cssAvatar}}">{{commit.avatarLetter}}</span>{{/useColoredAvatar}}
-                {{#usePicture}}<img src="http://gravatar.com/avatar/{{commit.emailHash}}?size=30px&default=identicon">{{/usePicture}}
-                {{#useIdenticon}}<img src="http://gravatar.com/avatar/{{commit.emailHash}}?size=30px&default=identicon&f=y">{{/useIdenticon}}
-            </div>
-            <span class="commit-author-name">{{commit.author}}</span>
-        </span>
-        <span class="commit-hash" data-hash="{{commit.hash}}">
-            <i class="octicon octicon-git-commit"></i><span class="selectable-text">{{commit.hashShort}}</span>
-            <a href="#" class="git-extend-sha">&hellip;</a>
-        </span>
     </div>
     <div class="body">
         <div class="table-striped tab-content">
