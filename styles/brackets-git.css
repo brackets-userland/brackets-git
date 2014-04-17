@@ -32,7 +32,7 @@
   width: 95%;
   height: 1px;
   border: none;
-  background-color: #bfbfbf;
+  background-color: #d3d3d3;
 }
 .git input[type="radio"] {
   margin: 0;
@@ -62,9 +62,9 @@
   content: '\25cf';
   -webkit-margin-start: 0;
   position: relative;
-  left: 1px;
-  top: -6px;
-  font-size: 16px;
+  left: 2px;
+  top: -4px;
+  font-size: 12px;
 }
 .git .text-bold {
   font-weight: 500;
