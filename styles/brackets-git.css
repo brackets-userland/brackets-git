@@ -133,6 +133,8 @@
   width: 30px;
 }
 .git-history .history-commit > td:nth-child(1) .commit-author-avatar {
+  width: 18px;
+  height: 18px;
   margin-left: 15px;
 }
 .git-history .history-commit > td:nth-child(2) {
