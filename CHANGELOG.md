@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.6
+* UI tweaks around history feature by [Larz](https://github.com/larz0)
+
 ## 0.13.5
 * Performance optimizations on 'Close not modified files' feature.
 * Fixes in history UI by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
