@@ -87,7 +87,7 @@ define({
     ENTER_REMOTE_URL:                   "Enter URL of the new remote:",
     ENTER_GITFTP_SCOPE_URL:             "Enter FTP URL of the new Git-FTP remote specifing username and password:",
     ERROR_TERMINAL_NOT_FOUND:           "Terminal was not found for your OS, you can define a custom Terminal command in the settings",
-    ERROR_CONNECT_NODEJS:               "Failed to connect to NodeJS. If you just updated the extension close all instances of Brackets and try starting again.",
+    ERROR_CONNECT_NODEJS:               "Failed to connect to NodeJS. If you've just updated the extension then close all instances of Brackets and try starting again.",
     EXTENDED_COMMIT_MESSAGE:            "EXTENDED",
     EXTENSION_WAS_UPDATED_TITLE:        "The extension was updated to {0}",
     ENTER_NEW_USER_NAME:                "Enter username",
