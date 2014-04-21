@@ -43,9 +43,15 @@ define(function (require, exports, module) {
             });
     }
 
+    var connectPromise = null;
+
     // return true/false to state if wasConnected before
     function connectToNode() {
-        return new Promise(function (resolve, reject) {
+        if (connectPromise) {
+            return connectPromise;
+        }
+
+        connectPromise = new Promise(function (resolve, reject) {
             if (nodeConnection.connected()) {
                 return resolve(true);
             }
@@ -61,6 +67,12 @@ define(function (require, exports, module) {
                 reject(ErrorHandler.toError(err));
             });
         });
+
+        connectPromise.finally(function () {
+            connectPromise = null;
+        });
+
+        return connectPromise;
     }
 
     function normalizePathForOs(path) {
