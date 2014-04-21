@@ -35,15 +35,8 @@ define(function (require, exports, module) {
         "debugMode": {                      "type": "boolean",           "value": false             },
         "TIMEOUT_VALUE": {                  "type": "number",            "value": 30000             },
         "gitIsInSystemPath": {              "type": "boolean",           "value": false             },
+        "gitPath": {                        "type": "string",            "value": "git"             },
         // platform specific
-        "gitPath": {
-            "type": "string",
-            "os": {
-                "win":      { "value": "C:\\Program Files (x86)\\Git\\bin\\git.exe" },
-                "mac":      { "value": "/usr/local/git/bin/git" },
-                "linux":    { "value": "/usr/bin/git" }
-            }
-        },
         "terminalCommand": {
             "type": "string",
             "os": {

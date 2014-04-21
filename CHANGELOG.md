@@ -2,6 +2,10 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.7
+* Extension now searches for Git in common install locations and picks the latest version available in case there are more Git versions installed on one computer.
+* Git version 1.7 or lower is now rejected because it doesn't have the command required by this extension.
+
 ## 0.13.6
 * UI tweaks around history feature by [Larz](https://github.com/larz0)
 
