@@ -1,0 +1,81 @@
+define(function (require, exports) {
+    "use strict";
+
+    // Brackets modules
+    var _ = brackets.getModule("thirdparty/lodash");
+
+    // Local modules
+    var Cli = require("src/Cli");
+    var Git = require("src/git/Git");
+    var Preferences = require("src/Preferences");
+    var Promise = require("bluebird");
+
+    // Templates
+
+    // Module variables
+    var standardGitPathsWin = [
+        "C:\\Program Files (x86)\\Git\\bin\\git.exe",
+        "C:\\Program Files\\Git\\bin\\git.exe",
+    ];
+
+    var standardGitPathsNonWin = [
+        "/usr/local/git/bin/git",
+        "/usr/bin/git"
+    ];
+
+    // Implementation
+    function findGit() {
+        return new Promise(function (resolve, reject) {
+
+            // TODO: do this in two steps - first check user config and then check all
+            var pathsToLook = ["git", Preferences.get("gitPath")].concat(brackets.platform === "win" ? standardGitPathsWin : standardGitPathsNonWin);
+            var results = [],
+                errors = [];
+            var finish = _.after(pathsToLook.length, function () {
+
+                if (results.length === 0) {
+                    // no git found
+                    reject("No Git has been found on this computer");
+                } else {
+                    // at least one git is found
+                    var gits = _.sortBy(results, "version").reverse();
+                    var latestGit = gits.shift();
+                    var m = latestGit.version.match(/([0-9]+)\.([0-9]+)/);
+                    var major = parseInt(m[1], 10);
+                    var minor = parseInt(m[2], 10);
+                    if (major === 1 && minor < 8) {
+                        return reject("Brackets Git requires Git 1.8 or older");
+                    }
+                    // this will save the settings also
+                    Git.setGitPath(latestGit.path);
+                    resolve(latestGit.version);
+                }
+
+            });
+
+            pathsToLook.forEach(function (path) {
+                Cli.spawnCommand(path, ["--version"]).then(function (stdout) {
+                    var m = stdout.match(/[0-9].*/);
+                    if (m) {
+                        results.push({
+                            path: path,
+                            version: m[0]
+                        });
+                    }
+                }).catch(function (err) {
+                    errors.push({
+                        path: path,
+                        err: err
+                    });
+                }).finally(function () {
+                    finish();
+                });
+            });
+
+        });
+    }
+
+    // Public API
+    exports.findGit = findGit;
+
+});

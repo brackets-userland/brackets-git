@@ -18,6 +18,7 @@ define(function (require, exports) {
         Panel             = require("./Panel"),
         Branch            = require("./Branch"),
         CloseNotModified  = require("./CloseNotModified"),
+        Setup             = require("src/utils/Setup"),
         Utils             = require("src/Utils");
 
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
@@ -184,7 +185,7 @@ define(function (require, exports) {
             $icon.removeClass("loading").removeAttr("title");
 
             // Try to get Git version, if succeeds then Git works
-            Git.getVersion().then(function (version) {
+            Setup.findGit().then(function (version) {
                 Strings.GIT_VERSION = version;
                 initUi();
             }).catch(function (err) {

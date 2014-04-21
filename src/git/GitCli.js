@@ -41,7 +41,16 @@ define(function (require, exports) {
 
     // Implementation
     function getGitPath() {
-        return _gitPath || (Preferences.get("gitIsInSystemPath") ? "git" : Preferences.get("gitPath"));
+        if (_gitPath) { return _gitPath; }
+        _gitPath = Preferences.get("gitIsInSystemPath" ? "git" : Preferences.get("gitPath"));
+        return _gitPath;
+    }
+
+    function setGitPath(path) {
+        if (path === true) { path = "git"; }
+        Preferences.set("gitIsInSystemPath", path === "git" ? true : false);
+        Preferences.set("gitPath", path);
+        _gitPath = path;
     }
 
     function _processQueue() {
@@ -679,8 +688,8 @@ define(function (require, exports) {
 
     function getVersion() {
         return git(["--version"]).then(function (stdout) {
-            var io = stdout.indexOf("git version");
-            return stdout.substring(io !== -1 ? io + "git version".length : 0).trim();
+            var m = stdout.match(/[0-9].*/);
+            return m ? m[0] : stdout.trim();
         });
     }
 
@@ -744,6 +753,7 @@ define(function (require, exports) {
 
     // Public API
     exports._git                      = git;
+    exports.setGitPath                = setGitPath;
     exports.FILE_STATUS               = FILE_STATUS;
     exports.fetchRemote               = fetchRemote;
     exports.fetchAllRemotes           = fetchAllRemotes;
