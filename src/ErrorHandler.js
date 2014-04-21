@@ -110,8 +110,14 @@ define(function (require, exports) {
         } else if (err instanceof Error) {
             errorBody = errorToString(err);
             errorStack = err.stack || "";
-        } else {
-            errorBody = JSON.stringify(err, null, 4);
+        }
+
+        if (!errorBody || errorBody === "[object Object]") {
+            try {
+                errorBody = JSON.stringify(err, null, 4);
+            } catch (e) {
+                errorBody = "Error can't be stringified by JSON.stringify";
+            }
         }
 
         var compiledTemplate = Mustache.render(errorDialogTemplate, {
