@@ -8,7 +8,8 @@ define(function (require, exports) {
         FileSystem        = brackets.getModule("filesystem/FileSystem"),
         ProjectManager    = brackets.getModule("project/ProjectManager");
 
-    var Promise           = require("bluebird"),
+    var ExpectedError     = require("src/ExpectedError"),
+        Promise           = require("bluebird"),
         Events            = require("src/Events"),
         EventEmitter      = require("src/EventEmitter"),
         Strings           = require("../strings"),
@@ -190,7 +191,10 @@ define(function (require, exports) {
                 initUi();
             }).catch(function (err) {
                 $icon.addClass("error").attr("title", Strings.CHECK_GIT_SETTINGS + " - " + err.toString());
-                ErrorHandler.showError(err, Strings.CHECK_GIT_SETTINGS);
+
+                var expected = new ExpectedError(err);
+                expected.detailsUrl = "https://github.com/zaggino/brackets-git#dependencies";
+                ErrorHandler.showError(expected, Strings.CHECK_GIT_SETTINGS);
             });
 
             // add command to project menu

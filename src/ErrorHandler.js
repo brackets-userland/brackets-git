@@ -100,6 +100,10 @@ define(function (require, exports) {
         if (err instanceof ExpectedError) {
             showReportButton = false;
         }
+        var showDetailsButton = false;
+        if (err.detailsUrl) {
+            showDetailsButton = true;
+        }
 
         if (typeof err === "string") {
             errorBody = err;
@@ -114,6 +118,7 @@ define(function (require, exports) {
             title: title,
             body: errorBody,
             showReportButton: showReportButton,
+            showDetailsButton: showDetailsButton,
             Strings: Strings
         });
 
@@ -130,6 +135,9 @@ define(function (require, exports) {
                            encodeURIComponent(title) +
                            "&body=" +
                            encodeURIComponent(mdReport));
+            }
+            if (buttonId === "details") {
+                NativeApp.openURLInDefaultBrowser(err.detailsUrl);
             }
         });
 

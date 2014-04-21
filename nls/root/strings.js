@@ -137,6 +137,7 @@ define({
     MERGE_BRANCH:                       "Merge branch",
     MERGE_RESULT:                       "Merge result",
     MERGE_MESSAGE:                      "Merge message",
+    MORE_INFO:                          "More information\u2026",
     NORMALIZE_LINE_ENDINGS:             "Normalize line endings (to \\n)",
     NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
     OK:                                 "OK",
