@@ -33,19 +33,23 @@ define(function (require, exports) {
                 errors = [];
             var finish = _.after(pathsToLook.length, function () {
 
+                var searchedPaths = "\n\nSearched paths:\n" + pathsToLook.join("\n");
+
                 if (results.length === 0) {
                     // no git found
-                    reject("No Git has been found on this computer");
+                    reject("No Git has been found on this computer" + searchedPaths);
                 } else {
                     // at least one git is found
-                    var gits = _.sortBy(results, "version").reverse();
-                    var latestGit = gits.shift();
-                    var m = latestGit.version.match(/([0-9]+)\.([0-9]+)/);
-                    var major = parseInt(m[1], 10);
-                    var minor = parseInt(m[2], 10);
+                    var gits = _.sortBy(results, "version").reverse(),
+                        latestGit = gits.shift(),
+                        m = latestGit.version.match(/([0-9]+)\.([0-9]+)/),
+                        major = parseInt(m[1], 10),
+                        minor = parseInt(m[2], 10);
+
                     if (major === 1 && minor < 8) {
-                        return reject("Brackets Git requires Git 1.8 or older");
+                        return reject("Brackets Git requires Git 1.8 or older - latest version found was " + latestGit.version + searchedPaths);
                     }
+
                     // this will save the settings also
                     Git.setGitPath(latestGit.path);
                     resolve(latestGit.version);
