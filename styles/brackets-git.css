@@ -116,7 +116,7 @@
   top: -6px;
   left: 6px;
 }
-.CodeMirror .CodeMirror-lines {
+.CodeMirror .CodeMirror-gutter-elt {
   pointer-events: all;
 }
 .CodeMirror .brackets-git-gutter {
