@@ -83,7 +83,7 @@ define(function (require) {
                 paths.push(Utils.getExtensionDirectory() + "shell/terminal.sh");
             }
 
-            paths = _.unique(_.compact(paths));
+            paths = _.unique(paths);
 
             var results = [];
             var finish = _.after(paths.length, function () {
@@ -94,7 +94,7 @@ define(function (require) {
                         Preferences.set("terminalCommand", validPaths[0]);
                     } else {
                         // nothing meaningful found
-                        Preferences.set("terminalCommand", paths[0]);
+                        Preferences.set("terminalCommand", paths[1]);
                     }
                     Preferences.set("terminalCommandArgs", "$1");
                 } else {
