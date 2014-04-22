@@ -29,7 +29,7 @@ define(function (require, exports) {
 
             // TODO: do this in two steps - first check user config and then check all
             var pathsToLook = ["git", Preferences.get("gitPath")].concat(brackets.platform === "win" ? standardGitPathsWin : standardGitPathsNonWin);
-            pathsToLook = _.unique(pathsToLook);
+            pathsToLook = _.unique(_.compact(pathsToLook));
 
             var results = [],
                 errors = [];

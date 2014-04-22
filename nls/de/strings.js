@@ -104,7 +104,6 @@ define({
     GIT_COMMIT:                         "Git-Commit\u2026",
     GIT_CONFIGURATION:                  "Git-Konfiguration",
     GIT_DIFF:                           "Git-Unterschied &mdash;",
-    GIT_IS_IN_PATH:                     "Git kann von überall aus abgerufen werden (ist im Systempfad, funktioniert evtl. nicht mit einem Mac)",
     GIT_PULL_RESPONSE:                  "Git Pull: Antwort",
     GIT_PUSH_RESPONSE:                  "Git Push: Antwort",
     GITFTP_PUSH_RESPONSE:               "Git-FTP Push: Antwort",

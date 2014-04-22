@@ -187,8 +187,6 @@ define({
     // TODO: localize GIT_CONFIGURATION to pt-br
     // GIT_DIFF:                           "Git diff &mdash;",
     GIT_DIFF:                              "Git diff &mdash;",
-    // GIT_IS_IN_PATH:                     "Git can be called from anywhere (is in system path, might not work on Mac)",
-    GIT_IS_IN_PATH:                        "O Git pode ser usado de qualquer lugar (está no caminho do sistema, pode não funcionar no Mac)",
     // GIT_PULL_RESPONSE:                  "Git Pull response",
     GIT_PULL_RESPONSE:                     "Resposta do Git Pull",
     // GIT_PUSH_RESPONSE:                  "Git Push response",

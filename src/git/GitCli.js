@@ -42,13 +42,12 @@ define(function (require, exports) {
     // Implementation
     function getGitPath() {
         if (_gitPath) { return _gitPath; }
-        _gitPath = Preferences.get("gitIsInSystemPath" ? "git" : Preferences.get("gitPath"));
+        _gitPath = Preferences.get("gitPath");
         return _gitPath;
     }
 
     function setGitPath(path) {
         if (path === true) { path = "git"; }
-        Preferences.set("gitIsInSystemPath", path === "git" ? true : false);
         Preferences.set("gitPath", path);
         _gitPath = path;
     }

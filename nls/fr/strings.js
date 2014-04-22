@@ -45,7 +45,7 @@ define({
     BUTTON_CLONE:                          "Cloner",
     // BUTTON_CHECKOUT_COMMIT:             "Checkout",
     BUTTON_CHECKOUT_COMMIT:                "Récupérer",
-     BUTTON_RESET:                         "Réinitialiser l’index",
+    BUTTON_RESET:                         "Réinitialiser l’index",
     // TODO: localize BUTTON_RESET to fr
     // BUTTON_RESET_HARD:                  "Reset to this commit and discard the changes that came after it. (reset --hard)",
     BUTTON_RESET_HARD:                     "Revenir à ce commit et abandonner tous les changements après celui-ci. (reset --hard)",
@@ -187,8 +187,6 @@ define({
     GIT_CONFIGURATION:                     "Configuration Git",
     // GIT_DIFF:                           "Git diff &mdash;",
     GIT_DIFF:                              "Git diff &mdash;",
-    // GIT_IS_IN_PATH:                     "Git can be called from anywhere (is in system path, might not work on Mac)",
-    GIT_IS_IN_PATH:                        "Git peut être appelé de n’importe ou (il est dans le chemin système, peut ne pas fonctionner sous Mac)",
     // GIT_PULL_RESPONSE:                  "Git Pull response",
     GIT_PULL_RESPONSE:                     "Réponse Git Pull (Récupérer)",
     // GIT_PUSH_RESPONSE:                  "Git Push response",

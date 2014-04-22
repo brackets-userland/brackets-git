@@ -187,8 +187,6 @@ define({
     GIT_CONFIGURATION:                     "Git 配置",
     // GIT_DIFF:                           "Git diff &mdash;",
     GIT_DIFF:                              "Git diff &mdash;",
-    // GIT_IS_IN_PATH:                     "Git can be called from anywhere (is in system path, might not work on Mac)",
-    GIT_IS_IN_PATH:                        "Git 可以在直接调用 (即在系统路径内，对 Mac 可能无效)",
     // GIT_PULL_RESPONSE:                  "Git Pull response",
     GIT_PULL_RESPONSE:                     "Git Pull 的回应",
     // GIT_PUSH_RESPONSE:                  "Git Push response",

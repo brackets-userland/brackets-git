@@ -35,8 +35,7 @@ define(function (require, exports, module) {
         // system
         "debugMode": {                      "type": "boolean",           "value": false             },
         "TIMEOUT_VALUE": {                  "type": "number",            "value": 30000             },
-        "gitIsInSystemPath": {              "type": "boolean",           "value": true              },
-        "gitPath": {                        "type": "string",            "value": "git"             },
+        "gitPath": {                        "type": "string",            "value": ""                },
         "terminalCommand": {                "type": "string",            "value": ""                },
         "terminalCommandArgs": {            "type": "string",            "value": ""                }
     };

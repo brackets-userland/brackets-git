@@ -111,7 +111,6 @@ define({
     GIT_COMMIT:                         "Git commit\u2026",
     GIT_CONFIGURATION:                  "Git configuration",
     GIT_DIFF:                           "Git diff &mdash;",
-    GIT_IS_IN_PATH:                     "Autodetect Git location (works when Git is in the system path)",
     GIT_PULL_RESPONSE:                  "Git Pull response",
     GIT_PUSH_RESPONSE:                  "Git Push response",
     GITFTP_PUSH_RESPONSE:               "Git-FTP Push response",
