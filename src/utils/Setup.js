@@ -43,7 +43,7 @@ define(function (require, exports) {
                 } else {
                     // at least one git is found
                     var gits = _.sortBy(results, "version").reverse(),
-                        latestGit = gits.shift(),
+                        latestGit = gits[0],
                         m = latestGit.version.match(/([0-9]+)\.([0-9]+)/),
                         major = parseInt(m[1], 10),
                         minor = parseInt(m[2], 10);
@@ -52,6 +52,9 @@ define(function (require, exports) {
                         return reject("Brackets Git requires Git 1.8 or later - latest version found was " + latestGit.version + searchedPaths);
                     }
 
+                    // prefer the first defined so it doesn't change all the time and confuse people
+                    latestGit = _.sortBy(_.filter(gits, function (git) { return git.version === latestGit.version; }), "index")[0];
+
                     // this will save the settings also
                     Git.setGitPath(latestGit.path);
                     resolve(latestGit.version);
@@ -59,13 +62,14 @@ define(function (require, exports) {
 
             });
 
-            pathsToLook.forEach(function (path) {
+            pathsToLook.forEach(function (path, index) {
                 Cli.spawnCommand(path, ["--version"]).then(function (stdout) {
                     var m = stdout.match(/^git version\s+(.*)$/);
                     if (m) {
                         results.push({
                             path: path,
-                            version: m[1]
+                            version: m[1],
+                            index: index
                         });
                     }
                 }).catch(function (err) {
