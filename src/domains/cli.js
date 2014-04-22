@@ -26,9 +26,11 @@
         }
         // http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
         var toExec = command + " " + args.join(" ");
-        ChildProcess.exec(toExec, { cwd: directory }, function (err, stdout, stderr) {
+        var child = ChildProcess.exec(toExec, { cwd: directory }, function (err, stdout, stderr) {
+            delete processMap[opts.cliId];
             callback(err ? fixEOL(stderr) : undefined, err ? undefined : fixEOL(stdout));
         });
+        processMap[opts.cliId] = child;
     }
 
     // handler with ChildProcess.spawn

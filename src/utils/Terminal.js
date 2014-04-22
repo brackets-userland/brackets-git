@@ -41,9 +41,8 @@ define(function (require) {
         var cmd,
             args,
             opts = {
-            timeout: 1, // 1 second
-            timeoutExpected: true
-        };
+                timeout: false
+            };
 
         cmd = customCmd;
         args = customArgs.split(" ").map(function (arg) {
