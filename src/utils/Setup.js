@@ -61,11 +61,11 @@ define(function (require, exports) {
 
             pathsToLook.forEach(function (path) {
                 Cli.spawnCommand(path, ["--version"]).then(function (stdout) {
-                    var m = stdout.match(/[0-9].*/);
+                    var m = stdout.match(/^git version\s+(.*)$/);
                     if (m) {
                         results.push({
                             path: path,
-                            version: m[0]
+                            version: m[1]
                         });
                     }
                 }).catch(function (err) {
