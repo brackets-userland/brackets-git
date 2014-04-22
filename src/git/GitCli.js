@@ -446,7 +446,7 @@ define(function (require, exports) {
     function stage(file, updateIndex) {
         var args = ["add"];
         if (updateIndex) { args.push("-u"); }
-        args.push(file);
+        args.push("--", file);
         return git(args);
     }
 
@@ -629,7 +629,7 @@ define(function (require, exports) {
     }
 
     function _isFileStaged(file) {
-        return git(["status", "-u", "--porcelain"]).then(function (stdout) {
+        return git(["status", "-u", "--porcelain", "--", file]).then(function (stdout) {
             if (!stdout) { return false; }
             return _.any(stdout.split("\n"), function (line) {
                 return line.match("^(\\S)(.)\\s+(" + file + ")$") !== null;
