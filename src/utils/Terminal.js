@@ -94,6 +94,8 @@ define(function (require) {
                         Preferences.set("terminalCommand", validPaths[0]);
                         Preferences.set("terminalCommandArgs", "$1");
                     }
+                } else {
+                    Preferences.set("terminalCommand", results[0]);
                 }
                 resolve();
             });
@@ -105,8 +107,8 @@ define(function (require) {
                     finish();
                     return;
                 }
-                Cli.commandExists(path).then(function () {
-                    results[index] = path;
+                Cli.commandExists(path).then(function (_path) {
+                    results[index] = _path;
                 }).catch(function () {
                     results[index] = null;
                 }).finally(function () {
