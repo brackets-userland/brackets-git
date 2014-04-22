@@ -116,6 +116,54 @@
   top: -6px;
   left: 6px;
 }
+.CodeMirror .CodeMirror-lines {
+  pointer-events: all;
+}
+.CodeMirror .brackets-git-gutter {
+  width: 0.65em;
+  margin-left: 1px;
+}
+.CodeMirror .brackets-git-gutter-added,
+.CodeMirror .brackets-git-gutter-modified,
+.CodeMirror .brackets-git-gutter-removed {
+  background-size: 0.65em 0.65em;
+  background-repeat: no-repeat;
+  font-size: 1em;
+  font-weight: bold;
+  color: #fff;
+}
+.CodeMirror .brackets-git-gutter-added {
+  background-color: #91cc41;
+}
+.CodeMirror .brackets-git-gutter-added.brackets-git-gutter-hover:before {
+  content: "+";
+}
+.CodeMirror .brackets-git-gutter-modified {
+  background-color: #e3b551;
+}
+.CodeMirror .brackets-git-gutter-modified.brackets-git-gutter-hover:before {
+  content: "*";
+}
+.CodeMirror .brackets-git-gutter-removed {
+  background-color: #f74687;
+}
+.CodeMirror .brackets-git-gutter-removed.brackets-git-gutter-hover:before {
+  content: "-";
+}
+.CodeMirror .brackets-git-gutter-deleted-lines {
+  color: #454545;
+  background-color: #fcc0d6;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  -o-user-select: text;
+  user-select: text;
+}
+.CodeMirror .CodeMirror-linenumber.brackets-git-gutter-hover {
+  background-color: #e9e9e9;
+  color: #000;
+}
 #editor-holder .git.spinner {
   display: none;
   z-index: 1000;
@@ -522,55 +570,6 @@
 }
 #git-branch-dropdown .divider {
   margin: 5px 1px;
-}
-/* CodeMirror area */
-.CodeMirror .CodeMirror-lines {
-  pointer-events: all;
-}
-.CodeMirror .brackets-git-gutter {
-  width: 0.65em;
-  margin-left: 1px;
-}
-.CodeMirror .brackets-git-gutter-added,
-.CodeMirror .brackets-git-gutter-modified,
-.CodeMirror .brackets-git-gutter-removed {
-  background-size: 0.65em 0.65em;
-  background-repeat: no-repeat;
-  font-size: 1em;
-  font-weight: bold;
-  color: #fff;
-}
-.CodeMirror .brackets-git-gutter-added {
-  background-color: #91cc41;
-}
-.CodeMirror .brackets-git-gutter-added.brackets-git-gutter-hover:before {
-  content: "+";
-}
-.CodeMirror .brackets-git-gutter-modified {
-  background-color: #e3b551;
-}
-.CodeMirror .brackets-git-gutter-modified.brackets-git-gutter-hover:before {
-  content: "*";
-}
-.CodeMirror .brackets-git-gutter-removed {
-  background-color: #f74687;
-}
-.CodeMirror .brackets-git-gutter-removed.brackets-git-gutter-hover:before {
-  content: "-";
-}
-.CodeMirror .brackets-git-gutter-deleted-lines {
-  color: #454545;
-  background-color: #fcc0d6;
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  -o-user-select: text;
-  user-select: text;
-}
-.CodeMirror .CodeMirror-linenumber.brackets-git-gutter-hover {
-  background-color: #e9e9e9;
-  color: #000;
 }
 /* Extension panel */
 #git-panel {
