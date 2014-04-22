@@ -9,7 +9,7 @@ It's tested and works on any platform supported by Brackets (Windows, Mac OSx, G
 To make **Brackets-Git** work you'll need Git installed in your system:
 
 - **Windows**: [MsysGit](https://code.google.com/p/msysgit/) is recommended with these ([settings](https://raw.github.com/zaggino/brackets-git/master/screenshots/gitInstall.png))
-- **Mac OS X**: [Git for OS X](https://code.google.com/p/git-osx-installer/) is reccomended.
+- **Mac OS X**: [Git for OS X](https://code.google.com/p/git-osx-installer/) is recommended.
 - **GNU/Linux**: Install the package `git`:  
    \- Debian/Ubuntu: `sudo apt-get install git`  
    \- RedHat/CentOS/Fedora: `sudo yum install git`

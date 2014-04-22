@@ -2,6 +2,7 @@ define(function (require) {
     "use strict";
 
     // Brackets modules
+    var _ = brackets.getModule("thirdparty/lodash");
 
     // Local modules
     var Cli           = require("src/Cli"),
@@ -9,6 +10,7 @@ define(function (require) {
         Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
         Preferences   = require("src/Preferences"),
+        Promise       = require("bluebird"),
         Utils         = require("src/Utils");
 
     // Templates
@@ -42,23 +44,12 @@ define(function (require) {
             timeout: 1, // 1 second
             timeoutExpected: true
         };
-        if (customCmd) {
-            cmd = customCmd;
-            args = customArgs.split(" ").map(function (arg) {
-                return arg.replace("$1", Cli.escapeShellArg(normalizeUncUrls(folder)));
-            });
-        } else {
-            if (brackets.platform === "win") {
-                var msysgitFolder = Preferences.get("gitPath").split("\\");
-                msysgitFolder.splice(-2, 2, "Git Bash.vbs");
-                cmd = msysgitFolder.join("\\");
-            } else if (brackets.platform === "mac") {
-                cmd = Utils.getExtensionDirectory() + "shell/terminal.osa";
-            } else {
-                cmd = Utils.getExtensionDirectory() + "shell/terminal.sh";
-            }
-            args = [Cli.escapeShellArg(folder)];
-        }
+
+        cmd = customCmd;
+        args = customArgs.split(" ").map(function (arg) {
+            return arg.replace("$1", Cli.escapeShellArg(normalizeUncUrls(folder)));
+        });
+
         return Cli.executeCommand(cmd, args, opts).catch(function (err) {
             if (ErrorHandler.isTimeout(err)) {
                 // process is running after 1 second timeout so terminal is opened
@@ -79,9 +70,59 @@ define(function (require) {
         });
     }
 
+    var setup = _.once(function () {
+        return new Promise(function (resolve) {
+
+            var paths = [Preferences.get("terminalCommand")];
+
+            if (brackets.platform === "win") {
+                paths.push("C:\\Program Files (x86)\\Git\\Git Bash.vbs");
+                paths.push("C:\\Program Files\\Git\\Git Bash.vbs");
+            } else if (brackets.platform === "mac") {
+                paths.push(Utils.getExtensionDirectory() + "shell/terminal.osa");
+            } else {
+                paths.push(Utils.getExtensionDirectory() + "shell/terminal.sh");
+            }
+
+            paths = _.unique(paths);
+
+            var results = [];
+            var finish = _.after(paths.length, function () {
+                if (!results[0]) {
+                    // configuration is not set to something meaningful
+                    var validPaths = _.compact(results);
+                    if (validPaths.length > 0) {
+                        Preferences.set("terminalCommand", validPaths[0]);
+                        Preferences.set("terminalCommandArgs", "$1");
+                    }
+                }
+                resolve();
+            });
+
+            // verify if these paths exist
+            paths.forEach(function (path, index) {
+                if (!path) {
+                    results[index] = null;
+                    finish();
+                    return;
+                }
+                Cli.commandExists(path).then(function () {
+                    results[index] = path;
+                }).catch(function () {
+                    results[index] = null;
+                }).finally(function () {
+                    finish();
+                });
+            });
+
+        });
+    });
+
     // Event subscriptions
     EventEmitter.on(Events.TERMINAL_OPEN, function () {
-        open();
+        setup().then(function () {
+            open();
+        });
     });
 
 });

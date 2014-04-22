@@ -93,6 +93,16 @@
         });
     }
 
+    function exists(directory, command, args, opts, callback) {
+        ProcessUtils.executableExists(command, function (err, exists, resolvedPath) {
+            if (exists) {
+                callback(null, resolvedPath);
+            } else {
+                callback("ProcessUtils can't resolve the path requested: " + command);
+            }
+        });
+    }
+
     function executeIfExists(directory, command, args, opts, callback) {
         return doIfExists(execute, directory, command, args, opts, callback);
     }
@@ -179,6 +189,23 @@
             ],
             [
                 { name: "stdout", type: "string" }
+            ]
+        );
+
+        domainManager.registerCommand(
+            domainName,
+            "exists",
+            exists,
+            true,
+            "Looks for a given file if it exists using which.",
+            [
+                { name: "directory", type: "string" },
+                { name: "command", type: "string" },
+                { name: "args", type: "array" },
+                { name: "opts", type: "object" }
+            ],
+            [
+                { name: "exists", type: "boolean" }
             ]
         );
 

@@ -4,7 +4,7 @@
 
 ## 0.13.7
 * Extension now searches for Git in common install locations and picks the latest version available in case there are more Git versions installed on one computer.
-* Git version 1.7 or lower is now rejected because it doesn't have the command required by this extension.
+* Git version 1.7 or lower is now rejected because it doesn't have the commands required by this extension.
 * Diffs now look more like GitHub ones by [Fez Vrasta](https://github.com/FezVrasta)
 * Updated French translation by [Vinz243](https://github.com/Vinz243)
 

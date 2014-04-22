@@ -37,23 +37,8 @@ define(function (require, exports, module) {
         "TIMEOUT_VALUE": {                  "type": "number",            "value": 30000             },
         "gitIsInSystemPath": {              "type": "boolean",           "value": false             },
         "gitPath": {                        "type": "string",            "value": "git"             },
-        // platform specific
-        "terminalCommand": {
-            "type": "string",
-            "os": {
-                "win":      { "value": "C:\\Program Files (x86)\\Git\\Git Bash.vbs" },
-                "mac":      { "value": null },
-                "linux":    { "value": null }
-            }
-        },
-        "terminalCommandArgs": {
-            "type": "string",
-            "os": {
-                "win":      { "value": "$1" },
-                "mac":      { "value": null },
-                "linux":    { "value": null }
-            }
-        }
+        "terminalCommand": {                "type": "string",            "value": ""                },
+        "terminalCommandArgs": {            "type": "string",            "value": ""                }
     };
 
     var prefs = PreferencesManager.getExtensionPrefs(prefix);

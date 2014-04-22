@@ -29,6 +29,8 @@ define(function (require, exports) {
 
             // TODO: do this in two steps - first check user config and then check all
             var pathsToLook = ["git", Preferences.get("gitPath")].concat(brackets.platform === "win" ? standardGitPathsWin : standardGitPathsNonWin);
+            pathsToLook = _.unique(pathsToLook);
+
             var results = [],
                 errors = [];
             var finish = _.after(pathsToLook.length, function () {
@@ -47,7 +49,7 @@ define(function (require, exports) {
                         minor = parseInt(m[2], 10);
 
                     if (major === 1 && minor < 8) {
-                        return reject("Brackets Git requires Git 1.8 or older - latest version found was " + latestGit.version + searchedPaths);
+                        return reject("Brackets Git requires Git 1.8 or later - latest version found was " + latestGit.version + searchedPaths);
                     }
 
                     // this will save the settings also

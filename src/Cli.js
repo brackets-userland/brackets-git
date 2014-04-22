@@ -118,6 +118,7 @@ define(function (require, exports, module) {
             deferred  = Promise.defer();
 
         deferredMap[cliId] = deferred;
+        args = args || [];
         opts = opts || {};
 
         var watchProgress = args.indexOf("--progress") !== -1;
@@ -274,6 +275,10 @@ define(function (require, exports, module) {
         return deferred.promise;
     }
 
+    function commandExists(cmd) {
+        return cliHandler("exists", cmd);
+    }
+
     function spawnCommand(cmd, args, opts) {
         return cliHandler("spawn", cmd, args, opts);
     }
@@ -308,6 +313,7 @@ define(function (require, exports, module) {
 
     // Public API
     exports.cliHandler      = cliHandler;
+    exports.commandExists   = commandExists;
     exports.executeCommand  = executeCommand;
     exports.spawnCommand    = spawnCommand;
     exports.escapeShellArg  = escapeShellArg;
