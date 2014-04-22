@@ -32,33 +32,76 @@ define(function (require, exports, module) {
 
     function formatDiff(diff) {
         var rv      = [],
-            tabSize = Preferences.getGlobal("tabSize");
+            tabSize = Preferences.getGlobal("tabSize"),
+            verbose = Preferences.get("useVerboseDiff");
 
         diff.split("\n").forEach(function (line) {
             if (line === " ") { line = ""; }
 
-            var lineClass;
-            if (line[0] === "+") {
+            var lineClass   = "",
+                pushLine    = true,
+                $newBlock   = $(null),
+                $separator  = $(null);
+
+            if (line.match(/index\s[A-z0-9]{7}..[A-z0-9]{7}/)) {
+                if (!verbose) {
+                    pushLine = false;
+                }
+            } else if (line.substr(0, 3) === "+++" || line.substr(0, 3) === "---" && !verbose) {
+                pushLine = false;
+            } else if (line[0] === "+" && line[1] !== "+") {
                 lineClass = "added";
-            } else if (line[0] === "-") {
+                line = line.substring(1);
+            } else if (line[0] === "-" && line[1] !== "-") {
                 lineClass = "removed";
+                line = line.substring(1);
+            } else if (line[0] === " ") {
+                lineClass = "unchanged";
+                line = line.substring(1);
             } else if (line.indexOf("@@") === 0) {
                 lineClass = "position";
             } else if (line.indexOf("diff --git") === 0) {
                 lineClass = "diffCmd";
+                $newBlock = $("<th/>")
+                                .addClass("meta")
+                                .html("<td/>")
+                                .find("td")
+                                    .text(line.split("b/")[1])
+                                .end();
+                $separator = $("<tr/>").addClass("separator");
+                if (!verbose) {
+                    pushLine = false;
+                }
             }
 
             line = _.escape(line).replace(/\s/g, "&nbsp;");
             line = line.replace(/(&nbsp;)+$/g, function (trailingWhitespace) {
                 return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
             });
-            var $line = $("<pre/>")
-                            .attr("style", "tab-size:" + tabSize)
-                            .html(line.length > 0 ? line : "&nbsp;");
-            if (lineClass) { $line.addClass(lineClass); }
-            rv.push($line);
+            var $line = $("<tr/>")
+                            .addClass("diff-row")
+                            .addClass(lineClass)
+                            .html("<td/>")
+                            .find("td")
+                                .html("<pre/>")
+                                .find("pre")
+                                    .attr("style", "tab-size:" + tabSize)
+                                    .html(line.length > 0 ? line : "&nbsp;")
+                                .end()
+                            .end();
+
+            if ($newBlock.length > 0) {
+                if (rv.length > 0) {
+                    rv.push($separator);
+                }
+                rv.push($newBlock);
+            }
+            if (pushLine) {
+                rv.push($line);
+            }
         });
-        return rv;
+
+        return $("<table/>").append(rv);
     }
 
     function askQuestion(title, question, options) {
