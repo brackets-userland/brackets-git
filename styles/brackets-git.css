@@ -453,6 +453,12 @@
   white-space: pre;
   word-wrap: normal;
   overflow: scroll;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  -o-user-select: text;
+  user-select: text;
 }
 #git-pull-dialog .modal-body {
   max-height: 500px;

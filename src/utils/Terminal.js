@@ -65,7 +65,7 @@ define(function (require) {
                 });
                 return;
             }
-            throw ErrorHandler.showError(err);
+            ErrorHandler.showError(err);
         });
     }
 
@@ -83,7 +83,7 @@ define(function (require) {
                 paths.push(Utils.getExtensionDirectory() + "shell/terminal.sh");
             }
 
-            paths = _.unique(paths);
+            paths = _.unique(_.compact(paths));
 
             var results = [];
             var finish = _.after(paths.length, function () {
@@ -92,8 +92,11 @@ define(function (require) {
                     var validPaths = _.compact(results);
                     if (validPaths.length > 0) {
                         Preferences.set("terminalCommand", validPaths[0]);
-                        Preferences.set("terminalCommandArgs", "$1");
+                    } else {
+                        // nothing meaningful found
+                        Preferences.set("terminalCommand", paths[0]);
                     }
+                    Preferences.set("terminalCommandArgs", "$1");
                 } else {
                     Preferences.set("terminalCommand", results[0]);
                 }
