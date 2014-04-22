@@ -320,7 +320,6 @@
   background: #ebebeb;
 }
 #history-viewer > .body .commit-diff {
-  overflow: hidden;
   max-height: 0px;
   margin: 10px;
   opacity: 0;
