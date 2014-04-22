@@ -1,5 +1,5 @@
 /*jshint maxlen:false */
 
 define({
-    DATE_FORMAT:                        "DD/MM/YYYY HH:mm:ss"
+    DATE_FORMAT:                           "DD/MM/YYYY HH:mm:ss"
 });
