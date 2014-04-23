@@ -94,13 +94,13 @@ define(function (require, exports, module) {
             } else if (line.indexOf("diff --git") === 0) {
                 // need to understand better this part
                 lineClass = "diffCmd";
-                $newBlock = $("<th/>")
+                /*$newBlock = $("<th/>")
                                 .addClass("meta")
                                 .html("<td/>")
                                 .find("td")
                                     .text(line.split("b/")[1])
                                 .end();
-                $separator = $("<tr/>").addClass("separator");
+                $separator = $("<tr/>").addClass("separator");*/
 
                 if (!verbose) {
                     pushLine = false;
