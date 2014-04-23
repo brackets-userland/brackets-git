@@ -32,8 +32,7 @@ define(function (require, exports, module) {
     }
 
     function formatDiff(diff) {
-        var rv           = [],
-            tabSize      = Preferences.getGlobal("tabSize"),
+        var tabSize      = Preferences.getGlobal("tabSize"),
             verbose      = Preferences.get("useVerboseDiff"),
             numLineOld   = 0,
             numLineNew   = 0,
