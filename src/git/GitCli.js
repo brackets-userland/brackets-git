@@ -356,12 +356,25 @@ define(function (require, exports) {
             });
     }
 
-    function getCurrentBranchHash() {
-        return git(["rev-parse", "--abbrev-ref", "HEAD"]);
-    }
-
     function getCurrentBranchName() {
-        return git(["symbolic-ref", "--short", "HEAD"]);
+        return git(["log", "--pretty=format:%H %d", "-1"]).then(function (stdout) {
+            var m = stdout.trim().match(/^(\S+)\s+\((.*)\)$/);
+            var hash = m[1].substring(0, 20);
+            m[2].split(",").forEach(function (info) {
+                info = info.trim();
+
+                if (info === "HEAD") { return; }
+
+                var m = info.match(/^tag:(.+)$/);
+                if (m) {
+                    hash = m[1].trim();
+                    return;
+                }
+
+                hash = info;
+            });
+            return hash;
+        });
     }
 
     function getCurrentUpstreamBranch() {
@@ -761,7 +774,6 @@ define(function (require, exports) {
     exports.deleteRemote              = deleteRemote;
     exports.push                      = push;
     exports.setUpstreamBranch         = setUpstreamBranch;
-    exports.getCurrentBranchHash      = getCurrentBranchHash;
     exports.getCurrentBranchName      = getCurrentBranchName;
     exports.getCurrentUpstreamBranch  = getCurrentUpstreamBranch;
     exports.getConfig                 = getConfig;

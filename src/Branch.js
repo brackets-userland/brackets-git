@@ -346,7 +346,7 @@ define(function (require, exports) {
                 return;
             }
 
-            return Git.getCurrentBranchHash().then(function (branchName) {
+            return Git.getCurrentBranchName().then(function (branchName) {
 
                 Git.getMergeInfo().then(function (mergeInfo) {
 
