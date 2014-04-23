@@ -2,6 +2,12 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.8
+* Autodetection of Git installation location has been improved.
+* Little performance upgrade for gutters, especially in large repositories.
+* BUGFIX: Correctly detect current tag or commit when in detached state - history now works when in detached state.
+* BUGFIX: Fixed issue which caused some dropdowns remained open after clicking into the editor area.
+
 ## 0.13.7
 * Extension now searches for Git in common install locations and picks the latest version available in case there are more Git versions installed on one computer.
 * Git version 1.7 or lower is now rejected because it doesn't have the commands required by this extension.
