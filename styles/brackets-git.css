@@ -345,7 +345,7 @@
   opacity: 1;
   border-color: #b2b5b5;
   margin-bottom: 10px;
-  padding: 10px;
+  padding: 10px 0;
 }
 #history-viewer > .body .opened {
   display: none;
