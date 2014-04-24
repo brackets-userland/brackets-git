@@ -6,6 +6,7 @@
 @import "editor-holder.less";
 @import "history.less";
 @import "dialogs/progress.less";
+@import "dialogs/diff-dialog.less";
 @import "dialogs/error-dialog.less";
 @import "dialogs/pull-dialog.less";
 
@@ -516,6 +517,13 @@
             margin: 0;
             padding: 0;
             border-width: 0;
+            &:nth-child(1), &:nth-child(2) {
+                width: 1px;
+                border-right: 1px solid #ccc;
+                text-align: right;
+                color: #999;
+                padding: 0 8px !important;
+            }
         }
         white-space: nowrap;
         &.added {
@@ -566,6 +574,12 @@
             color: @blue-text;
             font-weight: bold;
         }
+        .diff-file {
+            text-align: left !important;
+            padding: 10px;
+            color: @blue-text;
+            font-weight: bold;
+        }
         &:not(:first-child) {
             border-top: 1px dashed @tc-gray-component-border;
         }
@@ -573,6 +587,9 @@
     .separator {
         height: 20px;
         &:first-child {
+            display: none;
+        }
+        &:last-child {
             display: none;
         }
     }
