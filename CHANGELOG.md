@@ -2,6 +2,10 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.9
+* BUGFIX: Branch name not showing when switching branches.
+* BUGFIX: Impossible to undo last commit.
+
 ## 0.13.8
 * Autodetection of Git installation location has been improved.
 * Little performance upgrade for gutters, especially in large repositories.
