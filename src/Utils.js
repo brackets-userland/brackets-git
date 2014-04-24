@@ -43,7 +43,7 @@ define(function (require, exports, module) {
             ADDED: 3,
             REMOVED: 2,
             UNCHANGED: 1
-        }
+        };
 
         diff.split("\n").forEach(function (line) {
             if (line === " ") { line = ""; }
@@ -113,7 +113,7 @@ define(function (require, exports, module) {
                 var _numLineOld = "",
                     _numLineNew = "";
 
-                switch(lastStatus) {
+                switch (lastStatus) {
                     case 0:
                         _numLineOld = "";
                         _numLineNew = "";

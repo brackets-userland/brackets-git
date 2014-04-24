@@ -1,6 +1,8 @@
 <table>
     {{#files}}
-        <th class="meta">{{name}}</th>
+        <tr class="meta">
+            <td colspan="3">{{name}}</td>
+        </tr>
         {{#lines}}
             <tr class="diff-row {{lineClass}}">
                 <td style="border-right: 1px solid #ccc; text-align: right; color: #999; padding: 0 4px;">{{numLineOld}}</td>
