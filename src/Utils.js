@@ -135,6 +135,11 @@ define(function (require, exports, module) {
                         _numLineNew = numLineNew;
                 }
 
+                line = _.escape(line).replace(/\s/g, "&nbsp;");
+                line = line.replace(/(&nbsp;)+$/g, function (trailingWhitespace) {
+                    return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
+                });
+
                 _.last(diffData).lines.push({
                     "numLineOld": _numLineOld,
                     "numLineNew": _numLineNew,

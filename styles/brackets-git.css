@@ -1060,6 +1060,12 @@
   color: #1976dd;
   font-weight: bold;
 }
+.commit-diff .meta .diff-file {
+  text-align: left !important;
+  padding: 10px;
+  color: #1976dd;
+  font-weight: bold;
+}
 .commit-diff .meta:not(:first-child) {
   border-top: 1px dashed #b2b5b5;
 }
