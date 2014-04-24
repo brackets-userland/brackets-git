@@ -368,6 +368,11 @@ define(function (require, exports) {
                 return branchName;
             }
 
+            // no branch situation so we need to create one by doing a commit
+            if (stdout.match(/^\s*$/)) {
+                return EventEmitter.emit(Events.GIT_NO_BRANCH_EXISTS);
+            }
+
             // alternative
             return git(["log", "--pretty=format:%H %d", "-1"]).then(function (stdout) {
                 var m = stdout.trim().match(/^(\S+)\s+\((.*)\)$/);

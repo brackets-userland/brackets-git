@@ -18,6 +18,7 @@ define(function (require, exports) {
     exports.GIT_USERNAME_CHANGED = "git.username.changed";
     exports.GIT_EMAIL_CHANGED = "git.email.changed";
     exports.GIT_COMMITED = "git.commited";
+    exports.GIT_NO_BRANCH_EXISTS = "git.no.branch.exists";
 
     // Startup events
     exports.REFRESH_ALL = "git.refresh.all";

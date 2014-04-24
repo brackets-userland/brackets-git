@@ -94,5 +94,8 @@ define(function (require) {
     EventEmitter.on(Events.HANDLE_GIT_CLONE, function () {
         handleGitClone();
     });
+    EventEmitter.on(Events.GIT_NO_BRANCH_EXISTS, function () {
+        commitGitIgnore();
+    });
 
 });
