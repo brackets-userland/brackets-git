@@ -357,23 +357,36 @@ define(function (require, exports) {
     }
 
     function getCurrentBranchName() {
-        return git(["log", "--pretty=format:%H %d", "-1"]).then(function (stdout) {
-            var m = stdout.trim().match(/^(\S+)\s+\((.*)\)$/);
-            var hash = m[1].substring(0, 20);
-            m[2].split(",").forEach(function (info) {
-                info = info.trim();
+        return git(["branch"]).then(function (stdout) {
+            var branchName = _.find(stdout.split("\n"), function (l) { return l[0] === "*"; });
+            if (branchName) {
+                branchName = branchName.substring(1).trim();
 
-                if (info === "HEAD") { return; }
+                var m = branchName.match(/^\(.*\s(\S+)\)$/); // like (detached from f74acd4)
+                if (m) { return m[1]; }
 
-                var m = info.match(/^tag:(.+)$/);
-                if (m) {
-                    hash = m[1].trim();
-                    return;
-                }
+                return branchName;
+            }
 
-                hash = info;
+            // alternative
+            return git(["log", "--pretty=format:%H %d", "-1"]).then(function (stdout) {
+                var m = stdout.trim().match(/^(\S+)\s+\((.*)\)$/);
+                var hash = m[1].substring(0, 20);
+                m[2].split(",").forEach(function (info) {
+                    info = info.trim();
+
+                    if (info === "HEAD") { return; }
+
+                    var m = info.match(/^tag:(.+)$/);
+                    if (m) {
+                        hash = m[1].trim();
+                        return;
+                    }
+
+                    hash = info;
+                });
+                return hash;
             });
-            return hash;
         });
     }
 
