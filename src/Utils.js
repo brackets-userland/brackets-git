@@ -42,7 +42,8 @@ define(function (require, exports, module) {
         var LINE_STATUS = {
             ADDED: 3,
             REMOVED: 2,
-            UNCHANGED: 1
+            UNCHANGED: 1,
+            HEADER: 0
         };
 
         diff.split("\n").forEach(function (line) {
@@ -89,12 +90,15 @@ define(function (require, exports, module) {
                 lineClass = "position";
 
                 // Define the type of the line: Header
-                lastStatus = 0;
+                lastStatus = LINE_STATUS.HEADER;
 
                 // This read the start line for the diff and substract 1 for this line
-                // I think this can be do it better
-                numLineOld = parseInt(line.substring(line.indexOf("-") + 1, line.indexOf(","))) - 1;
-                numLineNew = parseInt(line.substring(line.indexOf("+") + 1, line.lastIndexOf(","))) - 1;
+                var m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
+                var s1 = m[1].split(",");
+                var s2 = m[2].split(",");
+
+                numLineOld = s1[0] - 1;
+                numLineNew = s2[0] - 1;
             } else if (line.indexOf("diff --git") === 0) {
                 // need to understand better this part
                 lineClass = "diffCmd";
@@ -114,15 +118,15 @@ define(function (require, exports, module) {
                     _numLineNew = "";
 
                 switch (lastStatus) {
-                    case 0:
+                    case LINE_STATUS.HEADER:
                         _numLineOld = "";
                         _numLineNew = "";
                         break;
-                    case 1:
+                    case LINE_STATUS.UNCHANGED:
                         _numLineOld = numLineOld;
                         _numLineNew = numLineNew;
                         break;
-                    case 2:
+                    case LINE_STATUS.REMOVED:
                         _numLineOld = numLineOld;
                         _numLineNew = "";
                         break;
@@ -131,7 +135,7 @@ define(function (require, exports, module) {
                         _numLineNew = numLineNew;
                 }
 
-                diffData[diffData.length - 1].lines.push({
+                _.last(diffData).lines.push({
                     "numLineOld": _numLineOld,
                     "numLineNew": _numLineNew,
                     "line": line,
