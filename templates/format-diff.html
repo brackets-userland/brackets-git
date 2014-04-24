@@ -1,9 +1,13 @@
 <table>
-    {{#lines}}
-        <tr class="diff-row {{lineClass}}">
-            <td style="border-right: 1px solid #ccc; text-align: right; color: #999;">{{numLineOld}}</td>
-            <td style="border-right: 1px solid #ccc; text-align: right; color: #999;">{{numLineNew}}</td>
-            <td><pre style="tab-size: {{tabSize}}">{{line}}</pre></td>
-        </tr>
-    {{/lines}}
+    {{#files}}
+        <th class="meta">{{name}}</th>
+        {{#lines}}
+            <tr class="diff-row {{lineClass}}">
+                <td style="border-right: 1px solid #ccc; text-align: right; color: #999; padding: 0 4px;">{{numLineOld}}</td>
+                <td style="border-right: 1px solid #ccc; text-align: right; color: #999; padding: 0 4px;">{{numLineNew}}</td>
+                <td><pre style="tab-size: {{tabSize}}">{{line}}</pre></td>
+            </tr>
+        {{/lines}}
+        <tr class="separator"></tr>
+    {{/files}}
 </table>

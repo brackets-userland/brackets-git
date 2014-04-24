@@ -39,13 +39,17 @@ define(function (require, exports, module) {
             lastStatus   = 0,
             diffData     = [];
 
+        var LINE_STATUS = {
+            ADDED: 3,
+            REMOVED: 2,
+            UNCHANGED: 1
+        }
+
         diff.split("\n").forEach(function (line) {
             if (line === " ") { line = ""; }
 
             var lineClass   = "",
-                pushLine    = true,
-                $newBlock   = $(null),
-                $separator  = $(null);
+                pushLine    = true;
 
             if (line.match(/index\s[A-z0-9]{7}..[A-z0-9]{7}/)) {
                 if (!verbose) {
@@ -58,7 +62,7 @@ define(function (require, exports, module) {
                 line = line.substring(1);
 
                 // Define the type of the line: Added
-                lastStatus = 3;
+                lastStatus = LINE_STATUS.ADDED;
 
                 // Add 1 to the num line for new document
                 numLineNew++;
@@ -67,7 +71,7 @@ define(function (require, exports, module) {
                 line = line.substring(1);
 
                 // Define the type of the line: Removed
-                lastStatus = 2;
+                lastStatus = LINE_STATUS.REMOVED;
 
                 // Add 1 to the num line for old document
                 numLineOld++;
@@ -76,7 +80,7 @@ define(function (require, exports, module) {
                 line = line.substring(1);
 
                 // Define the type of the line: Unchanged
-                lastStatus = 1;
+                lastStatus = LINE_STATUS.UNCHANGED;
 
                 // Add 1 to old a new num lines
                 numLineOld++;
@@ -94,27 +98,16 @@ define(function (require, exports, module) {
             } else if (line.indexOf("diff --git") === 0) {
                 // need to understand better this part
                 lineClass = "diffCmd";
-                /*$newBlock = $("<th/>")
-                                .addClass("meta")
-                                .html("<td/>")
-                                .find("td")
-                                    .text(line.split("b/")[1])
-                                .end();
-                $separator = $("<tr/>").addClass("separator");*/
+
+                diffData.push({
+                    name: line.split("b/")[1],
+                    lines: []
+                });
 
                 if (!verbose) {
                     pushLine = false;
                 }
             }
-
-            /* Need understand this part too.
-            if ($newBlock.length > 0) {
-                if (rv.length > 0) {
-                    rv.push($separator);
-                }
-
-                rv.push($newBlock);
-            }*/
 
             if (pushLine) {
                 var _numLineOld = "",
@@ -138,17 +131,17 @@ define(function (require, exports, module) {
                         _numLineNew = numLineNew;
                 }
 
-                diffData.push({
+                diffData[diffData.length - 1].lines.push({
                     "numLineOld": _numLineOld,
                     "numLineNew": _numLineNew,
-                    "line": (line.length > 0) ? line : "",
+                    "line": line,
                     "lineClass": lineClass,
                     "tabSize": tabSize
                 });
             }
         });
 
-        return Mustache.render(formatDiffTemplate, {lines: diffData});
+        return Mustache.render(formatDiffTemplate, {files: diffData});
     }
 
     function askQuestion(title, question, options) {
