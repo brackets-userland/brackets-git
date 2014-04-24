@@ -345,7 +345,7 @@
   opacity: 1;
   border-color: #b2b5b5;
   margin-bottom: 10px;
-  padding: 10px;
+  padding: 10px 0;
 }
 #history-viewer > .body .opened {
   display: none;
@@ -1012,6 +1012,14 @@
   padding: 0;
   border-width: 0;
 }
+.commit-diff tr td:nth-child(1),
+.commit-diff tr td:nth-child(2) {
+  width: 1px;
+  border-right: 1px solid #ccc;
+  text-align: right;
+  color: #999;
+  padding: 0 8px !important;
+}
 .commit-diff tr.added,
 .commit-diff tr.added pre {
   background-color: #dbffdb;
@@ -1048,6 +1056,12 @@
   display: none;
 }
 .commit-diff .meta td {
+  padding: 10px;
+  color: #1976dd;
+  font-weight: bold;
+}
+.commit-diff .meta .diff-file {
+  text-align: left !important;
   padding: 10px;
   color: #1976dd;
   font-weight: bold;
