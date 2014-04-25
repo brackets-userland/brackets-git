@@ -49,6 +49,11 @@ define(function (require) {
             return arg.replace("$1", Cli.escapeShellArg(normalizeUncUrls(folder)));
         });
 
+        if (brackets.platform === "mac" && cmd.match(/\.osa$/)) {
+            args.unshift(Cli.escapeShellArg(cmd));
+            cmd = "osascript";
+        }
+
         return Cli.executeCommand(cmd, args, opts).catch(function (err) {
             if (ErrorHandler.isTimeout(err)) {
                 // process is running after 1 second timeout so terminal is opened

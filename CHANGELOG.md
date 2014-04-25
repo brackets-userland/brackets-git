@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.11
+* BUGFIX: Fixed launching osascripts on Mac (open terminal button).
+
 ## 0.13.10
 * Added line numbers to diffs by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
 * BUGFIX: **Fixed critical bug that caused Brackets to crash when using Find in Files feature.**
