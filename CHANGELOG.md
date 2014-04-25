@@ -2,6 +2,12 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.10
+* Added line numbers to diffs by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
+* BUGFIX: **Fixed critical bug that caused Brackets to crash when using Find in Files feature.**
+* BUGFIX: Fixed error when opening terminal on Mac.
+* BUGFIX: Fixed issue when opening an empty repostitory without commits.
+
 ## 0.13.9
 * BUGFIX: Branch name not showing when switching branches.
 * BUGFIX: Impossible to undo last commit.
