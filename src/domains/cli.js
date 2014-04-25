@@ -3,7 +3,8 @@
 (function () {
     "use strict";
 
-    var ChildProcess  = require("child_process"),
+    var fs            = require("fs"),
+        ChildProcess  = require("child_process"),
         ProcessUtils  = require("./processUtils"),
         domainName    = "brackets-git",
         domainManager = null,
@@ -95,16 +96,6 @@
         });
     }
 
-    function exists(directory, command, args, opts, callback) {
-        ProcessUtils.executableExists(command, function (err, exists, resolvedPath) {
-            if (exists) {
-                callback(null, resolvedPath);
-            } else {
-                callback("ProcessUtils can't resolve the path requested: " + command);
-            }
-        });
-    }
-
     function executeIfExists(directory, command, args, opts, callback) {
         return doIfExists(execute, directory, command, args, opts, callback);
     }
@@ -125,6 +116,22 @@
             children.forEach(function (pid) {
                 ProcessUtils.killSingleProcess(pid);
             });
+        });
+    }
+
+    function which(directory, filePath, args, opts, callback) {
+        ProcessUtils.executableExists(filePath, function (err, exists, resolvedPath) {
+            if (exists) {
+                callback(null, resolvedPath);
+            } else {
+                callback("ProcessUtils can't resolve the path requested: " + filePath);
+            }
+        });
+    }
+
+    function pathExists(directory, path, args, opts, callback) {
+        fs.exists(path, function (exists) {
+            callback(null, exists);
         });
     }
 
@@ -196,13 +203,30 @@
 
         domainManager.registerCommand(
             domainName,
-            "exists",
-            exists,
+            "which",
+            which,
             true,
-            "Looks for a given file if it exists using which.",
+            "Looks for a given file using which.",
             [
                 { name: "directory", type: "string" },
-                { name: "command", type: "string" },
+                { name: "filePath", type: "string" },
+                { name: "args", type: "array" },
+                { name: "opts", type: "object" }
+            ],
+            [
+                { name: "path", type: "string" }
+            ]
+        );
+
+        domainManager.registerCommand(
+            domainName,
+            "pathExists",
+            pathExists,
+            true,
+            "Looks if given path exists on the file system",
+            [
+                { name: "directory", type: "string" },
+                { name: "path", type: "string" },
                 { name: "args", type: "array" },
                 { name: "opts", type: "object" }
             ],

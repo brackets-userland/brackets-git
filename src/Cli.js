@@ -275,8 +275,14 @@ define(function (require, exports, module) {
         return deferred.promise;
     }
 
-    function commandExists(cmd) {
-        return cliHandler("exists", cmd);
+    function which(cmd) {
+        return cliHandler("which", cmd);
+    }
+
+    function pathExists(path) {
+        return cliHandler("pathExists", path).then(function (response) {
+            return typeof response === "string" ? response === "true" : response;
+        });
     }
 
     function spawnCommand(cmd, args, opts) {
@@ -313,7 +319,8 @@ define(function (require, exports, module) {
 
     // Public API
     exports.cliHandler      = cliHandler;
-    exports.commandExists   = commandExists;
+    exports.which           = which;
+    exports.pathExists      = pathExists;
     exports.executeCommand  = executeCommand;
     exports.spawnCommand    = spawnCommand;
     exports.escapeShellArg  = escapeShellArg;

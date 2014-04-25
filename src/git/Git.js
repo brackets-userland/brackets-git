@@ -7,6 +7,7 @@ define(function (require, exports) {
 
     // Local modules
     var Promise = require("bluebird"),
+        Cli     = require("src/Cli"),
         GitCli  = require("src/git/GitCli"),
         Utils   = require("src/Utils");
 
@@ -86,6 +87,10 @@ define(function (require, exports) {
         });
     }
 
+    function isProjectRepositoryRoot() {
+        return Cli.pathExists(Utils.getProjectRoot() + ".git");
+    }
+
     function getMergeInfo() {
         var baseCheck  = ["MERGE_MODE", "rebase-apply"],
             mergeCheck = ["MERGE_HEAD", "MERGE_MSG"],
@@ -157,20 +162,21 @@ define(function (require, exports) {
     }
 
     // Public API
-    exports.pushToNewUpstream   = pushToNewUpstream;
-    exports.getBranches         = getBranches;
-    exports.getAllBranches      = getAllBranches;
-    exports.getHistory          = getHistory;
-    exports.getFileHistory      = getFileHistory;
-    exports.resetIndex          = resetIndex;
-    exports.discardAllChanges   = discardAllChanges;
-    exports.getMergeInfo        = getMergeInfo;
-    exports.discardFileChanges  = discardFileChanges;
-    exports.getRemoteUrl        = getRemoteUrl;
-    exports.setRemoteUrl        = setRemoteUrl;
-    exports.pushForced          = pushForced;
-    exports.deleteRemoteBranch  = deleteRemoteBranch;
-    exports.undoLastLocalCommit = undoLastLocalCommit;
+    exports.pushToNewUpstream       = pushToNewUpstream;
+    exports.getBranches             = getBranches;
+    exports.getAllBranches          = getAllBranches;
+    exports.getHistory              = getHistory;
+    exports.getFileHistory          = getFileHistory;
+    exports.resetIndex              = resetIndex;
+    exports.discardAllChanges       = discardAllChanges;
+    exports.isProjectRepositoryRoot = isProjectRepositoryRoot;
+    exports.getMergeInfo            = getMergeInfo;
+    exports.discardFileChanges      = discardFileChanges;
+    exports.getRemoteUrl            = getRemoteUrl;
+    exports.setRemoteUrl            = setRemoteUrl;
+    exports.pushForced              = pushForced;
+    exports.deleteRemoteBranch      = deleteRemoteBranch;
+    exports.undoLastLocalCommit     = undoLastLocalCommit;
 
     Object.keys(GitCli).forEach(function (method) {
         if (!exports[method]) {

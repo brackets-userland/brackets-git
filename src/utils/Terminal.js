@@ -110,7 +110,7 @@ define(function (require) {
                     finish();
                     return;
                 }
-                Cli.commandExists(path).then(function (_path) {
+                Cli.which(path).then(function (_path) {
                     results[index] = _path;
                 }).catch(function () {
                     results[index] = null;

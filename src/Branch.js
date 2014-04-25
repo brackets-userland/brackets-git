@@ -321,11 +321,6 @@ define(function (require, exports) {
         });
     }
 
-    function _isRepositoryRoot() {
-        var gitFolder = Utils.getProjectRoot() + "/.git";
-        return Utils.pathExists(gitFolder);
-    }
-
     function refresh() {
         if ($gitBranchName.length === 0) { return; }
 
@@ -335,7 +330,7 @@ define(function (require, exports) {
             .parent()
                 .show();
 
-        return _isRepositoryRoot().then(function (isRepositoryRoot) {
+        return Git.isProjectRepositoryRoot().then(function (isRepositoryRoot) {
             $gitBranchName.parent().toggle(isRepositoryRoot);
 
             if (!isRepositoryRoot) {
