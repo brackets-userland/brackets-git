@@ -24,6 +24,53 @@
  * with system and css color names. (We define our own colors because system
  * colors are ugly.)
  */
+/*
+ * Brackets Default Theme
+ *
+ * Defines all the variables that one can configure in a theme. This should
+ * contain all variables / mixins for UI styling that we want to be able to
+ * change in a theme.
+ *
+ * Throughout the rest of the LESS files we should _only_ use color
+ * variable names that are on the LHS of the list below. So, if we
+ * need a new color for some UI element, we should add a variable
+ * in this file.
+ */
+/* Overall Colors */
+/*
+ * Background colors are ordered from least "intense" to most "intense"
+ * So, if the background is light, then @background-color-3 should be
+ * lightest, -2 should be darker, and -1 should be darker still.
+ *
+ * The opposite is true for a dark background -- background-color-3 should be
+ * the darkest, -2 should be lighter, and -1 should be lighter still.
+ */
+/*
+ * @content-color-stronger should be should be further away from the
+ * background color than @content-color (i.e. more contrasty).
+ *
+ * @content-color-weaker should be closer to the background color
+ * than @content-color (i.e. less contrasty).
+ */
+/* Code Styling */
+/* code accent colors */
+/* code highlight */
+/* inline editor colors */
+/* sidebar/toolbar colors */
+/* open working file highlight */
+/* selection colors */
+/* background color of the line that has the cursor */
+/* custom scrollbar colors */
+/* live preview */
+/* Code font formatting
+ *
+ * NOTE (JRB): In order to get the web font to load early enough, we have a div called "dummy-text" that
+ * is styled with .code-font().
+ *
+ * The platform-specific selector gets added to the body tag *before* document ready time.
+ * We rely on this behavior to load platform-specific web fonts early.
+ */
+/* Variables and Mixins for non-code UI elements that can be styled */
 .git {
   /* radio buttons until they are styled in brackets */
   /* /radio buttons */
@@ -337,7 +384,7 @@
   white-space: pre-line;
 }
 #history-viewer > .body .commit-diff .separator,
-#history-viewer > .body .commit-diff .meta {
+#history-viewer > .body .commit-diff .meta-file {
   display: none;
 }
 #history-viewer > .body .active + .commit-diff {
@@ -443,13 +490,108 @@
   display: inline-block;
   vertical-align: middle;
 }
+.commit-diff {
+  color: #535353;
+  font-size: 12px;
+  line-height: 1.25;
+  font-family: "SourceCodePro-Medium", "ＭＳ ゴシック", "MS Gothic", monospace;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  -o-user-select: text;
+  user-select: text;
+  cursor: text;
+  background-color: #f5f5f5;
+  border: 1px solid #b2b5b5;
+  border-radius: 3px;
+  margin-bottom: 1em;
+  overflow: auto;
+  padding: 0;
+}
+.commit-diff code,
+.commit-diff pre {
+  background: none;
+  border: none;
+  padding: 0 3px;
+  margin: 0;
+  font-family: 'SourceCodePro', monospace;
+  line-height: 15px;
+}
+.commit-diff table {
+  width: 100%;
+}
+.commit-diff table tbody tr:nth-child(even) td,
+.commit-diff table tbody tr:nth-child(odd) td,
+.commit-diff table tbody tr:nth-child(even) th,
+.commit-diff table tbody tr:nth-child(odd) th {
+  background: none;
+  padding: 0;
+}
+.commit-diff table tbody tr.meta-file th {
+  color: #1976dd;
+  padding: 7.5px;
+  text-align: left;
+}
+.commit-diff table tbody tr.meta-file:not(:first-child) {
+  border-top: 1px dashed #b2b5b5;
+}
+.commit-diff table tbody tr.separator {
+  height: 15px;
+}
+.commit-diff table tbody tr.separator:first-child,
+.commit-diff table tbody tr.separator:last-child {
+  display: none;
+}
+.commit-diff table tbody tr td {
+  border-width: 0px;
+}
+.commit-diff table tbody tr td:nth-child(1),
+.commit-diff table tbody tr td:nth-child(2) {
+  width: 1px;
+  border-right: 1px solid #cccece;
+  text-align: right;
+  color: #949494;
+  padding: 0 8px;
+}
+.commit-diff table tbody tr td pre {
+  white-space: nowrap;
+}
+.commit-diff table tbody tr td pre .trailingWhitespace {
+  background-color: #ff7cad;
+}
+.commit-diff table tbody tr.added,
+.commit-diff table tbody tr.added pre {
+  background-color: #dbffdb;
+}
+.commit-diff table tbody tr.added pre:before {
+  content: "+";
+}
+.commit-diff table tbody tr.removed,
+.commit-diff table tbody tr.removed pre {
+  background-color: #ffdbdb;
+}
+.commit-diff table tbody tr.removed pre:before {
+  content: "-";
+}
+.commit-diff table tbody tr.unchanged pre:before {
+  content: "\0A0";
+}
+.commit-diff table tbody tr.diffCmd {
+  color: #1976dd;
+}
+.commit-diff table tbody tr.position,
+.commit-diff table tbody tr.position pre {
+  color: #999999;
+  background-color: #f0f0f7;
+}
 #git-progress-dialog textarea {
   height: 300px;
 }
 #git-progress-dialog textarea[readonly="readonly"] {
   cursor: default;
 }
-#git-diff-dialog .commit-diff .meta {
+#git-diff-dialog .commit-diff .meta-file {
   display: none;
 }
 #git-error-dialog pre {
@@ -968,118 +1110,6 @@
 }
 #git-commit-diff-dialog .modal-body ul.nav-stacked .active {
   background-color: #eee;
-}
-.commit-diff {
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  -o-user-select: text;
-  user-select: text;
-  cursor: text;
-  background-color: #f5f5f5;
-  border: 1px solid #b2b5b5;
-  border-radius: 3px;
-  margin-bottom: 1em;
-  overflow: auto;
-  padding: 0;
-}
-.commit-diff code,
-.commit-diff pre {
-  background: none;
-  border: none;
-  padding: 0 3px;
-  margin: 0;
-  font-family: 'SourceCodePro', monospace;
-  line-height: 15px;
-}
-.commit-diff table {
-  width: 100%;
-}
-.commit-diff table tbody tr:nth-child(even) td,
-.commit-diff table tbody tr:nth-child(odd) td,
-.commit-diff table tbody tr:nth-child(even) th,
-.commit-diff table tbody tr:nth-child(odd) th {
-  background: none;
-  padding: 0;
-}
-.commit-diff tr {
-  border: none;
-  margin: 0;
-  padding: 0;
-  border-width: 0;
-  white-space: nowrap;
-}
-.commit-diff tr td {
-  margin: 0;
-  padding: 0;
-  border-width: 0;
-}
-.commit-diff tr td:nth-child(1),
-.commit-diff tr td:nth-child(2) {
-  width: 1px;
-  border-right: 1px solid #ccc;
-  text-align: right;
-  color: #999;
-  padding: 0 8px !important;
-}
-.commit-diff tr.added,
-.commit-diff tr.added pre {
-  background-color: #dbffdb;
-}
-.commit-diff tr.added pre:before {
-  content: "+";
-}
-.commit-diff tr.removed,
-.commit-diff tr.removed pre {
-  background-color: #ffdbdb;
-}
-.commit-diff tr.removed pre:before {
-  content: "-";
-}
-.commit-diff tr.unchanged pre:before {
-  content: "\0A0";
-}
-.commit-diff tr.diffCmd {
-  color: #1976dd;
-}
-.commit-diff tr.position,
-.commit-diff tr.position pre {
-  color: #999999;
-  background-color: #f0f0f7;
-}
-.commit-diff tr .trailingWhitespace,
-.commit-diff tr .trailingWhitespace pre {
-  background-color: #ff7cad;
-}
-.commit-diff tr pre {
-  white-space: nowrap;
-}
-.commit-diff .meta:only-of-type {
-  display: none;
-}
-.commit-diff .meta td {
-  padding: 10px;
-  color: #1976dd;
-  font-weight: bold;
-}
-.commit-diff .meta .diff-file {
-  text-align: left !important;
-  padding: 10px;
-  color: #1976dd;
-  font-weight: bold;
-}
-.commit-diff .meta:not(:first-child) {
-  border-top: 1px dashed #b2b5b5;
-}
-.commit-diff .separator {
-  height: 20px;
-}
-.commit-diff .separator:first-child {
-  display: none;
-}
-.commit-diff .separator:last-child {
-  display: none;
 }
 #working-set-header .git-close-not-modified {
   position: absolute;

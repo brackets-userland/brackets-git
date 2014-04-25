@@ -1,15 +1,17 @@
 <table>
-    {{#files}}
-        <tr class="meta">
-            <td colspan="3" class="diff-file">{{name}}</td>
-        </tr>
-        {{#lines}}
-            <tr class="diff-row {{lineClass}}">
-                <td>{{numLineOld}}</td>
-                <td>{{numLineNew}}</td>
-                <td><pre style="tab-size: {{tabSize}}">{{{line}}}</pre></td>
+    <tbody>
+        {{#files}}
+            <tr class="meta-file">
+                <th colspan="3">{{name}}</th>
             </tr>
-        {{/lines}}
-        <tr class="separator"></tr>
-    {{/files}}
+            {{#lines}}
+                <tr class="diff-row {{lineClass}}">
+                    <td>{{numLineOld}}</td>
+                    <td>{{numLineNew}}</td>
+                    <td><pre style="tab-size: {{tabSize}}">{{{line}}}</pre></td>
+                </tr>
+            {{/lines}}
+            <tr class="separator"></tr>
+        {{/files}}
+    </tbody>
 </table>

@@ -1,10 +1,12 @@
 @import "brackets/brackets_colors.less";
+@import "brackets/brackets_theme_default.less";
 @import "colors.less";
 @import "common.less";
 @import "mixins.less";
 @import "code-mirror.less";
 @import "editor-holder.less";
 @import "history.less";
+@import "commit-diff.less";
 @import "dialogs/progress.less";
 @import "dialogs/diff-dialog.less";
 @import "dialogs/error-dialog.less";
@@ -476,121 +478,6 @@
             .active {
                 background-color: #eee;
             }
-        }
-    }
-}
-
-// nice, formatted and colored diff
-.commit-diff {
-    .selectable-text();
-    cursor: text;
-    code, pre {
-        background: none;
-        border: none;
-        padding: 0 3px;
-        margin: 0;
-        font-family: 'SourceCodePro', monospace;
-        line-height: 15px;
-    }
-    background-color: @almostWhite;
-    border: 1px solid @darkGrey;
-    border-radius: 3px;
-    margin-bottom: 1em;
-    overflow: auto;
-    padding: 0;
-    table {
-        width: 100%;
-        tbody tr:nth-child(even) td,
-        tbody tr:nth-child(odd)  td,
-        tbody tr:nth-child(even) th,
-        tbody tr:nth-child(odd)  th {
-            background: none;
-            padding: 0;
-        }
-    }
-    tr {
-        border: none;
-        margin: 0;
-        padding: 0;
-        border-width: 0;
-        td {
-            margin: 0;
-            padding: 0;
-            border-width: 0;
-            &:nth-child(1), &:nth-child(2) {
-                width: 1px;
-                border-right: 1px solid #ccc;
-                text-align: right;
-                color: #999;
-                padding: 0 8px !important;
-            }
-        }
-        white-space: nowrap;
-        &.added {
-            &, & pre {
-                background-color: @lgreen-background;
-            }
-            pre:before {
-                content: "+";
-            }
-        }
-        &.removed {
-            &, & pre {
-                background-color: @lred-background;
-            }
-            pre:before {
-                content: "-";
-            }
-        }
-        &.unchanged {
-            pre:before {
-                content: "\0A0"; // &nbsp;
-            }
-        }
-        &.diffCmd {
-            color: @blue-text;
-        }
-        &.position {
-            &, & pre {
-                color: @gray-text;
-                background-color: @lgray-background;
-            }
-        }
-        .trailingWhitespace {
-            &, & pre {
-                background-color: @red-background;
-            }
-        }
-        pre {
-            white-space: nowrap;
-        }
-    }
-    .meta {
-        &:only-of-type {
-            display: none;
-        }
-        td {
-            padding: 10px;
-            color: @blue-text;
-            font-weight: bold;
-        }
-        .diff-file {
-            text-align: left !important;
-            padding: 10px;
-            color: @blue-text;
-            font-weight: bold;
-        }
-        &:not(:first-child) {
-            border-top: 1px dashed @tc-gray-component-border;
-        }
-    }
-    .separator {
-        height: 20px;
-        &:first-child {
-            display: none;
-        }
-        &:last-child {
-            display: none;
         }
     }
 }
