@@ -511,12 +511,14 @@
 }
 .commit-diff code,
 .commit-diff pre {
+  color: #535353;
+  font-size: 12px;
+  line-height: 1.25;
+  font-family: "SourceCodePro-Medium", "ＭＳ ゴシック", "MS Gothic", monospace;
   background: none;
   border: none;
   padding: 0 3px;
   margin: 0;
-  font-family: 'SourceCodePro', monospace;
-  line-height: 15px;
 }
 .commit-diff table {
   width: 100%;
