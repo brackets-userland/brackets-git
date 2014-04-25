@@ -531,6 +531,7 @@
   padding: 0;
 }
 .commit-diff table tbody tr.meta-file th {
+  border-top: 0;
   color: #1976dd;
   padding: 7.5px;
   text-align: left;
