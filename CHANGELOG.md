@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.12
+* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+
 ## 0.13.11
 * When whitespace cleanup takes too long (over 3 seconds) it will show a progress dialog.
 * BUGFIX: Fixed launching osascripts on Mac (open terminal button).
