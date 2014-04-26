@@ -12,10 +12,8 @@ define(function (require, exports) {
         Dialogs            = brackets.getModule("widgets/Dialogs"),
         DocumentManager    = brackets.getModule("document/DocumentManager"),
         EditorManager      = brackets.getModule("editor/EditorManager"),
-        FileUtils          = brackets.getModule("file/FileUtils"),
         FileViewController = brackets.getModule("project/FileViewController"),
         KeyBindingManager  = brackets.getModule("command/KeyBindingManager"),
-        LanguageManager    = brackets.getModule("language/LanguageManager"),
         FileSystem         = brackets.getModule("filesystem/FileSystem"),
         Menus              = brackets.getModule("command/Menus"),
         FindInFiles        = brackets.getModule("search/FindInFiles"),
@@ -33,6 +31,7 @@ define(function (require, exports) {
         Strings            = require("../strings"),
         Utils              = require("src/Utils"),
         SettingsDialog     = require("./SettingsDialog"),
+        ProgressDialog     = require("src/dialogs/Progress"),
         PANEL_COMMAND_ID   = "brackets-git.panel";
 
     var gitPanelTemplate            = require("text!templates/git-panel.html"),
@@ -50,24 +49,6 @@ define(function (require, exports) {
         gitPanelMode = null,
         showingUntracked = true,
         $tableContainer = $(null);
-
-    /**
-     * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
-     *
-     * @param {!Document} doc
-     * @return {Promise} Resolved after editor has been refreshed; rejected if unable to load the
-     *      file's new content. Errors are logged but no UI is shown.
-     */
-    function _reloadDoc(doc) {
-        return Promise.cast(FileUtils.readAsText(doc.file))
-            .then(function (text) {
-                doc.refreshText(text, new Date());
-            })
-            .catch(function (err) {
-                ErrorHandler.logError("Error reloading contents of " + doc.file.fullPath);
-                ErrorHandler.logError(err);
-            });
-    }
 
     function lintFile(filename) {
         return CodeInspection.inspectFile(FileSystem.getFileForPath(Utils.getProjectRoot() + filename));
@@ -98,6 +79,8 @@ define(function (require, exports) {
     }
 
     function _showCommitDialog(stagedDiff, lintResults, prefilledMessage) {
+        lintResults = lintResults || [];
+
         // Flatten the error structure from various providers
         lintResults.forEach(function (lintResult) {
             lintResult.errors = [];
@@ -380,7 +363,7 @@ define(function (require, exports) {
                     var currentProjectRoot = Utils.getProjectRoot();
                     DocumentManager.getAllOpenDocuments().forEach(function (doc) {
                         if (doc.file.fullPath === currentProjectRoot + file) {
-                            _reloadDoc(doc);
+                            Utils.reloadDoc(doc);
                         }
                     });
                     refresh();
@@ -411,98 +394,6 @@ define(function (require, exports) {
                         .catch(function (err) {
                             ErrorHandler.showError(err, "File deletion failed");
                         });
-                });
-            }
-        });
-    }
-
-    /**
-     *  strips trailing whitespace from all the diffs and adds \n to the end
-     */
-    function stripWhitespaceFromFile(filename, clearWholeFile) {
-        return new Promise(function (resolve, reject) {
-
-            var fullPath              = Utils.getProjectRoot() + filename,
-                removeBom             = Preferences.get("removeByteOrderMark"),
-                normalizeLineEndings  = Preferences.get("normalizeLineEndings");
-
-            var _cleanLines = function (lineNumbers) {
-                // clean the file
-                var fileEntry = FileSystem.getFileForPath(fullPath);
-                return FileUtils.readAsText(fileEntry).then(function (text) {
-                    if (removeBom) {
-                        // remove BOM - \ufeff
-                        text = text.replace(/\ufeff/g, "");
-                    }
-                    if (normalizeLineEndings) {
-                        // normalizes line endings
-                        text = text.replace(/\r\n/g, "\n");
-                    }
-                    // process lines
-                    var lines = text.split("\n");
-
-                    if (lineNumbers) {
-                        lineNumbers.forEach(function (lineNumber) {
-                            lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
-                        });
-                    } else {
-                        lines.forEach(function (ln, lineNumber) {
-                            lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
-                        });
-                    }
-
-                    // add empty line to the end, i've heard that git likes that for some reason
-                    if (Preferences.get("addEndlineToTheEndOfFile")) {
-                        var lastLineNumber = lines.length - 1;
-                        if (lines[lastLineNumber].length > 0) {
-                            lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
-                        }
-                        if (lines[lastLineNumber].length > 0) {
-                            lines.push("");
-                        }
-                    }
-                    //-
-                    text = lines.join("\n");
-                    return Promise.cast(FileUtils.writeText(fileEntry, text))
-                        .catch(function (err) {
-                            ErrorHandler.logError("Wasn't able to clean whitespace from file: " + fullPath);
-                            resolve();
-                            throw err;
-                        })
-                        .then(function () {
-                            // refresh the file if it's open in the background
-                            DocumentManager.getAllOpenDocuments().forEach(function (doc) {
-                                if (doc.file.fullPath === fullPath) {
-                                    _reloadDoc(doc);
-                                }
-                            });
-                            // diffs were cleaned in this file
-                            resolve();
-                        });
-                });
-            };
-
-            if (clearWholeFile) {
-                _cleanLines(null);
-            } else {
-                Git.diffFile(filename).then(function (diff) {
-                    if (!diff) { return resolve(); }
-                    var modified = [],
-                        changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
-                    // collect line numbers to clean
-                    changesets.forEach(function (line) {
-                        var i,
-                            m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/),
-                            s = m[2].split(","),
-                            from = parseInt(s[0], 10),
-                            to = from - 1 + (parseInt(s[1], 10) || 1);
-                        for (i = from; i <= to; i++) { modified.push(i > 0 ? i - 1 : 0); }
-                    });
-                    _cleanLines(modified);
-                }).catch(function (ex) {
-                    // This error will bubble up to preparing commit dialog so just log here
-                    ErrorHandler.logError(ex);
-                    reject(ex);
                 });
             }
         });
@@ -548,9 +439,34 @@ define(function (require, exports) {
         });
     }
 
+    function inspectFiles(gitStatusResults) {
+        var lintResults = [];
+
+        var codeInspectionPromises = gitStatusResults.map(function (fileObj) {
+            var isDeleted = fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1;
+
+            // do a code inspection for the file, if it was not deleted
+            if (!isDeleted) {
+                return lintFile(fileObj.file).then(function (result) {
+                    if (result) {
+                        lintResults.push({
+                            filename: fileObj.file,
+                            result: result
+                        });
+                    }
+                });
+            }
+        });
+
+        return Promise.all(_.compact(codeInspectionPromises)).then(function () {
+            return lintResults;
+        });
+    }
+
     function handleGitCommit(prefilledMessage) {
-        var codeInspectionEnabled = Preferences.get("useCodeInspection");
+
         var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
+        var codeInspectionEnabled = Preferences.get("useCodeInspection");
 
         // Disable button (it will be enabled when selecting files after reset)
         Utils.setLoading($gitPanel.find(".git-commit"));
@@ -565,52 +481,26 @@ define(function (require, exports) {
                 return ErrorHandler.showError(new Error("Commit button should have been disabled"), "Nothing staged to commit");
             }
 
-            var lintResults = [],
-                promises = [];
-            files.forEach(function (fileObj) {
-                var queue = Promise.resolve();
+            var queue = Promise.resolve();
+            var lintResults;
 
-                var isDeleted = fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1,
-                    updateIndex = isDeleted;
-
-                // strip whitespace if configured to do so and file was not deleted
-                if (stripWhitespace && !isDeleted) {
-                    // strip whitespace only for recognized languages so binary files won't get corrupted
-                    var langId = LanguageManager.getLanguageForPath(fileObj.file).getId();
-                    if (["unknown", "binary", "image", "markdown"].indexOf(langId) === -1) {
-                        queue = queue.then(function () {
-                            var clearWholeFile = fileObj.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
-                                                 fileObj.status.indexOf(Git.FILE_STATUS.RENAMED) !== -1;
-                            return stripWhitespaceFromFile(fileObj.file, clearWholeFile);
-                        });
-                    }
-                }
-
+            if (stripWhitespace) {
                 queue = queue.then(function () {
-                    // stage the files again to include stripWhitespace changes
-                    // do not stage deleted files
-                    if (!isDeleted) {
-                        return Git.stage(fileObj.file, updateIndex);
-                    }
+                    return ProgressDialog.show(Utils.stripWhitespaceFromFiles(files),
+                                               Strings.CLEANING_WHITESPACE_PROGRESS,
+                                               { preDelay: 3, postDelay: 1 });
                 });
+            }
 
-                // do a code inspection for the file, if it was not deleted
-                if (codeInspectionEnabled && !isDeleted) {
-                    queue = queue.then(function () {
-                        return lintFile(fileObj.file).then(function (result) {
-                            if (result) {
-                                lintResults.push({
-                                    filename: fileObj.file,
-                                    result: result
-                                });
-                            }
-                        });
+            if (codeInspectionEnabled) {
+                queue = queue.then(function () {
+                    return inspectFiles(files).then(function (_lintResults) {
+                        lintResults = _lintResults;
                     });
-                }
+                });
+            }
 
-                promises.push(queue);
-            });
-            return Promise.all(promises).then(function () {
+            return queue.then(function () {
                 // All files are in the index now, get the diff and show dialog.
                 return _getStagedDiff().then(function (diff) {
                     return _showCommitDialog(diff, lintResults, prefilledMessage);

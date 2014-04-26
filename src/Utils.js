@@ -4,13 +4,17 @@ define(function (require, exports, module) {
     // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),
         Dialogs         = brackets.getModule("widgets/Dialogs"),
+        DocumentManager = brackets.getModule("document/DocumentManager"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
+        LanguageManager = brackets.getModule("language/LanguageManager"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
     // Local modules
-    var Preferences     = require("src/Preferences"),
+    var ErrorHandler    = require("src/ErrorHandler"),
+        Git             = require("src/git/Git"),
+        Preferences     = require("src/Preferences"),
         Promise         = require("bluebird"),
         Strings         = require("strings");
 
@@ -294,6 +298,164 @@ define(function (require, exports, module) {
         console[type || "log"](encodeSensitiveInformation(msg));
     }
 
+    /**
+     * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
+     *
+     * @param {!Document} doc
+     * @return {Promise} Resolved after editor has been refreshed; rejected if unable to load the
+     *      file's new content. Errors are logged but no UI is shown.
+     */
+    function reloadDoc(doc) {
+        return Promise.cast(FileUtils.readAsText(doc.file))
+            .then(function (text) {
+                doc.refreshText(text, new Date());
+            })
+            .catch(function (err) {
+                ErrorHandler.logError("Error reloading contents of " + doc.file.fullPath);
+                ErrorHandler.logError(err);
+            });
+    }
+
+    /**
+     *  strips trailing whitespace from all the diffs and adds \n to the end
+     */
+    function stripWhitespaceFromFile(filename, clearWholeFile) {
+        return new Promise(function (resolve, reject) {
+
+            var fullPath                  = getProjectRoot() + filename,
+                addEndlineToTheEndOfFile  = Preferences.get("addEndlineToTheEndOfFile"),
+                removeBom                 = Preferences.get("removeByteOrderMark"),
+                normalizeLineEndings      = Preferences.get("normalizeLineEndings");
+
+            var _cleanLines = function (lineNumbers) {
+                // clean the file
+                var fileEntry = FileSystem.getFileForPath(fullPath);
+                return FileUtils.readAsText(fileEntry).then(function (text) {
+                    if (removeBom) {
+                        // remove BOM - \ufeff
+                        text = text.replace(/\ufeff/g, "");
+                    }
+                    if (normalizeLineEndings) {
+                        // normalizes line endings
+                        text = text.replace(/\r\n/g, "\n");
+                    }
+                    // process lines
+                    var lines = text.split("\n");
+
+                    if (lineNumbers) {
+                        lineNumbers.forEach(function (lineNumber) {
+                            lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                        });
+                    } else {
+                        lines.forEach(function (ln, lineNumber) {
+                            lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                        });
+                    }
+
+                    // add empty line to the end, i've heard that git likes that for some reason
+                    if (addEndlineToTheEndOfFile) {
+                        var lastLineNumber = lines.length - 1;
+                        if (lines[lastLineNumber].length > 0) {
+                            lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
+                        }
+                        if (lines[lastLineNumber].length > 0) {
+                            lines.push("");
+                        }
+                    }
+
+                    //-
+                    text = lines.join("\n");
+                    return Promise.cast(FileUtils.writeText(fileEntry, text))
+                        .catch(function (err) {
+                            ErrorHandler.logError("Wasn't able to clean whitespace from file: " + fullPath);
+                            resolve();
+                            throw err;
+                        })
+                        .then(function () {
+                            // refresh the file if it's open in the background
+                            DocumentManager.getAllOpenDocuments().forEach(function (doc) {
+                                if (doc.file.fullPath === fullPath) {
+                                    reloadDoc(doc);
+                                }
+                            });
+                            // diffs were cleaned in this file
+                            resolve();
+                        });
+                });
+            };
+
+            if (clearWholeFile) {
+                _cleanLines(null);
+            } else {
+                Git.diffFile(filename).then(function (diff) {
+                    if (!diff) { return resolve(); }
+                    var modified = [],
+                        changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
+                    // collect line numbers to clean
+                    changesets.forEach(function (line) {
+                        var i,
+                            m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/),
+                            s = m[2].split(","),
+                            from = parseInt(s[0], 10),
+                            to = from - 1 + (parseInt(s[1], 10) || 1);
+                        for (i = from; i <= to; i++) { modified.push(i > 0 ? i - 1 : 0); }
+                    });
+                    _cleanLines(modified);
+                }).catch(function (ex) {
+                    // This error will bubble up to preparing commit dialog so just log here
+                    ErrorHandler.logError(ex);
+                    reject(ex);
+                });
+            }
+        });
+    }
+
+    function stripWhitespaceFromFiles(gitStatusResults) {
+        var notificationDefer = Promise.defer(),
+            startTime = (new Date()).getTime(),
+            queue = Promise.resolve();
+
+        gitStatusResults.forEach(function (fileObj) {
+            var isDeleted = fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1;
+
+            // strip whitespace if the file was not deleted
+            if (!isDeleted) {
+                // strip whitespace only for recognized languages so binary files won't get corrupted
+                var langId = LanguageManager.getLanguageForPath(fileObj.file).getId();
+                if (["unknown", "binary", "image", "markdown"].indexOf(langId) === -1) {
+
+                    queue = queue.then(function () {
+                        var clearWholeFile = fileObj.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
+                                             fileObj.status.indexOf(Git.FILE_STATUS.RENAMED) !== -1;
+
+                        var t = (new Date()).getTime() - startTime;
+                        notificationDefer.progress(t + "ms - " + Strings.CLEAN_FILE_START + ": " + fileObj.file);
+
+                        return stripWhitespaceFromFile(fileObj.file, clearWholeFile).then(function () {
+                            // stage the files again to include stripWhitespace changes
+                            return Git.stage(fileObj.file).then(function () {
+
+                                var t = (new Date()).getTime() - startTime;
+                                notificationDefer.progress(t + "ms - " + Strings.CLEAN_FILE_END + ": " + fileObj.file);
+                            });
+                        });
+                    });
+
+                }
+            }
+        });
+
+        queue
+            .then(function () {
+                notificationDefer.resolve();
+            })
+            .catch(function () {
+                notificationDefer.reject();
+            });
+
+        return notificationDefer.promise;
+    }
+
     // Public API
     exports.formatDiff                  = formatDiff;
     exports.getProjectRoot              = getProjectRoot;
@@ -307,5 +469,7 @@ define(function (require, exports, module) {
     exports.unsetLoading                = unsetLoading;
     exports.consoleLog                  = consoleLog;
     exports.encodeSensitiveInformation  = encodeSensitiveInformation;
+    exports.reloadDoc                   = reloadDoc;
+    exports.stripWhitespaceFromFiles    = stripWhitespaceFromFiles;
 
 });
