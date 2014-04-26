@@ -278,7 +278,6 @@ define(function (require) {
         var historyEnabled = $historyList.is(":visible"),
             currentFile = $historyList.data("file") || null,
             currentHistoryMode = historyEnabled ? (currentFile ? "FILE" : "GLOBAL") : "DISABLED",
-            $spinner = $(".spinner", $gitPanel),
             doc = newDocument ? newDocument : getCurrentDocument(),
             file;
 
@@ -308,9 +307,9 @@ define(function (require) {
             if ($historyList.length > 0) {
                 $historyList.remove();
             }
-            $spinner.addClass("spin");
-            renderHistory(file).then(function () {
-                $spinner.removeClass("spin");
+            var $spinner = $("<div class='spinner spin large'></div>").appendTo($gitPanel);
+            renderHistory(file).finally(function () {
+                $spinner.remove();
             });
         }
 
