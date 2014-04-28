@@ -4,6 +4,7 @@
 
 ## 0.13.12
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+* History now remembers last used Expand All/Collapse All.
 * BUGFIX: View authors of selection will now ask you to save modified file before launch.
 
 ## 0.13.11
