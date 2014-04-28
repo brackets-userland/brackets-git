@@ -629,6 +629,9 @@
 .commit-diff table tbody tr.diffCmd {
   color: #1976dd;
 }
+.commit-diff table tbody tr.position td {
+  padding: 8px;
+}
 .commit-diff table tbody tr.position,
 .commit-diff table tbody tr.position pre {
   color: #999999;
