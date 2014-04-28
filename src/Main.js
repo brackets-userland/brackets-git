@@ -102,7 +102,7 @@ define(function (require, exports) {
             var ignored = false;
             _.forEach(_ignoreEntries, function (entry) {
                 if (entry.regexp.test(path)) {
-                    ignored = (entry.type === "ignore");
+                    ignored = (entry.type === "deny");
                 }
             });
             return ignored;
@@ -141,38 +141,38 @@ define(function (require, exports) {
                 }
 
                 _ignoreEntries = _.compact(_.map(content.split("\n"), function (line) {
+                    var type = "deny",
+                        isNegative,
+                        leadingSlash,
+                        regex;
+
                     line = line.trim();
                     if (!line || line.indexOf("#") === 0) {
                         return;
                     }
 
-                    var path,
-                        type = "ignore";
-                    if (line.indexOf("/") === 0) {
-                        line = line.substring(1);
-                        path = projectRoot + line;
-                    } else if (line.indexOf("!") === 0) {
-                        type = "include";
-                        line = line.substring(1);
-                        path = projectRoot + line;
-                    } else {
-                        path = projectRoot + "(**/)?" + line;
+                    isNegative = line.indexOf("!") === 0;
+                    if (isNegative) {
+                        line = line.slice(1);
+                        type = "accept";
                     }
-                    path = path.replace(/\\/, "");
-                    path = path.replace(/\./, "\\.");
+                    if (line.indexOf("\\") === 0) {
+                        line = line.slice(1);
+                    }
+                    if (line.indexOf("/") === 0) {
+                        line = line.slice(1);
+                        leadingSlash = true;
+                    }
 
-                    path = "^" + path + "/?$";
+                    line = line.replace(/\/$/, "/**");
 
-                    path = path.replace(/\*+/g, function (match) {
-                        if (match.length === 2) {
-                            return ".*";
-                        }
-                        if (match.length === 1) {
-                            return "[^/]*";
-                        }
-                    });
+                    regex = projectRoot + (leadingSlash ? "" : "**") + line;
+                    // NOTE: We cannot use StringUtils.regexEscape() here because we don't wanna replace *
+                    regex = regex.replace(/([.?+\^$\[\]\\(){}|\-])/g, "\\$1");
+                    regex = regex.replace("**", "(.+)").replace("*", "([^/]+)");
+                    regex = "^" + regex + "$";
 
-                    return {regexp: new RegExp(path), type: type};
+                    return {regexp: new RegExp(regex), type: type};
                 }));
 
                 return resolve();
