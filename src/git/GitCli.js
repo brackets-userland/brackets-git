@@ -689,7 +689,7 @@ define(function (require, exports) {
         return _isFileStaged(file).then(function (staged) {
             var args = ["diff", "--no-ext-diff", "--no-color"];
             if (staged) { args.push("--staged"); }
-            args.push(file);
+            args.push("--", file);
             return git(args);
         });
     }
