@@ -4,6 +4,7 @@
 
 ## 0.13.12
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+* BUGFIX: View authors of selection will now ask you to save modified file before launch.
 
 ## 0.13.11
 * When whitespace cleanup takes too long (over 3 seconds) it will show a progress dialog.
