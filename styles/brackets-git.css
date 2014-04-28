@@ -556,10 +556,10 @@
 .commit-diff table {
   width: 100%;
 }
-.commit-diff table tbody tr:nth-child(even) td,
 .commit-diff table tbody tr:nth-child(odd) td,
-.commit-diff table tbody tr:nth-child(even) th,
-.commit-diff table tbody tr:nth-child(odd) th {
+.commit-diff table tbody tr:nth-child(even) td,
+.commit-diff table tbody tr:nth-child(odd) th,
+.commit-diff table tbody tr:nth-child(even) th {
   background: none;
   padding: 0;
 }

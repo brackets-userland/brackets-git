@@ -20,12 +20,13 @@
     padding: 0;
     table {
         width: 100%;
-        tbody tr:nth-child(even) td,
-        tbody tr:nth-child(odd)  td,
-        tbody tr:nth-child(even) th,
-        tbody tr:nth-child(odd)  th {
-            background: none;
-            padding: 0;
+        tbody tr {
+            &:nth-child(odd), &:nth-child(even) {
+                td, th {
+                    background: none;
+                    padding: 0;
+                }
+            }
         }
         tbody {
             tr.meta-file {
