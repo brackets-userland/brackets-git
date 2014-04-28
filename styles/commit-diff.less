@@ -7,7 +7,7 @@
     cursor: text;
     code, pre {
         .code-font();
-        background: none;
+        background-color: none;
         border: none;
         padding: 0 3px;
         margin: 0;
@@ -18,15 +18,19 @@
     margin-bottom: 1em;
     overflow: auto;
     padding: 0;
+    // FIXME: this part will be removed after github.com/adobe/brackets/issues/7673
+    table:not(.table-striped) {
+        > tbody {
+            > tr:nth-child(even), tr:nth-child(odd) {
+                > td,
+                > th {
+                    background-color: transparent;
+                }
+            }
+        }
+    }
     table {
         width: 100%;
-        tbody tr:nth-child(even) td,
-        tbody tr:nth-child(odd)  td,
-        tbody tr:nth-child(even) th,
-        tbody tr:nth-child(odd)  th {
-            background: none;
-            padding: 0;
-        }
         tbody {
             tr.meta-file {
                 th {
@@ -36,7 +40,6 @@
                     text-align: left;
                 }
                 &:not(:first-child) {
-                    // TODO: why I can't see this border?
                     border-top: 1px dashed @tc-gray-component-border;
                 }
             }
@@ -49,12 +52,14 @@
             tr {
                 td {
                     border-width: 0px;
-                    &:nth-child(1), &:nth-child(2) {
+                    padding: 0 8px;
+                    &.row-num {
                         width: 1px;
-                        border-right: 1px solid lighten(@tc-gray-component-border, @bc-color-step-size);
+                        border-right: 1px solid;
+                        border-color: @diff-gray-border;
                         text-align: right;
-                        color: @code-mirror-line-numbers-color;
-                        padding: 0 8px;
+                        color: @diff-row-text-color;
+                        .user-select(none);
                     }
                     pre {
                         white-space: nowrap;
@@ -65,18 +70,26 @@
                 }
                 &.added {
                     &, & pre {
-                        background-color: @lgreen-background;
+                        background-color: @diff-lgreen-bg;
                     }
                     pre:before {
                         content: "+";
                     }
+                    .row-num {
+                        background-color: @diff-green-bg !important; //FIXME: `!important` will be removed after github.com/adobe/brackets/issues/7673
+                        border-color: @diff-green-border;
+                    }
                 }
                 &.removed {
                     &, & pre {
-                        background-color: @lred-background;
+                        background-color: @diff-lred-bg;
                     }
                     pre:before {
                         content: "-";
+                    }
+                    .row-num {
+                        background-color: @diff-red-bg !important; //FIXME: `!important` will be removed after github.com/adobe/brackets/issues/7673
+                        border-color: @diff-red-border;
                     }
                 }
                 &.unchanged {
@@ -88,9 +101,12 @@
                     color: @blue-text;
                 }
                 &.position {
+                    td {
+                        padding: 8px;
+                    }
                     &, & pre {
-                        color: @gray-text;
-                        background-color: @lgray-background;
+                        color: @diff-gray-text;
+                        background-color: @diff-lgray-bg;
                     }
                 }
             }
