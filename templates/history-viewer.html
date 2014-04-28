@@ -1,4 +1,4 @@
-<div id="history-viewer" class="git-history">
+<div id="history-viewer">
     <div class="header">
         <div>
             <a href="#" class="close">&times;</a>
@@ -14,6 +14,7 @@
                     {{#useIdenticon}}<img src="http://gravatar.com/avatar/{{commit.emailHash}}?size=30px&default=identicon&f=y">{{/useIdenticon}}
                 </div>
                 <span class="commit-author-name">{{commit.author}}</span>
+                <span class="commit-author-email">&lt;{{commit.email}}&gt;</span>
             </span>
             <span class="commit-hash" data-hash="{{commit.hash}}">
                 <i class="octicon octicon-git-commit"></i><span class="selectable-text">{{commit.hashShort}}</span>
