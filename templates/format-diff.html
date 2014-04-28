@@ -6,8 +6,8 @@
             </tr>
             {{#lines}}
                 <tr class="diff-row {{lineClass}}">
-                    <td>{{numLineOld}}</td>
-                    <td>{{numLineNew}}</td>
+                    <td class="row-num">{{numLineOld}}</td>
+                    <td class="row-num">{{numLineNew}}</td>
                     <td><pre style="tab-size: {{tabSize}}">{{{line}}}</pre></td>
                 </tr>
             {{/lines}}

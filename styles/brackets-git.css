@@ -548,20 +548,19 @@
   font-size: 12px;
   line-height: 1.25;
   font-family: "SourceCodePro-Medium", "ＭＳ ゴシック", "MS Gothic", monospace;
-  background: none;
+  background-color: none;
   border: none;
   padding: 0 3px;
   margin: 0;
 }
+.commit-diff table:not(.table-striped) > tbody > tr:nth-child(even) > td,
+.commit-diff table:not(.table-striped) > tbody tr:nth-child(odd) > td,
+.commit-diff table:not(.table-striped) > tbody > tr:nth-child(even) > th,
+.commit-diff table:not(.table-striped) > tbody tr:nth-child(odd) > th {
+  background-color: transparent;
+}
 .commit-diff table {
   width: 100%;
-}
-.commit-diff table tbody tr:nth-child(odd) td,
-.commit-diff table tbody tr:nth-child(even) td,
-.commit-diff table tbody tr:nth-child(odd) th,
-.commit-diff table tbody tr:nth-child(even) th {
-  background: none;
-  padding: 0;
 }
 .commit-diff table tbody tr.meta-file th {
   border-top: 0;
@@ -581,14 +580,14 @@
 }
 .commit-diff table tbody tr td {
   border-width: 0px;
-}
-.commit-diff table tbody tr td:nth-child(1),
-.commit-diff table tbody tr td:nth-child(2) {
-  width: 1px;
-  border-right: 1px solid #cccece;
-  text-align: right;
-  color: #949494;
   padding: 0 8px;
+}
+.commit-diff table tbody tr td.row-num {
+  width: 1px;
+  border-right: 1px solid;
+  border-color: #cbcbcb;
+  text-align: right;
+  color: rgba(0, 0, 0, 0.3);
   -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
@@ -609,12 +608,20 @@
 .commit-diff table tbody tr.added pre:before {
   content: "+";
 }
+.commit-diff table tbody tr.added .row-num {
+  background-color: #ceffce !important;
+  border-color: #a1cfa1;
+}
 .commit-diff table tbody tr.removed,
 .commit-diff table tbody tr.removed pre {
   background-color: #ffdbdb;
 }
 .commit-diff table tbody tr.removed pre:before {
   content: "-";
+}
+.commit-diff table tbody tr.removed .row-num {
+  background-color: #f7c8c8 !important;
+  border-color: #e9aeae;
 }
 .commit-diff table tbody tr.unchanged pre:before {
   content: "\0A0";
