@@ -174,10 +174,17 @@ define(function (require, exports, module) {
                 Strings: Strings
             });
 
-            var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
-            if (!options.booleanResponse) {
-                dialog.getElement().find("input").focus();
-            }
+            var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+                $dialog = dialog.getElement();
+
+            _.defer(function () {
+                var $input = $dialog.find("input:visible");
+                if ($input.length > 0) {
+                    $input.focus();
+                } else {
+                    $dialog.find(".primary").focus();
+                }
+            });
 
             dialog.done(function (buttonId) {
                 if (options.booleanResponse) {

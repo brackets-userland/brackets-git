@@ -4,6 +4,7 @@
 
 ## 0.13.13
 * BUGFIX: Settings & Changelog dialogs are no longer displayed on startup when running tests.
+* BUGFIX: Focus doesn't remain in the editor any longer when attempting to delete local branch.
 
 ## 0.13.12
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
