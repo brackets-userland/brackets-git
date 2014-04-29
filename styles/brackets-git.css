@@ -467,6 +467,8 @@
 }
 #history-viewer > .body .commit-files .openFile {
   margin-left: 20px;
+  cursor: pointer;
+  opacity: 0.7;
 }
 #history-viewer .message {
   display: block;
