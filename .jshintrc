@@ -38,6 +38,7 @@
         "document": true,
         "brackets": true,
         "define": true,
-        "Mustache": true
+        "Mustache": true,
+        "window": true
     }
 }

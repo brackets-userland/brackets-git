@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.13
+* BUGFIX: Settings & Changelog dialogs are no longer displayed on startup when running tests.
+
 ## 0.13.12
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
 * History now remembers last used Expand All/Collapse All.

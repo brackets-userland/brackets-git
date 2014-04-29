@@ -41,10 +41,15 @@ define(function (require, exports, module) {
 
     // Display settings panel on first start / changelog dialog on version change
     ExtensionInfo.get().then(function (packageJson) {
+        // do not display dialogs when running tests
+        if (window.isBracketsTestWindow) {
+            return;
+        }
+
         var lastVersion    = Preferences.get("lastVersion"),
             currentVersion = packageJson.version;
 
-        if (lastVersion === null) {
+        if (!lastVersion) {
             Preferences.persist("lastVersion", "firstStart");
             SettingsDialog.show();
         } else if (lastVersion !== currentVersion) {
