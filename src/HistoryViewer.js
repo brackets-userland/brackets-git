@@ -79,6 +79,11 @@ define(function (require, exports) {
             .on("click", ".commit-files a", function () {
                 toggleDiff($(this));
             })
+            .on("click", ".openFile", function (e) {
+                e.stopPropagation();
+                var file = $(this).closest("[x-file]").attr("x-file");
+                Utils.openEditorForFile(file, true);
+            })
             .on("click", ".close", function () {
                 // Close history viewer
                 remove();
@@ -243,6 +248,7 @@ define(function (require, exports) {
 
     function remove() {
         if (previousFile && previousFile.file) {
+            // TODO: use utils?
             CommandManager.execute("file.open", previousFile.file);
         } else {
             EditorManager._closeCustomViewer();

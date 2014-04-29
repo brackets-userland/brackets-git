@@ -223,5 +223,6 @@ define({
     USE_VERBOSE_DIFF:                   "Show verbose output in diffs",
     USING_GIT_VERSION:                  "Git version",
     VIEW_AUTHORS_FILE:                  "View authors of file",
-    VIEW_AUTHORS_SELECTION:             "View authors of selection"
+    VIEW_AUTHORS_SELECTION:             "View authors of selection",
+    VIEW_THIS_FILE:                     "View this file"
 });

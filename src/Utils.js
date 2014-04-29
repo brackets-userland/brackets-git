@@ -3,6 +3,8 @@ define(function (require, exports, module) {
 
     // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),
+        CommandManager  = brackets.getModule("command/CommandManager"),
+        Commands        = brackets.getModule("command/Commands"),
         Dialogs         = brackets.getModule("widgets/Dialogs"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
@@ -463,6 +465,15 @@ define(function (require, exports, module) {
         return notificationDefer.promise;
     }
 
+    function openEditorForFile(file, relative) {
+        if (relative) {
+            file = getProjectRoot() + file;
+        }
+        CommandManager.execute(Commands.FILE_OPEN, {
+            fullPath: file
+        });
+    }
+
     // Public API
     exports.formatDiff                  = formatDiff;
     exports.getProjectRoot              = getProjectRoot;
@@ -478,5 +489,6 @@ define(function (require, exports, module) {
     exports.encodeSensitiveInformation  = encodeSensitiveInformation;
     exports.reloadDoc                   = reloadDoc;
     exports.stripWhitespaceFromFiles    = stripWhitespaceFromFiles;
+    exports.openEditorForFile           = openEditorForFile;
 
 });
