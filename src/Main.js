@@ -12,15 +12,12 @@ define(function (require, exports) {
         Events            = require("src/Events"),
         EventEmitter      = require("src/EventEmitter"),
         Strings           = require("../strings"),
-        Preferences       = require("./Preferences"),
         ErrorHandler      = require("./ErrorHandler"),
-        Git               = require("src/git/Git"),
         Panel             = require("./Panel"),
         Branch            = require("./Branch"),
         CloseNotModified  = require("./CloseNotModified"),
         Setup             = require("src/utils/Setup"),
-        Utils             = require("src/Utils"),
-        GitIgnore         = require("src/GitIgnore");
+        Utils             = require("src/Utils");
 
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
                                     .addClass("loading").appendTo($("#main-toolbar .buttons"));
@@ -91,28 +88,6 @@ define(function (require, exports) {
         return _addRemoveItemInGitignore(fileEntry, "remove");
     }
 
-    function refreshProjectFiles(modifiedPaths, newPaths) {
-        if (!Preferences.get("markModifiedInTree")) {
-            return;
-        }
-
-        [ ["#project-files-container", "entry"], ["#open-files-container", "file"] ].forEach(function (arr) {
-            $(arr[0]).find("li").each(function () {
-                var $li = $(this),
-                    data = $li.data(arr[1]);
-                if (data) {
-                    var fullPath = data.fullPath,
-                        isModified = modifiedPaths.indexOf(fullPath) !== -1,
-                        isNew = newPaths.indexOf(fullPath) !== -1;
-
-                    $li.toggleClass("git-ignored", GitIgnore.isIgnored(fullPath))
-                       .toggleClass("git-new", isNew)
-                       .toggleClass("git-modified", isModified);
-                }
-            });
-        });
-    }
-
     function init() {
         // Initialize items dependent on HTML DOM
         AppInit.htmlReady(function () {
@@ -154,26 +129,7 @@ define(function (require, exports) {
     }
 
     // Event handlers
-    EventEmitter.on(Events.GIT_STATUS_RESULTS, function (files) {
-        var projectRoot = Utils.getProjectRoot(),
-            modifiedPaths = [],
-            newPaths = [];
-
-        files.forEach(function (entry) {
-            var isNew = entry.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
-                        entry.status.indexOf(Git.FILE_STATUS.ADDED) !== -1;
-
-            var fullPath = projectRoot + entry.file;
-            if (isNew) {
-                newPaths.push(fullPath);
-            } else {
-                modifiedPaths.push(fullPath);
-            }
-        });
-
-        refreshProjectFiles(modifiedPaths, newPaths);
-    });
-
+    // TODO: investigate this event
     EventEmitter.on(Events.HANDLE_PROJECT_REFRESH, function () {
         $(ProjectManager).triggerHandler("projectRefresh");
     });

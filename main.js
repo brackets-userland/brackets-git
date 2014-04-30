@@ -28,6 +28,7 @@ define(function (require, exports, module) {
         "src/GutterManager",
         "src/History",
         "src/NoRepo",
+        "src/ProjectTreeMarks",
         "src/Remotes",
         "src/utils/Terminal"
     ];
