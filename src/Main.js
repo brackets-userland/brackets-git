@@ -9,7 +9,6 @@ define(function (require, exports) {
         ProjectManager    = brackets.getModule("project/ProjectManager");
 
     var ExpectedError     = require("src/ExpectedError"),
-        Promise           = require("bluebird"),
         Events            = require("src/Events"),
         EventEmitter      = require("src/EventEmitter"),
         Strings           = require("../strings"),
@@ -20,7 +19,8 @@ define(function (require, exports) {
         Branch            = require("./Branch"),
         CloseNotModified  = require("./CloseNotModified"),
         Setup             = require("src/utils/Setup"),
-        Utils             = require("src/Utils");
+        Utils             = require("src/Utils"),
+        GitIgnore         = require("./GitIgnore");
 
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
                                     .addClass("loading").appendTo($("#main-toolbar .buttons"));
@@ -66,7 +66,7 @@ define(function (require, exports) {
                 if (err) {
                     return ErrorHandler.showError(err, "Failed modifying .gitignore");
                 }
-                refreshIgnoreEntries().then(Panel.refresh);
+                GitIgnore.refreshIgnoreEntries().then(Panel.refresh);
             });
         });
     }
@@ -91,21 +91,9 @@ define(function (require, exports) {
         return _addRemoveItemInGitignore(fileEntry, "remove");
     }
 
-    var _ignoreEntries = [];
-
     function refreshProjectFiles(modifiedPaths, newPaths) {
         if (!Preferences.get("markModifiedInTree")) {
             return;
-        }
-
-        function isIgnored(path) {
-            var ignored = false;
-            _.forEach(_ignoreEntries, function (entry) {
-                if (entry.regexp.test(path)) {
-                    ignored = (entry.type === "ignore");
-                }
-            });
-            return ignored;
         }
 
         [ ["#project-files-container", "entry"], ["#open-files-container", "file"] ].forEach(function (arr) {
@@ -117,65 +105,10 @@ define(function (require, exports) {
                         isModified = modifiedPaths.indexOf(fullPath) !== -1,
                         isNew = newPaths.indexOf(fullPath) !== -1;
 
-                    $li.toggleClass("git-ignored", isIgnored(fullPath))
+                    $li.toggleClass("git-ignored", GitIgnore.isIgnored(fullPath))
                        .toggleClass("git-new", isNew)
                        .toggleClass("git-modified", isModified);
                 }
-            });
-        });
-    }
-
-    function refreshIgnoreEntries() {
-        return new Promise(function (resolve) {
-
-            if (!Preferences.get("markModifiedInTree")) {
-                return resolve();
-            }
-
-            var projectRoot = Utils.getProjectRoot();
-
-            FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
-                if (err) {
-                    _ignoreEntries = [];
-                    return resolve();
-                }
-
-                _ignoreEntries = _.compact(_.map(content.split("\n"), function (line) {
-                    line = line.trim();
-                    if (!line || line.indexOf("#") === 0) {
-                        return;
-                    }
-
-                    var path,
-                        type = "ignore";
-                    if (line.indexOf("/") === 0) {
-                        line = line.substring(1);
-                        path = projectRoot + line;
-                    } else if (line.indexOf("!") === 0) {
-                        type = "include";
-                        line = line.substring(1);
-                        path = projectRoot + line;
-                    } else {
-                        path = projectRoot + "(**/)?" + line;
-                    }
-                    path = path.replace(/\\/, "");
-                    path = path.replace(/\./, "\\.");
-
-                    path = "^" + path + "/?$";
-
-                    path = path.replace(/\*+/g, function (match) {
-                        if (match.length === 2) {
-                            return ".*";
-                        }
-                        if (match.length === 1) {
-                            return "[^/]*";
-                        }
-                    });
-
-                    return {regexp: new RegExp(path), type: type};
-                }));
-
-                return resolve();
             });
         });
     }
@@ -221,14 +154,6 @@ define(function (require, exports) {
     }
 
     // Event handlers
-    EventEmitter.on(Events.GIT_ENABLED, function () {
-        refreshIgnoreEntries();
-    });
-
-    EventEmitter.on(Events.GIT_DISABLED, function () {
-        _ignoreEntries = [];
-    });
-
     EventEmitter.on(Events.GIT_STATUS_RESULTS, function (files) {
         var projectRoot = Utils.getProjectRoot(),
             modifiedPaths = [],
