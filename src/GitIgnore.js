@@ -78,6 +78,11 @@ define(function (require, exports) {
         return ignored;
     }
 
+    EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function (evt, file) {
+        if (file.fullPath === Utils.getProjectRoot() + ".gitignore") {
+            refreshIgnoreEntries();
+        }
+    });
     EventEmitter.on(Events.GIT_ENABLED, function () {
         refreshIgnoreEntries();
     });
