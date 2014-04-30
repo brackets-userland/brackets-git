@@ -4,6 +4,7 @@
 
 ## 0.13.13
 * Added icon to the history viewer which opens the mentioned file for editing.
+* Improved .gitignore parsing by [Marcel Gerber](https://github.com/SAPlayer)
 * BUGFIX: Settings & Changelog dialogs are no longer displayed on startup when running tests.
 * BUGFIX: Focus doesn't remain in the editor any longer when attempting to delete local branch.
 
