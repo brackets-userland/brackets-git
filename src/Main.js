@@ -20,7 +20,7 @@ define(function (require, exports) {
         CloseNotModified  = require("./CloseNotModified"),
         Setup             = require("src/utils/Setup"),
         Utils             = require("src/Utils"),
-        GitIgnore         = require("./GitIgnore");
+        GitIgnore         = require("src/GitIgnore");
 
     var $icon                   = $("<a id='git-toolbar-icon' href='#'></a>").attr("title", Strings.LOADING)
                                     .addClass("loading").appendTo($("#main-toolbar .buttons"));
@@ -66,7 +66,7 @@ define(function (require, exports) {
                 if (err) {
                     return ErrorHandler.showError(err, "Failed modifying .gitignore");
                 }
-                GitIgnore.refreshIgnoreEntries().then(Panel.refresh);
+                Panel.refresh();
             });
         });
     }
