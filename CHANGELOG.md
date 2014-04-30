@@ -2,8 +2,17 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.13
+* Added icon to the history viewer which opens the mentioned file for editing.
+* BUGFIX: Settings & Changelog dialogs are no longer displayed on startup when running tests.
+* BUGFIX: Focus doesn't remain in the editor any longer when attempting to delete local branch.
+
 ## 0.13.12
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+* History now remembers last used Expand All/Collapse All.
+* Styled row numbers on diffs by [Fez Vrasta](https://github.com/FezVrasta)
+* BUGFIX: View authors of selection will now ask you to save modified file before launch.
+* BUGFIX: Diffs no logner fail when external diff tool is configured.
 
 ## 0.13.11
 * When whitespace cleanup takes too long (over 3 seconds) it will show a progress dialog.

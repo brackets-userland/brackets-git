@@ -1,70 +1,61 @@
 // main: brackets-git.less
 
-.git-history {
-    .history-commit > td {
-        &:nth-child(1) {
-            width: 30px;
-            .commit-author-avatar {
-                width: 18px;
-                height: 18px;
-                margin-left: 15px;
-            }
-        }
-        &:nth-child(2) {
-            width: 250px;
-        }
-        &.commit-title {
-            @padLeft: 15px;
-            padding-left: @padLeft;
-            span {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                position: absolute;
-                left: @padLeft;
-                right: 0;
-            }
-        }
-        position: relative;
-        overflow: hidden;
-    }
-    .commit-author-avatar {
-        @size: 13px;
+.commit-author-avatar-mixin(@size) {
+    position: relative;
+    width: @size;
+    height: @size;
+    text-align: center;
+    span, img {
         position: absolute;
-        top: 4px;
-        left: 0px;
-        right: 2px;
-        bottom: 2px;
-        width: @size;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
         height: @size;
-        text-align: center;
-        span {
-            font-family: 'SourceCodePro', monospace;
-            font-size: 11px;
-            font-weight: 500;
-            font-size: @size;
-            line-height: @size;
-            padding: 0 5px;
-            color: #FEFEFE;
-            text-transform: uppercase;
-            border-radius: 2px;
-            &.avatar-bw {
-                -webkit-filter: grayscale(100%);
-            }
-        }
-        img {
-            position: absolute;
-            left: 0;
-            top: 1px;
-            height: 16px;
-            width: 16px;
-            border-radius: 2px;
-        }
+        width: @size;
+        border-radius: 2px;
     }
-    .commit-author {
+    span {
+        .code-font();
         font-weight: 500;
+        font-size: @size;
+        line-height: @size;
+        text-transform: uppercase;
+        &.avatar-bw {
+            -webkit-filter: grayscale(100%);
+        }
     }
 }
+
+#git-history-list {
+    table-layout: fixed;
+    tbody tr td {
+        vertical-align: middle;
+        position: relative;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        &:nth-child(1) { // author avatar
+            width: 30px;
+            .commit-author-avatar {
+                .commit-author-avatar-mixin(18px);
+            }
+        }
+        &:nth-child(2) { // commit date/author
+            width: 250px;
+            .commit-author {
+                font-weight: 500;
+            }
+        }
+        &:nth-child(3) { // commit title
+
+        }
+        &:last-child { // commit hash
+            width: 50px;
+        }
+    }
+}
+
 #history-viewer {
     position: absolute;
     top: 0px;
@@ -76,17 +67,18 @@
     .flex-box(column);
     > .header {
         .flex-item(0, 0);
-        .commit-author-avatar {
-            @size: 18px;
-            top: 4px;
-            margin-right: 2px;
-            position: relative;
-            display: inline-block;
-            width: @size;
-            height: @size;
-            .text {
-                font-size: @size;
-                line-height: @size;
+        .commit-author {
+            @lineHeight: 36px;
+            height: @lineHeight;
+            line-height: @lineHeight;
+            .commit-author-avatar {
+                .commit-author-avatar-mixin(@lineHeight);
+                display: inline-block;
+                top: @lineHeight / 3;
+            }
+            .commit-author-name, .commit-author-email {
+                margin-left: 1em;
+                .selectable-text();
             }
         }
         padding: 25px 30px 33px;
@@ -206,6 +198,11 @@
         }
         .commit-files {
             padding: 0 20px;
+            .openFile {
+                margin-left: 20px;
+                cursor: pointer;
+                opacity: 0.7;
+            }
         }
     }
     .message {

@@ -163,6 +163,14 @@
   top: -6px;
   left: 6px;
 }
+.selectable-text {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  -o-user-select: text;
+  user-select: text;
+}
 .CodeMirror .CodeMirror-gutter-elt {
   pointer-events: all;
 }
@@ -221,66 +229,57 @@
 #editor-holder .git.spinner.spin {
   display: block;
 }
-.git-history .history-commit > td {
+#git-history-list {
+  table-layout: fixed;
+}
+#git-history-list tbody tr td {
+  vertical-align: middle;
   position: relative;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.git-history .history-commit > td:nth-child(1) {
+#git-history-list tbody tr td:nth-child(1) {
   width: 30px;
 }
-.git-history .history-commit > td:nth-child(1) .commit-author-avatar {
+#git-history-list tbody tr td:nth-child(1) .commit-author-avatar {
+  position: relative;
   width: 18px;
   height: 18px;
-  margin-left: 15px;
-}
-.git-history .history-commit > td:nth-child(2) {
-  width: 250px;
-}
-.git-history .history-commit > td.commit-title {
-  padding-left: 15px;
-}
-.git-history .history-commit > td.commit-title span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  position: absolute;
-  left: 15px;
-  right: 0;
-}
-.git-history .commit-author-avatar {
-  position: absolute;
-  top: 4px;
-  left: 0px;
-  right: 2px;
-  bottom: 2px;
-  width: 13px;
-  height: 13px;
   text-align: center;
 }
-.git-history .commit-author-avatar span {
-  font-family: 'SourceCodePro', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 13px;
-  padding: 0 5px;
-  color: #FEFEFE;
-  text-transform: uppercase;
-  border-radius: 2px;
-}
-.git-history .commit-author-avatar span.avatar-bw {
-  -webkit-filter: grayscale(100%);
-}
-.git-history .commit-author-avatar img {
+#git-history-list tbody tr td:nth-child(1) .commit-author-avatar span,
+#git-history-list tbody tr td:nth-child(1) .commit-author-avatar img {
   position: absolute;
   left: 0;
-  top: 1px;
-  height: 16px;
-  width: 16px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: 18px;
+  width: 18px;
   border-radius: 2px;
 }
-.git-history .commit-author {
+#git-history-list tbody tr td:nth-child(1) .commit-author-avatar span {
+  color: #535353;
+  font-size: 12px;
+  line-height: 1.25;
+  font-family: "SourceCodePro-Medium", "ＭＳ ゴシック", "MS Gothic", monospace;
   font-weight: 500;
+  font-size: 18px;
+  line-height: 18px;
+  text-transform: uppercase;
+}
+#git-history-list tbody tr td:nth-child(1) .commit-author-avatar span.avatar-bw {
+  -webkit-filter: grayscale(100%);
+}
+#git-history-list tbody tr td:nth-child(2) {
+  width: 250px;
+}
+#git-history-list tbody tr td:nth-child(2) .commit-author {
+  font-weight: 500;
+}
+#git-history-list tbody tr td:last-child {
+  width: 50px;
 }
 #history-viewer {
   position: absolute;
@@ -300,17 +299,51 @@
   flex: 0 0 auto;
   padding: 25px 30px 33px;
 }
-#history-viewer > .header .commit-author-avatar {
-  top: 4px;
-  margin-right: 2px;
-  position: relative;
-  display: inline-block;
-  width: 18px;
-  height: 18px;
+#history-viewer > .header .commit-author {
+  height: 36px;
+  line-height: 36px;
 }
-#history-viewer > .header .commit-author-avatar .text {
-  font-size: 18px;
-  line-height: 18px;
+#history-viewer > .header .commit-author .commit-author-avatar {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  text-align: center;
+  display: inline-block;
+  top: 12px;
+}
+#history-viewer > .header .commit-author .commit-author-avatar span,
+#history-viewer > .header .commit-author .commit-author-avatar img {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: 36px;
+  width: 36px;
+  border-radius: 2px;
+}
+#history-viewer > .header .commit-author .commit-author-avatar span {
+  color: #535353;
+  font-size: 12px;
+  line-height: 1.25;
+  font-family: "SourceCodePro-Medium", "ＭＳ ゴシック", "MS Gothic", monospace;
+  font-weight: 500;
+  font-size: 36px;
+  line-height: 36px;
+  text-transform: uppercase;
+}
+#history-viewer > .header .commit-author .commit-author-avatar span.avatar-bw {
+  -webkit-filter: grayscale(100%);
+}
+#history-viewer > .header .commit-author .commit-author-name,
+#history-viewer > .header .commit-author .commit-author-email {
+  margin-left: 1em;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  -o-user-select: text;
+  user-select: text;
 }
 #history-viewer > .header.shadow {
   box-shadow: 0 -1px 3px 2px rgba(0, 0, 0, 0.15);
@@ -432,6 +465,11 @@
 #history-viewer > .body .commit-files {
   padding: 0 20px;
 }
+#history-viewer > .body .commit-files .openFile {
+  margin-left: 20px;
+  cursor: pointer;
+  opacity: 0.7;
+}
 #history-viewer .message {
   display: block;
   padding: 10px;
@@ -515,20 +553,19 @@
   font-size: 12px;
   line-height: 1.25;
   font-family: "SourceCodePro-Medium", "ＭＳ ゴシック", "MS Gothic", monospace;
-  background: none;
+  background-color: none;
   border: none;
   padding: 0 3px;
   margin: 0;
 }
+.commit-diff table:not(.table-striped) > tbody > tr:nth-child(even) > td,
+.commit-diff table:not(.table-striped) > tbody tr:nth-child(odd) > td,
+.commit-diff table:not(.table-striped) > tbody > tr:nth-child(even) > th,
+.commit-diff table:not(.table-striped) > tbody tr:nth-child(odd) > th {
+  background-color: transparent;
+}
 .commit-diff table {
   width: 100%;
-}
-.commit-diff table tbody tr:nth-child(even) td,
-.commit-diff table tbody tr:nth-child(odd) td,
-.commit-diff table tbody tr:nth-child(even) th,
-.commit-diff table tbody tr:nth-child(odd) th {
-  background: none;
-  padding: 0;
 }
 .commit-diff table tbody tr.meta-file th {
   border-top: 0;
@@ -548,14 +585,20 @@
 }
 .commit-diff table tbody tr td {
   border-width: 0px;
-}
-.commit-diff table tbody tr td:nth-child(1),
-.commit-diff table tbody tr td:nth-child(2) {
-  width: 1px;
-  border-right: 1px solid #cccece;
-  text-align: right;
-  color: #949494;
   padding: 0 8px;
+}
+.commit-diff table tbody tr td.row-num {
+  width: 1px;
+  border-right: 1px solid;
+  border-color: #cbcbcb;
+  text-align: right;
+  color: rgba(0, 0, 0, 0.4);
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 }
 .commit-diff table tbody tr td pre {
   white-space: nowrap;
@@ -570,6 +613,10 @@
 .commit-diff table tbody tr.added pre:before {
   content: "+";
 }
+.commit-diff table tbody tr.added .row-num {
+  background-color: #ceffce !important;
+  border-color: #a1cfa1;
+}
 .commit-diff table tbody tr.removed,
 .commit-diff table tbody tr.removed pre {
   background-color: #ffdbdb;
@@ -577,11 +624,18 @@
 .commit-diff table tbody tr.removed pre:before {
   content: "-";
 }
+.commit-diff table tbody tr.removed .row-num {
+  background-color: #f7c8c8 !important;
+  border-color: #e9aeae;
+}
 .commit-diff table tbody tr.unchanged pre:before {
   content: "\0A0";
 }
 .commit-diff table tbody tr.diffCmd {
   color: #1976dd;
+}
+.commit-diff table tbody tr.position td {
+  padding: 8px;
 }
 .commit-diff table tbody tr.position,
 .commit-diff table tbody tr.position pre {
@@ -730,6 +784,9 @@
 }
 #git-panel .toolbar {
   overflow: visible;
+}
+#git-panel .git-edited-list td {
+  vertical-align: middle;
 }
 #git-panel tr.selected {
   font-weight: 400;
@@ -1144,14 +1201,6 @@
   background: #404141;
   border: 1px solid rgba(0, 0, 0, 0.24);
   box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.12);
-}
-.selectable-text {
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  -o-user-select: text;
-  user-select: text;
 }
 /*
 these mixins were copied out from the Brackets,

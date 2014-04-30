@@ -404,7 +404,7 @@ define(function (require, exports) {
 
     // Get list of deleted files between two branches
     function getDeletedFiles(oldBranch, newBranch) {
-        return git(["diff", "--name-status", oldBranch + ".." + newBranch])
+        return git(["diff", "--no-ext-diff", "--name-status", oldBranch + ".." + newBranch])
             .then(function (stdout) {
                 var regex = /^D/;
                 return stdout.split("\n").reduce(function (arr, row) {
@@ -669,16 +669,16 @@ define(function (require, exports) {
     }
 
     function getDiffOfStagedFiles() {
-        return git(["diff", "--no-color", "--staged"]);
+        return git(["diff", "--no-ext-diff", "--no-color", "--staged"]);
     }
 
     function getListOfStagedFiles() {
-        return git(["diff", "--no-color", "--staged", "--name-only"]);
+        return git(["diff", "--no-ext-diff", "--no-color", "--staged", "--name-only"]);
     }
 
     function diffFile(file) {
         return _isFileStaged(file).then(function (staged) {
-            var args = ["diff", "--no-color"];
+            var args = ["diff", "--no-ext-diff", "--no-color"];
             if (staged) { args.push("--staged"); }
             args.push("-U0", "--", file);
             return git(args);
@@ -687,9 +687,9 @@ define(function (require, exports) {
 
     function diffFileNice(file) {
         return _isFileStaged(file).then(function (staged) {
-            var args = ["diff", "--no-color"];
+            var args = ["diff", "--no-ext-diff", "--no-color"];
             if (staged) { args.push("--staged"); }
-            args.push(file);
+            args.push("--", file);
             return git(args);
         });
     }
@@ -699,13 +699,13 @@ define(function (require, exports) {
     }
 
     function getFilesFromCommit(hash) {
-        return git(["diff", "--name-only", hash + "^!"]).then(function (stdout) {
+        return git(["diff", "--no-ext-diff", "--name-only", hash + "^!"]).then(function (stdout) {
             return !stdout ? [] : stdout.split("\n");
         });
     }
 
     function getDiffOfFileFromCommit(hash, file) {
-        return git(["diff", "--no-color", hash + "^!", "--", file]);
+        return git(["diff", "--no-ext-diff", "--no-color", hash + "^!", "--", file]);
     }
 
     function rebaseInit(branchName) {

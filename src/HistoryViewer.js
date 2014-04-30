@@ -1,52 +1,88 @@
 define(function (require, exports) {
     "use strict";
 
-    var EditorManager = brackets.getModule("editor/EditorManager"),
-        CommandManager = brackets.getModule("command/CommandManager"),
-        FileUtils = brackets.getModule("file/FileUtils");
+    var _               = brackets.getModule("thirdparty/lodash"),
+        EditorManager   = brackets.getModule("editor/EditorManager"),
+        CommandManager  = brackets.getModule("command/CommandManager"),
+        FileUtils       = brackets.getModule("file/FileUtils");
 
-    var marked = require("marked"),
-        ErrorHandler = require("src/ErrorHandler"),
-        Events = require("src/Events"),
-        EventEmitter = require("src/EventEmitter"),
-        Git = require("src/git/Git"),
-        Preferences = require("src/Preferences"),
-        Strings = require("strings"),
-        Utils = require("src/Utils");
+    var marked        = require("marked"),
+        ErrorHandler  = require("src/ErrorHandler"),
+        Events        = require("src/Events"),
+        EventEmitter  = require("src/EventEmitter"),
+        Git           = require("src/git/Git"),
+        Preferences   = require("src/Preferences"),
+        Strings       = require("strings"),
+        Utils         = require("src/Utils");
 
     var historyViewerTemplate = require("text!templates/history-viewer.html");
 
-    var commit                 = null,
-        avatarType             = Preferences.get("avatarType"),
-        enableAdvancedFeatures = Preferences.get("enableAdvancedFeatures");
+    var avatarType             = Preferences.get("avatarType"),
+        enableAdvancedFeatures = Preferences.get("enableAdvancedFeatures"),
+        isShown                = false,
+        commit                 = null,
+        previousFile           = null,
+        $viewer                = null;
 
-    function attachEvents($viewer) {
+    var setExpandState = _.debounce(function () {
+        var allFiles = $viewer.find(".commit-files a"),
+            activeFiles = allFiles.filter(".active"),
+            allExpanded = allFiles.length === activeFiles.length;
+        $viewer.find(".toggle-diffs").toggleClass("opened", allExpanded);
+    }, 100);
+
+    function toggleDiff($a) {
+        if ($a.hasClass("active")) {
+            // Close the clicked diff
+            $a.removeClass("active");
+            setExpandState();
+            return;
+        }
+
+        // Open the clicked diff
+        $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
+
+        // If this diff was not previously loaded then load it
+        if (!$a.is(".loaded")) {
+            var $li = $a.closest("[x-file]"),
+                relativeFilePath = $li.attr("x-file"),
+                $diffContainer = $li.find(".commit-diff");
+
+            Git.getDiffOfFileFromCommit(commit.hash, relativeFilePath).then(function (diff) {
+                $diffContainer.html(Utils.formatDiff(diff));
+                $diffContainer.scrollTop($a.attr("scrollPos") || 0);
+
+                $a.addClass("active loaded");
+                setExpandState();
+            }).catch(function (err) {
+                ErrorHandler.showError(err, "Failed to get diff");
+            });
+        } else {
+            // If this diff was previously loaded just open it
+            $a.addClass("active");
+            setExpandState();
+        }
+    }
+
+    function expandAll() {
+        $viewer.find(".commit-files a").not(".active").trigger("click");
+        Preferences.set("autoExpandDiffsInHistory", true);
+    }
+
+    function collapseAll() {
+        $viewer.find(".commit-files a").filter(".active").trigger("click");
+        Preferences.set("autoExpandDiffsInHistory", false);
+    }
+
+    function attachEvents() {
         $viewer
-            .on("click", ".commit-files a:not(.active)", function () {
-                    // Open the clicked diff
-                    $(".commit-files a.active").attr("scrollPos", $(".commit-diff").scrollTop());
-                    var $a = $(this);
-                    // If this diff was not previously loaded then load it
-                    if (!$a.is(".loaded")) {
-                        var $li = $a.closest("[x-file]"),
-                            relativeFilePath = $li.attr("x-file"),
-                            $diffContainer = $li.find(".commit-diff");
-
-                        Git.getDiffOfFileFromCommit(commit.hash, relativeFilePath).then(function (diff) {
-                            $a.addClass("active loaded");
-                            $diffContainer.html(Utils.formatDiff(diff));
-                            $diffContainer.scrollTop($a.attr("scrollPos") || 0);
-                        }).catch(function (err) {
-                            ErrorHandler.showError(err, "Failed to get diff");
-                        });
-                    } else {
-                        // If this diff was previously loaded just open it
-                        $a.addClass("active");
-                    }
-                })
-            .on("click", ".commit-files a.active", function () {
-                // Close the clicked diff
-                $(this).removeClass("active");
+            .on("click", ".commit-files a", function () {
+                toggleDiff($(this));
+            })
+            .on("click", ".openFile", function (e) {
+                e.stopPropagation();
+                var file = $(this).closest("[x-file]").attr("x-file");
+                Utils.openEditorForFile(file, true);
             })
             .on("click", ".close", function () {
                 // Close history viewer
@@ -59,16 +95,10 @@ define(function (require, exports) {
                 $parent.find("span.selectable-text").text(sha);
                 $(this).remove();
             })
-            .on("click", ".toggle-diffs", function () {
-                $(this).addClass("opened");
-                $viewer.find(".commit-files a").not(".active").trigger("click");
-            })
-            .on("click", ".toggle-diffs.opened", function () {
-                $(this).removeClass("opened");
-                $viewer.find(".commit-files a.active").trigger("click");
-            });
+            .on("click", ".toggle-diffs", expandAll)
+            .on("click", ".toggle-diffs.opened", collapseAll);
 
-        // Add/Remove shadown on bottom of header
+        // Add/Remove shadow on bottom of header
         $viewer.find(".body")
             .on("scroll", function () {
                 if ($viewer.find(".body").scrollTop() > 0) {
@@ -80,11 +110,16 @@ define(function (require, exports) {
 
         // Enable actions on advanced buttons if requested by user's preferences
         if (enableAdvancedFeatures) {
-            attachAdvancedEvents($viewer);
+            attachAdvancedEvents();
+        }
+
+        // Expand the diffs when wanted
+        if (Preferences.get("autoExpandDiffsInHistory")) {
+            expandAll();
         }
     }
 
-    function attachAdvancedEvents($viewer) {
+    function attachAdvancedEvents() {
         var refreshCallback  = function () {
             // dialog.close();
             EventEmitter.emit(Events.REFRESH_ALL);
@@ -139,7 +174,7 @@ define(function (require, exports) {
         });
     }
 
-    function renderViewerContent($viewer, files, selectedFile) {
+    function renderViewerContent(files, selectedFile) {
         var bodyMarkdown = marked(commit.body, {gfm: true, breaks: true});
 
         $viewer.append(Mustache.render(historyViewerTemplate, {
@@ -162,11 +197,11 @@ define(function (require, exports) {
             });
         }
 
-        attachEvents($viewer);
+        attachEvents();
     }
 
     function render(hash, $editorHolder) {
-        var $container = $("<div>").addClass("git spinner large spin");
+        $viewer = $("<div>").addClass("git spinner large spin");
         Git.getFilesFromCommit(commit.hash).then(function (files) {
             var list = files.map(function (file) {
                 var fileExtension = FileUtils.getSmartFileExtension(file),
@@ -179,33 +214,30 @@ define(function (require, exports) {
                 };
             });
             var file = $("#git-history-list").data("file-relative");
-            return renderViewerContent($container, list, file);
+            return renderViewerContent(list, file);
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to load list of diff files");
         }).finally(function () {
-            $container.removeClass("spinner large spin");
+            $viewer.removeClass("spinner large spin");
         });
-        return $container.appendTo($editorHolder);
+        return $viewer.appendTo($editorHolder);
     }
-
-    var isShown = false;
-
-    function onRemove() {
-        isShown = false;
-        // detach events that were added by this viewer to another element than one added to $editorHolder
-    }
-
-    var previousFile = null;
 
     function show(commitInfo, _previousFile) {
-        isShown = true;
-        commit = commitInfo;
-        previousFile = _previousFile;
-        // this is a "private" API but it's so convienient it's a sin not to use it
+        isShown       = true;
+        commit        = commitInfo;
+        previousFile  = _previousFile;
+        // TODO: we will need to replace this with something ours later and not to use private API
         EditorManager._showCustomViewer({
             render: render,
             onRemove: onRemove
         }, commit.hash);
+    }
+
+    function onRemove() {
+        isShown = false;
+        $viewer = null;
+        // detach events that were added by this viewer to another element than one added to $editorHolder
     }
 
     function hide() {
@@ -216,6 +248,7 @@ define(function (require, exports) {
 
     function remove() {
         if (previousFile && previousFile.file) {
+            // TODO: use utils?
             CommandManager.execute("file.open", previousFile.file);
         } else {
             EditorManager._closeCustomViewer();

@@ -155,7 +155,12 @@ define(function (require, exports) {
     exports.toError = function (arg) {
         // FUTURE: use this everywhere and have a custom error class for this extension
         if (arg instanceof Error) { return arg; }
-        return new Error(arg);
+        var err = new Error(arg);
+        // TODO: new class for this?
+        err.match = function () {
+            return arg.match.apply(arg, arguments);
+        };
+        return err;
     };
 
 });

@@ -318,7 +318,12 @@ define(function (require, exports) {
         var isSomethingSelected = currentSelection.start.line !== currentSelection.end.line ||
                                   currentSelection.start.ch !== currentSelection.end.ch;
         if (!isSomethingSelected) {
-            ErrorHandler.showError(new ExpectedError("Nothing is selected!"));
+            ErrorHandler.showError(new ExpectedError(Strings.ERROR_NOTHING_SELECTED));
+            return;
+        }
+
+        if (editor.document.isDirty) {
+            ErrorHandler.showError(new ExpectedError(Strings.ERROR_SAVE_FIRST));
             return;
         }
 
