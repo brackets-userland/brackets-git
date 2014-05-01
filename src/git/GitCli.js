@@ -6,6 +6,8 @@
     to provide more sensible outputs than just plain strings.
     Format of the output should be specified in Git.js
 */
+var querystring = require('querystring');
+
 define(function (require, exports) {
 
     // Brackets modules
@@ -663,7 +665,7 @@ define(function (require, exports) {
         return git(["status", "-u", "--porcelain", "--", file]).then(function (stdout) {
             if (!stdout) { return false; }
             return _.any(stdout.split("\n"), function (line) {
-                return line.match("^(\\S)(.)\\s+(" + file + ")$") !== null;
+                return line.match("^(\\S)(.)\\s+(" + querystring.escape(file) + ")$") !== null;
             });
         });
     }
