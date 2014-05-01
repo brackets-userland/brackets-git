@@ -4,6 +4,7 @@
 
 ## 0.13.14
 * BUGFIX: Fixed errors on files that are inside a directory with a plus sign in its name. Thanks to [llchen223](https://github.com/llchen223)
+* BUGFIX: Add to .gitignore and Remove from .gitignore context menu entries are now removed when Git is not available in current project.
 
 ## 0.13.13
 * Added icon to the history viewer which opens the mentioned file for editing.
