@@ -62,7 +62,6 @@ define(function (require) {
                     regex = regex.replace(/\*\*$/g, "(.{0,})").replace(/\*\*/g, "(.+)").replace(/\*/g, "([^/]+)");
                     regex = "^" + regex + "$";
 
-                    console.log(regex);
                     return {regexp: new RegExp(regex), type: type};
                 }));
 
