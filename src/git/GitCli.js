@@ -7,14 +7,13 @@
     Format of the output should be specified in Git.js
 */
 
-
 define(function (require, exports) {
 
     // Brackets modules
     var _           = brackets.getModule("thirdparty/lodash"),
         FileSystem  = brackets.getModule("filesystem/FileSystem"),
         FileUtils   = brackets.getModule("file/FileUtils"),
-		    StringUtils = brackets.getModule("file/FileUtils");
+        StringUtils = brackets.getModule("file/FileUtils");
 
     // Local modules
     var Promise       = require("bluebird"),
