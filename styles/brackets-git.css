@@ -651,6 +651,12 @@
 #git-diff-dialog .commit-diff .meta-file {
   display: none;
 }
+#git-error-dialog .modal-header {
+  background-color: #dc322f;
+}
+#git-error-dialog .modal-header .dialog-title {
+  color: #ffffff;
+}
 #git-error-dialog pre {
   white-space: pre;
   word-wrap: normal;
@@ -963,7 +969,7 @@
 }
 /* Toolbar icon */
 #git-toolbar-icon {
-  background: url("git-icon.svg") no-repeat 0 0;
+  background: url("icons/git-icon.svg") no-repeat 0 0;
 }
 #git-toolbar-icon.on {
   background-position: 0 -24px;
