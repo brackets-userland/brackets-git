@@ -269,7 +269,7 @@ define(function (require, exports, module) {
             }
 
         }).catch(function (err) {
-            throw ErrorHandler.showError(err, "Unexpected error in CLI handler");
+            throw ErrorHandler.showError(err, "Unexpected error in CLI handler - close all instances of Brackets and start again to reload");
         });
 
         return deferred.promise;
