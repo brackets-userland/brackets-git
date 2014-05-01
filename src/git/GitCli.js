@@ -6,14 +6,15 @@
     to provide more sensible outputs than just plain strings.
     Format of the output should be specified in Git.js
 */
-var querystring = require('querystring');
+
 
 define(function (require, exports) {
 
     // Brackets modules
     var _           = brackets.getModule("thirdparty/lodash"),
         FileSystem  = brackets.getModule("filesystem/FileSystem"),
-        FileUtils   = brackets.getModule("file/FileUtils");
+        FileUtils   = brackets.getModule("file/FileUtils"),
+		    StringUtils = brackets.getModule("file/FileUtils");
 
     // Local modules
     var Promise       = require("bluebird"),
@@ -665,7 +666,7 @@ define(function (require, exports) {
         return git(["status", "-u", "--porcelain", "--", file]).then(function (stdout) {
             if (!stdout) { return false; }
             return _.any(stdout.split("\n"), function (line) {
-                return line.match("^(\\S)(.)\\s+(" + querystring.escape(file) + ")$") !== null;
+                return line.match("^(\\S)(.)\\s+(" + StringUtils.regexEscape(file) + ")$") !== null;
             });
         });
     }
