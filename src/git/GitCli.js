@@ -13,7 +13,7 @@ define(function (require, exports) {
     var _           = brackets.getModule("thirdparty/lodash"),
         FileSystem  = brackets.getModule("filesystem/FileSystem"),
         FileUtils   = brackets.getModule("file/FileUtils"),
-        StringUtils = brackets.getModule("file/FileUtils");
+        StringUtils = brackets.getModule("utils/StringUtils");
 
     // Local modules
     var Promise       = require("bluebird"),
