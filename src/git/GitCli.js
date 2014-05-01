@@ -663,7 +663,8 @@ define(function (require, exports) {
         return git(["status", "-u", "--porcelain", "--", file]).then(function (stdout) {
             if (!stdout) { return false; }
             return _.any(stdout.split("\n"), function (line) {
-                return line.match("^(\\S)(.)\\s+(" + file + ")$") !== null;
+                return line[0] !== " " && line[0] !== "?" && // first character marks staged status
+                       line.lastIndexOf(" " + file) === line.length - file.length - 1; // in case another file appeared here?
             });
         });
     }
