@@ -16,6 +16,11 @@ define(function (require) {
         modifiedPaths = [];
 
     function refreshIgnoreEntries() {
+        function regexEscape(str) {
+            // NOTE: We cannot use StringUtils.regexEscape() here because we don't wanna replace *
+            return str.replace(/([.?+\^$\[\]\\(){}|\-])/g, "\\$1");
+        }
+
         return new Promise(function (resolve) {
 
             if (!Preferences.get("markModifiedInTree")) {
@@ -31,8 +36,8 @@ define(function (require) {
                 }
 
                 ignoreEntries = _.compact(_.map(content.split("\n"), function (line) {
+                    // Rules: http://git-scm.com/docs/gitignore
                     var type = "deny",
-                        isNegative,
                         leadingSlash,
                         regex;
 
@@ -41,25 +46,31 @@ define(function (require) {
                         return;
                     }
 
-                    isNegative = line.indexOf("!") === 0;
-                    if (isNegative) {
+                    // handle explicitly allowed files/folders with a leading !
+                    if (line.indexOf("!") === 0) {
                         line = line.slice(1);
                         type = "accept";
                     }
+                    // handle lines beginning with a backslash, which is used for escaping ! or #
                     if (line.indexOf("\\") === 0) {
                         line = line.slice(1);
                     }
+                    // handle lines beginning with a slash, which only matches files/folders in the root dir
                     if (line.indexOf("/") === 0) {
                         line = line.slice(1);
                         leadingSlash = true;
                     }
 
-                    line = line.replace(/[^*]$/, "$&**");
+                    // a line ending with a slash ends with **
+                    line = line.replace(/\/$/, "$&**");
 
-                    regex = projectRoot + (leadingSlash ? "" : "**") + line;
-                    // NOTE: We cannot use StringUtils.regexEscape() here because we don't wanna replace *
-                    regex = regex.replace(/([.?+\^$\[\]\\(){}|\-])/g, "\\$1");
-                    regex = regex.replace(/\*\*$/g, "(.{0,})").replace(/\*\*/g, "(.+)").replace(/\*/g, "([^/]+)");
+                    // create the first regexp here. We need the absolute path 'cause it could be that there
+                    // are external files with the same name as a project file
+                    regex = regexEscape(projectRoot) + (leadingSlash ? "" : "((.+)/)?") + regexEscape(line);
+                    // replace all the possible asterisks
+                    // NOTE: /(.{0,})/ is basically the same as /(.*)/, but we can't use it because the asterisk
+                    // would be replaced later on
+                    regex = regex.replace(/\*\*$/g, "(.{0,})").replace(/(\*\*|\*$)/g, "(.+)").replace(/\*/g, "([^/]+)");
                     regex = "^" + regex + "$";
 
                     return {regexp: new RegExp(regex), type: type};
