@@ -183,5 +183,9 @@ define(function (require) {
         modifiedPaths = [];
         detachEvents();
     });
+    // refresh marks whenever a node is opened
+    $("#project-files-container").on("after_open.jstree", function () {
+        refreshProjectFiles();
+    });
 
 });
