@@ -39,6 +39,7 @@ define(function (require) {
                     // Rules: http://git-scm.com/docs/gitignore
                     var type = "deny",
                         leadingSlash,
+                        trailingSlash,
                         regex;
 
                     line = line.trim();
@@ -60,16 +61,20 @@ define(function (require) {
                         line = line.slice(1);
                         leadingSlash = true;
                     }
+                    // handle lines ending with a slash, which only exludes dirs
+                    if (line.lastIndexOf("/") === line.length) {
+                        // a line ending with a slash ends with **
+                        line += "**";
+                        trailingSlash = true;
+                    }
 
-                    // a line ending with a slash ends with **
-                    line = line.replace(/\/$/, "$&**");
-
-                    // create the first regexp here. We need the absolute path 'cause it could be that there
-                    // are external files with the same name as a project file
-                    regex = regexEscape(projectRoot) + (leadingSlash ? "" : "((.+)/)?") + regexEscape(line);
-                    // replace all the possible asterisks
                     // NOTE: /(.{0,})/ is basically the same as /(.*)/, but we can't use it because the asterisk
                     // would be replaced later on
+
+                    // create the intial regexp here. We need the absolute path 'cause it could be that there
+                    // are external files with the same name as a project file
+                    regex = regexEscape(projectRoot) + (leadingSlash ? "" : "((.+)/)?") + regexEscape(line) + (leadingSlash ? "" : "(/.{0,})?");
+                    // replace all the possible asterisks
                     regex = regex.replace(/\*\*$/g, "(.{0,})").replace(/(\*\*|\*$)/g, "(.+)").replace(/\*/g, "([^/]+)");
                     regex = "^" + regex + "$";
 
