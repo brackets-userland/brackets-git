@@ -133,7 +133,7 @@ define(function (require) {
     function attachEvents() {
         if (Preferences.get("markModifiedInTree")) {
             $("#open-files-container").on("contentChanged", refreshOpenFiles).triggerHandler("contentChanged");
-            $("#project-files-container").on("contentChanged", refreshProjectFiles).triggerHandler("contentChanged");
+            $("#project-files-container").on("contentChanged after_open.jstree", refreshProjectFiles).triggerHandler("contentChanged");
         }
     }
 
@@ -182,10 +182,6 @@ define(function (require) {
         newPaths      = [];
         modifiedPaths = [];
         detachEvents();
-    });
-    // refresh marks whenever a node is opened
-    $("#project-files-container").on("after_open.jstree", function () {
-        refreshProjectFiles();
     });
 
 });
