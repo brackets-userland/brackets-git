@@ -449,7 +449,7 @@ define(function (require, exports) {
             stdout = stdout.substring(0, stdout.length - newline.length);
             return !stdout ? [] : stdout.split(newline).map(function (line) {
 
-                var data = line.split(separator),
+                var data = line.trim().split(separator),
                     commit = {};
 
                 commit.hashShort  = data[0];
