@@ -2,13 +2,13 @@
 
 define({
     // ACTION:                             "Action",
-    // TODO: localize ACTION to pt-br
+    ACTION:                                "Ação",
     // ADD_ENDLINE_TO_THE_END_OF_FILE:     "Add endline at the end of file",
     ADD_ENDLINE_TO_THE_END_OF_FILE:        "Adicionar endline no fim do arquivo",
     // ADD_TO_GITIGNORE:                   "Add to .gitignore",
     ADD_TO_GITIGNORE:                      "Adicionar ao .gitignore",
     // ADVANCED_FEATURES_WARNING:          "This features are not recommended for basic Git users as they may cause you to lose code that has been already commited if used inproperly. Use with caution.",
-    // TODO: localize ADVANCED_FEATURES_WARNING to pt-br
+    ADVANCED_FEATURES_WARNING:             "Estes recursos não são recomendados para usuários básicos do Git, pois podem causar perda de código de commits já feitos se usados incorretamente. Use com cuidado.",
     // AMEND_COMMIT:                       "Amend last commit",
     AMEND_COMMIT:                          "Emendar no último commit",
     // AMEND_COMMIT_FORBIDDEN:             "Cannot amend commit when there are no unpushed commits",
@@ -16,17 +16,17 @@ define({
     // _ANOTHER_BRANCH:                    "another branch",
     // TODO: localize _ANOTHER_BRANCH to pt-br
     // AUTHOR:                             "Author",
-    // TODO: localize AUTHOR to pt-br
+    AUTHOR:                                "Autor",
     // AUTHORS_OF:                         "Authors of",
     // TODO: localize AUTHORS_OF to pt-br
     // AVATAR_TYPE:                        "Avatar type",
-    // TODO: localize AVATAR_TYPE to pt-br
+    AVATAR_TYPE:                           "Tipo de avatar",
     // BASH_NOT_AVAILABLE:                 "Bash is not available or properly configured",
-    BASH_NOT_AVAILABLE:                    "O console de comando não está disponível ou propriamente configurado",
+    BASH_NOT_AVAILABLE:                    "O console de comando não está disponível ou devidamente configurado",
     // BASIC_CONFIGURATION:                "Basic configuration",
     BASIC_CONFIGURATION:                   "Configuração básica",
     // BLACK_WHITE_AVATAR:                 "Black and white avatar",
-    // TODO: localize BLACK_WHITE_AVATAR to pt-br
+    BLACK_WHITE_AVATAR:                    "Avatar preto e branco",
     // BRACKETS_GIT_ERROR:                 "Brackets Git encountered an error\u2026",
     BRACKETS_GIT_ERROR:                    "Brackets Git encontrou um erro\u2026",
     // BRANCH_NAME:                        "Branch name",
@@ -46,7 +46,7 @@ define({
     // BUTTON_DEFAULTS:                    "Restore defaults",
     BUTTON_DEFAULTS:                       "Restaurar padrões",
     // BUTTON_FIND_CONFLICTS:              "Find conflicts\u2026",
-    // TODO: localize BUTTON_FIND_CONFLICTS to pt-br
+    BUTTON_FIND_CONFLICTS:                 "Localizar conflitos\u2026",
     // BUTTON_INIT:                        "Init",
     BUTTON_INIT:                           "Init",
     // BUTTON_MERGE_ABORT:                 "Abort merge",
@@ -72,13 +72,13 @@ define({
     // BUTTON_SAVE:                        "Save",
     BUTTON_SAVE:                           "Salvar",
     // CANCEL:                             "Cancel",
-    // TODO: localize CANCEL to pt-br
+    CANCEL:                                "Cancelar",
     // CHANGELOG:                          "Changelog",
     CHANGELOG:                             "Histórico de alterações",
     // CHANGE_USER_EMAIL:                  "Change git email",
-    // TODO: localize CHANGE_USER_EMAIL to pt-br
+    CHANGE_USER_EMAIL:                     "Mudar email do git",
     // CHANGE_USER_NAME:                   "Change git username",
-    // TODO: localize CHANGE_USER_NAME to pt-br
+    CHANGE_USER_NAME:                      "Mudar nome de usuário do git",
     // CHECK_GIT_SETTINGS:                 "Failed to launch Git executable - fix Git settings and restart Brackets",
     CHECK_GIT_SETTINGS:                    "Verificar configurações do Git",
     // CLONE_REPOSITORY:                   "Clone repository",
@@ -110,25 +110,25 @@ define({
     // _CURRENT_TRACKING_BRANCH:           "current tracking branch",
     // TODO: localize _CURRENT_TRACKING_BRANCH to pt-br
     // CUSTOM_TERMINAL_COMMAND:            "Custom terminal command (sample: gnome-terminal or complete path to executable)",
-    CUSTOM_TERMINAL_COMMAND:               "Custom terminal command (sample: gnome-terminal --window --working-directory=$1)",
+    CUSTOM_TERMINAL_COMMAND:               "Comando de terminal personalizado (exemplo: gnome-terminal ou caminho completo ao executável)",
     // CUSTOM_TERMINAL_COMMAND_HINT:       "Sample arguments: --window --working-directory=$1<br>$1 in arguments will be replaced by current project directory.",
-    // TODO: localize CUSTOM_TERMINAL_COMMAND_HINT to pt-br
+    CUSTOM_TERMINAL_COMMAND_HINT:          "Exemplo de argumentos: --window --working-directory=$1<br>$1 nos argumentos serão substituídos pelo diretório do projeto atual.",
     // DATE_FORMAT:                        "MM/DD/YYYY HH:mm:ss",
-    // TODO: localize DATE_FORMAT to pt-br
+    DATE_FORMAT:                           "DD/MM/YYYY HH:mm:ss",
     // DATE_MODE_0:                        "Formatted using local date format",
-    // TODO: localize DATE_MODE_0 to pt-br
+    DATE_MODE_0:                           "Formatado no formato de data local",
     // DATE_MODE_1:                        "Relative time",
-    // TODO: localize DATE_MODE_1 to pt-br
+    DATE_MODE_1:                           "Hora relativa",
     // DATE_MODE_2:                        "Intelligent mode (relative/formatted)",
-    // TODO: localize DATE_MODE_2 to pt-br
+    DATE_MODE_2:                           "Modo inteligente (relativo/formatado)",
     // DATE_MODE_3:                        "Formatted using your own format",
-    // TODO: localize DATE_MODE_3 to pt-br
+    DATE_MODE_3:                           "Formatado no seu próprio formato",
     // DATE_MODE_4:                        "Original Git date",
-    // TODO: localize DATE_MODE_4 to pt-br
+    DATE_MODE_4:                           "Data original do Git",
     // DEBUG:                              "Debug",
     // TODO: localize DEBUG to pt-br
     // DEBUG_MODE_SETTING:                 "DEBUG mode &mdash; Leave this OFF unless you need to find a problem with the extension. All Git communication will be forwarded to Brackets console!",
-    // TODO: localize DEBUG_MODE_SETTING to pt-br
+    DEBUG_MODE_SETTING:                    "Modo de depuração &mdash; Deixe isto DESLIGADO a não ser que precise encontrar um problema na extensão. Toda a comunicação do Git será redirecionada ao console do Brackets!",
     // DELETE_FILE:                        "Delete file",
     DELETE_FILE:                           "Excluir arquivo",
     // DELETE_LOCAL_BRANCH:                "Delete local branch",
@@ -162,11 +162,11 @@ define({
     // ENTER_GITFTP_SCOPE_URL:             "Enter FTP URL of the new Git-FTP remote specifing username and password:",
     // TODO: localize ENTER_GITFTP_SCOPE_URL to pt-br
     // ENTER_NEW_USER_EMAIL:               "Enter email",
-    // TODO: localize ENTER_NEW_USER_EMAIL to pt-br
+    ENTER_NEW_USER_EMAIL:                  "Insira e-mail",
     // ENTER_NEW_USER_NAME:                "Enter username",
-    // TODO: localize ENTER_NEW_USER_NAME to pt-br
+    ENTER_NEW_USER_NAME:                   "Insira nome de usuário",
     // ENTER_PASSWORD:                     "Enter password:",
-    ENTER_PASSWORD:                        "Senha",
+    ENTER_PASSWORD:                        "Insira senha",
     // ENTER_REMOTE_GIT_URL:               "Enter Git URL of the repository you want to clone:",
     // TODO: localize ENTER_REMOTE_GIT_URL to pt-br
     // ENTER_REMOTE_NAME:                  "Enter name of the new remote:",
@@ -176,13 +176,13 @@ define({
     // ENTER_USERNAME:                     "Enter username:",
     ENTER_USERNAME:                        "Usuário",
     // ERROR_CONNECT_NODEJS:               "Failed to connect to NodeJS. If you've just updated the extension then close all instances of Brackets and try starting again.",
-    // TODO: localize ERROR_CONNECT_NODEJS to pt-br
+    ERROR_CONNECT_NODEJS:                  "Falha na conexão com o NodeJS. Se você acabou de atualizar a extensão, feche todas as instâncias do Brackets e tente novamente.",
     // ERROR_TERMINAL_NOT_FOUND:           "Terminal was not found for your OS, you can define a custom Terminal command in the settings",
     ERROR_TERMINAL_NOT_FOUND:              "Terminal was not found for your OS, you can define a custom Terminal command in the settings",
     // EXPAND_ALL:                         "Expand all",
-    // TODO: localize EXPAND_ALL to pt-br
+    EXPAND_ALL:                            "Expandir tudo",
     // EXTENDED_COMMIT_MESSAGE:            "EXTENDED",
-    // TODO: localize EXTENDED_COMMIT_MESSAGE to pt-br
+    EXTENDED_COMMIT_MESSAGE:               "ESTENDIDO",
     // EXTENSION_WAS_UPDATED_TITLE:        "The extension was updated to {0}",
     EXTENSION_WAS_UPDATED_TITLE:           "A extensão foi atualizada para {0}",
     // FEATURES:                           "Features",
@@ -190,11 +190,11 @@ define({
     // FILE_ADDED:                         "New file",
     FILE_ADDED:                            "Adicionado",
     // FILE_COPIED:                        "Copied",
-    // TODO: localize FILE_COPIED to pt-br
+    FILE_COPIED:                           "Copiado",
     // FILE_DELETED:                       "Deleted",
     FILE_DELETED:                          "Exluído",
     // FILE_IGNORED:                       "Ignored",
-    // TODO: localize FILE_IGNORED to pt-br
+    FILE_IGNORED:                          "Ignorado",
     // FILE_MODIFIED:                      "Modified",
     FILE_MODIFIED:                         "Modificado",
     // FILE_RENAMED:                       "Renamed",
@@ -234,13 +234,13 @@ define({
     // GOTO_PREVIOUS_GIT_CHANGE:           "Go to previous Git change",
     // TODO: localize GOTO_PREVIOUS_GIT_CHANGE to pt-br
     // GUTTER_CLICK_DETAILS:               "Click for more details",
-    // TODO: localize GUTTER_CLICK_DETAILS to pt-br
+    GUTTER_CLICK_DETAILS:                  "Clique para mais detalhes",
     // HIDE_UNTRACKED:                     "Hide untracked",
     // TODO: localize HIDE_UNTRACKED to pt-br
     // HISTORY:                            "History",
-    // TODO: localize HISTORY to pt-br
+    HISTORY:                               "Histórico",
     // HISTORY_COMMIT_BY:                  "by",
-    // TODO: localize HISTORY_COMMIT_BY to pt-br
+    HISTORY_COMMIT_BY:                     "por",
     // IDENTICON:                          "Identicon (www.gravatar.com)",
     // TODO: localize IDENTICON to pt-br
     // INIT_GITFTP_SCOPE:                  "Initialize Git-FTP remote",
@@ -250,9 +250,9 @@ define({
     // LAUNCH_BASH_SHORTCUT:               "Bash/Terminal shortcut",
     // TODO: localize LAUNCH_BASH_SHORTCUT to pt-br
     // LINES:                              "Lines",
-    // TODO: localize LINES to pt-br
+    LINES:                                 "Linhas",
     // _LINES:                             "lines",
-    // TODO: localize _LINES to pt-br
+    _LINES:                                "linhas",
     // LIST_MODIFIED_FILES:                "Modified files",
     LIST_MODIFIED_FILES:                   "Lista de arquivos modificados",
     // LOADING:                            "Loading\u2026",
@@ -266,13 +266,13 @@ define({
     // MERGE_RESULT:                       "Merge result",
     // TODO: localize MERGE_RESULT to pt-br
     // MORE_INFO:                          "More information\u2026",
-    // TODO: localize MORE_INFO to pt-br
+    MORE_INFO:                             "Mais informações\u2026",
     // NORMALIZE_LINE_ENDINGS:             "Normalize line endings (to \\n)",
-    // TODO: localize NORMALIZE_LINE_ENDINGS to pt-br
+    NORMALIZE_LINE_ENDINGS:                "Padronizar finais de linha (para \\n)",
     // NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
     NOTHING_TO_COMMIT:                     "Nada para fazer commit, diretório de trabalho limpo.",
     // OK:                                 "OK",
-    // TODO: localize OK to pt-br
+    OK:                                    "OK",
     // OPERATION_IN_PROGRESS_TITLE:        "Git operation in progress\u2026",
     // TODO: localize OPERATION_IN_PROGRESS_TITLE to pt-br
     // ORIGIN_BRANCH:                      "Origin branch",
@@ -280,9 +280,9 @@ define({
     // PANEL_COMMAND:                      "Show Git panel",
     PANEL_COMMAND:                         "Git",
     // PANEL_SHORTCUT:                     "Toggle panel",
-    PANEL_SHORTCUT:                        "Toggle panel",
+    PANEL_SHORTCUT:                        "Alternar painel",
     // PASSWORD:                           "Password",
-    // TODO: localize PASSWORD to pt-br
+    PASSWORD:                              "Senha",
     // PASSWORDS:                          "Passwords",
     PASSWORDS:                             "Senhas",
     // PATH_TO_GIT_EXECUTABLE:             "Path to Git executable",
@@ -292,7 +292,7 @@ define({
     // PICTURE:                            "Gravatar (www.gravatar.com)",
     // TODO: localize PICTURE to pt-br
     // PULL_AVOID_MERGING:                 "Avoid manual merging",
-    // TODO: localize PULL_AVOID_MERGING to pt-br
+    PULL_AVOID_MERGING:                    "Evitar mesclagem manual",
     // PULL_DEFAULT:                       "Default merge",
     // TODO: localize PULL_DEFAULT to pt-br
     // PULL_FROM:                          "Pull from",
@@ -336,9 +336,9 @@ define({
     // RESTART:                            "Restart",
     RESTART:                               "Reiniciar",
     // SAVE_CREDENTIALS_HELP:              "You don't need to fill out username/password if your credentials are managed elsewhere. Use this only when your operation keeps timing out.",
-    // TODO: localize SAVE_CREDENTIALS_HELP to pt-br
+    SAVE_CREDENTIALS_HELP:                 "Não é preciso preencher usuário/senha se suas credenciais forem gerenciadas em outro lugar. Use isto apenas se a operação ficar expirando.",
     // SAVE_CREDENTIALS_IN_URL:            "Save credentials to remote url (in plain text)",
-    // TODO: localize SAVE_CREDENTIALS_IN_URL to pt-br
+    SAVE_CREDENTIALS_IN_URL:               "Salvar credenciais a uma url remota (em texto plano)",
     // SAVE_PASSWORD_QUESTION:             "Save username/password?",
     SAVE_PASSWORD_QUESTION:                "Salvar usuário/senha?",
     // SET_ORIGIN_URL:                     "Set origin URL",
@@ -346,15 +346,15 @@ define({
     // SET_THIS_BRANCH_AS_TRACKING:        "Set this branch as a new tracking branch",
     // TODO: localize SET_THIS_BRANCH_AS_TRACKING to pt-br
     // SHORTCUTS:                          "Shortcuts",
-    // TODO: localize SHORTCUTS to pt-br
+    SHORTCUTS:                             "Atalhos",
     // SHORTCUTS_HINT:                     "Separate keys with dash, like this: Ctrl-Alt-G<br>You can use the english key identifiers Ctrl, Cmd (Mac), Alt and Shift.",
-    // TODO: localize SHORTCUTS_HINT to pt-br
+    SHORTCUTS_HINT:                        "Separe as teclas com um traço, assim: Ctrl-Alt-G<br>Você pode usar o nome das teclas em inglês Ctrl, Cmd (Mac), Alt e Shift.",
     // SHOWN_DATE_FORMAT:                  "Format of commit dates in history",
-    // TODO: localize SHOWN_DATE_FORMAT to pt-br
+    SHOWN_DATE_FORMAT:                     "Formato de data dos commits no histórico",
     // SHOW_BASH_TERMINAL_BUTTON:          "Show Bash/Terminal button in the panel",
     // TODO: localize SHOW_BASH_TERMINAL_BUTTON to pt-br
     // SHOW_REPORT_BUG_BUTTON:             "Show Report Bug button in the panel",
-    // TODO: localize SHOW_REPORT_BUG_BUTTON to pt-br
+    SHOW_REPORT_BUG_BUTTON:                "Mostrar botão Relatar Erro no painel",
     // SHOW_UNTRACKED:                     "Show untracked",
     // TODO: localize SHOW_UNTRACKED to pt-br
     // STRIP_WHITESPACE_FROM_COMMITS:      "Strip trailing whitespace from commits",
@@ -380,15 +380,15 @@ define({
     // TOOLTIP_GITPUSH:                    "Git-FTP Push",
     // TODO: localize TOOLTIP_GITPUSH to pt-br
     // TOOLTIP_HIDE_FILE_HISTORY:          "Hide file history",
-    // TODO: localize TOOLTIP_HIDE_FILE_HISTORY to pt-br
+    TOOLTIP_HIDE_FILE_HISTORY:             "Ocultar histórico de arquivo",
     // TOOLTIP_HIDE_HISTORY:               "Hide history",
-    // TODO: localize TOOLTIP_HIDE_HISTORY to pt-br
+    TOOLTIP_HIDE_HISTORY:                  "Ocultar histórico",
     // TOOLTIP_INIT:                       "Initialize repository",
     TOOLTIP_INIT:                          "Inicializar repositório",
     // TOOLTIP_MERGE_ABORT:                "Abort the merge operation and reset HEAD to the last local commit",
     // TODO: localize TOOLTIP_MERGE_ABORT to pt-br
     // TOOLTIP_MORE:                       "More actions\u2026",
-    // TODO: localize TOOLTIP_MORE to pt-br
+    TOOLTIP_MORE:                          "Mais ações\u2026",
     // TOOLTIP_OPEN_BASH:                  "Open Bash/Terminal console",
     TOOLTIP_OPEN_BASH:                     "Abrir console de comandos",
     // TOOLTIP_PICK_REMOTE:                "Pick preferred remote",
@@ -406,9 +406,9 @@ define({
     // TOOLTIP_REFRESH_PANEL:              "Refresh panel",
     TOOLTIP_REFRESH_PANEL:                 "Recarregar painel",
     // TOOLTIP_SHOW_FILE_HISTORY:          "Show file history",
-    // TODO: localize TOOLTIP_SHOW_FILE_HISTORY to pt-br
+    TOOLTIP_SHOW_FILE_HISTORY:             "Mostrar histórico de arquivo",
     // TOOLTIP_SHOW_HISTORY:               "Show history",
-    // TODO: localize TOOLTIP_SHOW_HISTORY to pt-br
+    TOOLTIP_SHOW_HISTORY:                  "Mostrar histórico",
     // UNDO_CHANGES:                       "Discard changes",
     UNDO_CHANGES:                          "Desfazer alterações",
     // UNDO_LAST_LOCAL_COMMIT:             "Undo last local (not pushed) commit",
@@ -416,11 +416,11 @@ define({
     // URL:                                "URL",
     URL:                                   "URL",
     // USERNAME:                           "Username",
-    // TODO: localize USERNAME to pt-br
+    USERNAME:                              "Nome de usuário",
     // USER_ABORTED:                       "User aborted!",
-    // TODO: localize USER_ABORTED to pt-br
+    USER_ABORTED:                          "Abortado pelo usuário!",
     // USER_DATE_FORMAT:                   "Own date format (<a href='http://momentjs.com/docs/#/displaying/format/'>Syntax</a>)",
-    // TODO: localize USER_DATE_FORMAT to pt-br
+    USER_DATE_FORMAT:                      "Formato de data próprio (<a href='http://momentjs.com/docs/#/displaying/format/'>Sintaxe</a>)",
     // USE_CODE_INSPECTION:                "Use Code inspection",
     USE_CODE_INSPECTION:                   "Usar inspetor de código",
     // USE_GITFTP:                         "Use Git-FTP",
@@ -428,13 +428,13 @@ define({
     // USE_GIT_GUTTER:                     "Use Git gutter marks",
     USE_GIT_GUTTER:                        "Usar marcas do Git na margem",
     // USE_REBASE:                         "Use REBASE",
-    // TODO: localize USE_REBASE to pt-br
+    USE_REBASE:                            "Usar REBASE",
     // USE_VERBOSE_DIFF:                   "Show verbose output in diffs",
     // TODO: localize USE_VERBOSE_DIFF to pt-br
     // USING_GIT_VERSION:                  "Git version",
-    USING_GIT_VERSION:                     "Versão do Git"
+    USING_GIT_VERSION:                     "Versão do Git",
     // VIEW_AUTHORS_FILE:                  "View authors of file",
-    // TODO: localize VIEW_AUTHORS_FILE to pt-br
+    VIEW_AUTHORS_FILE:                     "Ver autores do arquivo",
     // VIEW_AUTHORS_SELECTION:             "View authors of selection"
-    // TODO: localize VIEW_AUTHORS_SELECTION to pt-br
+    VIEW_AUTHORS_SELECTION:                "Ver autores da seleção"
 });
