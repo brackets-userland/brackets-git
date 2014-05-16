@@ -146,13 +146,15 @@ define(function (require, exports, module) {
                     return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
                 });
 
-                _.last(diffData).lines.push({
-                    "numLineOld": _numLineOld,
-                    "numLineNew": _numLineNew,
-                    "line": line,
-                    "lineClass": lineClass,
-                    "tabSize": tabSize
-                });
+                if (diffData.length > 0) {
+                    _.last(diffData).lines.push({
+                        "numLineOld": _numLineOld,
+                        "numLineNew": _numLineNew,
+                        "line": line,
+                        "lineClass": lineClass,
+                        "tabSize": tabSize
+                    });
+                }
             }
         });
 

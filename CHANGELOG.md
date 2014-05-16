@@ -5,6 +5,7 @@
 ## 0.13.15
 * Updated Brazilian Portuguese translation by [Rodrigo Tavares](https://github.com/rodrigost23)
 * BUGFIX: Improved .gitignore parsing by [Marcel Gerber](https://github.com/SAPlayer)
+* BUGFIX: Git Diff failed when the diff is empty is now fixed.
 
 ## 0.13.14
 * BUGFIX: Fixed errors on files that are inside a directory with a plus sign in its name. Thanks to [llchen223](https://github.com/llchen223)
