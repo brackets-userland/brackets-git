@@ -2,6 +2,10 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.15
+* Updated Brazilian Portuguese translation by [Rodrigo Tavares](https://github.com/rodrigost23)
+* BUGFIX: Improved .gitignore parsing by [Marcel Gerber](https://github.com/SAPlayer)
+
 ## 0.13.14
 * BUGFIX: Fixed errors on files that are inside a directory with a plus sign in its name. Thanks to [llchen223](https://github.com/llchen223)
 * BUGFIX: Add to .gitignore and Remove from .gitignore context menu entries are now removed when Git is not available in current project.
