@@ -1,6 +1,6 @@
 # Brackets-Git
 
-Brackets-Git is an extension for [Brackets](http://brackets.io/) editor - it provides Git integration for Brackets.  
+Brackets-Git is an extension for [Brackets](http://brackets.io/) editor - it provides Git integration for Brackets.
 It's tested and works on any platform supported by Brackets (Windows, Mac OSx, GNU/Linux).
 
 ## Installation
@@ -12,20 +12,20 @@ To make **Brackets-Git** work you'll need Git installed in your system:
 - **Mac OS X**: [Git for Mac](http://git-scm.com/download/mac) is recommended.
 - **GNU/Linux**: Install the package `git`:
    - [Debian/Ubuntu](https://launchpad.net/~git-core/+archive/ppa) using [this guide](http://askmetutorials.blogspot.com.au/2014/03/install-git-191-on-ubuntu-linuxmint.html):
-   
+
    ```
    sudo add-apt-repository ppa:git-core/ppa
    sudo apt-get update
    sudo apt-get install git
-   ```  
-   
+   ```
+
    - RedHat/CentOS/Fedora: `sudo yum install git`
 
 #### Extension installation:
 To install latest release of **Brackets-Git** use the built-in Brackets Extension Manager which downloads the extension from the [extension registry](https://brackets-registry.aboutweb.com/).
 
 #### Configuration:
-Extension can be configured by opening the Git Panel and clicking the ![settings...][settingsIcon] button.  
+Extension can be configured by opening the Git Panel and clicking the ![settings...][settingsIcon] button.
 Alternatively you can use `File > Git Settings...` in the Brackets menu.
 
 ## Features and limitations
@@ -36,13 +36,13 @@ Currently **Brackets-Git** supports these features (this list may be incomplete 
 
 - `init` / `clone` / `push` / `pull`
 - `create` / `delete` / `merge` branches
-- `select` / `define` / `delete` / `select` remotes
+- `select` / `define` / `delete` remotes
 - `checkout` / `reset` commits
 - show commits history
 - manage different Git settings
-- support for [Git-FTP](http://git-ftp.github.io/git-ftp/)
+- support for [Git-FTP](http://git-ftp.github.io/git-ftp/) ([installation instructions](docs/GIT-FTP.md))
 
-A comprehensive list of Brackets-Git features is available reading the [`CHANGELOG.md`](CHANGELOG.md).  
+A comprehensive list of Brackets-Git features is available reading the [`CHANGELOG.md`](CHANGELOG.md).
 Most of the features available are configurable and it's possible to enable and disable them selectively.
 
 **Pull/Push to password protected repositories:**
