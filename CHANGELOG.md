@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.16-dev
+* Added instructions for an easy installation of Git-FTP by [Fez Vrasta](https://github.com/FezVrasta)
+
 ## 0.13.15
 * Updated Brazilian Portuguese translation by [Rodrigo Tavares](https://github.com/rodrigost23)
 * BUGFIX: Improved .gitignore parsing by [Marcel Gerber](https://github.com/SAPlayer)
