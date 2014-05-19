@@ -13,7 +13,7 @@ define({
     AVATAR_TYPE:                        "Avatar-Typ",
     BASH_NOT_AVAILABLE:                 "Bash ist nicht verfügbar oder richtig eingestellt",
     BASIC_CONFIGURATION:                "Basis-Konfiguration",
-    BLACK_WHITE_AVATAR:                 "Scwarz-weißer Avatar",
+    BLACK_WHITE_AVATAR:                 "Schwarz-weißer Avatar",
     BRACKETS_GIT_ERROR:                 "Es ist ein Fehler in Brackets Git aufgetreten\u2026",
     BRANCH_NAME:                        "Name des Branches",
     BUTTON_CANCEL:                      "Abbrechen",
@@ -41,6 +41,9 @@ define({
     CHANGE_USER_EMAIL:                  "Git-E-Mail-Adresse ändern",
     CHANGE_USER_NAME:                   "Git-Nutzernamen ändern",
     CHECK_GIT_SETTINGS:                 "Git konnte nicht ausgeführt werden - Überprüfe die Git-Einstellungen und starte Brackets neu",
+    CLEAN_FILE_END:                     "Datei gesäubert",
+    CLEAN_FILE_START:                   "Datei wird gesäubert",
+    CLEANING_WHITESPACE_PROGRESS:       "Anhängende Leerzeichen werden von den Dateien entfernt\u2026",
     CLONE_REPOSITORY:                   "Repository klonen",
     CODE_INSPECTION_PROBLEMS:           "Fehler beim Linten:",
     COLLAPSE_ALL:                       "Alle einklappen",
@@ -89,6 +92,8 @@ define({
     ENTER_REMOTE_URL:                   "Geben Sie die URL des neuen Remote-Repositories ein:",
     ENTER_USERNAME:                     "Nutzernamen eingeben:",
     ERROR_CONNECT_NODEJS:               "Es konnte keine Verbindung zu NodeJS aufgebaut werden. Schließen Sie alle Instanzen von Brackets und starten es erneut, wenn Sie die Erweiterung gerade aktualisiert haben.",
+    ERROR_NOTHING_SELECTED:             "Es wurde nichts ausgewählt!",
+    ERROR_SAVE_FIRST:                   "Speichern Sie die Datei erst!",
     ERROR_TERMINAL_NOT_FOUND:           "Die Konsole wurde in ihrem Betriebssystem nicht gefunden, Sie können einen eigenen Konsolenbefehl in den Einstellungen angeben",
     EXPAND_ALL:                         "Alle ausklappen",
     EXTENDED_COMMIT_MESSAGE:            "ERWEITERT",
@@ -172,6 +177,7 @@ define({
     SAVE_CREDENTIALS_IN_URL:            "Zugangsdaten für diese Remote-URL speichern (im Klartext)",
     SAVE_PASSWORD_QUESTION:             "Wollen sie den Nutzernamen und das Passwort speichern?",
     SET_ORIGIN_URL:                     "Origin-URL einstellen",
+    SET_THIS_BRANCH_AS_TRACKING:        "Setzt diesen Branch als neuen Remote-Tracking-Branch",
     SHORTCUTS:                          "Tastenkürzel",
     SHORTCUTS_HINT:                     "Trennen Sie Tasten mit Strichen, zum Beispiel: Ctrl-Alt-G<br>Sie können die englischen Bezeichnungen Ctrl (-> Strg), Cmd (Mac -> Command), Alt und Shift (-> Umschalt) nutzen.",
     SHOWN_DATE_FORMAT:                  "Anzeigeformat des Datums eines Commits im Verlauf",
@@ -217,7 +223,8 @@ define({
     USE_VERBOSE_DIFF:                   "Ausführliche Angaben in Diffs anzeigen",
     USING_GIT_VERSION:                  "Git-Version",
     VIEW_AUTHORS_FILE:                  "Autoren der Datei anzeigen",
-    VIEW_AUTHORS_SELECTION:             "Autoren der Auswahl anzeigen"
+    VIEW_AUTHORS_SELECTION:             "Autoren der Auswahl anzeigen",
+    VIEW_THIS_FILE:                     "Diese Datei anzeigen"
 });
 
-/* Last translated for 12dc2d80344d767d52a0fb9aed7fc65f69dc8544 */
+/* Last translated for fbc3411dadb6b4a23dadb7ca3590a2a75fc199ac */
