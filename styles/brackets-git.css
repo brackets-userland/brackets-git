@@ -539,7 +539,6 @@
   -ms-user-select: text;
   -o-user-select: text;
   user-select: text;
-  cursor: text;
   background-color: #f5f5f5;
   border: 1px solid #b2b5b5;
   border-radius: 3px;
@@ -566,6 +565,7 @@
 }
 .commit-diff table {
   width: 100%;
+  cursor: text;
 }
 .commit-diff table tbody tr.meta-file th {
   border-top: 0;
