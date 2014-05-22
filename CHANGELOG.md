@@ -2,8 +2,11 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.13.16-dev
+## 0.13.16
 * Added instructions for an easy installation of Git-FTP by [Fez Vrasta](https://github.com/FezVrasta)
+* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+* BUGFIX: Restored default cursor for the commit diff scrollbars by [cheesypoof](https://github.com/cheesypoof)
+* BUGFIX: Diffs over 2000 lines will not be displayed due to poor performance.
 
 ## 0.13.15
 * Updated Brazilian Portuguese translation by [Rodrigo Tavares](https://github.com/rodrigost23)

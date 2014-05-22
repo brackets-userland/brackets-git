@@ -38,6 +38,8 @@ define(function (require, exports, module) {
     }
 
     function formatDiff(diff) {
+        var DIFF_MAX_LENGTH = 2000;
+
         var tabSize      = Preferences.getGlobal("tabSize"),
             verbose      = Preferences.get("useVerboseDiff"),
             numLineOld   = 0,
@@ -52,7 +54,13 @@ define(function (require, exports, module) {
             ADDED: 3
         };
 
-        diff.split("\n").forEach(function (line) {
+        var diffSplit = diff.split("\n");
+
+        if (diffSplit.length > DIFF_MAX_LENGTH) {
+            return "<div>" + Strings.DIFF_TOO_LONG + "</div>";
+        }
+
+        diffSplit.forEach(function (line) {
             if (line === " ") { line = ""; }
 
             var lineClass   = "",

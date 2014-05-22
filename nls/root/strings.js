@@ -81,6 +81,7 @@ define({
     DIALOG_RESET_SOFT:                  "Changes after this commit will be staged for a new commmit.",
     DIFF:                               "Diff",
     DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
+    DIFF_TOO_LONG:                      "Diff too long to display",
     ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
     ENTER_GITFTP_SCOPE_NAME:            "Enter name of the new Git-FTP remote:",
     ENTER_GITFTP_SCOPE_URL:             "Enter FTP URL of the new Git-FTP remote specifing username and password:",
