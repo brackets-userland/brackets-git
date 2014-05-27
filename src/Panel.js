@@ -51,7 +51,11 @@ define(function (require, exports) {
         $tableContainer = $(null);
 
     function lintFile(filename) {
-        return CodeInspection.inspectFile(FileSystem.getFileForPath(Utils.getProjectRoot() + filename));
+        var fullPath = Utils.getProjectRoot() + filename;
+        return Promise.cast(CodeInspection.inspectFile(FileSystem.getFileForPath(fullPath)))
+            .catch(function (err) {
+                ErrorHandler.logError(err + " on CodeInspection.inspectFile for " + fullPath);
+            });
     }
 
     function _makeDialogBig($dialog) {

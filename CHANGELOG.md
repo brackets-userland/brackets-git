@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.18
+* BUGFIX: Fix error when trying to commit non utf-8 code files.
+
 ## 0.13.17
 * BUGFIX: Fix hanging when trying to trim whitespace from binary files.
 
