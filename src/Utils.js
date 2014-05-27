@@ -347,67 +347,85 @@ define(function (require, exports, module) {
                 normalizeLineEndings      = Preferences.get("normalizeLineEndings");
 
             var _cleanLines = function (lineNumbers) {
+                // do not clean if there's nothing to clean
+                if (lineNumbers && lineNumbers.length === 0) {
+                    return resolve();
+                }
                 // clean the file
                 var fileEntry = FileSystem.getFileForPath(fullPath);
-                return FileUtils.readAsText(fileEntry).then(function (text) {
-                    if (removeBom) {
-                        // remove BOM - \ufeff
-                        text = text.replace(/\ufeff/g, "");
-                    }
-                    if (normalizeLineEndings) {
-                        // normalizes line endings
-                        text = text.replace(/\r\n/g, "\n");
-                    }
-                    // process lines
-                    var lines = text.split("\n");
-
-                    if (lineNumbers) {
-                        lineNumbers.forEach(function (lineNumber) {
-                            lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
-                        });
-                    } else {
-                        lines.forEach(function (ln, lineNumber) {
-                            lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
-                        });
-                    }
-
-                    // add empty line to the end, i've heard that git likes that for some reason
-                    if (addEndlineToTheEndOfFile) {
-                        var lastLineNumber = lines.length - 1;
-                        if (lines[lastLineNumber].length > 0) {
-                            lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
+                return Promise.cast(FileUtils.readAsText(fileEntry))
+                    .catch(function (err) {
+                        ErrorHandler.logError(err + " on FileUtils.readAsText for " + fileEntry.fullPath);
+                        return null;
+                    })
+                    .then(function (text) {
+                        if (text === null) {
+                            return resolve();
                         }
-                        if (lines[lastLineNumber].length > 0) {
-                            lines.push("");
-                        }
-                    }
 
-                    //-
-                    text = lines.join("\n");
-                    return Promise.cast(FileUtils.writeText(fileEntry, text))
-                        .catch(function (err) {
-                            ErrorHandler.logError("Wasn't able to clean whitespace from file: " + fullPath);
-                            resolve();
-                            throw err;
-                        })
-                        .then(function () {
-                            // refresh the file if it's open in the background
-                            DocumentManager.getAllOpenDocuments().forEach(function (doc) {
-                                if (doc.file.fullPath === fullPath) {
-                                    reloadDoc(doc);
-                                }
+                        if (removeBom) {
+                            // remove BOM - \ufeff
+                            text = text.replace(/\ufeff/g, "");
+                        }
+                        if (normalizeLineEndings) {
+                            // normalizes line endings
+                            text = text.replace(/\r\n/g, "\n");
+                        }
+                        // process lines
+                        var lines = text.split("\n");
+
+                        if (lineNumbers) {
+                            lineNumbers.forEach(function (lineNumber) {
+                                lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
                             });
-                            // diffs were cleaned in this file
-                            resolve();
-                        });
-                });
+                        } else {
+                            lines.forEach(function (ln, lineNumber) {
+                                lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                            });
+                        }
+
+                        // add empty line to the end, i've heard that git likes that for some reason
+                        if (addEndlineToTheEndOfFile) {
+                            var lastLineNumber = lines.length - 1;
+                            if (lines[lastLineNumber].length > 0) {
+                                lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
+                            }
+                            if (lines[lastLineNumber].length > 0) {
+                                lines.push("");
+                            }
+                        }
+
+                        //-
+                        text = lines.join("\n");
+                        return Promise.cast(FileUtils.writeText(fileEntry, text))
+                            .catch(function (err) {
+                                ErrorHandler.logError("Wasn't able to clean whitespace from file: " + fullPath);
+                                resolve();
+                                throw err;
+                            })
+                            .then(function () {
+                                // refresh the file if it's open in the background
+                                DocumentManager.getAllOpenDocuments().forEach(function (doc) {
+                                    if (doc.file.fullPath === fullPath) {
+                                        reloadDoc(doc);
+                                    }
+                                });
+                                // diffs were cleaned in this file
+                                resolve();
+                            });
+                    });
             };
 
             if (clearWholeFile) {
                 _cleanLines(null);
             } else {
                 Git.diffFile(filename).then(function (diff) {
+                    // if git returned an empty diff
                     if (!diff) { return resolve(); }
+
+                    // if git detected that the file is binary
+                    if (diff.match(/^binary files.*differ$/img)) { return resolve(); }
+
                     var modified = [],
                         changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
                     // collect line numbers to clean
@@ -441,7 +459,7 @@ define(function (require, exports, module) {
             if (!isDeleted) {
                 // strip whitespace only for recognized languages so binary files won't get corrupted
                 var langId = LanguageManager.getLanguageForPath(fileObj.file).getId();
-                if (["unknown", "binary", "image", "markdown"].indexOf(langId) === -1) {
+                if (["unknown", "binary", "image", "markdown", "audio"].indexOf(langId) === -1) {
 
                     queue = queue.then(function () {
                         var clearWholeFile = fileObj.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||

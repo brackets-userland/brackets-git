@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.17
+* BUGFIX: Fix hanging when trying to trim whitespace from binary files.
+
 ## 0.13.16
 * Added instructions for an easy installation of Git-FTP by [Fez Vrasta](https://github.com/FezVrasta)
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
