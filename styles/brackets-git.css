@@ -791,6 +791,9 @@
 #git-panel .toolbar {
   overflow: visible;
 }
+#git-panel table {
+  margin-bottom: 0;
+}
 #git-panel .git-edited-list td {
   vertical-align: middle;
 }
