@@ -221,7 +221,7 @@ define(function (require, exports, module) {
                 question: options.question
             });
             var dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
-            dialog.getElement().focus();
+            dialog.getElement().find("button").focus();
             dialog.done(function (buttonId) {
                 resolve(buttonId === "ok");
             });
