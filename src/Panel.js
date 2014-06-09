@@ -443,6 +443,9 @@ define(function (require, exports) {
     function commitMerge() {
         Utils.loadPathContent(Utils.getProjectRoot() + "/.git/MERGE_MSG").then(function (msg) {
             handleGitCommit(msg);
+            EventEmitter.once(Events.GIT_COMMITED, function () {
+                EventEmitter.emit(Events.REFRESH_ALL);
+            });
         }).catch(function (err) {
             ErrorHandler.showError(err, "Merge commit failed");
         });
