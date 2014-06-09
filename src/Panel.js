@@ -1021,6 +1021,13 @@ define(function (require, exports) {
         refresh();
     });
 
+    EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function (event, fileSystemEntry) {
+        // files are added or deleted from the directory
+        if (fileSystemEntry.isDirectory) {
+            refresh();
+        }
+    });
+
     EventEmitter.on(Events.REBASE_MERGE_MODE, function (rebaseEnabled, mergeEnabled) {
         $gitPanel.find(".git-rebase").toggle(rebaseEnabled);
         $gitPanel.find(".git-merge").toggle(mergeEnabled);
