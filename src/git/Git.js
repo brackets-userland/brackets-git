@@ -95,7 +95,7 @@ define(function (require, exports) {
         var baseCheck  = ["MERGE_MODE", "rebase-apply"],
             mergeCheck = ["MERGE_HEAD", "MERGE_MSG"],
             rebaseCheck = ["rebase-apply/next", "rebase-apply/last", "rebase-apply/head-name"],
-            gitFolder  = Utils.getProjectRoot() + "/.git/";
+            gitFolder  = Utils.getProjectRoot() + ".git/";
 
         return Promise.all(baseCheck.map(function (fileName) {
             return Utils.loadPathContent(gitFolder + fileName);

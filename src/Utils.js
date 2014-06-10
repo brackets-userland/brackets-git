@@ -274,6 +274,9 @@ define(function (require, exports, module) {
                 if (err) {
                     return resolve(null);
                 }
+                if (entry._clearCachedData) {
+                    entry._clearCachedData();
+                }
                 if (entry.isFile) {
                     entry.read(function (err, content) {
                         if (err) {
