@@ -6,6 +6,7 @@
 * BUGFIX: Refresh panel when a new file is added into the project (directory content has been modified).
 * BUGFIX: Refresh project after commiting a merge commit.
 * BUGFIX: Always clear Brackets fileSystem cache when working with .git files.
+* BUGFIX: Remove panel table margin-bottom by [cheesypoof](https://github.com/cheesypoof)
 
 ## 0.13.18
 * BUGFIX: Fix error when trying to commit non utf-8 code files.
