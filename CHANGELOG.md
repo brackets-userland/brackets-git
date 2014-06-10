@@ -7,6 +7,7 @@
 * BUGFIX: Refresh project after commiting a merge commit.
 * BUGFIX: Always clear Brackets fileSystem cache when working with .git files.
 * BUGFIX: Remove panel table margin-bottom by [cheesypoof](https://github.com/cheesypoof)
+* BUGFIX: When closing files not modified by Git, do not close files that have unsaved changes.
 
 ## 0.13.18
 * BUGFIX: Fix error when trying to commit non utf-8 code files.

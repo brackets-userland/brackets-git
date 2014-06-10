@@ -24,6 +24,15 @@ define(function (require, exports) {
                 modifiedFiles.forEach(function (modifiedFile) {
                     if (projectRoot + modifiedFile.file === openFile.fullPath) { removeOpenFile = false; }
                 });
+
+                if (removeOpenFile) {
+                    // check if file doesn't have any unsaved changes
+                    var doc = DocumentManager.getOpenDocumentForPath(openFile.fullPath);
+                    if (doc && doc.isDirty) {
+                        removeOpenFile = false;
+                    }
+                }
+
                 if (removeOpenFile) {
                     DocumentManager.closeFullEditor(openFile);
                 }
