@@ -3,7 +3,8 @@
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
 ## 0.13.20
-* BUGFIX: Fixed default Git paths for Windows from bin directory to cmd directory.
+* BUGFIX: Fixed default Git paths for Windows from bin directory to cmd directory by [Leif Gruenwoldt](https://github.com/leif81)
+* BUGFIX: Allow empty commit when in merge stage.
 
 ## 0.13.19
 * Use LESS rather than pre-compiled CSS for the extension.

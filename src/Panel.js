@@ -442,7 +442,7 @@ define(function (require, exports) {
 
     function commitMerge() {
         Utils.loadPathContent(Utils.getProjectRoot() + "/.git/MERGE_MSG").then(function (msg) {
-            handleGitCommit(msg);
+            handleGitCommit(msg, true);
             EventEmitter.once(Events.GIT_COMMITED, function () {
                 EventEmitter.emit(Events.REFRESH_ALL);
             });
@@ -475,7 +475,7 @@ define(function (require, exports) {
         });
     }
 
-    function handleGitCommit(prefilledMessage) {
+    function handleGitCommit(prefilledMessage, isMerge) {
 
         var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
         var codeInspectionEnabled = Preferences.get("useCodeInspection");
@@ -489,7 +489,7 @@ define(function (require, exports) {
                 return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
             });
 
-            if (files.length === 0) {
+            if (files.length === 0 && !isMerge) {
                 return ErrorHandler.showError(new Error("Commit button should have been disabled"), "Nothing staged to commit");
             }
 
