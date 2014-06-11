@@ -14,8 +14,8 @@ define(function (require, exports) {
 
     // Module variables
     var standardGitPathsWin = [
-        "C:\\Program Files (x86)\\Git\\bin\\git.exe",
-        "C:\\Program Files\\Git\\bin\\git.exe",
+        "C:\\Program Files (x86)\\Git\\cmd\\git.exe",
+        "C:\\Program Files\\Git\\cmd\\git.exe"
     ];
 
     var standardGitPathsNonWin = [

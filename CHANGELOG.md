@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.20
+* BUGFIX: Fixed default Git paths for Windows from bin directory to cmd directory.
+
 ## 0.13.19
 * Use LESS rather than pre-compiled CSS for the extension.
 * BUGFIX: Refresh panel when a new file is added into the project (directory content has been modified).
