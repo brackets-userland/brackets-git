@@ -5,6 +5,7 @@
 ## 0.13.20
 * BUGFIX: Fixed default Git paths for Windows from bin directory to cmd directory by [Leif Gruenwoldt](https://github.com/leif81)
 * BUGFIX: Allow empty commit when in merge stage.
+* BUGFIX: Do not show deleted remote as default.
 
 ## 0.13.19
 * Use LESS rather than pre-compiled CSS for the extension.
