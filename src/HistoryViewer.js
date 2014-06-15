@@ -15,7 +15,8 @@ define(function (require, exports) {
         Strings       = require("strings"),
         Utils         = require("src/Utils");
 
-    var historyViewerTemplate = require("text!templates/history-viewer.html");
+    var historyViewerTemplate       = require("text!templates/history-viewer.html"),
+        historyViewerFilesTemplate  = require("text!templates/history-viewer-files.html");
 
     var avatarType             = Preferences.get("avatarType"),
         enableAdvancedFeatures = Preferences.get("enableAdvancedFeatures"),
@@ -30,6 +31,10 @@ define(function (require, exports) {
             allExpanded = allFiles.length === activeFiles.length;
         $viewer.find(".toggle-diffs").toggleClass("opened", allExpanded);
     }, 100);
+
+    var PAGE_SIZE = 25;
+    var currentPage = 0;
+    var hasNextPage = false;
 
     function toggleDiff($a) {
         if ($a.hasClass("active")) {
@@ -184,10 +189,11 @@ define(function (require, exports) {
             useIdenticon: avatarType === "IDENTICON",
             useBwAvatar: avatarType === "AVATAR_BW",
             useColoredAvatar: avatarType === "AVATAR_COLOR",
-            files: files,
             Strings: Strings,
             enableAdvancedFeatures: enableAdvancedFeatures
         }));
+
+        renderFiles(files);
 
         var firstFile = selectedFile || $viewer.find(".commit-files ul li:first-child").text().trim();
         if (firstFile) {
@@ -200,9 +206,27 @@ define(function (require, exports) {
         attachEvents();
     }
 
-    function render(hash, $editorHolder) {
-        $viewer = $("<div>").addClass("git spinner large spin");
+    function renderFiles(files) {
+        $viewer.find(".filesContainer").append(Mustache.render(historyViewerFilesTemplate, {
+            files: files
+        }));
+
+        // Activate/Deactivate load more button
+        $viewer.find(".loadMore")
+            .toggle(hasNextPage)
+            .off("click")
+            .on("click", function () {
+                currentPage++;
+                loadMoreFiles();
+            });
+    }
+
+    function loadMoreFiles() {
         Git.getFilesFromCommit(commit.hash).then(function (files) {
+
+            hasNextPage = files.slice((currentPage + 1) * PAGE_SIZE).length > 0;
+            files = files.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+
             var list = files.map(function (file) {
                 var fileExtension = FileUtils.getSmartFileExtension(file),
                     i = file.lastIndexOf("." + fileExtension),
@@ -213,13 +237,26 @@ define(function (require, exports) {
                     file: file
                 };
             });
-            var file = $("#git-history-list").data("file-relative");
-            return renderViewerContent(list, file);
+
+            if (currentPage === 0) {
+                var file = $("#git-history-list").data("file-relative");
+                return renderViewerContent(list, file);
+            } else {
+                return renderFiles(list);
+            }
         }).catch(function (err) {
             ErrorHandler.showError(err, "Failed to load list of diff files");
         }).finally(function () {
             $viewer.removeClass("spinner large spin");
         });
+    }
+
+    function render(hash, $editorHolder) {
+        $viewer = $("<div>").addClass("git spinner large spin");
+
+        currentPage = 0;
+        loadMoreFiles();
+
         return $viewer.appendTo($editorHolder);
     }
 

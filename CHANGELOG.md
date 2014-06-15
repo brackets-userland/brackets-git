@@ -6,6 +6,7 @@
 * BUGFIX: Fixed default Git paths for Windows from bin directory to cmd directory by [Leif Gruenwoldt](https://github.com/leif81)
 * BUGFIX: Allow empty commit when in merge stage.
 * BUGFIX: Do not show deleted remote as default.
+* BUGFIX: History viewer is now paged to load at most 25 files in one go.
 
 ## 0.13.19
 * Use LESS rather than pre-compiled CSS for the extension.
