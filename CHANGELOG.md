@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.21-dev
+* BUGFIX: When there are not remotes but there's at least one FTP scope the Push button is enabled, by [FezVrasta](https://github.com/FezVrasta)
+
 ## 0.13.20
 * BUGFIX: Fixed default Git paths for Windows from bin directory to cmd directory by [Leif Gruenwoldt](https://github.com/leif81)
 * BUGFIX: Allow empty commit when in merge stage.

@@ -167,6 +167,14 @@ define(function (require) {
                     hasFtpScopes: ftpScopes.length > 0
                 });
                 $remotesDropdown.prepend(compiledTemplate);
+
+                // If there is at least one ftp scope, then enable the push button (if it was disabled), otherwise, keep it as it
+                if (ftpScopes.length !== 0) {
+                    $gitPanel
+                    .find(".git-push")
+                    .prop("disabled", false);
+                }
+
             }
         }).catch(function (err) {
             ErrorHandler.showError(err, "Getting FTP remotes failed!");
