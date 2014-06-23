@@ -156,7 +156,7 @@ define({
     // DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     // TODO: localize DIFF_FAILED_SEE_FILES to pt-br
     // ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
-    // TODO: localize ENABLE_ADVANCED_FEATURES to pt-br
+    ENABLE_ADVANCED_FEATURES:              "Habilitar recursos avançados",
     // ENTER_GITFTP_SCOPE_NAME:            "Enter name of the new Git-FTP remote:",
     // TODO: localize ENTER_GITFTP_SCOPE_NAME to pt-br
     // ENTER_GITFTP_SCOPE_URL:             "Enter FTP URL of the new Git-FTP remote specifing username and password:",
@@ -168,15 +168,15 @@ define({
     // ENTER_PASSWORD:                     "Enter password:",
     ENTER_PASSWORD:                        "Insira senha",
     // ENTER_REMOTE_GIT_URL:               "Enter Git URL of the repository you want to clone:",
-    // TODO: localize ENTER_REMOTE_GIT_URL to pt-br
+    ENTER_REMOTE_GIT_URL:                  "Insira a URL do repositório Git que você deseja clonar:",
     // ENTER_REMOTE_NAME:                  "Enter name of the new remote:",
-    // TODO: localize ENTER_REMOTE_NAME to pt-br
+    ENTER_REMOTE_NAME:                     "Insira o nome do novo remoto:",
     // ENTER_REMOTE_URL:                   "Enter URL of the new remote:",
-    // TODO: localize ENTER_REMOTE_URL to pt-br
+    ENTER_REMOTE_URL:                      "Insira a URL do novo remoto:",
     // ENTER_USERNAME:                     "Enter username:",
     ENTER_USERNAME:                        "Usuário",
     // ERROR_CONNECT_NODEJS:               "Failed to connect to NodeJS. If you've just updated the extension then close all instances of Brackets and try starting again.",
-    ERROR_CONNECT_NODEJS:                  "Falha na conexão com o NodeJS. Se você acabou de atualizar a extensão, feche todas as instâncias do Brackets e tente novamente.",
+    ERROR_CONNECT_NODEJS:                  "Falha ao conectar com o NodeJS. Se você acabou de atualizar a extensão, feche todas as instâncias do Brackets e tente novamente.",
     // ERROR_TERMINAL_NOT_FOUND:           "Terminal was not found for your OS, you can define a custom Terminal command in the settings",
     ERROR_TERMINAL_NOT_FOUND:              "Terminal was not found for your OS, you can define a custom Terminal command in the settings",
     // EXPAND_ALL:                         "Expand all",
@@ -192,7 +192,7 @@ define({
     // FILE_COPIED:                        "Copied",
     FILE_COPIED:                           "Copiado",
     // FILE_DELETED:                       "Deleted",
-    FILE_DELETED:                          "Exluído",
+    FILE_DELETED:                          "Excluído",
     // FILE_IGNORED:                       "Ignored",
     FILE_IGNORED:                          "Ignorado",
     // FILE_MODIFIED:                      "Modified",
@@ -204,9 +204,9 @@ define({
     // FILE_UNMERGED:                      "Unmerged",
     // TODO: localize FILE_UNMERGED to pt-br
     // FILE_UNMODIFIED:                    "Unmodified",
-    // TODO: localize FILE_UNMODIFIED to pt-br
+     FILE_UNMODIFIED:                    "Não modificado",
     // FILE_UNTRACKED:                     "Untracked",
-    FILE_UNTRACKED:                        "Untracked",
+    FILE_UNTRACKED:                        "Não versionado",
     // FOR_MAC_LINUX_USERS:                "For Mac/Linux users",
     FOR_MAC_LINUX_USERS:                   "Para usuários de Mac/Linux",
     // FOR_WINDOWS_USERS:                  "For Windows users",
@@ -218,7 +218,7 @@ define({
     // GIT_COMMIT:                         "Git commit\u2026",
     GIT_COMMIT:                            "Git commit\u2026",
     // GIT_CONFIGURATION:                  "Git configuration",
-    // TODO: localize GIT_CONFIGURATION to pt-br
+    GIT_CONFIGURATION:                     "Configuração do Git",
     // GIT_DIFF:                           "Git diff &mdash;",
     GIT_DIFF:                              "Git diff &mdash;",
     // GIT_PULL_RESPONSE:                  "Git Pull response",
@@ -430,7 +430,7 @@ define({
     // USE_REBASE:                         "Use REBASE",
     USE_REBASE:                            "Usar REBASE",
     // USE_VERBOSE_DIFF:                   "Show verbose output in diffs",
-    // TODO: localize USE_VERBOSE_DIFF to pt-br
+    USE_VERBOSE_DIFF:                      "Mostrar saída detalhada em diffs",
     // USING_GIT_VERSION:                  "Git version",
     USING_GIT_VERSION:                     "Versão do Git",
     // VIEW_AUTHORS_FILE:                  "View authors of file",
