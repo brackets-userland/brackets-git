@@ -2,7 +2,7 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.13.21-dev
+## 0.13.21
 * Updated Brazilian Portuguese translation by [Júnior Messias](https://github.com/jrmessias)
 * BUGFIX: When there are not remotes but there's at least one FTP scope the Push button is enabled, by [FezVrasta](https://github.com/FezVrasta)
 * BUGFIX: Some styling improvements by [cheesypoof](https://github.com/cheesypoof)
