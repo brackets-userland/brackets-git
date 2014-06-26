@@ -6,6 +6,7 @@ define(function (require, exports, module) {
     var Promise       = require("bluebird"),
         Strings       = require("strings"),
         ErrorHandler  = require("src/ErrorHandler"),
+        ExpectedError = require("src/ExpectedError"),
         Preferences   = require("src/Preferences"),
         Utils         = require("src/Utils");
 
@@ -145,7 +146,7 @@ define(function (require, exports, module) {
         // we connect to node (promise is returned immediately if we are already connected)
         connectToNode().catch(function (err) {
             // failed to connect to node for some reason
-            throw ErrorHandler.showError(err, Strings.ERROR_CONNECT_NODEJS);
+            throw ErrorHandler.showError(new ExpectedError(err), Strings.ERROR_CONNECT_NODEJS);
         }).then(function (wasConnected) {
 
             var resolved      = false,
