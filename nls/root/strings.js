@@ -92,7 +92,7 @@ define({
     ENTER_REMOTE_NAME:                  "Enter name of the new remote:",
     ENTER_REMOTE_URL:                   "Enter URL of the new remote:",
     ENTER_USERNAME:                     "Enter username:",
-    ERROR_CONNECT_NODEJS:               "Failed to connect to NodeJS. If you've just updated the extension then close all instances of Brackets and try starting again.",
+    ERROR_CONNECT_NODEJS:               "Failed to connect to NodeJS. If you've just updated the extension then close all instances of Brackets and try starting again. If restart doesn't help try removing other extensions that you've installed as one of them is probably causing this problem.",
     ERROR_NOTHING_SELECTED:             "Nothing is selected!",
     ERROR_SAVE_FIRST:                   "Save the document first!",
     ERROR_TERMINAL_NOT_FOUND:           "Terminal was not found for your OS, you can define a custom Terminal command in the settings",
