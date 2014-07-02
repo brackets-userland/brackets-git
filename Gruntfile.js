@@ -60,6 +60,17 @@ module.exports = function (grunt) {
                     {src: ["LICENSE", "*.js", "*.json", "*.md"], dest: "/", filter: "isFile"}
                 ]
             }
+        },
+        lineending: {
+            dist: {
+                options: {
+                    eol: "lf",
+                    overwrite: true
+                },
+                files: {
+                    "": ["nls/**/*.js", "shell/**/*.*", "src/**/*.js", "styles/**/*.less", "templates/**/*.html", "thirdparty/**/*.js"]
+                }
+            }
         }
     });
 
@@ -68,7 +79,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-lesslint");
     grunt.loadNpmTasks("grunt-jscs-checker");
     grunt.loadNpmTasks("grunt-contrib-compress");
+    grunt.loadNpmTasks("grunt-lineending");
 
+    grunt.registerTask("package", ["lineending", "compress"]);
     grunt.registerTask("jslint-test", ["jslint"]);
     grunt.registerTask("jshint-test", ["jshint"]);
     grunt.registerTask("less-test", ["lesslint"]);
