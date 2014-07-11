@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.23
+* BUGFIX: Attempt to reconnect to Node.js when a socket connection closed unexpectedly.
+
 ## 0.13.22
 * Added grunt task to fix line-endings before creating a package.
 

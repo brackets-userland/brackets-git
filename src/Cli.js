@@ -114,7 +114,7 @@ define(function (require, exports, module) {
         Utils.consoleLog(msg);
     }
 
-    function cliHandler(method, cmd, args, opts) {
+    function cliHandler(method, cmd, args, opts, retry) {
         var cliId     = getNextCliId(),
             deferred  = Promise.defer();
 
@@ -175,7 +175,22 @@ define(function (require, exports, module) {
                             logDebug(domainOpts, debugInfo, method, "fail", err);
                         }
                         delete deferredMap[cliId];
-                        deferred.reject(ErrorHandler.toError(err));
+
+                        err = ErrorHandler.toError(err);
+
+                        // socket was closed so we should try this once again (if not already retrying)
+                        if (err.stack && err.stack.indexOf("WebSocket.self._ws.onclose") !== -1 && !retry) {
+                            cliHandler(method, cmd, args, opts, true)
+                                .then(function (response) {
+                                    deferred.resolve(response);
+                                })
+                                .catch(function (err) {
+                                    deferred.reject(err);
+                                });
+                            return;
+                        }
+
+                        deferred.reject(err);
                     }
                 })
                 .then(function (out) {
