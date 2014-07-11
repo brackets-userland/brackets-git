@@ -313,8 +313,13 @@ define(function (require) {
             });
         }
 
-        // Toggle commit button and check-all checkbox
-        $gitPanel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
+        // disable commit button when viewing history
+        // refresh status when history is closed and commit button will correct its disabled state if required
+        if (historyEnabled) {
+            $gitPanel.find(".git-commit, .check-all").prop("disabled", true);
+        } else {
+            Git.status();
+        }
 
         // Toggle visibility of .git-edited-list and #git-history-list
         $tableContainer.find(".git-edited-list").toggle(!historyEnabled);

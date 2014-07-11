@@ -4,6 +4,7 @@
 
 ## 0.13.23
 * BUGFIX: Attempt to reconnect to Node.js when a socket connection closed unexpectedly.
+* BUGFIX: Fix a bug where commit button stays enabled after leaving history view.
 
 ## 0.13.22
 * Added grunt task to fix line-endings before creating a package.
