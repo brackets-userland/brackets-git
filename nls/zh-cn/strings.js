@@ -149,7 +149,7 @@ define({
     // TODO: localize DIALOG_RESET_HARD to zh-cn
     // DIALOG_RESET_MIXED:                 "Changes after this commit will be unstaged.",
     // TODO: localize DIALOG_RESET_MIXED to zh-cn
-    // DIALOG_RESET_SOFT:                  "Changes after this commit will be staged for a new commmit.",
+    // DIALOG_RESET_SOFT:                  "Changes after this commit will be staged for a new commit.",
     // TODO: localize DIALOG_RESET_SOFT to zh-cn
     // DIFF:                               "Diff",
     DIFF:                                  "运行 Diff 查看更改",
@@ -361,7 +361,7 @@ define({
     STRIP_WHITESPACE_FROM_COMMITS:         "去除提交信息后的空白字符",
     // TARGET_BRANCH:                      "Target branch",
     // TODO: localize TARGET_BRANCH to zh-cn
-    // TITLE_CHECKOUT:                     "Do you really wish to checkout this commmit?",
+    // TITLE_CHECKOUT:                     "Do you really wish to checkout this commit?",
     // TODO: localize TITLE_CHECKOUT to zh-cn
     // TITLE_RESET:                        "Do you really wish to reset?",
     // TODO: localize TITLE_RESET to zh-cn
