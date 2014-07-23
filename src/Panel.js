@@ -51,11 +51,18 @@ define(function (require, exports) {
         $tableContainer = $(null);
 
     function lintFile(filename) {
-        var fullPath = Utils.getProjectRoot() + filename;
-        return Promise.cast(CodeInspection.inspectFile(FileSystem.getFileForPath(fullPath)))
-            .catch(function (err) {
-                ErrorHandler.logError(err + " on CodeInspection.inspectFile for " + fullPath);
-            });
+        var fullPath = Utils.getProjectRoot() + filename,
+            codeInspectionPromise;
+
+        try {
+            codeInspectionPromise = CodeInspection.inspectFile(FileSystem.getFileForPath(fullPath));
+        } catch (e) {
+            ErrorHandler.logError("CodeInspection.inspectFile failed to execute for file " + fullPath);
+            ErrorHandler.logError(e);
+            codeInspectionPromise = Promise.reject(e);
+        }
+
+        return Promise.cast(codeInspectionPromise);
     }
 
     function _makeDialogBig($dialog) {
@@ -459,14 +466,30 @@ define(function (require, exports) {
 
             // do a code inspection for the file, if it was not deleted
             if (!isDeleted) {
-                return lintFile(fileObj.file).then(function (result) {
-                    if (result) {
-                        lintResults.push({
-                            filename: fileObj.file,
-                            result: result
-                        });
-                    }
-                });
+                return lintFile(fileObj.file)
+                    .catch(function () {
+                        return [
+                            {
+                                provider: { name: "See console [F12] for details" },
+                                result: {
+                                    errors: [
+                                        {
+                                            pos: { line: 0, ch: 0 },
+                                            message: "CodeInspection failed to execute for this file."
+                                        }
+                                    ]
+                                }
+                            }
+                        ];
+                    })
+                    .then(function (result) {
+                        if (result) {
+                            lintResults.push({
+                                filename: fileObj.file,
+                                result: result
+                            });
+                        }
+                    });
             }
         });
 

@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.24
+* BUGFIX: Commiting no longer throws an error when buggy CodeInspector is installed.
+
 ## 0.13.23
 * BUGFIX: Attempt to reconnect to Node.js when a socket connection closed unexpectedly.
 * BUGFIX: Fix a bug where commit button stays enabled after leaving history view.
