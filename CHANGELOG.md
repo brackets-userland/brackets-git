@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.25
+* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+
 ## 0.13.24
 * BUGFIX: Commiting no longer throws an error when buggy CodeInspector is installed.
 
