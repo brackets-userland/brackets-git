@@ -81,6 +81,7 @@ define({
     DIALOG_RESET_SOFT:                  "Änderungen nach diesem Commit werden für einen neuen Commit vorgemerkt.",
     DIFF:                               "Diff",
     DIFF_FAILED_SEE_FILES:              "Git diff konnte keine Unterschiede finden. Hier ist die Liste der zum Commit vorgemerkten Dateien, die committet werden:",
+    DIFF_TOO_LONG:                      "Diff zu lang zum Anzeigen",
     ENABLE_ADVANCED_FEATURES:           "Erweiterte Funktionen aktivieren",
     ENTER_GITFTP_SCOPE_NAME:            "Geben Sie den Namen des neuen Git-FTP Remote-Repositories ein:",
     ENTER_GITFTP_SCOPE_URL:             "Geben Sie die FTP-URL des neuen Git-FTP Remote-Repositories unter Angabe von Nutzername und Passwort ein:",
@@ -91,7 +92,7 @@ define({
     ENTER_REMOTE_NAME:                  "Geben Sie den Namen des neuen Remote-Repositories ein:",
     ENTER_REMOTE_URL:                   "Geben Sie die URL des neuen Remote-Repositories ein:",
     ENTER_USERNAME:                     "Nutzernamen eingeben:",
-    ERROR_CONNECT_NODEJS:               "Es konnte keine Verbindung zu NodeJS aufgebaut werden. Schließen Sie alle Instanzen von Brackets und starten es erneut, wenn Sie die Erweiterung gerade aktualisiert haben.",
+    ERROR_CONNECT_NODEJS:               "Es konnte keine Verbindung zu NodeJS aufgebaut werden. Schließen Sie alle Instanzen von Brackets und starten es erneut, wenn Sie die Erweiterung gerade aktualisiert haben. Probieren Sie, wenn das nicht hilft, andere installierte Erweiterungen zu entfernen, da eine davon wahrscheinlich das Problem verursacht.",
     ERROR_NOTHING_SELECTED:             "Es wurde nichts ausgewählt!",
     ERROR_SAVE_FIRST:                   "Speichern Sie die Datei erst!",
     ERROR_TERMINAL_NOT_FOUND:           "Die Konsole wurde in ihrem Betriebssystem nicht gefunden, Sie können einen eigenen Konsolenbefehl in den Einstellungen angeben",
@@ -227,4 +228,4 @@ define({
     VIEW_THIS_FILE:                     "Diese Datei anzeigen"
 });
 
-/* Last translated for fbc3411dadb6b4a23dadb7ca3590a2a75fc199ac */
+/* Last translated for 7e9b60ba198543487b712dcd020baeea544911e2 */
