@@ -51,7 +51,22 @@ Push/Pull from and to password protected repositories is partially supported, cu
 [Windows Credential Store for Git](http://gitcredentialstore.codeplex.com/) is recommended to better manage password protected repositories till **Brackets-Git** will provide a better support for them.
 You'll need to push manually for the first time to setup your username/password into credentials helper.
 
-If you can't find the feature you were looking for, feel free to **open issues with your ideas**.
+**Working with SSH repositories:**
+SSH protocol is currently a bit more difficult, so you'll have to use command line or try to follow these [tips](https://github.com/zaggino/brackets-git/issues/524):
+
+- Mac
+
+  - Create a ssh pair key with the following command on the terminal $ ssh-keygen -t rsa -b 2048 -C "MyCommentedKey" (Enter twice because we dont need password)
+  - Now add the sshkeyfilename.pub to the authorized_keys onto the git server. (see some tutorial about this, it is simple)
+  - Keep the private file (sshkeyfilename) on your mac, and now add this private key via terminal like this: $ chmod 600 sshkeyfilename $ ssh-add sshkeyfilename
+
+- Windows (Go to point 3 if you have already a rsa key already generated)
+
+  - Create a ssh pair key with PuttyGen RSA with 2048 bytes. Don't add any password. Save the PPK and upload the public key to the git server.
+  - Add the PPK key to the Putty agent.
+  - ONLY IF YOU HAVE A RSA Key already from the server. You need to convert the private key to PPK. With PuttyGen load the sshkeyfilename (this file comes without extension, after loaded Save it as private key. After that load this key in Putty Agent.
+  - Insert (if not already) the pub key to the server inside the folder /root/.ssh/authorized_keys. (edit with "vi" the file authorized_keys and paste the pub key content on the file.)
+  - Putty manage the private keys with a SSH agent always present in the task bar.
 
 ## Some screenshots:
 
