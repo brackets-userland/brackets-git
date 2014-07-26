@@ -169,15 +169,17 @@ define(function (require, exports, module) {
             // nodeConnection returns jQuery deferred
             nodeConnection.domains[domainName][method](opts.cwd, cmd, args, domainOpts)
                 .fail(function (err) { // jQuery promise - .fail is fine
+                    console.log("[zivorad-git] ovde sam bio", err);
+
                     if (!resolved) {
                         err = sanitizeOutput(err);
                         if (debugOn) {
                             logDebug(domainOpts, debugInfo, method, "fail", err);
                         }
                         delete deferredMap[cliId];
-
+                        console.log("[zivorad-git] ovde sam bio 1", err);
                         err = ErrorHandler.toError(err);
-
+                        console.log("[zivorad-git] ovde sam bio 2", err);
                         // socket was closed so we should try this once again (if not already retrying)
                         if (err.stack && err.stack.indexOf("WebSocket.self._ws.onclose") !== -1 && !retry) {
                             cliHandler(method, cmd, args, opts, true)
