@@ -45,14 +45,25 @@ define(function (require) {
             {booleanResponse: true}
         ).then(function (response) {
             if (response) {
-                return GitFtp.push(gitFtpScope).catch(function (err) {
+                return GitFtp.push(gitFtpScope).then(function (result) {
+                console.log(result);
+                Dialogs.showModalDialog(
+                    DefaultDialogs.DIALOG_ID_INFO,
+                    Strings.GITFTP_PUSH_RESPONSE, // title
+                    result // message
+                );
+                console.log("stigao sam dovde - done");
+                $gitPanel.find(".git-push")
+                    .prop("disabled", false)
+                    .removeClass("btn-loading");
+                }).catch(function (err) {
                     ErrorHandler.showError(err, "Failed push to Git-FTP remote.");
+                }).finally(function () {
+                    $gitPanel.find(".git-push")
+                        .removeClass("btn-loading")
+                        .prop("disabled", false);
                 });
             }
-        }).finally(function () {
-            $gitPanel.find(".git-push")
-                .removeClass("btn-loading")
-                .prop("disabled", false);
         });
 
         /*GitFtp.push(gitFtpScope).then(function (result) {
