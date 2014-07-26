@@ -25,7 +25,7 @@ define(function (require) {
             .on("click", ".gitftp-remote-new", function () { handleGitFtpScopeCreation(); })
             .on("click", ".gitftp-remove-remote", function () { handleGitFtpScopeRemove($(this)); })
             .on("click", ".gitftp-init-remote", function () { handleGitFtpInitScope($(this)); })
-            .on("click", ".gitftp-push", handleGitFtpPush);
+            .on("click", ".git-push.ftp", handleGitFtpPush);
     });
 
     function initVariables() {
@@ -35,21 +35,30 @@ define(function (require) {
     }
 
     function handleGitFtpPush() {
-        var gitFtpScope = $gitPanel.find(".git-remote-selected").text().trim();
-        $gitPanel.find(".gitftp-push").prop("disabled", true).addClass("btn-loading");
-
-        GitFtp.push(gitFtpScope).done(function (result) {
+        var gitFtpScope = $gitPanel.find(".git-selected-remote").text().trim();
+        
+        $gitPanel.find(".git-push")
+            .addClass("btn-loading")
+            .prop("disabled", true);
+        
+        return GitFtp.push(gitFtpScope).then(function (result) {
+            
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GITFTP_PUSH_RESPONSE, // title
                 result // message
             );
+            
         }).catch(function (err) {
+            
             ErrorHandler.showError(err, "Failed push to Git-FTP remote.");
+            
         }).finally(function () {
-            $gitPanel.find(".gitftp-push")
-                .prop("disabled", false)
-                .removeClass("btn-loading");
+            
+            $gitPanel.find(".git-push")
+                .removeClass("btn-loading")
+                .prop("disabled", false);
+            
         });
     }
 
@@ -108,7 +117,7 @@ define(function (require) {
             .prop("disabled", true);
 
         var $selectedElement = $this.closest(".remote-name"),
-            $currentScope = $gitPanel.find(".git-remote-selected"),
+            $currentScope = $gitPanel.find(".git-selected-remote"),
             scopeName = $selectedElement.data("remote-name");
 
         return Utils.askQuestion(
@@ -123,12 +132,12 @@ define(function (require) {
                     $currentScope.data("remote-name", newScope).html(newScope);
                 }).catch(function (err) {
                     ErrorHandler.showError(err, "Remove scope failed");
+                }).finally(function () {
+                    $gitPanel.find(".git-remotes")
+                        .removeClass("btn-loading")
+                        .prop("disabled", false);
                 });
             }
-        }).finally(function () {
-            $gitPanel.find(".git-remotes")
-                .removeClass("btn-loading")
-                .prop("disabled", false);
         });
     }
 
@@ -168,12 +177,25 @@ define(function (require) {
                 });
                 $remotesDropdown.prepend(compiledTemplate);
 
+				$gitPanel
+                    .find(".git-pull")
+                    .prop("disabled", true);
+
+				$gitPanel
+                    .find(".git-push")
+                    .prop("disabled", true).removeClass("git").removeClass("ftp");
+
                 // If there is at least one ftp scope, then enable the push button (if it was disabled), otherwise, keep it as it
                 if (ftpScopes.length !== 0) {
                     $gitPanel
-                    .find(".git-push")
-                    .prop("disabled", false);
+                    	.find(".git-push")
+                    	.prop("disabled", false).addClass("ftp");
+					$gitPanel
+						.find(".git-selected-remote")
+						.text(ftpScopes[0].name);
                 }
+
+				console.log("[zivorad-git] ", ftpScopes);
 
             }
         }).catch(function (err) {
