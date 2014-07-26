@@ -21,7 +21,7 @@
         "url": "https://github.com/zaggino/brackets-git/issues",
         "email": "zaggino@gmail.com"
     },
-    "i18n": ["en", "en-uk", "de", "fr", "it", "pt-br", "zh-cn"],
+    "i18n": ["en", "en-gb", "de", "fr", "it", "pt-br", "zh-cn"],
 
     "engines": {
         "brackets": ">=0.40.0"
