@@ -907,7 +907,7 @@ define(function (require, exports) {
             .on("click", ".authors-file", handleAuthorsFile)
             .on("click", ".git-file-history", EventEmitter.emitFactory(Events.HISTORY_SHOW, "FILE"))
             .on("click", ".git-history-toggle", EventEmitter.emitFactory(Events.HISTORY_SHOW, "GLOBAL"))
-            .on("click", ".git-push", EventEmitter.emitFactory(Events.HANDLE_PUSH))
+            .on("click", ".git-push.git", EventEmitter.emitFactory(Events.HANDLE_PUSH))
             .on("click", ".git-pull", EventEmitter.emitFactory(Events.HANDLE_PULL))
             .on("click", ".git-bug", ErrorHandler.reportBug)
             .on("click", ".git-init", EventEmitter.emitFactory(Events.HANDLE_GIT_INIT))
