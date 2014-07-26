@@ -51,18 +51,11 @@ define(function (require, exports) {
         $tableContainer = $(null);
 
     function lintFile(filename) {
-        var fullPath = Utils.getProjectRoot() + filename,
-            codeInspectionPromise;
-
-        try {
-            codeInspectionPromise = CodeInspection.inspectFile(FileSystem.getFileForPath(fullPath));
-        } catch (e) {
-            ErrorHandler.logError("CodeInspection.inspectFile failed to execute for file " + fullPath);
-            ErrorHandler.logError(e);
-            codeInspectionPromise = Promise.reject(e);
-        }
-
-        return Promise.cast(codeInspectionPromise);
+        var fullPath = Utils.getProjectRoot() + filename;
+        return Promise.cast(CodeInspection.inspectFile(FileSystem.getFileForPath(fullPath)))
+            .catch(function (err) {
+                ErrorHandler.logError(err + " on CodeInspection.inspectFile for " + fullPath);
+            });
     }
 
     function _makeDialogBig($dialog) {
@@ -466,30 +459,14 @@ define(function (require, exports) {
 
             // do a code inspection for the file, if it was not deleted
             if (!isDeleted) {
-                return lintFile(fileObj.file)
-                    .catch(function () {
-                        return [
-                            {
-                                provider: { name: "See console [F12] for details" },
-                                result: {
-                                    errors: [
-                                        {
-                                            pos: { line: 0, ch: 0 },
-                                            message: "CodeInspection failed to execute for this file."
-                                        }
-                                    ]
-                                }
-                            }
-                        ];
-                    })
-                    .then(function (result) {
-                        if (result) {
-                            lintResults.push({
-                                filename: fileObj.file,
-                                result: result
-                            });
-                        }
-                    });
+                return lintFile(fileObj.file).then(function (result) {
+                    if (result) {
+                        lintResults.push({
+                            filename: fileObj.file,
+                            result: result
+                        });
+                    }
+                });
             }
         });
 
@@ -816,41 +793,33 @@ define(function (require, exports) {
 
     }
 
-    EventEmitter.on(Events.GIT_CHANGE_USERNAME, function (event, callback) {
+    function changeUserName() {
         return Git.getConfig("user.name").then(function (currentUserName) {
             return Utils.askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, {defaultValue: currentUserName})
                 .then(function (userName) {
                     if (!userName.length) { userName = currentUserName; }
-                    return Git.setConfig("user.name", userName, true).catch(function (err) {
-                        ErrorHandler.showError(err, "Impossible to change username");
+                    return Git.setConfig("user.name", userName).catch(function (err) {
+                        ErrorHandler.showError(err, "Impossible change username");
                     }).then(function () {
                         EventEmitter.emit(Events.GIT_USERNAME_CHANGED, userName);
-                    }).finally(function () {
-                        if (callback) {
-                            callback(userName);
-                        }
                     });
                 });
         });
-    });
+    }
 
-    EventEmitter.on(Events.GIT_CHANGE_EMAIL, function (event, callback) {
+    function changeUserEmail() {
         return Git.getConfig("user.email").then(function (currentUserEmail) {
             return Utils.askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, {defaultValue: currentUserEmail})
                 .then(function (userEmail) {
                     if (!userEmail.length) { userEmail = currentUserEmail; }
-                    return Git.setConfig("user.email", userEmail, true).catch(function (err) {
-                        ErrorHandler.showError(err, "Impossible to change user email");
+                    return Git.setConfig("user.email", userEmail).catch(function (err) {
+                        ErrorHandler.showError(err, "Impossible change user email");
                     }).then(function () {
                         EventEmitter.emit(Events.GIT_EMAIL_CHANGED, userEmail);
-                    }).finally(function () {
-                        if (callback) {
-                            callback(userEmail);
-                        }
                     });
                 });
         });
-    });
+    }
 
     function discardAllChanges() {
         return Utils.askQuestion(Strings.RESET_LOCAL_REPO, Strings.RESET_LOCAL_REPO_CONFIRM, { booleanResponse: true })
@@ -907,7 +876,7 @@ define(function (require, exports) {
             .on("click", ".authors-file", handleAuthorsFile)
             .on("click", ".git-file-history", EventEmitter.emitFactory(Events.HISTORY_SHOW, "FILE"))
             .on("click", ".git-history-toggle", EventEmitter.emitFactory(Events.HISTORY_SHOW, "GLOBAL"))
-            .on("click", ".git-push", EventEmitter.emitFactory(Events.HANDLE_PUSH))
+            .on("click", ".git-push.git", EventEmitter.emitFactory(Events.HANDLE_PUSH))
             .on("click", ".git-pull", EventEmitter.emitFactory(Events.HANDLE_PULL))
             .on("click", ".git-bug", ErrorHandler.reportBug)
             .on("click", ".git-init", EventEmitter.emitFactory(Events.HANDLE_GIT_INIT))
@@ -925,8 +894,8 @@ define(function (require, exports) {
                     Menus.getContextMenu("git-panel-context-menu").open(e);
                 }, 1);
             })
-            .on("click", ".change-user-name", EventEmitter.emitFactory(Events.GIT_CHANGE_USERNAME))
-            .on("click", ".change-user-email", EventEmitter.emitFactory(Events.GIT_CHANGE_EMAIL))
+            .on("click", ".change-user-name", changeUserName)
+            .on("click", ".change-user-email", changeUserEmail)
             .on("click", ".undo-last-commit", undoLastLocalCommit)
             .on("click", ".git-bash", EventEmitter.emitFactory(Events.TERMINAL_OPEN))
             .on("click", ".reset-all", discardAllChanges);
@@ -1070,10 +1039,6 @@ define(function (require, exports) {
 
     EventEmitter.on(Events.HANDLE_GIT_COMMIT, function () {
         handleGitCommit();
-    });
-
-    EventEmitter.on(Events.TERMINAL_DISABLE, function (where) {
-        $gitPanel.find(".git-bash").prop("disabled", true).attr("title", Strings.TERMINAL_DISABLED + " @ " + where);
     });
 
     exports.init = init;

@@ -5,8 +5,7 @@ define(function (require, exports) {
     "use strict";
 
     var DocumentManager = brackets.getModule("document/DocumentManager"),
-        EditorManager   = brackets.getModule("editor/EditorManager"),
-        FileSystem      = brackets.getModule("filesystem/FileSystem");
+        EditorManager   = brackets.getModule("editor/EditorManager");
 
     var Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
@@ -16,23 +15,14 @@ define(function (require, exports) {
 
     var $icon = $(null);
 
-    function handleCloseNotModified(event) {
-        var reopenModified = false;
-        if (event.shiftKey) {
-            reopenModified = true;
-        }
-
+    function handleCloseNotModified() {
         Git.status().then(function (modifiedFiles) {
             var openFiles = DocumentManager.getWorkingSet(),
                 projectRoot = Utils.getProjectRoot();
-
             openFiles.forEach(function (openFile) {
                 var removeOpenFile = true;
                 modifiedFiles.forEach(function (modifiedFile) {
-                    if (projectRoot + modifiedFile.file === openFile.fullPath) {
-                        removeOpenFile = false;
-                        modifiedFile.isOpen = true;
-                    }
+                    if (projectRoot + modifiedFile.file === openFile.fullPath) { removeOpenFile = false; }
                 });
 
                 if (removeOpenFile) {
@@ -47,17 +37,6 @@ define(function (require, exports) {
                     DocumentManager.closeFullEditor(openFile);
                 }
             });
-
-            if (reopenModified) {
-                var filesToReopen = modifiedFiles.filter(function (modifiedFile) {
-                    return !modifiedFile.isOpen;
-                });
-                filesToReopen.forEach(function (fileObj) {
-                    var fileEntry = FileSystem.getFileForPath(projectRoot + fileObj.file);
-                    DocumentManager.addToWorkingSet(fileEntry);
-                });
-            }
-
             EditorManager.focusEditor();
         });
     }
