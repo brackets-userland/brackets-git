@@ -816,33 +816,41 @@ define(function (require, exports) {
 
     }
 
-    function changeUserName() {
+    EventEmitter.on(Events.GIT_CHANGE_USERNAME, function (event, callback) {
         return Git.getConfig("user.name").then(function (currentUserName) {
             return Utils.askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, {defaultValue: currentUserName})
                 .then(function (userName) {
                     if (!userName.length) { userName = currentUserName; }
-                    return Git.setConfig("user.name", userName).catch(function (err) {
-                        ErrorHandler.showError(err, "Impossible change username");
+                    return Git.setConfig("user.name", userName, true).catch(function (err) {
+                        ErrorHandler.showError(err, "Impossible to change username");
                     }).then(function () {
                         EventEmitter.emit(Events.GIT_USERNAME_CHANGED, userName);
+                    }).finally(function () {
+                        if (callback) {
+                            callback(userName);
+                        }
                     });
                 });
         });
-    }
+    });
 
-    function changeUserEmail() {
+    EventEmitter.on(Events.GIT_CHANGE_EMAIL, function (event, callback) {
         return Git.getConfig("user.email").then(function (currentUserEmail) {
             return Utils.askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, {defaultValue: currentUserEmail})
                 .then(function (userEmail) {
                     if (!userEmail.length) { userEmail = currentUserEmail; }
-                    return Git.setConfig("user.email", userEmail).catch(function (err) {
-                        ErrorHandler.showError(err, "Impossible change user email");
+                    return Git.setConfig("user.email", userEmail, true).catch(function (err) {
+                        ErrorHandler.showError(err, "Impossible to change user email");
                     }).then(function () {
                         EventEmitter.emit(Events.GIT_EMAIL_CHANGED, userEmail);
+                    }).finally(function () {
+                        if (callback) {
+                            callback(userEmail);
+                        }
                     });
                 });
         });
-    }
+    });
 
     function discardAllChanges() {
         return Utils.askQuestion(Strings.RESET_LOCAL_REPO, Strings.RESET_LOCAL_REPO_CONFIRM, { booleanResponse: true })
@@ -917,8 +925,8 @@ define(function (require, exports) {
                     Menus.getContextMenu("git-panel-context-menu").open(e);
                 }, 1);
             })
-            .on("click", ".change-user-name", changeUserName)
-            .on("click", ".change-user-email", changeUserEmail)
+            .on("click", ".change-user-name", EventEmitter.emitFactory(Events.GIT_CHANGE_USERNAME))
+            .on("click", ".change-user-email", EventEmitter.emitFactory(Events.GIT_CHANGE_EMAIL))
             .on("click", ".undo-last-commit", undoLastLocalCommit)
             .on("click", ".git-bash", EventEmitter.emitFactory(Events.TERMINAL_OPEN))
             .on("click", ".reset-all", discardAllChanges);

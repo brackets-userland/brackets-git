@@ -4,6 +4,7 @@
 
 ## 0.13.25
 * Added feature to reopen modified files by Shift-clicking on a "Close not modified" icon.
+* Git now asks for your username and email when you have none set and try to init a new repository.
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
 
 ## 0.13.24
