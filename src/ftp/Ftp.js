@@ -39,59 +39,25 @@ define(function (require) {
         var gitFtpScope = $gitPanel.find(".git-selected-remote").text().trim();
         $gitPanel.find(".git-push").prop("disabled", true).addClass("btn-loading");
 
-        return Utils.askQuestion(
-            Strings.INIT_GITFTP_SCOPE,
-            StringUtils.format(Strings.INIT_GITFTP_SCOPE_NAME, gitFtpScope),
-            {booleanResponse: true}
-        ).then(function (response) {
-            if (response) {
-                return GitFtp.push(gitFtpScope).then(function (result) {
-                console.log(result);
-                Dialogs.showModalDialog(
-                    DefaultDialogs.DIALOG_ID_INFO,
-                    Strings.GITFTP_PUSH_RESPONSE, // title
-                    result // message
-                );
-                console.log("stigao sam dovde - done");
-                $gitPanel.find(".git-push")
-                    .prop("disabled", false)
-                    .removeClass("btn-loading");
-                }).catch(function (err) {
-                    ErrorHandler.showError(err, "Failed push to Git-FTP remote.");
-                }).finally(function () {
-                    $gitPanel.find(".git-push")
-                        .removeClass("btn-loading")
-                        .prop("disabled", false);
-                });
-            }
-        });
 
-        /*GitFtp.push(gitFtpScope).then(function (result) {
+        return GitFtp.push(gitFtpScope).then(function (result) {
             console.log(result);
-			Dialogs.showModalDialog(
-                DefaultDialogs.DIALOG_ID_INFO,
-                Strings.GITFTP_PUSH_RESPONSE, // title
-                result // message
-            );
-            console.log("stigao sam dovde - done");
-			$gitPanel.find(".git-push")
-                .prop("disabled", false)
-                .removeClass("btn-loading");
-        }).done(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GITFTP_PUSH_RESPONSE, // title
                 result // message
             );
-			console.log("stigao sam dovde - done");
-        }).catch(function (err) {
-			console.log("stigao sam dovde - err");
-            ErrorHandler.showError(err, "Failed push to Git-FTP remote.");
-        }).finally(function () {
-			console.log("stigao sam dovde - finally");
-
-        });*/
-
+            console.log("stigao sam dovde - done");
+            $gitPanel.find(".git-push")
+                .prop("disabled", false)
+                .removeClass("btn-loading");
+            }).catch(function (err) {
+                ErrorHandler.showError(err, "Failed push to Git-FTP remote.");
+            }).finally(function () {
+                $gitPanel.find(".git-push")
+                    .removeClass("btn-loading")
+                    .prop("disabled", false);
+            });
     }
 
     function handleGitFtpScopeCreation() {
