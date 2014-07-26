@@ -39,7 +39,23 @@ define(function (require) {
         var gitFtpScope = $gitPanel.find(".git-selected-remote").text().trim();
         $gitPanel.find(".git-push").prop("disabled", true).addClass("btn-loading");
 
-        GitFtp.push(gitFtpScope).then(function (result) {
+        return Utils.askQuestion(
+            Strings.INIT_GITFTP_SCOPE,
+            StringUtils.format(Strings.INIT_GITFTP_SCOPE_NAME, gitFtpScope),
+            {booleanResponse: true}
+        ).then(function (response) {
+            if (response) {
+                return GitFtp.push(gitFtpScope).catch(function (err) {
+                    ErrorHandler.showError(err, "Failed push to Git-FTP remote.");
+                });
+            }
+        }).finally(function () {
+            $gitPanel.find(".git-push")
+                .removeClass("btn-loading")
+                .prop("disabled", false);
+        });
+
+        /*GitFtp.push(gitFtpScope).then(function (result) {
             console.log(result);
 			Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
@@ -50,7 +66,7 @@ define(function (require) {
 			$gitPanel.find(".git-push")
                 .prop("disabled", false)
                 .removeClass("btn-loading");
-        })/*.done(function (result) {
+        }).done(function (result) {
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GITFTP_PUSH_RESPONSE, // title
@@ -63,7 +79,7 @@ define(function (require) {
         }).finally(function () {
 			console.log("stigao sam dovde - finally");
 
-        })*/;
+        });*/
 
     }
 
@@ -168,9 +184,6 @@ define(function (require) {
             $gitPanel.find(".git-remotes")
                 .removeClass("btn-loading")
                 .prop("disabled", false);
-			$gitPanel.find(".git-remotes")
-                .removeClass("btn-loading")
-                .prop("disabled", false)
         });
     }
 
