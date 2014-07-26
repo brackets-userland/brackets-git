@@ -39,7 +39,8 @@ define(function (require) {
         var gitFtpScope = $gitPanel.find(".git-selected-remote").text().trim();
         $gitPanel.find(".git-push").prop("disabled", true).addClass("btn-loading");
 
-        GitFtp.push(gitFtpScope).done(function (result) {
+        GitFtp.push(gitFtpScope).then(function (result) {
+            console.log(result);
 			Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GITFTP_PUSH_RESPONSE, // title
