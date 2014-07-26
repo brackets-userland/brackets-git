@@ -6,6 +6,7 @@
 * Added feature to reopen modified files by Shift-clicking on a "Close not modified" icon.
 * Git now asks for your username and email when you have none set and try to init a new repository.
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+* BUGFIX: Extension will not try to open the Bash/Terminal if proper executable script doesn't exist.
 
 ## 0.13.24
 * BUGFIX: Commiting no longer throws an error when buggy CodeInspector is installed.

@@ -187,6 +187,7 @@ define({
     SHOW_UNTRACKED:                     "Show untracked",
     STRIP_WHITESPACE_FROM_COMMITS:      "Strip trailing whitespace from commits",
     TARGET_BRANCH:                      "Target branch",
+    TERMINAL_DISABLED:                  "Bash/Terminal console is disabled because no valid executable was found",
     TITLE_CHECKOUT:                     "Do you really wish to checkout this commit?",
     TITLE_RESET:                        "Do you really wish to reset?",
     TOOLTIP_BUG:                        "Report bug",

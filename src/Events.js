@@ -50,4 +50,5 @@ define(function (require, exports) {
 
     // utils/Terminal.js
     exports.TERMINAL_OPEN = "terminal.open";
+    exports.TERMINAL_DISABLE = "terminal.disable";
 });

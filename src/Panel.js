@@ -1072,6 +1072,10 @@ define(function (require, exports) {
         handleGitCommit();
     });
 
+    EventEmitter.on(Events.TERMINAL_DISABLE, function (where) {
+        $gitPanel.find(".git-bash").prop("disabled", true).attr("title", Strings.TERMINAL_DISABLED + " @ " + where);
+    });
+
     exports.init = init;
     exports.refresh = refresh;
     exports.toggle = toggle;
