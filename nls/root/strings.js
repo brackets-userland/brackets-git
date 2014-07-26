@@ -192,7 +192,7 @@ define({
     TOOLTIP_BUG:                        "Report bug",
     TOOLTIP_CHECKOUT_COMMIT:            "Checkout a specific commit",
     TOOLTIP_CLONE:                      "Clone existing repository",
-    TOOLTIP_CLOSE_NOT_MODIFIED:         "Close files not modified in Git",
+    TOOLTIP_CLOSE_NOT_MODIFIED:         "Close files not modified in Git [Shift-click to reopen modified files]",
     TOOLTIP_COMMIT:                     "Commit the selected files",
     TOOLTIP_FIND_CONFLICTS:             "Starts a search for Git merge/rebase conflicts in the project",
     TOOLTIP_GITPUSH:                    "Git-FTP Push",

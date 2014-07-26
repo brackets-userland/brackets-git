@@ -3,6 +3,7 @@
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
 ## 0.13.25
+* Added feature to reopen modified files by Shift-clicking on a "Close not modified" icon.
 * Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
 
 ## 0.13.24
