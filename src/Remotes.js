@@ -26,12 +26,14 @@ define(function (require) {
     // Module variables
     var $selectedRemote  = null,
         $remotesDropdown = null,
-        $gitPanel = null;
+        $gitPanel = null,
+        $gitPush = null;
 
     function initVariables() {
         $gitPanel = $("#git-panel");
         $selectedRemote = $gitPanel.find(".git-selected-remote");
         $remotesDropdown = $gitPanel.find(".git-remotes-dropdown");
+        $gitPush = $gitPanel.find(".git-push");
     }
 
     // Implementation
@@ -69,11 +71,17 @@ define(function (require) {
         if (!remoteName) {
             return clearRemotePicker();
         }
+
         // Set as default remote only if is a normal git remote
         if (type === "git") { setDefaultRemote(remoteName); }
 
         // Disable pull if it is not a normal git remote
-        $gitPanel.find("git-pull").prop("disabled", type !== "git");
+        $gitPanel.find(".git-pull").prop("disabled", type !== "git");
+
+        // Enable push and set selected-remote-type to Git push button by type of remote
+        $gitPush
+            .prop("disabled", false)
+            .attr("x-selected-remote-type", type);
 
         // Update remote name of $selectedRemote
         $selectedRemote
