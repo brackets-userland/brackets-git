@@ -117,13 +117,6 @@ define(function (require) {
             $currentScope = $gitPanel.find(".git-selected-remote"),
             scopeName = $selectedElement.data("remote-name");
 
-        console.log(scopeName);
-
-        /*return Utils.askQuestion(
-            Strings.DELETE_SCOPE,
-            StringUtils.format(Strings.DELETE_SCOPE_NAME, scopeName),
-            {booleanResponse: true}
-        )*/
         return Utils.askQuestion(
             Strings.DELETE_SCOPE,
             StringUtils.format(Strings.DELETE_SCOPE_NAME, scopeName),

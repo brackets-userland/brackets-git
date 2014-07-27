@@ -178,7 +178,7 @@ define(function (require, exports, module) {
                         delete deferredMap[cliId];
 
                         err = ErrorHandler.toError(err);
-                        console.log("[zivorad-git] ovde sam bio", err);
+
                         // socket was closed so we should try this once again (if not already retrying)
                         if (err.stack && err.stack.indexOf("WebSocket.self._ws.onclose") !== -1 && !retry) {
                             cliHandler(method, cmd, args, opts, true)
@@ -190,7 +190,7 @@ define(function (require, exports, module) {
                                 });
                             return;
                         }
-                        console.log("[zivorad-git] ovde sam bio 1", err, deferred.reject(err));
+
                         deferred.reject(err);
                     }
                 })
