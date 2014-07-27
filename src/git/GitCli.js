@@ -16,7 +16,6 @@ define(function (require, exports) {
     // Local modules
     var Promise       = require("bluebird"),
         Cli           = require("src/Cli"),
-        ErrorHandler  = require("src/ErrorHandler"),
         Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
         Preferences   = require("src/Preferences"),
@@ -421,17 +420,8 @@ define(function (require, exports) {
         return git(["config", key.replace(/\s/g, "")]);
     }
 
-    function setConfig(key, value, allowGlobal) {
-        key = key.replace(/\s/g, "");
-        return git(["config", key, value]).catch(function (err) {
-
-            if (allowGlobal && ErrorHandler.contains(err, "No such file or directory")) {
-                return git(["config", "--global", key, value]);
-            }
-
-            throw err;
-
-        });
+    function setConfig(key, value) {
+        return git(["config", key.replace(/\s/g, ""), value]);
     }
 
     function getHistory(branch, skipCommits, file) {

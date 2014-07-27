@@ -52,6 +52,8 @@ define(function (require) {
             }
         }
 
+		console.log("[zivorad-git] ", allRemotes);
+
         return candidate;
     }
 

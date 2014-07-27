@@ -92,26 +92,20 @@ define(function (require) {
 
             var results = [];
             var finish = _.after(paths.length, function () {
-
                 if (!results[0]) {
                     // configuration is not set to something meaningful
                     var validPaths = _.compact(results);
-                    if (validPaths.length === 0) {
-                        // nothing meaningful found, so restore default configuration
+                    if (validPaths.length > 0) {
+                        Preferences.set("terminalCommand", validPaths[0]);
+                    } else {
+                        // nothing meaningful found
                         Preferences.set("terminalCommand", paths[1]);
-                        Preferences.set("terminalCommandArgs", "$1");
-                        // and then disabled the button for this session
-                        EventEmitter.emit(Events.TERMINAL_DISABLE, paths[0]);
-                        resolve(false);
-                        return;
                     }
-                    Preferences.set("terminalCommand", validPaths[0]);
                     Preferences.set("terminalCommandArgs", "$1");
                 } else {
                     Preferences.set("terminalCommand", results[0]);
                 }
-                resolve(true);
-
+                resolve();
             });
 
             // verify if these paths exist
@@ -135,10 +129,8 @@ define(function (require) {
 
     // Event subscriptions
     EventEmitter.on(Events.TERMINAL_OPEN, function () {
-        setup().then(function (configuredOk) {
-            if (configuredOk) {
-                open();
-            }
+        setup().then(function () {
+            open();
         });
     });
 
