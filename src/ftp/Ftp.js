@@ -125,8 +125,8 @@ define(function (require) {
             {booleanResponse: true}
         )*/
         return Utils.askQuestion(
-            Strings.DELETE_REMOTE,
-            StringUtils.format(Strings.DELETE_REMOTE_NAME, scopeName),
+            Strings.DELETE_SCOPE,
+            StringUtils.format(Strings.DELETE_SCOPE_NAME, scopeName),
             {booleanResponse: true}
         ).then(function (response) {
             if (response) {
