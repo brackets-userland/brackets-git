@@ -18,7 +18,7 @@ define(function (require, exports, module) {
         extName           = "[brackets-git] ",
         nodeConnection    = new NodeConnection(),
         nextCliId         = 0,
-        deferredMap       = {};
+        deferredMap       = [];
 
     // Constants
     var MAX_COUNTER_VALUE = 4294967295; // 2^32 - 1
@@ -169,6 +169,7 @@ define(function (require, exports, module) {
             // nodeConnection returns jQuery deferred
             nodeConnection.domains[domainName][method](opts.cwd, cmd, args, domainOpts)
                 .fail(function (err) { // jQuery promise - .fail is fine
+
                     if (!resolved) {
                         err = sanitizeOutput(err);
                         if (debugOn) {
@@ -177,7 +178,7 @@ define(function (require, exports, module) {
                         delete deferredMap[cliId];
 
                         err = ErrorHandler.toError(err);
-
+                        console.log("[zivorad-git] ovde sam bio", err);
                         // socket was closed so we should try this once again (if not already retrying)
                         if (err.stack && err.stack.indexOf("WebSocket.self._ws.onclose") !== -1 && !retry) {
                             cliHandler(method, cmd, args, opts, true)
@@ -189,7 +190,7 @@ define(function (require, exports, module) {
                                 });
                             return;
                         }
-
+                        console.log("[zivorad-git] ovde sam bio 1", err, deferred.reject(err));
                         deferred.reject(err);
                     }
                 })
