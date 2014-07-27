@@ -25,7 +25,12 @@ define(function (require) {
             .on("click", ".gitftp-remote-new", function () { handleGitFtpScopeCreation(); })
             .on("click", ".gitftp-remove-remote", function () { handleGitFtpScopeRemove($(this)); })
             .on("click", ".gitftp-init-remote", function () { handleGitFtpInitScope($(this)); })
-            .on("click", ".git-push.ftp", handleGitFtpPush);
+            .on("click", ".git-push", function () {
+                var typeOfRemote = $(this).attr("x-selected-remote-type");
+                if (typeOfRemote === "ftp") {
+                    handleGitFtpPush();
+                }
+            });
     });
 
     function initVariables() {
@@ -132,12 +137,12 @@ define(function (require) {
                     $currentScope.data("remote-name", newScope).html(newScope);
                 }).catch(function (err) {
                     ErrorHandler.showError(err, "Remove scope failed");
-                }).finally(function () {
-                    $gitPanel.find(".git-remotes")
-                        .removeClass("btn-loading")
-                        .prop("disabled", false);
                 });
             }
+        }).finally(function () {
+            $gitPanel.find(".git-remotes")
+                .removeClass("btn-loading")
+                .prop("disabled", false);
         });
     }
 
@@ -167,8 +172,10 @@ define(function (require) {
     }
 
     function addFtpScopesToPicker() {
+        var otherRemotes = $remotesDropdown.find("li.remote");
+        
         GitFtp.getScopes().then(function (ftpScopes) {
-            if (!$gitPanel.find(".ftp-remotes-header").length) {
+            if ($gitPanel.find(".ftp-remotes-header").length === 0) {
                 // Pass to Mustache the needed data
                 var compiledTemplate = Mustache.render(ftpScopesTemplate, {
                     Strings: Strings,
@@ -177,26 +184,16 @@ define(function (require) {
                 });
                 $remotesDropdown.prepend(compiledTemplate);
 
-				$gitPanel
-                    .find(".git-pull")
-                    .prop("disabled", true);
-
-				$gitPanel
-                    .find(".git-push")
-                    .prop("disabled", true).removeClass("git").removeClass("ftp");
-
-                // If there is at least one ftp scope, then enable the push button (if it was disabled), otherwise, keep it as it
-                if (ftpScopes.length !== 0) {
+                // if there are only ftp remotes, enable the push button and make first ftp remote selected
+                if (otherRemotes.length === 0 && ftpScopes.length > 0) {
                     $gitPanel
-                    	.find(".git-push")
-                    	.prop("disabled", false).addClass("ftp");
-					$gitPanel
-						.find(".git-selected-remote")
-						.text(ftpScopes[0].name);
+                        .find(".git-push")
+                        .prop("disabled", false)
+                        .attr("x-selected-remote-type", "ftp");
+                    $gitPanel
+                        .find(".git-selected-remote")
+                        .text(ftpScopes[0].name);
                 }
-
-				console.log("[zivorad-git] ", ftpScopes);
-
             }
         }).catch(function (err) {
             ErrorHandler.showError(err, "Getting FTP remotes failed!");

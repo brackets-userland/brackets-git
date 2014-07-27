@@ -21,7 +21,7 @@ define(function (require, exports) {
     }
 
     function init(scope) {
-		return git(["ftp", "init", "--scope", scope]);
+        return git(["ftp", "init", "--scope", scope]);
     }
 
     function push(scope) {
