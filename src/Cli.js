@@ -18,7 +18,7 @@ define(function (require, exports, module) {
         extName           = "[brackets-git] ",
         nodeConnection    = new NodeConnection(),
         nextCliId         = 0,
-        deferredMap       = [];
+        deferredMap       = {};
 
     // Constants
     var MAX_COUNTER_VALUE = 4294967295; // 2^32 - 1
