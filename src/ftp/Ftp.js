@@ -39,15 +39,14 @@ define(function (require) {
         var gitFtpScope = $gitPanel.find(".git-selected-remote").text().trim();
         $gitPanel.find(".git-push").prop("disabled", true).addClass("btn-loading");
 
-
         return GitFtp.push(gitFtpScope).then(function (result) {
-            console.log(result);
+
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GITFTP_PUSH_RESPONSE, // title
                 result // message
             );
-            console.log("stigao sam dovde - done");
+
             $gitPanel.find(".git-push")
                 .prop("disabled", false)
                 .removeClass("btn-loading");
@@ -118,9 +117,16 @@ define(function (require) {
             $currentScope = $gitPanel.find(".git-selected-remote"),
             scopeName = $selectedElement.data("remote-name");
 
-        return Utils.askQuestion(
+        console.log(scopeName);
+
+        /*return Utils.askQuestion(
             Strings.DELETE_SCOPE,
             StringUtils.format(Strings.DELETE_SCOPE_NAME, scopeName),
+            {booleanResponse: true}
+        )*/
+        return Utils.askQuestion(
+            Strings.DELETE_REMOTE,
+            StringUtils.format(Strings.DELETE_REMOTE_NAME, scopeName),
             {booleanResponse: true}
         ).then(function (response) {
             if (response) {
@@ -130,12 +136,12 @@ define(function (require) {
                     $currentScope.data("remote-name", newScope).html(newScope);
                 }).catch(function (err) {
                     ErrorHandler.showError(err, "Remove scope failed");
+                }).finally(function () {
+                    $gitPanel.find(".git-remotes")
+                        .removeClass("btn-loading")
+                        .prop("disabled", false);
                 });
             }
-        }).finally(function () {
-            $gitPanel.find(".git-remotes")
-                .removeClass("btn-loading")
-                .prop("disabled", false);
         });
     }
 
