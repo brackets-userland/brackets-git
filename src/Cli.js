@@ -169,6 +169,7 @@ define(function (require, exports, module) {
             // nodeConnection returns jQuery deferred
             nodeConnection.domains[domainName][method](opts.cwd, cmd, args, domainOpts)
                 .fail(function (err) { // jQuery promise - .fail is fine
+
                     if (!resolved) {
                         err = sanitizeOutput(err);
                         if (debugOn) {

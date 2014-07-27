@@ -19,8 +19,6 @@ define(function (require, exports) {
     exports.GIT_EMAIL_CHANGED = "git.email.changed";
     exports.GIT_COMMITED = "git.commited";
     exports.GIT_NO_BRANCH_EXISTS = "git.no.branch.exists";
-    exports.GIT_CHANGE_USERNAME = "git.change.username";
-    exports.GIT_CHANGE_EMAIL = "git.change.email";
 
     // Startup events
     exports.REFRESH_ALL = "git.refresh.all";
@@ -50,5 +48,4 @@ define(function (require, exports) {
 
     // utils/Terminal.js
     exports.TERMINAL_OPEN = "terminal.open";
-    exports.TERMINAL_DISABLE = "terminal.disable";
 });
