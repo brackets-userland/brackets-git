@@ -41,29 +41,29 @@ define(function (require) {
 
     function handleGitFtpPush() {
         var gitFtpScope = $gitPanel.find(".git-selected-remote").text().trim();
-        
+
         $gitPanel.find(".git-push")
             .addClass("btn-loading")
             .prop("disabled", true);
-        
+
         return GitFtp.push(gitFtpScope).then(function (result) {
-            
+
             Dialogs.showModalDialog(
                 DefaultDialogs.DIALOG_ID_INFO,
                 Strings.GITFTP_PUSH_RESPONSE, // title
                 result // message
             );
-            
+
         }).catch(function (err) {
-            
+
             ErrorHandler.showError(err, "Failed push to Git-FTP remote.");
-            
+
         }).finally(function () {
-            
+
             $gitPanel.find(".git-push")
                 .removeClass("btn-loading")
                 .prop("disabled", false);
-            
+
         });
     }
 
@@ -173,7 +173,7 @@ define(function (require) {
 
     function addFtpScopesToPicker() {
         var otherRemotes = $remotesDropdown.find("li.remote");
-        
+
         GitFtp.getScopes().then(function (ftpScopes) {
             if ($gitPanel.find(".ftp-remotes-header").length === 0) {
                 // Pass to Mustache the needed data
