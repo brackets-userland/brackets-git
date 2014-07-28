@@ -226,6 +226,10 @@ define(function (require, exports) {
 
             showGutters(editor._codeMirror, [].concat(added, removed, modified));
         }).catch(function (err) {
+            // if this is launched in a non-git repository, just ignore
+            if (ErrorHandler.contains(err, "Not a git repository")) {
+                return;
+            }
             ErrorHandler.showError(err, "Refreshing gutter failed!");
         });
     }

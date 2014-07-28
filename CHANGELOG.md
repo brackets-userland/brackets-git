@@ -4,6 +4,7 @@
 
 ## 0.13.26
 * BUGFIX: Remote not found error is now expected and non-reportable.
+* BUGFIX: If a gutter refresh is queued when switching projects, do not throw an error.
 
 ## 0.13.25
 * Added feature to reopen modified files by Shift-clicking on a "Close not modified" icon.
