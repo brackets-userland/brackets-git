@@ -632,7 +632,7 @@ define(function (require, exports) {
 
         var p1 = Git.status();
 
-        //- push button
+        //  Push button
         var $pushBtn = $gitPanel.find(".git-push");
         var p2 = Git.getCommitsAhead().then(function (commits) {
             $pushBtn.children("span").remove();
@@ -643,7 +643,7 @@ define(function (require, exports) {
             $pushBtn.children("span").remove();
         });
 
-        //- Clone button
+        // Clone button
         $gitPanel.find(".git-clone").prop("disabled", false);
 
         // FUTURE: who listens for this?
@@ -818,7 +818,7 @@ define(function (require, exports) {
 
     EventEmitter.on(Events.GIT_CHANGE_USERNAME, function (event, callback) {
         return Git.getConfig("user.name").then(function (currentUserName) {
-            return Utils.askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, {defaultValue: currentUserName})
+            return Utils.askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, { defaultValue: currentUserName })
                 .then(function (userName) {
                     if (!userName.length) { userName = currentUserName; }
                     return Git.setConfig("user.name", userName, true).catch(function (err) {
@@ -836,7 +836,7 @@ define(function (require, exports) {
 
     EventEmitter.on(Events.GIT_CHANGE_EMAIL, function (event, callback) {
         return Git.getConfig("user.email").then(function (currentUserEmail) {
-            return Utils.askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, {defaultValue: currentUserEmail})
+            return Utils.askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, { defaultValue: currentUserEmail })
                 .then(function (userEmail) {
                     if (!userEmail.length) { userEmail = currentUserEmail; }
                     return Git.setConfig("user.email", userEmail, true).catch(function (err) {

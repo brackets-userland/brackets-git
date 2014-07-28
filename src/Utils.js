@@ -166,7 +166,7 @@ define(function (require, exports, module) {
             }
         });
 
-        return Mustache.render(formatDiffTemplate, {files: diffData});
+        return Mustache.render(formatDiffTemplate, { files: diffData });
     }
 
     function askQuestion(title, question, options) {
@@ -398,7 +398,6 @@ define(function (require, exports, module) {
                             }
                         }
 
-                        //-
                         text = lines.join("\n");
                         return Promise.cast(FileUtils.writeText(fileEntry, text))
                             .catch(function (err) {

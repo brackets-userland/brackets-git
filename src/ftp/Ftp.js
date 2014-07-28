@@ -77,7 +77,7 @@ define(function (require) {
                 return Utils.askQuestion(
                     Strings.CREATE_GITFTP_NEW_SCOPE,
                     Strings.ENTER_GITFTP_SCOPE_URL,
-                    {defaultValue: "ftp://user:passwd@example.org/folder"}
+                    { defaultValue: "ftp://user:passwd@example.org/folder" }
                 )
                     .then(function (url) {
                         return GitFtp.addScope(name, url).then(function () {
@@ -88,7 +88,11 @@ define(function (require) {
                                                 .addClass("gitftp-remote")
                                                 .append("<a/>")
                                                 .find("a")
-                                                    .attr({href: "#", "data-remote-name": name, "data-type": "ftp"})
+                                                    .attr({
+                                                        href: "#",
+                                                        "data-remote-name": name,
+                                                        "data-type": "ftp"
+                                                    })
                                                     .addClass("remote-name")
                                                     .append("<span/>")
                                                     .find("span")
@@ -128,7 +132,7 @@ define(function (require) {
         return Utils.askQuestion(
             Strings.DELETE_SCOPE,
             StringUtils.format(Strings.DELETE_SCOPE_NAME, scopeName),
-            {booleanResponse: true}
+            { booleanResponse: true }
         ).then(function (response) {
             if (response) {
                 return GitFtp.removeScope(scopeName).then(function () {
@@ -157,7 +161,7 @@ define(function (require) {
         return Utils.askQuestion(
             Strings.INIT_GITFTP_SCOPE,
             StringUtils.format(Strings.INIT_GITFTP_SCOPE_NAME, scopeName),
-            {booleanResponse: true}
+            { booleanResponse: true }
         ).then(function (response) {
             if (response) {
                 return GitFtp.init(scopeName).catch(function (err) {

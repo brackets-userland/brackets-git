@@ -134,7 +134,7 @@ define(function (require, exports) {
             var cmd = "git checkout " + commit.hash;
             Utils.askQuestion(Strings.TITLE_CHECKOUT,
                               Strings.DIALOG_CHECKOUT + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
+                              { booleanResponse: true, noescape: true })
                 .then(function (response) {
                     if (response === true) {
                         return Git.checkout(commit.hash).then(refreshCallback);
@@ -146,7 +146,7 @@ define(function (require, exports) {
             var cmd = "git reset --hard " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_HARD + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
+                              { booleanResponse: true, noescape: true })
                 .then(function (response) {
                     if (response === true) {
                         return Git.reset("--hard", commit.hash).then(refreshCallback);
@@ -158,7 +158,7 @@ define(function (require, exports) {
             var cmd = "git reset --mixed " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_MIXED + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
+                              { booleanResponse: true, noescape: true })
                 .then(function (response) {
                     if (response === true) {
                         return Git.reset("--mixed", commit.hash).then(refreshCallback);
@@ -170,7 +170,7 @@ define(function (require, exports) {
             var cmd = "git reset --soft " + commit.hash;
             Utils.askQuestion(Strings.TITLE_RESET,
                               Strings.DIALOG_RESET_SOFT + "<br><br>" + cmd,
-                              {booleanResponse: true, noescape: true})
+                              { booleanResponse: true, noescape: true })
                 .then(function (response) {
                     if (response === true) {
                         return Git.reset("--soft", commit.hash).then(refreshCallback);
@@ -180,7 +180,7 @@ define(function (require, exports) {
     }
 
     function renderViewerContent(files, selectedFile) {
-        var bodyMarkdown = marked(commit.body, {gfm: true, breaks: true});
+        var bodyMarkdown = marked(commit.body, { gfm: true, breaks: true });
 
         $viewer.append(Mustache.render(historyViewerTemplate, {
             commit: commit,

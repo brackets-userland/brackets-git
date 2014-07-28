@@ -239,9 +239,9 @@
             domainName,
             "progress",
             [
-                {name: "commandId", type: "number"},
-                {name: "time", type: "number"},
-                {name: "message", type: "string"}
+                { name: "commandId", type: "number" },
+                { name: "time", type: "number" },
+                { name: "message", type: "string" }
             ]
         );
     };

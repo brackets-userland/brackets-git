@@ -204,7 +204,7 @@ define({
     // FILE_UNMERGED:                      "Unmerged",
     // TODO: localize FILE_UNMERGED to pt-br
     // FILE_UNMODIFIED:                    "Unmodified",
-     FILE_UNMODIFIED:                    "Não modificado",
+    FILE_UNMODIFIED:                       "Não modificado",
     // FILE_UNTRACKED:                     "Untracked",
     FILE_UNTRACKED:                        "Não versionado",
     // FOR_MAC_LINUX_USERS:                "For Mac/Linux users",

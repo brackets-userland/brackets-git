@@ -51,13 +51,13 @@ module.exports = function (grunt) {
                     archive: "brackets-git.zip"
                 },
                 files: [
-                    {src: ["nls/**"], dest: "/" },
-                    {src: ["shell/**"], dest: "/" },
-                    {src: ["src/**"], dest: "/" },
-                    {src: ["styles/**"], dest: "/" },
-                    {src: ["templates/**"], dest: "/" },
-                    {src: ["thirdparty/**"], dest: "/" },
-                    {src: ["LICENSE", "*.js", "*.json", "*.md"], dest: "/", filter: "isFile"}
+                    { src: ["nls/**"], dest: "/" },
+                    { src: ["shell/**"], dest: "/" },
+                    { src: ["src/**"], dest: "/" },
+                    { src: ["styles/**"], dest: "/" },
+                    { src: ["templates/**"], dest: "/" },
+                    { src: ["thirdparty/**"], dest: "/" },
+                    { src: ["LICENSE", "*.js", "*.json", "*.md"], dest: "/", filter: "isFile" }
                 ]
             }
         },
@@ -68,7 +68,17 @@ module.exports = function (grunt) {
                     overwrite: true
                 },
                 files: {
-                    "": ["nls/**/*.js", "shell/**/*.*", "src/**/*.js", "styles/**/*.less", "templates/**/*.html", "thirdparty/**/*.js"]
+                    "": [
+                        "main.js",
+                        "strings.js",
+                        "Gruntfile.js",
+                        "nls/**/*.js",
+                        "shell/**/*.*",
+                        "src/**/*.js",
+                        "styles/**/*.less",
+                        "templates/**/*.html",
+                        "thirdparty/**/*.js"
+                    ]
                 }
             }
         }
