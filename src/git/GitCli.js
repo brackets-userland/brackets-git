@@ -19,6 +19,7 @@ define(function (require, exports) {
         ErrorHandler  = require("src/ErrorHandler"),
         Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
+        ExpectedError = require("src/ExpectedError"),
         Preferences   = require("src/Preferences"),
         Utils         = require("src/Utils");
 
@@ -179,12 +180,20 @@ define(function (require, exports) {
         --progress This flag forces progress status even if the standard error stream is not directed to a terminal.
     */
 
+    function repositoryNotFoundHandler(err) {
+        var m = ErrorHandler.matches(err, /Repository (.*) not found$/gim);
+        if (m) {
+            throw new ExpectedError(m[0]);
+        }
+        throw err;
+    }
+
     function fetchRemote(remote) {
-        return git(["fetch", "--progress", remote]);
+        return git(["fetch", "--progress", remote]).catch(repositoryNotFoundHandler);
     }
 
     function fetchAllRemotes() {
-        return git(["fetch", "--progress", "--all"]);
+        return git(["fetch", "--progress", "--all"]).catch(repositoryNotFoundHandler);
     }
 
     /*
@@ -318,6 +327,7 @@ define(function (require, exports) {
         }
 
         return git(args)
+            .catch(repositoryNotFoundHandler)
             .then(function (stdout) {
                 var retObj = {},
                     lines = stdout.split("\n"),

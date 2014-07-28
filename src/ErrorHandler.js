@@ -80,6 +80,10 @@ define(function (require, exports) {
         return err.toString().toLowerCase().indexOf(what.toLowerCase()) !== -1;
     };
 
+    exports.matches = function (err, regExp) {
+        return err.toString().match(regExp);
+    };
+
     exports.logError = function (err) {
         var msg = err && err.stack ? err.stack : err;
         Utils.consoleLog("[brackets-git] " + msg, "error");

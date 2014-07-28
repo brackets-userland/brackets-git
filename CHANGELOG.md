@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.26
+* BUGFIX: Remote not found error is now expected and non-reportable.
+
 ## 0.13.25
 * Added feature to reopen modified files by Shift-clicking on a "Close not modified" icon.
 * Git now asks for your username and email when you have none set and try to init a new repository.
