@@ -8,6 +8,7 @@ define(function (require, exports, module) {
 
     var defaultPreferences = {
         // features
+        "theme": {                          "type": "string",            "value": "LIGHT"            },
         "stripWhitespaceFromCommits": {     "type": "boolean",           "value": true              },
         "addEndlineToTheEndOfFile": {       "type": "boolean",           "value": true              },
         "removeByteOrderMark": {            "type": "boolean",           "value": false             },

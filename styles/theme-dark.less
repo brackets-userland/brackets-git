@@ -1,0 +1,69 @@
+// main: brackets-git.less
+
+#git-panel.git-theme-dark {
+
+    @basic-background: @project-panel-base-color;
+    @basic-background-text: @project-panel-text-1;
+
+    @row-selected-color: @tc-sidebar-selection;
+    @row-selected-color-text: #ddd;
+
+    @row-color-1: @main-toolbar-background-color;
+    @row-color-2: darken(@main-toolbar-background-color, 10%);
+
+    background-color: @basic-background;
+    color: @basic-background-text;
+
+    .toolbar {
+        background-color: @basic-background;
+        color: @basic-background-text;
+        .close {
+            color: @basic-background-text;
+        }
+    }
+
+    .btn {
+        background-color: @row-selected-color;
+        color: @row-selected-color-text;
+        border-color: @tc-gray-component-border;
+        box-shadow: none;
+    }
+
+    .table-container .table-striped tbody tr.selected td, .table-striped tbody tr.selected th {
+        background-color: red;
+        color: white;
+    }
+
+    .table-striped tbody tr:nth-child(odd) td, .table-striped tbody tr:nth-child(odd) th {
+        background-color: @row-color-1;
+    }
+
+    .table-striped tbody tr:nth-child(even) td, .table-striped tbody tr:nth-child(even) th {
+        background-color: @row-color-2;
+    }
+
+    input[type="checkbox"] {
+        border: 1px solid @tc-gray-component-border;
+        background-color: @row-selected-color;
+        box-shadow: none;
+    }
+
+    input[type="checkbox"]:active:not(:disabled) {
+        background-color: @tc-button-down-background;
+        box-shadow: none;
+    }
+
+    select:focus, input[type="checkbox"]:focus {
+        border-color: @tc-gray-component-focused-border;
+        box-shadow: none;
+    }
+
+    select {
+        border-color: #b2b5b5;
+    }
+
+    input[type="checkbox"]:checked:before {
+        color: @row-selected-color-text;
+    }
+
+}

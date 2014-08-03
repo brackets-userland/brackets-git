@@ -876,6 +876,9 @@ define(function (require, exports) {
         var $panelHtml = $(panelHtml);
         $panelHtml.find(".git-available, .git-not-available").hide();
 
+        // add theme class to style colors
+        $panelHtml.addClass("git-theme-" + Preferences.get("theme").toLowerCase());
+
         gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
         $gitPanel = gitPanel.$panel;
 
