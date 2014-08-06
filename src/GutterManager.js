@@ -230,6 +230,10 @@ define(function (require, exports) {
             if (ErrorHandler.contains(err, "Not a git repository")) {
                 return;
             }
+            // if this file was moved or deleted before this command could be executed, ignore
+            if (ErrorHandler.contains(err, "No such file or directory")) {
+                return;
+            }
             ErrorHandler.showError(err, "Refreshing gutter failed!");
         });
     }
