@@ -114,6 +114,7 @@ define({
     FILE_UNTRACKED:                     "Untracked",
     FOR_MAC_LINUX_USERS:                "For Mac/Linux users",
     FOR_WINDOWS_USERS:                  "For Windows users",
+    GETTING_STAGED_DIFF_PROGRESS:       "Getting diff of staged files\u2026",
     GITFTP_PUSH_RESPONSE:               "Git-FTP Push response",
     GITFTP_SCOPES:                      "Git-FTP remotes",
     GIT_COMMIT:                         "Git commit\u2026",

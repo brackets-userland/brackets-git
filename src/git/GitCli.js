@@ -690,7 +690,9 @@ define(function (require, exports) {
     }
 
     function getDiffOfStagedFiles() {
-        return git(["diff", "--no-ext-diff", "--no-color", "--staged"]);
+        return git(["diff", "--no-ext-diff", "--no-color", "--staged"], {
+            timeout: false // never timeout this
+        });
     }
 
     function getListOfStagedFiles() {

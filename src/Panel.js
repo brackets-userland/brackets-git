@@ -416,7 +416,10 @@ define(function (require, exports) {
     }
 
     function _getStagedDiff() {
-        return Git.getDiffOfStagedFiles().then(function (diff) {
+        return ProgressDialog.show(Git.getDiffOfStagedFiles(),
+                                   Strings.GETTING_STAGED_DIFF_PROGRESS,
+                                   { preDelay: 3, postDelay: 1 })
+        .then(function (diff) {
             if (!diff) {
                 return Git.getListOfStagedFiles().then(function (filesList) {
                     return Strings.DIFF_FAILED_SEE_FILES + "\n\n" + filesList;
