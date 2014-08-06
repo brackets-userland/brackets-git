@@ -67,6 +67,9 @@
     .flex-box(column);
     > .header {
         .flex-item(0, 0);
+        .author-line {
+            margin-bottom: 1em;
+        }
         .commit-author {
             @lineHeight: 36px;
             height: @lineHeight;
@@ -81,7 +84,7 @@
                 .selectable-text();
             }
         }
-        padding: 25px 30px 33px;
+        padding: 25px 30px 5px;
         &.shadow {
             box-shadow: 0 -1px 3px 2px rgba(0, 0, 0, 0.15);
             z-index: 1;
@@ -95,6 +98,7 @@
         }
         .close {
             margin: -5px -3px 0 0;
+            padding-left: 50px;
         }
         .commit-hash, .commit-author {
             margin-right: 10px;
@@ -195,6 +199,9 @@
             border-bottom: 4px solid transparent;
             border-top: 4px solid transparent;
             border-left: 5px solid #454545;
+        }
+        .commitBody {
+            padding: 0 30px;
         }
         .commit-files {
             padding: 0 20px;
