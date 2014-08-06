@@ -6,6 +6,7 @@
 * Experimental dark theme for Git panel to use with dark editor themes (configurable in settings).
 * BUGFIX: Commit summary for large commits does scroll now correctly.
 * BUGFIX: Getting diff from large number of files will now not timeout, but show a dialog after 3 seconds.
+* BUGFIX: Better support for handling files with non-ascii characters in filenames.
 
 ## 0.13.26
 * BUGFIX: Remote not found error is now expected and non-reportable.

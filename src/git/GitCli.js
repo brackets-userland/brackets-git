@@ -568,11 +568,12 @@ define(function (require, exports) {
         return git(args);
     }
 
+    function _isquoted(str) {
+        return str[0] === "\"" && str[str.length - 1] === "\"";
+    }
+
     function _unquote(str) {
-        if (str[0] === "\"" && str[str.length - 1] === "\"") {
-            str = str.substring(1, str.length - 1);
-        }
-        return str;
+        return str.substring(1, str.length - 1);
     }
 
     function status(type) {
@@ -580,7 +581,8 @@ define(function (require, exports) {
             if (!stdout) { return []; }
 
             // files that are modified both in index and working tree should be resetted
-            var needReset = [],
+            var isQuoted = false,
+                needReset = [],
                 results = [],
                 lines = stdout.split("\n");
 
@@ -588,7 +590,13 @@ define(function (require, exports) {
                 var statusStaged = line.substring(0, 1),
                     statusUnstaged = line.substring(1, 2),
                     status = [],
-                    file = _unquote(line.substring(3));
+                    file = line.substring(3);
+
+                // check if the file is quoted
+                if (_isquoted(file)) {
+                    isQuoted = true;
+                    file = _unquote(file);
+                }
 
                 if (statusStaged !== " " && statusUnstaged !== " " &&
                     statusStaged !== "?" && statusUnstaged !== "?") {
@@ -649,6 +657,15 @@ define(function (require, exports) {
                     name: file.substring(file.lastIndexOf("/") + 1)
                 });
             });
+
+            if (isQuoted) {
+                return setConfig("core.quotepath", "false").then(function () {
+                    if (type === "SET_QUOTEPATH") {
+                        throw new Error("git status is calling itself in a recursive loop!");
+                    }
+                    return status("SET_QUOTEPATH");
+                });
+            }
 
             if (needReset.length > 0) {
                 return Promise.all(needReset.map(function (fileName) {
