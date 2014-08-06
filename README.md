@@ -1,7 +1,7 @@
 # Brackets-Git
 
 Brackets-Git is an extension for [Brackets](http://brackets.io/) editor - it provides Git integration for Brackets.
-It's tested and works on any platform supported by Brackets (Windows, Mac OSx, GNU/Linux).
+It's tested and works on any platform supported by Brackets (Windows, Mac OS X, GNU/Linux).
 
 ## Installation
 
@@ -32,7 +32,7 @@ Alternatively you can use `File > Git Settings...` in the Brackets menu.
 
 You can find some samples of features [here](docs/FEATURES.md).
 
-Currently **Brackets-Git** supports these features (this list may be incomplete as we add new features regularely):
+Currently **Brackets-Git** supports these features (this list may be incomplete as we add new features regularly):
 
 - `init` / `clone` / `push` / `pull`
 - `create` / `delete` / `merge` branches
@@ -48,10 +48,10 @@ Most of the features available are configurable and it's possible to enable and 
 **Pull/Push to password protected repositories:**
 Push/Pull from and to password protected repositories is partially supported, currently it works only with `http` / `https` repositories.
 
-[Windows Credential Store for Git](http://gitcredentialstore.codeplex.com/) is recommended to better manage password protected repositories till **Brackets-Git** will provide a better support for them.
-You'll need to push manually for the first time to setup your username/password into credentials helper.
+[Windows Credential Store for Git](http://gitcredentialstore.codeplex.com/) is recommended to better manage password protected repositories, **Brackets-Git** will eventually provide better support for them.
+You'll need to push manually the first time to setup your username/password into the credentials helper.
 
-If you can't find the feature you were looking for, feel free to **open issues with your ideas**.
+If you can't find the feature you were looking for, feel free to [open an issue](https://github.com/zaggino/brackets-git/issues) with your idea(s).
 
 ## Some screenshots:
 
