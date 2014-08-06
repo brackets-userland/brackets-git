@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+* Updated French translation by [rainje](https://github.com/rainje)
+* Fixed some typos in the README by [Eric J](https://github.com/wormeyman)
+
 ## 0.13.26
 * Experimental dark theme for Git panel to use with dark editor themes (configurable in settings).
 * BUGFIX: Commit summary for large commits does scroll now correctly.
