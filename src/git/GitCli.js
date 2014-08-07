@@ -576,12 +576,16 @@ define(function (require, exports) {
         return str.substring(1, str.length - 1);
     }
 
+    function _isescaped(str) {
+        return /\\[0-9]{3}/.test(str);
+    }
+
     function status(type) {
         return git(["status", "-u", "--porcelain"]).then(function (stdout) {
             if (!stdout) { return []; }
 
             // files that are modified both in index and working tree should be resetted
-            var isQuoted = false,
+            var isEscaped = false,
                 needReset = [],
                 results = [],
                 lines = stdout.split("\n");
@@ -594,8 +598,10 @@ define(function (require, exports) {
 
                 // check if the file is quoted
                 if (_isquoted(file)) {
-                    isQuoted = true;
                     file = _unquote(file);
+                    if (_isescaped(file)) {
+                        isEscaped = true;
+                    }
                 }
 
                 if (statusStaged !== " " && statusUnstaged !== " " &&
@@ -658,7 +664,7 @@ define(function (require, exports) {
                 });
             });
 
-            if (isQuoted) {
+            if (isEscaped) {
                 return setConfig("core.quotepath", "false").then(function () {
                     if (type === "SET_QUOTEPATH") {
                         throw new Error("git status is calling itself in a recursive loop!");
