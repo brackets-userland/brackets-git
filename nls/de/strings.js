@@ -73,6 +73,8 @@ define({
     DELETE_LOCAL_BRANCH_NAME:           "Wollen Sie den lokalen Branch \"{0}\" wirklich entfernen?",
     DELETE_REMOTE:                      "Remote-Repository entfernen",
     DELETE_REMOTE_NAME:                 "Wollen Sie das Remote-Repository \"{0}\" wirklich entfernen?",
+    DELETE_SCOPE:                       "Git-FTP Remote-Repository entfernen",
+    DELETE_SCOPE_NAME:                  "Wollen Sie das Git-FTP Remote-Repository \"{0}\" wirklich entfernen?",
     DIALOG_CHECKOUT:                    "Nachdem ein Commit ausgecheckt wurde, hat das Repository einen losgelösten HEAD. Sie können nicht committen, bis Sie aus diesem Zustand heraus einen Branch erstellen.",
     DIALOG_PULL_TITLE:                  "Vom Remote-Repository aktualisieren (\"Pull\")",
     DIALOG_PUSH_TITLE:                  "Zum Remote-Repository versenden (\"Push\")",
@@ -112,6 +114,7 @@ define({
     FILE_UNTRACKED:                     "Unbeobachtet",
     FOR_MAC_LINUX_USERS:                "Für Mac-/Linux-Nutzer",
     FOR_WINDOWS_USERS:                  "Für Windows-Nutzer",
+    GETTING_STAGED_DIFF_PROGRESS:       "Diff der zum Commit vorgemerkten Dateien wird vorbereitet\u2026",
     GITFTP_PUSH_RESPONSE:               "Git-FTP Push: Antwort",
     GITFTP_SCOPES:                      "Git-FTP Remote-Repositories",
     GIT_COMMIT:                         "Git-Commit\u2026",
@@ -187,12 +190,16 @@ define({
     SHOW_UNTRACKED:                     "Unbeobachtete anzeigen",
     STRIP_WHITESPACE_FROM_COMMITS:      "Anhängende Leerzeichen von Commits entfernen",
     TARGET_BRANCH:                      "Ziel",
+    TERMINAL_DISABLED:                  "Bash/Terminal kann nicht genutzt werden, da keine Programmdatei gefunden werden konnte.",
+    THEME:                              "Design",
+    THEME_DARK:                         "Brackets-Git (dunkel)",
+    THEME_LIGHT:                        "Brackets-Git Standard (hell)",
     TITLE_CHECKOUT:                     "Wollen Sie diesen Commit wirklich auschecken?",
     TITLE_RESET:                        "Wollen Sie die Staging-Area wirklich umsetzen?",
     TOOLTIP_BUG:                        "Bug melden",
     TOOLTIP_CHECKOUT_COMMIT:            "Einen bestimmten Commit auschecken",
     TOOLTIP_CLONE:                      "Bereits existierendes Repository klonen",
-    TOOLTIP_CLOSE_NOT_MODIFIED:         "In Git unveränderte Dateien schließen",
+    TOOLTIP_CLOSE_NOT_MODIFIED:         "In Git unveränderte Dateien schließen [Umschalt+Klick zum Öffnen veränderter Dateien]",
     TOOLTIP_COMMIT:                     "Ausgewählte Dateien committen",
     TOOLTIP_FIND_CONFLICTS:             "Sucht nach Merge/Rebase-Konflikten im Projekt",
     TOOLTIP_GITPUSH:                    "Zum Git-FTP Remote-Repository versenden (\"Push\")",
@@ -228,4 +235,4 @@ define({
     VIEW_THIS_FILE:                     "Diese Datei anzeigen"
 });
 
-/* Last translated for 7e9b60ba198543487b712dcd020baeea544911e2 */
+/* Last translated for 88bf31a7790fd50f2324a397dec4e680ee37f3bf */
