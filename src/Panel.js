@@ -258,7 +258,7 @@ define(function (require, exports) {
                         return Git.commit(commitMessage, amendCommit);
                     } else {
                         throw new ExpectedError("The files you were going to commit were modified while commit dialog was displayed. " +
-                                                "Aborting the commit as the result would be different then was was shown in the dialog.");
+                                                "Aborting the commit as the result would be different then what was shown in the dialog.");
                     }
                 }).catch(function (err) {
                     ErrorHandler.showError(err, "Git Commit failed");
