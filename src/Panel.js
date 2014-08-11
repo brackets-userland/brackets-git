@@ -257,7 +257,8 @@ define(function (require, exports) {
                     if (diff === stagedDiff) {
                         return Git.commit(commitMessage, amendCommit);
                     } else {
-                        throw new Error("Index was changed while commit dialog was shown!");
+                        throw new ExpectedError("The files you were going to commit were modified while commit dialog was displayed. " +
+                                                "Aborting the commit as the result would be different then was was shown in the dialog.");
                     }
                 }).catch(function (err) {
                     ErrorHandler.showError(err, "Git Commit failed");
