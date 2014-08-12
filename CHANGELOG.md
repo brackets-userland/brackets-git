@@ -4,6 +4,7 @@
 
 ## ???
 * Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
+* Updated README by [Fez Vrasta](https://github.com/FezVrasta)
 * BUGFIX: Fix dark button styling by [Marcel Gerber](https://github.com/MarcelGerber)
 
 ## 0.13.27
