@@ -72,10 +72,19 @@ SSH protocol is currently a bit more difficult, so you'll have to use command li
 ## Some screenshots:
 
 ![main](screenshots/main.jpg)
+*Main panel of Brackets Git*
 
-![commit dialog](screenshots/commitDialog.jpg)
+![history](screenshots/history.jpg)
+*History panel of Brackets Git*
 
-![settings dialog](screenshots/settingsDialog.jpg)
+![history-details](screenshots/history-details.jpg)
+*Details view for a specific commit*
+
+![commit dialog](screenshots/commit-dialog.jpg)
+*Commit dialog*
+
+![settings dialog](screenshots/settings-dialog.jpg)
+*Settings dialog*
 
 ## Contributing
 
