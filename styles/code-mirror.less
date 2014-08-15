@@ -36,9 +36,13 @@
         content: "-";
     }
     .brackets-git-gutter-deleted-lines {
-        color: @tc-text;
+        color: @bc-text;
         background-color: lighten(@red, 25%);
         .selectable-text();
+
+        .dark & {
+            color: @dark-bc-text;
+        }
     }
     .CodeMirror-linenumber.brackets-git-gutter-hover {
         background-color: #e9e9e9;

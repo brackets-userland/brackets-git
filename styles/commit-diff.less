@@ -39,7 +39,11 @@
                     text-align: left;
                 }
                 &:not(:first-child) {
-                    border-top: 1px dashed @tc-gray-component-border;
+                    border-top: 1px dashed @bc-btn-border;
+
+                    .dark & {
+                        border-top: 1px dashed @dark-bc-btn-border;
+                    }
                 }
             }
             tr.separator {
