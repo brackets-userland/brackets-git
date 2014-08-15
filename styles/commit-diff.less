@@ -2,13 +2,22 @@
 
 .commit-diff {
     @lineHeight: 15px;
-    .code-font();
+    color: @bc-text;
     .selectable-text();
+
+    .dark & {
+        color: @dark-bc-text;
+    }
+
     code, pre {
-        .code-font();
+        color: @bc-text;
         border: none;
         padding: 0 3px;
         margin: 0;
+
+        .dark & {
+            color: @dark-bc-text;
+        }
     }
     background-color: @almostWhite;
     border: 1px solid @darkGrey;

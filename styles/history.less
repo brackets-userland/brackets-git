@@ -16,13 +16,17 @@
         border-radius: 2px;
     }
     span {
-        .code-font();
+        color: @bc-text;
         font-weight: 500;
         font-size: @size;
         line-height: @size;
         text-transform: uppercase;
         &.avatar-bw {
             -webkit-filter: grayscale(100%);
+        }
+
+        .dark & {
+            color: @dark-bc-text;
         }
     }
 }
@@ -185,7 +189,7 @@
             border-radius: 4px 4px 0 0;
 
             .dark & {
-                border-color: @dark-bc-btn-border;
+                border: 1px solid @dark-bc-btn-border;
             }
 
             a {
