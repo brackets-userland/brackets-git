@@ -1,4 +1,3 @@
-@import "brackets/brackets_variables.less";
 @import "colors.less";
 @import "common.less";
 @import "mixins.less";
@@ -63,8 +62,14 @@
     &:focus {
         outline: none;
     }
+
+    a,
     a:hover {
-        color: @defaultText;
+        color: @bc-menu-text;
+
+        .dark & {
+            color: @dark-bc-menu-text;
+        }
     }
     .git-branch-new, .git-branch-link {
         padding: 5px 26px 5px 26px;
@@ -107,7 +112,11 @@
     a {
         padding: 5px 15px;
         &.selected {
-            background: @blue-background;
+            background: @bc-bg-highlight;
+
+            .dark & {
+                background: @dark-bc-bg-highlight;
+            }
         }
         &:not(.selected):hover {
             background: none;
