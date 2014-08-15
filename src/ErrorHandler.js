@@ -80,6 +80,10 @@ define(function (require, exports) {
         return err.toString().toLowerCase().indexOf(what.toLowerCase()) !== -1;
     };
 
+    exports.matches = function (err, regExp) {
+        return err.toString().match(regExp);
+    };
+
     exports.logError = function (err) {
         var msg = err && err.stack ? err.stack : err;
         Utils.consoleLog("[brackets-git] " + msg, "error");
@@ -100,20 +104,31 @@ define(function (require, exports) {
         if (err instanceof ExpectedError) {
             showReportButton = false;
         }
+        var showDetailsButton = false;
+        if (err.detailsUrl) {
+            showDetailsButton = true;
+        }
 
         if (typeof err === "string") {
             errorBody = err;
         } else if (err instanceof Error) {
             errorBody = errorToString(err);
             errorStack = err.stack || "";
-        } else {
-            errorBody = JSON.stringify(err, null, 4);
+        }
+
+        if (!errorBody || errorBody === "[object Object]") {
+            try {
+                errorBody = JSON.stringify(err, null, 4);
+            } catch (e) {
+                errorBody = "Error can't be stringified by JSON.stringify";
+            }
         }
 
         var compiledTemplate = Mustache.render(errorDialogTemplate, {
             title: title,
             body: errorBody,
             showReportButton: showReportButton,
+            showDetailsButton: showDetailsButton,
             Strings: Strings
         });
 
@@ -131,6 +146,9 @@ define(function (require, exports) {
                            "&body=" +
                            encodeURIComponent(mdReport));
             }
+            if (buttonId === "details") {
+                NativeApp.openURLInDefaultBrowser(err.detailsUrl);
+            }
         });
 
         if (typeof err === "string") { err = new Error(err); }
@@ -141,7 +159,12 @@ define(function (require, exports) {
     exports.toError = function (arg) {
         // FUTURE: use this everywhere and have a custom error class for this extension
         if (arg instanceof Error) { return arg; }
-        return new Error(arg);
+        var err = new Error(arg);
+        // TODO: new class for this?
+        err.match = function () {
+            return arg.match.apply(arg, arguments);
+        };
+        return err;
     };
 
 });

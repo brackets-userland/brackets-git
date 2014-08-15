@@ -278,7 +278,6 @@ define(function (require) {
         var historyEnabled = $historyList.is(":visible"),
             currentFile = $historyList.data("file") || null,
             currentHistoryMode = historyEnabled ? (currentFile ? "FILE" : "GLOBAL") : "DISABLED",
-            $spinner = $(".spinner", $gitPanel),
             doc = newDocument ? newDocument : getCurrentDocument(),
             file;
 
@@ -308,14 +307,19 @@ define(function (require) {
             if ($historyList.length > 0) {
                 $historyList.remove();
             }
-            $spinner.addClass("spin");
-            renderHistory(file).then(function () {
-                $spinner.removeClass("spin");
+            var $spinner = $("<div class='spinner spin large'></div>").appendTo($gitPanel);
+            renderHistory(file).finally(function () {
+                $spinner.remove();
             });
         }
 
-        // Toggle commit button and check-all checkbox
-        $gitPanel.find(".git-commit, .check-all").prop("disabled", historyEnabled);
+        // disable commit button when viewing history
+        // refresh status when history is closed and commit button will correct its disabled state if required
+        if (historyEnabled) {
+            $gitPanel.find(".git-commit, .check-all").prop("disabled", true);
+        } else {
+            Git.status();
+        }
 
         // Toggle visibility of .git-edited-list and #git-history-list
         $tableContainer.find(".git-edited-list").toggle(!historyEnabled);

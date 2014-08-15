@@ -3,19 +3,26 @@ define(function (require, exports, module) {
 
     // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),
+        CommandManager  = brackets.getModule("command/CommandManager"),
+        Commands        = brackets.getModule("command/Commands"),
         Dialogs         = brackets.getModule("widgets/Dialogs"),
+        DocumentManager = brackets.getModule("document/DocumentManager"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
+        LanguageManager = brackets.getModule("language/LanguageManager"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
     // Local modules
-    var Preferences     = require("src/Preferences"),
+    var ErrorHandler    = require("src/ErrorHandler"),
+        Git             = require("src/git/Git"),
+        Preferences     = require("src/Preferences"),
         Promise         = require("bluebird"),
         Strings         = require("strings");
 
     // Module variables
-    var questionDialogTemplate  = require("text!templates/git-question-dialog.html"),
+    var formatDiffTemplate      = require("text!templates/format-diff.html"),
+        questionDialogTemplate  = require("text!templates/git-question-dialog.html"),
         outputDialogTemplate    = require("text!templates/git-output.html"),
         writeTestResults        = {};
 
@@ -31,34 +38,135 @@ define(function (require, exports, module) {
     }
 
     function formatDiff(diff) {
-        var rv      = [],
-            tabSize = Preferences.getGlobal("tabSize");
+        var DIFF_MAX_LENGTH = 2000;
 
-        diff.split("\n").forEach(function (line) {
+        var tabSize      = Preferences.getGlobal("tabSize"),
+            verbose      = Preferences.get("useVerboseDiff"),
+            numLineOld   = 0,
+            numLineNew   = 0,
+            lastStatus   = 0,
+            diffData     = [];
+
+        var LINE_STATUS = {
+            HEADER: 0,
+            UNCHANGED: 1,
+            REMOVED: 2,
+            ADDED: 3
+        };
+
+        var diffSplit = diff.split("\n");
+
+        if (diffSplit.length > DIFF_MAX_LENGTH) {
+            return "<div>" + Strings.DIFF_TOO_LONG + "</div>";
+        }
+
+        diffSplit.forEach(function (line) {
             if (line === " ") { line = ""; }
 
-            var lineClass;
-            if (line[0] === "+") {
+            var lineClass   = "",
+                pushLine    = true;
+
+            if (line.match(/index\s[A-z0-9]{7}..[A-z0-9]{7}/)) {
+                if (!verbose) {
+                    pushLine = false;
+                }
+            } else if (line.substr(0, 3) === "+++" || line.substr(0, 3) === "---" && !verbose) {
+                pushLine = false;
+            } else if (line[0] === "+" && line[1] !== "+") {
                 lineClass = "added";
-            } else if (line[0] === "-") {
+                line = line.substring(1);
+
+                // Define the type of the line: Added
+                lastStatus = LINE_STATUS.ADDED;
+
+                // Add 1 to the num line for new document
+                numLineNew++;
+            } else if (line[0] === "-" && line[1] !== "-") {
                 lineClass = "removed";
+                line = line.substring(1);
+
+                // Define the type of the line: Removed
+                lastStatus = LINE_STATUS.REMOVED;
+
+                // Add 1 to the num line for old document
+                numLineOld++;
+            } else if (line[0] === " " || line === "") {
+                lineClass = "unchanged";
+                line = line.substring(1);
+
+                // Define the type of the line: Unchanged
+                lastStatus = LINE_STATUS.UNCHANGED;
+
+                // Add 1 to old a new num lines
+                numLineOld++;
+                numLineNew++;
             } else if (line.indexOf("@@") === 0) {
                 lineClass = "position";
+
+                // Define the type of the line: Header
+                lastStatus = LINE_STATUS.HEADER;
+
+                // This read the start line for the diff and substract 1 for this line
+                var m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
+                var s1 = m[1].split(",");
+                var s2 = m[2].split(",");
+
+                numLineOld = s1[0] - 1;
+                numLineNew = s2[0] - 1;
             } else if (line.indexOf("diff --git") === 0) {
                 lineClass = "diffCmd";
+
+                diffData.push({
+                    name: line.split("b/")[1],
+                    lines: []
+                });
+
+                if (!verbose) {
+                    pushLine = false;
+                }
             }
 
-            line = _.escape(line).replace(/\s/g, "&nbsp;");
-            line = line.replace(/(&nbsp;)+$/g, function (trailingWhitespace) {
-                return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
-            });
-            var $line = $("<pre/>")
-                            .attr("style", "tab-size:" + tabSize)
-                            .html(line.length > 0 ? line : "&nbsp;");
-            if (lineClass) { $line.addClass(lineClass); }
-            rv.push($line);
+            if (pushLine) {
+                var _numLineOld = "",
+                    _numLineNew = "";
+
+                switch (lastStatus) {
+                    case LINE_STATUS.HEADER:
+                        // _numLineOld = "";
+                        // _numLineNew = "";
+                        break;
+                    case LINE_STATUS.UNCHANGED:
+                        _numLineOld = numLineOld;
+                        _numLineNew = numLineNew;
+                        break;
+                    case LINE_STATUS.REMOVED:
+                        _numLineOld = numLineOld;
+                        // _numLineNew = "";
+                        break;
+                    // case LINE_STATUS.ADDED:
+                    default:
+                        // _numLineOld = "";
+                        _numLineNew = numLineNew;
+                }
+
+                line = _.escape(line).replace(/\s/g, "&nbsp;");
+                line = line.replace(/(&nbsp;)+$/g, function (trailingWhitespace) {
+                    return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
+                });
+
+                if (diffData.length > 0) {
+                    _.last(diffData).lines.push({
+                        "numLineOld": _numLineOld,
+                        "numLineNew": _numLineNew,
+                        "line": line,
+                        "lineClass": lineClass,
+                        "tabSize": tabSize
+                    });
+                }
+            }
         });
-        return rv;
+
+        return Mustache.render(formatDiffTemplate, { files: diffData });
     }
 
     function askQuestion(title, question, options) {
@@ -78,10 +186,17 @@ define(function (require, exports, module) {
                 Strings: Strings
             });
 
-            var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
-            if (!options.booleanResponse) {
-                dialog.getElement().find("input").focus();
-            }
+            var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+                $dialog = dialog.getElement();
+
+            _.defer(function () {
+                var $input = $dialog.find("input:visible");
+                if ($input.length > 0) {
+                    $input.focus();
+                } else {
+                    $dialog.find(".primary").focus();
+                }
+            });
 
             dialog.done(function (buttonId) {
                 if (options.booleanResponse) {
@@ -106,7 +221,7 @@ define(function (require, exports, module) {
                 question: options.question
             });
             var dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
-            dialog.getElement().focus();
+            dialog.getElement().find("button").focus();
             dialog.done(function (buttonId) {
                 resolve(buttonId === "ok");
             });
@@ -159,6 +274,9 @@ define(function (require, exports, module) {
                 if (err) {
                     return resolve(null);
                 }
+                if (entry._clearCachedData) {
+                    entry._clearCachedData();
+                }
                 if (entry.isFile) {
                     entry.read(function (err, content) {
                         if (err) {
@@ -202,6 +320,190 @@ define(function (require, exports, module) {
         console[type || "log"](encodeSensitiveInformation(msg));
     }
 
+    /**
+     * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
+     *
+     * @param {!Document} doc
+     * @return {Promise} Resolved after editor has been refreshed; rejected if unable to load the
+     *      file's new content. Errors are logged but no UI is shown.
+     */
+    function reloadDoc(doc) {
+        return Promise.cast(FileUtils.readAsText(doc.file))
+            .then(function (text) {
+                doc.refreshText(text, new Date());
+            })
+            .catch(function (err) {
+                ErrorHandler.logError("Error reloading contents of " + doc.file.fullPath);
+                ErrorHandler.logError(err);
+            });
+    }
+
+    /**
+     *  strips trailing whitespace from all the diffs and adds \n to the end
+     */
+    function stripWhitespaceFromFile(filename, clearWholeFile) {
+        return new Promise(function (resolve, reject) {
+
+            var fullPath                  = getProjectRoot() + filename,
+                addEndlineToTheEndOfFile  = Preferences.get("addEndlineToTheEndOfFile"),
+                removeBom                 = Preferences.get("removeByteOrderMark"),
+                normalizeLineEndings      = Preferences.get("normalizeLineEndings");
+
+            var _cleanLines = function (lineNumbers) {
+                // do not clean if there's nothing to clean
+                if (lineNumbers && lineNumbers.length === 0) {
+                    return resolve();
+                }
+                // clean the file
+                var fileEntry = FileSystem.getFileForPath(fullPath);
+                return Promise.cast(FileUtils.readAsText(fileEntry))
+                    .catch(function (err) {
+                        ErrorHandler.logError(err + " on FileUtils.readAsText for " + fileEntry.fullPath);
+                        return null;
+                    })
+                    .then(function (text) {
+                        if (text === null) {
+                            return resolve();
+                        }
+
+                        if (removeBom) {
+                            // remove BOM - \ufeff
+                            text = text.replace(/\ufeff/g, "");
+                        }
+                        if (normalizeLineEndings) {
+                            // normalizes line endings
+                            text = text.replace(/\r\n/g, "\n");
+                        }
+                        // process lines
+                        var lines = text.split("\n");
+
+                        if (lineNumbers) {
+                            lineNumbers.forEach(function (lineNumber) {
+                                lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                            });
+                        } else {
+                            lines.forEach(function (ln, lineNumber) {
+                                lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                            });
+                        }
+
+                        // add empty line to the end, i've heard that git likes that for some reason
+                        if (addEndlineToTheEndOfFile) {
+                            var lastLineNumber = lines.length - 1;
+                            if (lines[lastLineNumber].length > 0) {
+                                lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
+                            }
+                            if (lines[lastLineNumber].length > 0) {
+                                lines.push("");
+                            }
+                        }
+
+                        text = lines.join("\n");
+                        return Promise.cast(FileUtils.writeText(fileEntry, text))
+                            .catch(function (err) {
+                                ErrorHandler.logError("Wasn't able to clean whitespace from file: " + fullPath);
+                                resolve();
+                                throw err;
+                            })
+                            .then(function () {
+                                // refresh the file if it's open in the background
+                                DocumentManager.getAllOpenDocuments().forEach(function (doc) {
+                                    if (doc.file.fullPath === fullPath) {
+                                        reloadDoc(doc);
+                                    }
+                                });
+                                // diffs were cleaned in this file
+                                resolve();
+                            });
+                    });
+            };
+
+            if (clearWholeFile) {
+                _cleanLines(null);
+            } else {
+                Git.diffFile(filename).then(function (diff) {
+                    // if git returned an empty diff
+                    if (!diff) { return resolve(); }
+
+                    // if git detected that the file is binary
+                    if (diff.match(/^binary files.*differ$/img)) { return resolve(); }
+
+                    var modified = [],
+                        changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
+                    // collect line numbers to clean
+                    changesets.forEach(function (line) {
+                        var i,
+                            m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/),
+                            s = m[2].split(","),
+                            from = parseInt(s[0], 10),
+                            to = from - 1 + (parseInt(s[1], 10) || 1);
+                        for (i = from; i <= to; i++) { modified.push(i > 0 ? i - 1 : 0); }
+                    });
+                    _cleanLines(modified);
+                }).catch(function (ex) {
+                    // This error will bubble up to preparing commit dialog so just log here
+                    ErrorHandler.logError(ex);
+                    reject(ex);
+                });
+            }
+        });
+    }
+
+    function stripWhitespaceFromFiles(gitStatusResults) {
+        var notificationDefer = Promise.defer(),
+            startTime = (new Date()).getTime(),
+            queue = Promise.resolve();
+
+        gitStatusResults.forEach(function (fileObj) {
+            var isDeleted = fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1;
+
+            // strip whitespace if the file was not deleted
+            if (!isDeleted) {
+                // strip whitespace only for recognized languages so binary files won't get corrupted
+                var langId = LanguageManager.getLanguageForPath(fileObj.file).getId();
+                if (["unknown", "binary", "image", "markdown", "audio"].indexOf(langId) === -1) {
+
+                    queue = queue.then(function () {
+                        var clearWholeFile = fileObj.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
+                                             fileObj.status.indexOf(Git.FILE_STATUS.RENAMED) !== -1;
+
+                        var t = (new Date()).getTime() - startTime;
+                        notificationDefer.progress(t + "ms - " + Strings.CLEAN_FILE_START + ": " + fileObj.file);
+
+                        return stripWhitespaceFromFile(fileObj.file, clearWholeFile).then(function () {
+                            // stage the files again to include stripWhitespace changes
+                            return Git.stage(fileObj.file).then(function () {
+
+                                var t = (new Date()).getTime() - startTime;
+                                notificationDefer.progress(t + "ms - " + Strings.CLEAN_FILE_END + ": " + fileObj.file);
+                            });
+                        });
+                    });
+
+                }
+            }
+        });
+
+        queue
+            .then(function () {
+                notificationDefer.resolve();
+            })
+            .catch(function () {
+                notificationDefer.reject();
+            });
+
+        return notificationDefer.promise;
+    }
+
+    function openEditorForFile(file, relative) {
+        if (relative) {
+            file = getProjectRoot() + file;
+        }
+        CommandManager.execute(Commands.FILE_OPEN, {
+            fullPath: file
+        });
+    }
+
     // Public API
     exports.formatDiff                  = formatDiff;
     exports.getProjectRoot              = getProjectRoot;
@@ -215,5 +517,8 @@ define(function (require, exports, module) {
     exports.unsetLoading                = unsetLoading;
     exports.consoleLog                  = consoleLog;
     exports.encodeSensitiveInformation  = encodeSensitiveInformation;
+    exports.reloadDoc                   = reloadDoc;
+    exports.stripWhitespaceFromFiles    = stripWhitespaceFromFiles;
+    exports.openEditorForFile           = openEditorForFile;
 
 });

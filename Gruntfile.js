@@ -51,14 +51,35 @@ module.exports = function (grunt) {
                     archive: "brackets-git.zip"
                 },
                 files: [
-                    {src: ["nls/**"], dest: "/" },
-                    {src: ["shell/**"], dest: "/" },
-                    {src: ["src/**"], dest: "/" },
-                    {src: ["styles/**"], dest: "/" },
-                    {src: ["templates/**"], dest: "/" },
-                    {src: ["thirdparty/**"], dest: "/" },
-                    {src: ["LICENSE", "*.js", "*.json", "*.md"], dest: "/", filter: "isFile"}
+                    { src: ["nls/**"], dest: "/" },
+                    { src: ["shell/**"], dest: "/" },
+                    { src: ["src/**"], dest: "/" },
+                    { src: ["styles/**"], dest: "/" },
+                    { src: ["templates/**"], dest: "/" },
+                    { src: ["thirdparty/**"], dest: "/" },
+                    { src: ["LICENSE", "*.js", "*.json", "*.md"], dest: "/", filter: "isFile" }
                 ]
+            }
+        },
+        lineending: {
+            dist: {
+                options: {
+                    eol: "lf",
+                    overwrite: true
+                },
+                files: {
+                    "": [
+                        "main.js",
+                        "strings.js",
+                        "Gruntfile.js",
+                        "nls/**/*.js",
+                        "shell/**/*.*",
+                        "src/**/*.js",
+                        "styles/**/*.less",
+                        "templates/**/*.html",
+                        "thirdparty/**/*.js"
+                    ]
+                }
             }
         }
     });
@@ -68,7 +89,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-lesslint");
     grunt.loadNpmTasks("grunt-jscs-checker");
     grunt.loadNpmTasks("grunt-contrib-compress");
+    grunt.loadNpmTasks("grunt-lineending");
 
+    grunt.registerTask("package", ["lineending", "compress"]);
     grunt.registerTask("jslint-test", ["jslint"]);
     grunt.registerTask("jshint-test", ["jshint"]);
     grunt.registerTask("less-test", ["lesslint"]);

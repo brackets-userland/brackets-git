@@ -47,7 +47,25 @@ define(function (require) {
             if (!writable) {
                 throw new ExpectedError("Folder " + Utils.getProjectRoot() + " is not writable!");
             }
-            return Git.init();
+            return Git.init().catch(function (err) {
+
+                if (ErrorHandler.contains(err, "Please tell me who you are")) {
+                    var defer = Promise.defer();
+                    EventEmitter.emit(Events.GIT_CHANGE_USERNAME, null, function () {
+                        EventEmitter.emit(Events.GIT_CHANGE_EMAIL, null, function () {
+                            Git.init().then(function (result) {
+                                defer.resolve(result);
+                            }).catch(function (err) {
+                                defer.reject(err);
+                            });
+                        });
+                    });
+                    return defer.promise;
+                }
+
+                throw err;
+
+            });
         }).then(function () {
             return commitGitIgnore("Initial commit");
         }).catch(function (err) {
@@ -93,6 +111,9 @@ define(function (require) {
     });
     EventEmitter.on(Events.HANDLE_GIT_CLONE, function () {
         handleGitClone();
+    });
+    EventEmitter.on(Events.GIT_NO_BRANCH_EXISTS, function () {
+        commitGitIgnore();
     });
 
 });

@@ -8,6 +8,7 @@ define(function (require, exports, module) {
 
     var defaultPreferences = {
         // features
+        "theme": {                          "type": "string",            "value": "LIGHT"            },
         "stripWhitespaceFromCommits": {     "type": "boolean",           "value": true              },
         "addEndlineToTheEndOfFile": {       "type": "boolean",           "value": true              },
         "removeByteOrderMark": {            "type": "boolean",           "value": false             },
@@ -22,6 +23,7 @@ define(function (require, exports, module) {
         "dateFormat": {                     "type": "string",            "value": null              },
         "showReportBugButton": {            "type": "boolean",           "value": true              },
         "enableAdvancedFeatures": {         "type": "boolean",           "value": false             },
+        "useVerboseDiff": {                 "type": "boolean",           "value": false             },
         // shortcuts
         "panelShortcut": {                  "type": "string",            "value": "Ctrl-Alt-G"      },
         "commitCurrentShortcut": {          "type": "string",            "value": null              },
@@ -34,32 +36,9 @@ define(function (require, exports, module) {
         // system
         "debugMode": {                      "type": "boolean",           "value": false             },
         "TIMEOUT_VALUE": {                  "type": "number",            "value": 30000             },
-        "gitIsInSystemPath": {              "type": "boolean",           "value": false             },
-        // platform specific
-        "gitPath": {
-            "type": "string",
-            "os": {
-                "win":      { "value": "C:\\Program Files (x86)\\Git\\bin\\git.exe" },
-                "mac":      { "value": "/usr/local/git/bin/git" },
-                "linux":    { "value": "/usr/bin/git" }
-            }
-        },
-        "terminalCommand": {
-            "type": "string",
-            "os": {
-                "win":      { "value": "C:\\Program Files (x86)\\Git\\Git Bash.vbs" },
-                "mac":      { "value": null },
-                "linux":    { "value": null }
-            }
-        },
-        "terminalCommandArgs": {
-            "type": "string",
-            "os": {
-                "win":      { "value": "$1" },
-                "mac":      { "value": null },
-                "linux":    { "value": null }
-            }
-        }
+        "gitPath": {                        "type": "string",            "value": ""                },
+        "terminalCommand": {                "type": "string",            "value": ""                },
+        "terminalCommandArgs": {            "type": "string",            "value": ""                }
     };
 
     var prefs = PreferencesManager.getExtensionPrefs(prefix);

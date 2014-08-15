@@ -16,6 +16,17 @@
                 <!-- #features -->
                 <div class="row-fluid">
                     <div class="span6">
+                        <label for="git-settings-theme">
+                            {{THEME}}:
+                        </label>
+                        <select id="git-settings-theme" settingsProperty="theme">
+                            <option value="DARK">{{THEME_DARK}}</option>
+                            <option value="LIGHT">{{THEME_LIGHT}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
                         <label for="git-settings-stripWhitespaceFromCommits">
                             <input id="git-settings-stripWhitespaceFromCommits" type="checkbox" settingsProperty="stripWhitespaceFromCommits" />
                             {{STRIP_WHITESPACE_FROM_COMMITS}}
@@ -81,6 +92,14 @@
                         <label for="git-settings-useGitFtp">
                             <input id="git-settings-useGitFtp" type="checkbox" settingsProperty="useGitFtp" />
                             {{USE_GITFTP}}
+                        </label>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <label for="git-settings-useVerboseDiff">
+                            <input id="git-settings-useVerboseDiff" type="checkbox" settingsProperty="useVerboseDiff" />
+                            {{USE_VERBOSE_DIFF}}
                         </label>
                     </div>
                 </div>
@@ -184,12 +203,6 @@
             <div class="tab-pane" id="git-settings-tab-gitConfig">
                 <!-- #gitConfig -->
                 <h4>{{BASIC_CONFIGURATION}}</h4>
-                <div class="row-fluid">
-                    <label for="git-settings-gitIsInSystemPath">
-                        <input id="git-settings-gitIsInSystemPath" type="checkbox" settingsProperty="gitIsInSystemPath" />
-                        {{GIT_IS_IN_PATH}}
-                    </label>
-                </div>
                 <div class="row-fluid">
                     <label for="git-settings-gitPath">{{PATH_TO_GIT_EXECUTABLE}}:</label>
                     <input id="git-settings-gitPath" type="text" settingsProperty="gitPath" />

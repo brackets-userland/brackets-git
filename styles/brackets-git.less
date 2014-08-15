@@ -1,12 +1,18 @@
 @import "brackets/brackets_colors.less";
+@import "brackets/brackets_variables.less";
+@import "brackets/brackets_theme_default.less";
 @import "colors.less";
 @import "common.less";
 @import "mixins.less";
+@import "code-mirror.less";
 @import "editor-holder.less";
 @import "history.less";
+@import "commit-diff.less";
 @import "dialogs/progress.less";
+@import "dialogs/diff-dialog.less";
 @import "dialogs/error-dialog.less";
 @import "dialogs/pull-dialog.less";
+@import "theme-dark.less";
 
 @gutterWidth: 0.65em; // using ems so that it'll be scalable on cmd +/-
 
@@ -67,6 +73,8 @@
         .switch-branch {
             display: inline-block;
             width: 100%;
+            padding: 5px 0;
+            margin: -5px 0;
         }
         .trash-icon, .merge-branch {
             position: absolute;
@@ -110,60 +118,18 @@
     }
 }
 
-/* CodeMirror area */
-.CodeMirror {
-    .CodeMirror-lines {
-        pointer-events: all;
-    }
-
-    .brackets-git-gutter {
-        width: @gutterWidth;
-        margin-left: 1px;
-    }
-    .brackets-git-gutter-added,
-    .brackets-git-gutter-modified,
-    .brackets-git-gutter-removed {
-        background-size: @gutterWidth @gutterWidth;
-        background-repeat: no-repeat;
-        font-size: 1em;
-        font-weight: bold;
-        color: #fff;
-    }
-    .brackets-git-gutter-added {
-        background-color: @green;
-    }
-    .brackets-git-gutter-added.brackets-git-gutter-hover:before {
-        content: "+";
-    }
-    .brackets-git-gutter-modified {
-        background-color: @orange;
-    }
-    .brackets-git-gutter-modified.brackets-git-gutter-hover:before {
-        content: "*";
-    }
-    .brackets-git-gutter-removed {
-        background-color: @red;
-    } 
-    .brackets-git-gutter-removed.brackets-git-gutter-hover:before {
-        content: "-";
-    }    
-    .brackets-git-gutter-deleted-lines {
-        color: @tc-text;
-        background-color: lighten(@red, 25%);
-        .selectable-text();
-    }
-    .CodeMirror-linenumber.brackets-git-gutter-hover {
-        background-color: #e9e9e9;
-        color: #000;
-    }
-}
-
 /* Extension panel */
 #git-panel {
     position: relative;
 
     .toolbar {
         overflow: visible;
+    }
+    table {
+        margin-bottom: 0;
+    }
+    .git-edited-list td {
+        vertical-align: middle;
     }
     tr.selected {
         font-weight: 400;
@@ -300,21 +266,6 @@
         100% { background-position: 60px 30px; }
     }
 
-    // Git-FTP styles, will be removed after S38, see /src/ftp/styles/ftp.less
-    .git-remotes-dropdown {
-        .gitftp-init-remote {
-            position: relative;
-            top: 2px;
-            right: 4px;
-        }
-    }
-
-    a[data-type=ftp] .change-remote:before, span[data-type=ftp]:before {
-        content: "FTP:";
-        padding-right: 5px;
-        opacity: 0.5;
-    }
-
     .spinner {
         display: none;
         z-index: 1000;
@@ -330,7 +281,7 @@
 
 /* Toolbar icon */
 #git-toolbar-icon {
-    background: url("git-icon.svg") no-repeat 0 0;
+    background: url("icons/git-icon.svg") no-repeat 0 0;
     &.on {
         background-position: 0 -24px;
     }
@@ -526,45 +477,6 @@
     }
 }
 
-// nice, formatted and colored diff
-.commit-diff {
-    .selectable-text();
-    code, pre {
-        background: none;
-        border: none;
-        padding: 0 3px 2px;
-        font-family: 'SourceCodePro', monospace;
-    }
-    background-color: @almostWhite;
-    border: 1px solid @darkGrey;
-    border-radius: 3px;
-    margin-bottom: 1em;
-    overflow: auto;
-    padding: 7px 10px;
-    pre {
-        border: none;
-        border-radius: 0px;
-        margin: 0px;
-        padding: 0px;
-        white-space: nowrap;
-        &.added {
-            color: @green-text;
-        }
-        &.removed {
-            color: @red-text;
-        }
-        &.diffCmd {
-            color: @blue-text;
-        }
-        &.position {
-            color: @orange-text;
-        }
-        .trailingWhitespace {
-            background-color: @red-background;
-        }
-    }
-}
-
 #working-set-header {
     .git-close-not-modified {
         position: absolute;
@@ -586,10 +498,6 @@
         }
         .btn-alt-quiet();
     }
-}
-
-.selectable-text {
-    .user-select(text);
 }
 
 /*

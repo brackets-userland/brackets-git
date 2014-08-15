@@ -179,7 +179,7 @@ define(function (require, exports) {
                 var lineCount = parseInt(s1[1], 10);
                 if (isNaN(lineCount)) { lineCount = 1; }
                 if (lineCount > 0) {
-                    lineRemovedFrom = lineFrom > 0 ? lineFrom - 1 : 0;
+                    lineRemovedFrom = lineFrom - 1;
                     removed.push({
                         type: "removed",
                         line: lineRemovedFrom,
@@ -197,7 +197,7 @@ define(function (require, exports) {
                 var isModifiedMark = false;
                 var firstAddedMark = false;
                 for (var i = lineFrom, lineTo = lineFrom + lineCount; i < lineTo; i++) {
-                    var lineNo = i > 0 ? i - 1 : 0;
+                    var lineNo = i - 1;
                     if (lineNo === lineRemovedFrom) {
                         // modified
                         var o = removed.pop();
@@ -226,6 +226,14 @@ define(function (require, exports) {
 
             showGutters(editor._codeMirror, [].concat(added, removed, modified));
         }).catch(function (err) {
+            // if this is launched in a non-git repository, just ignore
+            if (ErrorHandler.contains(err, "Not a git repository")) {
+                return;
+            }
+            // if this file was moved or deleted before this command could be executed, ignore
+            if (ErrorHandler.contains(err, "No such file or directory")) {
+                return;
+            }
             ErrorHandler.showError(err, "Refreshing gutter failed!");
         });
     }

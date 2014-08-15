@@ -84,7 +84,11 @@ function getChildrenOfPid(pid, callback) {
 }
 
 function executableExists(filename, dir, callback) {
-    if (typeof dir === "function") { callback = dir; dir = ""; }
+    if (typeof dir === "function") {
+        callback = dir;
+        dir = "";
+    }
+
     which(filename, function (err, path) {
         if (err) {
             return callback(err, false);

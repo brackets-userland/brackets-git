@@ -2,6 +2,124 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## ???
+* Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
+* Updated README by [Fez Vrasta](https://github.com/FezVrasta)
+* BUGFIX: Fix dark button styling by [Marcel Gerber](https://github.com/MarcelGerber)
+
+## 0.13.27
+* Updated French translation by [rainje](https://github.com/rainje)
+* Fixed some typos in the README by [Eric J](https://github.com/wormeyman)
+* BUGFIX: Fix check-all checkbox not working in some cases.
+
+## 0.13.26
+* Experimental dark theme for Git panel to use with dark editor themes (configurable in settings).
+* BUGFIX: Commit summary for large commits does scroll now correctly.
+* BUGFIX: Getting diff from large number of files will now not timeout, but show a dialog after 3 seconds.
+* BUGFIX: Better support for handling files with non-ascii characters in filenames.
+* BUGFIX: Remote not found error is now expected and non-reportable.
+* BUGFIX: If a gutter refresh is queued when switching projects, do not throw an error.
+
+## 0.13.25
+* Added feature to reopen modified files by Shift-clicking on a "Close not modified" icon.
+* Git now asks for your username and email when you have none set and try to init a new repository.
+* Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
+* BUGFIX: Fixes to Git-FTP support by [Živorad Milekić](https://github.com/zivoradmilekic)
+* BUGFIX: Extension will not try to open the Bash/Terminal if proper executable script doesn't exist.
+
+## 0.13.24
+* BUGFIX: Commiting no longer throws an error when buggy CodeInspector is installed.
+
+## 0.13.23
+* BUGFIX: Attempt to reconnect to Node.js when a socket connection closed unexpectedly.
+* BUGFIX: Fix a bug where commit button stays enabled after leaving history view.
+
+## 0.13.22
+* Added grunt task to fix line-endings before creating a package.
+
+## 0.13.21
+* Updated Brazilian Portuguese translation by [Júnior Messias](https://github.com/jrmessias)
+* BUGFIX: When there are not remotes but there's at least one FTP scope the Push button is enabled, by [FezVrasta](https://github.com/FezVrasta)
+* BUGFIX: Some styling improvements by [cheesypoof](https://github.com/cheesypoof)
+
+## 0.13.20
+* BUGFIX: Fixed default Git paths for Windows from bin directory to cmd directory by [Leif Gruenwoldt](https://github.com/leif81)
+* BUGFIX: Allow empty commit when in merge stage.
+* BUGFIX: Do not show deleted remote as default.
+* BUGFIX: History viewer is now paged to load at most 25 files in one go.
+
+## 0.13.19
+* Use LESS rather than pre-compiled CSS for the extension.
+* BUGFIX: Refresh panel when a new file is added into the project (directory content has been modified).
+* BUGFIX: Refresh project after commiting a merge commit.
+* BUGFIX: Always clear Brackets fileSystem cache when working with .git files.
+* BUGFIX: Remove panel table margin-bottom by [cheesypoof](https://github.com/cheesypoof)
+* BUGFIX: When closing files not modified by Git, do not close files that have unsaved changes.
+
+## 0.13.18
+* BUGFIX: Fix error when trying to commit non utf-8 code files.
+
+## 0.13.17
+* BUGFIX: Fix hanging when trying to trim whitespace from binary files.
+
+## 0.13.16
+* Added instructions for an easy installation of Git-FTP by [Fez Vrasta](https://github.com/FezVrasta)
+* Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
+* BUGFIX: Restored default cursor for the commit diff scrollbars by [cheesypoof](https://github.com/cheesypoof)
+* BUGFIX: Diffs over 2000 lines will not be displayed due to poor performance.
+
+## 0.13.15
+* Updated Brazilian Portuguese translation by [Rodrigo Tavares](https://github.com/rodrigost23)
+* BUGFIX: Improved .gitignore parsing by [Marcel Gerber](https://github.com/MarcelGerber)
+* BUGFIX: Git Diff failed when the diff is empty is now fixed.
+* BUGFIX: Fixed visual nit with commit hash in history viewer.
+
+## 0.13.14
+* BUGFIX: Fixed errors on files that are inside a directory with a plus sign in its name. Thanks to [llchen223](https://github.com/llchen223)
+* BUGFIX: Add to .gitignore and Remove from .gitignore context menu entries are now removed when Git is not available in current project.
+
+## 0.13.13
+* Added icon to the history viewer which opens the mentioned file for editing.
+* Improved .gitignore parsing by [Marcel Gerber](https://github.com/MarcelGerber)
+* BUGFIX: Settings & Changelog dialogs are no longer displayed on startup when running tests.
+* BUGFIX: Focus doesn't remain in the editor any longer when attempting to delete local branch.
+
+## 0.13.12
+* Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
+* History now remembers last used Expand All/Collapse All.
+* Styled row numbers on diffs by [Fez Vrasta](https://github.com/FezVrasta)
+* BUGFIX: View authors of selection will now ask you to save modified file before launch.
+* BUGFIX: Diffs no logner fail when external diff tool is configured.
+
+## 0.13.11
+* When whitespace cleanup takes too long (over 3 seconds) it will show a progress dialog.
+* BUGFIX: Fixed launching osascripts on Mac (open terminal button).
+
+## 0.13.10
+* Added line numbers to diffs by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
+* BUGFIX: **Fixed critical bug that caused Brackets to crash when using Find in Files feature.**
+* BUGFIX: Fixed error when opening terminal on Mac.
+* BUGFIX: Fixed issue when opening an empty repostitory without commits.
+
+## 0.13.9
+* BUGFIX: Branch name not showing when switching branches.
+* BUGFIX: Impossible to undo last commit.
+
+## 0.13.8
+* Autodetection of Git installation location has been improved.
+* Little performance upgrade for gutters, especially in large repositories.
+* BUGFIX: Correctly detect current tag or commit when in detached state - history now works when in detached state.
+* BUGFIX: Fixed issue which caused some dropdowns remained open after clicking into the editor area.
+
+## 0.13.7
+* Extension now searches for Git in common install locations and picks the latest version available in case there are more Git versions installed on one computer.
+* Git version 1.7 or lower is now rejected because it doesn't have the commands required by this extension.
+* Diffs now look more like GitHub ones by [Fez Vrasta](https://github.com/FezVrasta)
+* Updated French translation by [Vinz243](https://github.com/Vinz243)
+
+## 0.13.6
+* UI tweaks around history feature by [Larz](https://github.com/larz0)
+
 ## 0.13.5
 * Performance optimizations on 'Close not modified files' feature.
 * Fixes in history UI by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
@@ -37,14 +155,14 @@
 * Modified files are now also marked in working files list.
 * Whitespace cleanup now removes byte order mark and normalizes line endings to LF (configurable in settings).
 * `Q` library has been completely removed and replaced by `bluebird`
-* History can now also be viewed for a particular file by [Marcel Gerber](https://github.com/SAPlayer)
+* History can now also be viewed for a particular file by [Marcel Gerber](https://github.com/MarcelGerber)
 * Feature to discard all changes since last commit by [Fez Vrasta](https://github.com/FezVrasta)
 * Feature to checkout a commit in history, or reset to a commit in history by [Zhi](https://github.com/yfwz100)
 * Hover for the expandable gutters has been added by [Miguel Castillo](https://github.com/MiguelCastillo)
 * Improved Git-FTP support by [Fez Vrasta](https://github.com/FezVrasta)
 * Added French translation by [rainje](https://github.com/rainje)
 * Fixed some errors in translations by [Fez Vrasta](https://github.com/FezVrasta)
-* Various UI improvements by [Fez Vrasta](https://github.com/FezVrasta), [Marcel Gerber](https://github.com/SAPlayer) and [Larz](https://github.com/larz0)
+* Various UI improvements by [Fez Vrasta](https://github.com/FezVrasta), [Marcel Gerber](https://github.com/MarcelGerber) and [Larz](https://github.com/larz0)
 * Redesigned history by [Fez Vrasta](https://github.com/FezVrasta)
 * BUGFIX: Clone won't timeout anymore when cloning large repositories.
 * BUGFIX: Switching between branches will never timeout.
@@ -61,12 +179,12 @@ Little stats - 150 commits, 108 files changed, 8673 insertions(+), 6257 deletion
 * Branch deletion handling has been improved and now you can delete also not fully merged branches.
 * README has been updated after a long time by [Fez Vrasta](https://github.com/FezVrasta)
 * [Fez Vrasta](https://github.com/FezVrasta) started to add support for [Git-FTP](https://github.com/git-ftp/git-ftp)
-* Updated translations by [Marcel Gerber](https://github.com/SAPlayer)
+* Updated translations by [Marcel Gerber](https://github.com/MarcelGerber)
 
 ## 0.12.1
 * Fixed a bug that extension won't even start on some machines.
 * Fixed some issues with pushing to remote repositories.
-* Improvements to the commit history by [Marcel Gerber](https://github.com/SAPlayer)
+* Improvements to the commit history by [Marcel Gerber](https://github.com/MarcelGerber)
 
 ## 0.12.0
 * Bash command is now customizable for Windows - you may need to do some adjustements (even Mac/Linux users) in the settings (you can use restore defaults command if you have any problems).
@@ -75,17 +193,17 @@ Little stats - 150 commits, 108 files changed, 8673 insertions(+), 6257 deletion
 * Many UI tweaks by [Larz](https://github.com/larz0)
 * Some more UI tweaks by [Fez Vrasta](https://github.com/FezVrasta)
 * Fixed custom terminal not working in Linux/Mac.
-* Better .gitignore parsing by [Marcel Gerber](https://github.com/SAPlayer)
-* Updated translations by [Marcel Gerber](https://github.com/SAPlayer) & [Pietro Albini](https://github.com/pietroalbini)
+* Better .gitignore parsing by [Marcel Gerber](https://github.com/MarcelGerber)
+* Updated translations by [Marcel Gerber](https://github.com/MarcelGerber) & [Pietro Albini](https://github.com/pietroalbini)
 
 ## 0.11.0
 * Added features to change current username and email by [Fez Vrasta](https://github.com/FezVrasta)
 * Added feature to delete local branches by [Fez Vrasta](https://github.com/FezVrasta)
 * Added feature to add and remove remotes by [Fez Vrasta](https://github.com/FezVrasta)
 * Added feature to revert last commit by [Fez Vrasta](https://github.com/FezVrasta)
-* Changelog is now shown in nice html by [Marcel Gerber](https://github.com/SAPlayer)
+* Changelog is now shown in nice html by [Marcel Gerber](https://github.com/MarcelGerber)
 * Updated Italian translation by [Pietro Albini](https://github.com/pietroalbini)
-* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+* Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
 * Fixed issue when right-clicking on history entries.
 * Fixed an issue with "View authors" not working for some people.
 * When toggling "Extended" commit, message is copied from the input.
@@ -175,7 +293,7 @@ Little stats - 150 commits, 108 files changed, 8673 insertions(+), 6257 deletion
 * Refresh button on panel now refreshes current branch too in case it has been switched from outside of Brackets.
 * Gutters now expand when clicking on line numbers too.
 * Added Italian translation by [Fez Vrasta](https://github.com/FezVrasta)
-* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+* Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
 * Updated Brazilian Portuguese translation by [Jimmy Brian Anamaria Torres](https://github.com/Azakur4)
 
 ## 0.8.10
@@ -202,7 +320,7 @@ Little stats - 150 commits, 108 files changed, 8673 insertions(+), 6257 deletion
 ## 0.8.4
 * Adds an option to disable adding newline at the end of the file.
 * Updated Simplified Chinese translation by [Zhi](https://github.com/yfwz100)
-* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+* Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
 
 ## 0.8.3
 * Git gutters are now clickable.
@@ -248,7 +366,7 @@ Little stats - 150 commits, 108 files changed, 8673 insertions(+), 6257 deletion
 * Git Init now experimentally works in projects that are not a git repository.
 
 ## 0.7.2
-* Updated German translation by [Marcel Gerber](https://github.com/SAPlayer)
+* Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
 
 ## 0.7.1
 * Added bug reporting button to the git panel which prefills some Brackets info.
@@ -290,7 +408,7 @@ Little stats - 150 commits, 108 files changed, 8673 insertions(+), 6257 deletion
 * Fix a bug in diff formatting.
 
 ## 0.6.9
-* German translation by [Marcel Gerber](https://github.com/SAPlayer)
+* German translation by [Marcel Gerber](https://github.com/MarcelGerber)
 
 ## 0.6.8
 * Fix bug where extension breaks on Linux by [Fabio Massaioli](https://github.com/fbbdev)

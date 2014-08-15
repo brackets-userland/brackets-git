@@ -6,6 +6,7 @@ define(function (require, exports, module) {
     var Promise       = require("bluebird"),
         Strings       = require("strings"),
         ErrorHandler  = require("src/ErrorHandler"),
+        ExpectedError = require("src/ExpectedError"),
         Preferences   = require("src/Preferences"),
         Utils         = require("src/Utils");
 
@@ -43,9 +44,15 @@ define(function (require, exports, module) {
             });
     }
 
+    var connectPromise = null;
+
     // return true/false to state if wasConnected before
     function connectToNode() {
-        return new Promise(function (resolve, reject) {
+        if (connectPromise) {
+            return connectPromise;
+        }
+
+        connectPromise = new Promise(function (resolve, reject) {
             if (nodeConnection.connected()) {
                 return resolve(true);
             }
@@ -61,6 +68,12 @@ define(function (require, exports, module) {
                 reject(ErrorHandler.toError(err));
             });
         });
+
+        connectPromise.finally(function () {
+            connectPromise = null;
+        });
+
+        return connectPromise;
     }
 
     function normalizePathForOs(path) {
@@ -101,11 +114,12 @@ define(function (require, exports, module) {
         Utils.consoleLog(msg);
     }
 
-    function cliHandler(method, cmd, args, opts) {
+    function cliHandler(method, cmd, args, opts, retry) {
         var cliId     = getNextCliId(),
             deferred  = Promise.defer();
 
         deferredMap[cliId] = deferred;
+        args = args || [];
         opts = opts || {};
 
         var watchProgress = args.indexOf("--progress") !== -1;
@@ -132,7 +146,7 @@ define(function (require, exports, module) {
         // we connect to node (promise is returned immediately if we are already connected)
         connectToNode().catch(function (err) {
             // failed to connect to node for some reason
-            throw ErrorHandler.showError(err, Strings.ERROR_CONNECT_NODEJS);
+            throw ErrorHandler.showError(new ExpectedError(err), Strings.ERROR_CONNECT_NODEJS);
         }).then(function (wasConnected) {
 
             var resolved      = false,
@@ -161,7 +175,22 @@ define(function (require, exports, module) {
                             logDebug(domainOpts, debugInfo, method, "fail", err);
                         }
                         delete deferredMap[cliId];
-                        deferred.reject(ErrorHandler.toError(err));
+
+                        err = ErrorHandler.toError(err);
+
+                        // socket was closed so we should try this once again (if not already retrying)
+                        if (err.stack && err.stack.indexOf("WebSocket.self._ws.onclose") !== -1 && !retry) {
+                            cliHandler(method, cmd, args, opts, true)
+                                .then(function (response) {
+                                    deferred.resolve(response);
+                                })
+                                .catch(function (err) {
+                                    deferred.reject(err);
+                                });
+                            return;
+                        }
+
+                        deferred.reject(err);
                     }
                 })
                 .then(function (out) {
@@ -256,10 +285,20 @@ define(function (require, exports, module) {
             }
 
         }).catch(function (err) {
-            throw ErrorHandler.showError(err, "Unexpected error in CLI handler");
+            throw ErrorHandler.showError(err, "Unexpected error in CLI handler - close all instances of Brackets and start again to reload");
         });
 
         return deferred.promise;
+    }
+
+    function which(cmd) {
+        return cliHandler("which", cmd);
+    }
+
+    function pathExists(path) {
+        return cliHandler("pathExists", path).then(function (response) {
+            return typeof response === "string" ? response === "true" : response;
+        });
     }
 
     function spawnCommand(cmd, args, opts) {
@@ -296,6 +335,8 @@ define(function (require, exports, module) {
 
     // Public API
     exports.cliHandler      = cliHandler;
+    exports.which           = which;
+    exports.pathExists      = pathExists;
     exports.executeCommand  = executeCommand;
     exports.spawnCommand    = spawnCommand;
     exports.escapeShellArg  = escapeShellArg;

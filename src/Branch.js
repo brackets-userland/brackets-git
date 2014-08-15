@@ -24,6 +24,7 @@ define(function (require, exports) {
         mergeBranchTemplate     = require("text!templates/branch-merge-dialog.html");
 
     var $gitBranchName          = $(null),
+        currentEditor,
         $dropdown;
 
     function renderList(branches) {
@@ -258,6 +259,12 @@ define(function (require, exports) {
         $("#project-files-container").on("scroll", closeDropdown);
         $(SidebarView).on("hide", closeDropdown);
         $("#titlebar .nav").on("click", closeDropdown);
+
+        currentEditor = EditorManager.getCurrentFullEditor();
+        if (currentEditor) {
+            currentEditor._codeMirror.on("focus", closeDropdown);
+        }
+
         // $(window).on("keydown", keydownHook);
     }
 
@@ -266,6 +273,11 @@ define(function (require, exports) {
         $("#project-files-container").off("scroll", closeDropdown);
         $(SidebarView).off("hide", closeDropdown);
         $("#titlebar .nav").off("click", closeDropdown);
+
+        if (currentEditor) {
+            currentEditor._codeMirror.off("focus", closeDropdown);
+        }
+
         // $(window).off("keydown", keydownHook);
 
         $dropdown = null;
@@ -309,11 +321,6 @@ define(function (require, exports) {
         });
     }
 
-    function _isRepositoryRoot() {
-        var gitFolder = Utils.getProjectRoot() + "/.git";
-        return Utils.pathExists(gitFolder);
-    }
-
     function refresh() {
         if ($gitBranchName.length === 0) { return; }
 
@@ -323,7 +330,7 @@ define(function (require, exports) {
             .parent()
                 .show();
 
-        return _isRepositoryRoot().then(function (isRepositoryRoot) {
+        return Git.isProjectRepositoryRoot().then(function (isRepositoryRoot) {
             $gitBranchName.parent().toggle(isRepositoryRoot);
 
             if (!isRepositoryRoot) {
@@ -334,7 +341,7 @@ define(function (require, exports) {
                 return;
             }
 
-            return Git.getCurrentBranchHash().then(function (branchName) {
+            return Git.getCurrentBranchName().then(function (branchName) {
 
                 Git.getMergeInfo().then(function (mergeInfo) {
 

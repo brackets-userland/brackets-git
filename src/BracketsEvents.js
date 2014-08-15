@@ -2,46 +2,17 @@ define(function (require) {
     "use strict";
 
     // Brackets modules
-    var _               = brackets.getModule("thirdparty/lodash"),
-        DocumentManager = brackets.getModule("document/DocumentManager"),
+    var DocumentManager = brackets.getModule("document/DocumentManager"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
     // Local modules
     var Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
-        Git           = require("src/git/Git"),
         HistoryViewer = require("src/HistoryViewer"),
         Utils         = require("src/Utils");
 
-    // first call to debounce will delay the execution of Git.status by 100ms
-    // any subsequent call until the function is executed
-    // will result in delaying the exectution to new 100ms
-    //
-    // so if this gets called 200 times, Git.status will execute only once
-    // and that is 100ms after the last call
-    var refreshStatus = _.debounce(function () {
-        // Extension parts should listen to GIT_STATUS_RESULTS
-        Git.status();
-    }, 100);
-
-    function attachGitOnlyEvents() {
-        $("#open-files-container").on("contentChanged", refreshStatus);
-    }
-
-    function detachGitOnlyEvents() {
-        $("#open-files-container").off("contentChanged", refreshStatus);
-    }
-
-    EventEmitter.on(Events.GIT_ENABLED, function () {
-        attachGitOnlyEvents();
-    });
-
-    EventEmitter.on(Events.GIT_DISABLED, function () {
-        detachGitOnlyEvents();
-    });
-
-	FileSystem.on("change", function (evt, file) {
+    FileSystem.on("change", function (evt, file) {
         // we care only for files in current project
         if (file && file.fullPath.indexOf(Utils.getProjectRoot()) === 0) {
             EventEmitter.emit(Events.BRACKETS_FILE_CHANGED, evt, file);

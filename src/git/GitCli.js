@@ -16,8 +16,10 @@ define(function (require, exports) {
     // Local modules
     var Promise       = require("bluebird"),
         Cli           = require("src/Cli"),
+        ErrorHandler  = require("src/ErrorHandler"),
         Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
+        ExpectedError = require("src/ExpectedError"),
         Preferences   = require("src/Preferences"),
         Utils         = require("src/Utils");
 
@@ -41,7 +43,15 @@ define(function (require, exports) {
 
     // Implementation
     function getGitPath() {
-        return _gitPath || (Preferences.get("gitIsInSystemPath") ? "git" : Preferences.get("gitPath"));
+        if (_gitPath) { return _gitPath; }
+        _gitPath = Preferences.get("gitPath");
+        return _gitPath;
+    }
+
+    function setGitPath(path) {
+        if (path === true) { path = "git"; }
+        Preferences.set("gitPath", path);
+        _gitPath = path;
     }
 
     function _processQueue() {
@@ -170,12 +180,20 @@ define(function (require, exports) {
         --progress This flag forces progress status even if the standard error stream is not directed to a terminal.
     */
 
+    function repositoryNotFoundHandler(err) {
+        var m = ErrorHandler.matches(err, /Repository (.*) not found$/gim);
+        if (m) {
+            throw new ExpectedError(m[0]);
+        }
+        throw err;
+    }
+
     function fetchRemote(remote) {
-        return git(["fetch", "--progress", remote]);
+        return git(["fetch", "--progress", remote]).catch(repositoryNotFoundHandler);
     }
 
     function fetchAllRemotes() {
-        return git(["fetch", "--progress", "--all"]);
+        return git(["fetch", "--progress", "--all"]).catch(repositoryNotFoundHandler);
     }
 
     /*
@@ -309,6 +327,7 @@ define(function (require, exports) {
         }
 
         return git(args)
+            .catch(repositoryNotFoundHandler)
             .then(function (stdout) {
                 var retObj = {},
                     lines = stdout.split("\n"),
@@ -348,12 +367,43 @@ define(function (require, exports) {
             });
     }
 
-    function getCurrentBranchHash() {
-        return git(["rev-parse", "--abbrev-ref", "HEAD"]);
-    }
-
     function getCurrentBranchName() {
-        return git(["symbolic-ref", "--short", "HEAD"]);
+        return git(["branch"]).then(function (stdout) {
+            var branchName = _.find(stdout.split("\n"), function (l) { return l[0] === "*"; });
+            if (branchName) {
+                branchName = branchName.substring(1).trim();
+
+                var m = branchName.match(/^\(.*\s(\S+)\)$/); // like (detached from f74acd4)
+                if (m) { return m[1]; }
+
+                return branchName;
+            }
+
+            // no branch situation so we need to create one by doing a commit
+            if (stdout.match(/^\s*$/)) {
+                return EventEmitter.emit(Events.GIT_NO_BRANCH_EXISTS);
+            }
+
+            // alternative
+            return git(["log", "--pretty=format:%H %d", "-1"]).then(function (stdout) {
+                var m = stdout.trim().match(/^(\S+)\s+\((.*)\)$/);
+                var hash = m[1].substring(0, 20);
+                m[2].split(",").forEach(function (info) {
+                    info = info.trim();
+
+                    if (info === "HEAD") { return; }
+
+                    var m = info.match(/^tag:(.+)$/);
+                    if (m) {
+                        hash = m[1].trim();
+                        return;
+                    }
+
+                    hash = info;
+                });
+                return hash;
+            });
+        });
     }
 
     function getCurrentUpstreamBranch() {
@@ -365,7 +415,7 @@ define(function (require, exports) {
 
     // Get list of deleted files between two branches
     function getDeletedFiles(oldBranch, newBranch) {
-        return git(["diff", "--name-status", oldBranch + ".." + newBranch])
+        return git(["diff", "--no-ext-diff", "--name-status", oldBranch + ".." + newBranch])
             .then(function (stdout) {
                 var regex = /^D/;
                 return stdout.split("\n").reduce(function (arr, row) {
@@ -381,8 +431,17 @@ define(function (require, exports) {
         return git(["config", key.replace(/\s/g, "")]);
     }
 
-    function setConfig(key, value) {
-        return git(["config", key.replace(/\s/g, ""), value]);
+    function setConfig(key, value, allowGlobal) {
+        key = key.replace(/\s/g, "");
+        return git(["config", key, value]).catch(function (err) {
+
+            if (allowGlobal && ErrorHandler.contains(err, "No such file or directory")) {
+                return git(["config", "--global", key, value]);
+            }
+
+            throw err;
+
+        });
     }
 
     function getHistory(branch, skipCommits, file) {
@@ -410,7 +469,7 @@ define(function (require, exports) {
             stdout = stdout.substring(0, stdout.length - newline.length);
             return !stdout ? [] : stdout.split(newline).map(function (line) {
 
-                var data = line.split(separator),
+                var data = line.trim().split(separator),
                     commit = {};
 
                 commit.hashShort  = data[0];
@@ -438,7 +497,7 @@ define(function (require, exports) {
     function stage(file, updateIndex) {
         var args = ["add"];
         if (updateIndex) { args.push("-u"); }
-        args.push(file);
+        args.push("--", file);
         return git(args);
     }
 
@@ -482,7 +541,7 @@ define(function (require, exports) {
 
     function reset(type, hash) {
         var args = ["reset", type || "--mixed"]; // mixed is the default action
-        if (hash) { args.push(hash); }
+        if (hash) { args.push(hash, "--"); }
         return git(args);
     }
 
@@ -509,11 +568,16 @@ define(function (require, exports) {
         return git(args);
     }
 
+    function _isquoted(str) {
+        return str[0] === "\"" && str[str.length - 1] === "\"";
+    }
+
     function _unquote(str) {
-        if (str[0] === "\"" && str[str.length - 1] === "\"") {
-            str = str.substring(1, str.length - 1);
-        }
-        return str;
+        return str.substring(1, str.length - 1);
+    }
+
+    function _isescaped(str) {
+        return /\\[0-9]{3}/.test(str);
     }
 
     function status(type) {
@@ -521,7 +585,8 @@ define(function (require, exports) {
             if (!stdout) { return []; }
 
             // files that are modified both in index and working tree should be resetted
-            var needReset = [],
+            var isEscaped = false,
+                needReset = [],
                 results = [],
                 lines = stdout.split("\n");
 
@@ -529,7 +594,15 @@ define(function (require, exports) {
                 var statusStaged = line.substring(0, 1),
                     statusUnstaged = line.substring(1, 2),
                     status = [],
-                    file = _unquote(line.substring(3));
+                    file = line.substring(3);
+
+                // check if the file is quoted
+                if (_isquoted(file)) {
+                    file = _unquote(file);
+                    if (_isescaped(file)) {
+                        isEscaped = true;
+                    }
+                }
 
                 if (statusStaged !== " " && statusUnstaged !== " " &&
                     statusStaged !== "?" && statusUnstaged !== "?") {
@@ -591,6 +664,15 @@ define(function (require, exports) {
                 });
             });
 
+            if (isEscaped) {
+                return setConfig("core.quotepath", "false").then(function () {
+                    if (type === "SET_QUOTEPATH") {
+                        throw new Error("git status is calling itself in a recursive loop!");
+                    }
+                    return status("SET_QUOTEPATH");
+                });
+            }
+
             if (needReset.length > 0) {
                 return Promise.all(needReset.map(function (fileName) {
                     if (fileName.indexOf("->") !== -1) {
@@ -621,25 +703,28 @@ define(function (require, exports) {
     }
 
     function _isFileStaged(file) {
-        return git(["status", "-u", "--porcelain"]).then(function (stdout) {
+        return git(["status", "-u", "--porcelain", "--", file]).then(function (stdout) {
             if (!stdout) { return false; }
             return _.any(stdout.split("\n"), function (line) {
-                return line.match("^(\\S)(.)\\s+(" + file + ")$") !== null;
+                return line[0] !== " " && line[0] !== "?" && // first character marks staged status
+                       line.lastIndexOf(" " + file) === line.length - file.length - 1; // in case another file appeared here?
             });
         });
     }
 
     function getDiffOfStagedFiles() {
-        return git(["diff", "--no-color", "--staged"]);
+        return git(["diff", "--no-ext-diff", "--no-color", "--staged"], {
+            timeout: false // never timeout this
+        });
     }
 
     function getListOfStagedFiles() {
-        return git(["diff", "--no-color", "--staged", "--name-only"]);
+        return git(["diff", "--no-ext-diff", "--no-color", "--staged", "--name-only"]);
     }
 
     function diffFile(file) {
         return _isFileStaged(file).then(function (staged) {
-            var args = ["diff", "--no-color"];
+            var args = ["diff", "--no-ext-diff", "--no-color"];
             if (staged) { args.push("--staged"); }
             args.push("-U0", "--", file);
             return git(args);
@@ -648,9 +733,9 @@ define(function (require, exports) {
 
     function diffFileNice(file) {
         return _isFileStaged(file).then(function (staged) {
-            var args = ["diff", "--no-color"];
+            var args = ["diff", "--no-ext-diff", "--no-color"];
             if (staged) { args.push("--staged"); }
-            args.push(file);
+            args.push("--", file);
             return git(args);
         });
     }
@@ -660,13 +745,13 @@ define(function (require, exports) {
     }
 
     function getFilesFromCommit(hash) {
-        return git(["diff", "--name-only", hash + "^!"]).then(function (stdout) {
+        return git(["diff", "--no-ext-diff", "--name-only", hash + "^!"]).then(function (stdout) {
             return !stdout ? [] : stdout.split("\n");
         });
     }
 
     function getDiffOfFileFromCommit(hash, file) {
-        return git(["diff", "--no-color", hash + "^!", "--", file]);
+        return git(["diff", "--no-ext-diff", "--no-color", hash + "^!", "--", file]);
     }
 
     function rebaseInit(branchName) {
@@ -679,8 +764,8 @@ define(function (require, exports) {
 
     function getVersion() {
         return git(["--version"]).then(function (stdout) {
-            var io = stdout.indexOf("git version");
-            return stdout.substring(io !== -1 ? io + "git version".length : 0).trim();
+            var m = stdout.match(/[0-9].*/);
+            return m ? m[0] : stdout.trim();
         });
     }
 
@@ -744,6 +829,7 @@ define(function (require, exports) {
 
     // Public API
     exports._git                      = git;
+    exports.setGitPath                = setGitPath;
     exports.FILE_STATUS               = FILE_STATUS;
     exports.fetchRemote               = fetchRemote;
     exports.fetchAllRemotes           = fetchAllRemotes;
@@ -752,7 +838,6 @@ define(function (require, exports) {
     exports.deleteRemote              = deleteRemote;
     exports.push                      = push;
     exports.setUpstreamBranch         = setUpstreamBranch;
-    exports.getCurrentBranchHash      = getCurrentBranchHash;
     exports.getCurrentBranchName      = getCurrentBranchName;
     exports.getCurrentUpstreamBranch  = getCurrentUpstreamBranch;
     exports.getConfig                 = getConfig;

@@ -27,7 +27,6 @@ define(function (require, exports) {
                 $this.val(values[property]);
             }
         });
-        $("#git-settings-gitPath", $dialog).prop("disabled", values.gitIsInSystemPath);
         $("#git-settings-dateFormat-container", $dialog).toggle(values.dateMode === 3);
     }
 
@@ -49,9 +48,6 @@ define(function (require, exports) {
     }
 
     function assignActions() {
-        $("#git-settings-gitIsInSystemPath", $dialog).on("click", function () {
-            $("#git-settings-gitPath", $dialog).prop("disabled", $(this).is(":checked"));
-        });
         $("#git-settings-stripWhitespaceFromCommits", $dialog).on("change", function () {
             var on = $(this).is(":checked");
             $("#git-settings-addEndlineToTheEndOfFile,#git-settings-removeByteOrderMark,#git-settings-normalizeLineEndings", $dialog)

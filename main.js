@@ -28,6 +28,7 @@ define(function (require, exports, module) {
         "src/GutterManager",
         "src/History",
         "src/NoRepo",
+        "src/ProjectTreeMarks",
         "src/Remotes",
         "src/utils/Terminal"
     ];
@@ -35,16 +36,21 @@ define(function (require, exports, module) {
     require(modules);
 
     // Load CSS
-    ExtensionUtils.loadStyleSheet(module, "styles/brackets-git.css");
+    ExtensionUtils.loadStyleSheet(module, "styles/brackets-git.less");
     ExtensionUtils.loadStyleSheet(module, "styles/fonts/octicon.less");
-    // FUTURE: load ftp.less on demand after Sprint 38
+    if (Preferences.get("useGitFtp")) { ExtensionUtils.loadStyleSheet(module, "styles/src/ftp/styles/ftp.less"); }
 
     // Display settings panel on first start / changelog dialog on version change
     ExtensionInfo.get().then(function (packageJson) {
+        // do not display dialogs when running tests
+        if (window.isBracketsTestWindow) {
+            return;
+        }
+
         var lastVersion    = Preferences.get("lastVersion"),
             currentVersion = packageJson.version;
 
-        if (lastVersion === null) {
+        if (!lastVersion) {
             Preferences.persist("lastVersion", "firstStart");
             SettingsDialog.show();
         } else if (lastVersion !== currentVersion) {
