@@ -326,18 +326,33 @@
         min-height: 410px; // this needs to be set to a height that'll prevent the dialog to change size when tabs are being switched.
     }
     .nav-tabs {
-        border-bottom: 1px solid #c3c6c5;
+        border-bottom: 1px solid @bc-panel-separator;
+
+        .dark & {
+            border-bottom: 1px solid @dark-bc-panel-separator;
+        }
+
         a {
-            color: @defaultText;
+            color: @bc-text;
             border: 1px solid transparent;
+
+            .dark & {
+                color: @dark-bc-text;
+            }
         }
         a:hover {
             background-color: rgba(0, 0, 0, 0.04);
         }
         > .active > a {
-            background-color: #dfe2e2 !important;
-            border: 1px solid #b4b7b7;
-            border-bottom: 1px solid #dfe2e2 !important;
+            background-color: @bc-btn-bg !important;
+            border: 1px solid @bc-btn-border;
+            border-bottom: 1px solid @bc-btn-bg !important;
+
+            .dark & {
+                background-color: @dark-bc-btn-bg !important;
+                border: 1px solid @dark-bc-btn-border;
+                border-bottom: 1px solid @dark-bc-btn-bg !important;
+            }
         }
     }
     .tab-content {

@@ -5,7 +5,11 @@
         width: 95%;
         height: 1px;
         border: none;
-        background-color: #d3d3d3;
+        background-color: @bc-panel-separator;
+
+        .dark & {
+            background-color: @dark-bc-panel-separator;
+        }
     }
 
     /* radio buttons until they are styled in brackets */
