@@ -51,7 +51,6 @@
     overflow: hidden;
     padding: 0 5px;
     white-space: nowrap;
-    .btn-alt-quiet();
 }
 #git-branch-dropdown {
     margin-left: -12px;
@@ -192,9 +191,15 @@
         margin-right: 5px;
     }
     .btn-group.open .dropdown-toggle {
-        background-color: #d3d7d7;
-        box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
-        color: @defaultText;
+        background-color: @bc-btn-bg;
+        box-shadow: inset 0 1px 0 @bc-btn-bg-down;
+        color: @bc-text;
+
+        .dark & {
+            background-color: @dark-bc-btn-bg;
+            box-shadow: inset 0 1px 0 @dark-bc-btn-bg-down;
+            color: @dark-bc-text;
+        }
     }
     .git-more {
         border-radius: 0 4px 4px 0;
@@ -244,14 +249,6 @@
     }
 
     .dropdown-menu();
-
-    // remove any kind of :focus state from buttons (because it's ugly)
-    .btn:focus {
-        border-color: #b2b5b5;
-        box-shadow: none;
-        color: @defaultText;
-        outline: none;
-    }
 
     // class for buttons that are performing an action
     .btn-loading, .btn-loading:active {
@@ -402,8 +399,8 @@
 #git-commit-dialog {
     .modal-body {
         .lint-errors {
-            background-color: @almostWhite;
-            border: 1px solid @darkGrey;
+            background-color: @bc-menu-bg;
+            border: 1px solid @bc-panel-separator;
             border-radius: 3px;
             margin-bottom: 1em;
             // no grow, no shrink
@@ -432,7 +429,7 @@
                 border-top-left-radius:0;
                 border-bottom-left-radius:0;
                 text-align: center;
-                color: @darkGrey;
+                color: @bc-panel-separator;
                 &.over50 {
                     color: @orange-text;
                 }
@@ -462,7 +459,7 @@
                 margin: 0 0 1em;
             }
             .extension {
-                color: @darkGrey;
+                color: @bc-panel-separator;
             }
         }
         .commit-diff {
@@ -505,7 +502,6 @@
         &:hover {
             opacity: 1;
         }
-        .btn-alt-quiet();
     }
 }
 
@@ -543,26 +539,4 @@ because there's no way to import them right now
 .flex-item(@grow: 0, @shrink: 1, @basis: auto) {
     -webkit-flex: @grow @shrink @basis;
     flex: @grow @shrink @basis;
-}
-
-// Remove it after fix of brackets imports in S38
-.btn-alt-quiet {
-    border: 1px solid transparent;
-    border-radius: 3px;
-    text-decoration: none;
-    &:hover {
-        border: 1px solid rgba(0, 0, 0, 0.24);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    }
-    &:active {
-        background: #404141;
-        border: 1px solid rgba(0, 0, 0, 0.24);
-        box-shadow: inset 0 1px 0 rgba(0,0,0,0.12);
-    }
-}
-
-.btn.active:not([disabled]) {
-    background-color: #e0f0fa;
-    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
-    color: #0083e8;
 }

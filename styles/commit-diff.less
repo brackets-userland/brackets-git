@@ -10,21 +10,29 @@
     }
 
     code, pre {
+        background-color: @diff-lgray-bg;
         color: @bc-text;
         border: none;
         padding: 0 3px;
         margin: 0;
 
         .dark & {
+            background-color: @dark-diff-lgray-bg;
             color: @dark-bc-text;
         }
     }
-    background-color: @almostWhite;
-    border: 1px solid @darkGrey;
+    background-color: @diff-lgray-bg;
+    border: 1px solid @bc-btn-border;
     border-radius: 3px;
     margin-bottom: 1em;
     overflow: auto;
     padding: 0;
+
+    .dark & {
+        background-color: @dark-diff-lgray-bg;
+        border: 1px solid @dark-bc-btn-border;
+    }
+
     // FIXME: this part will be removed after github.com/adobe/brackets/issues/7673
     table:not(.table-striped) {
         > tbody {
@@ -68,21 +76,30 @@
                     &.row-num {
                         width: 1px;
                         border-right: 1px solid;
-                        border-color: @diff-gray-border;
+                        border-color: @dark-diff-gray-border;
                         text-align: right;
-                        color: @diff-row-text-color;
+                        color: @bc-text;
                         .user-select(none);
+
+                        .dark & {
+                            border-color: @dark-bc-btn-border;
+                            color: @dark-bc-text;
+                        }
                     }
                     pre {
                         white-space: nowrap;
                         .trailingWhitespace {
-                            background-color: @red-background;
+                            background-color: @dark-diff-red-bg;
                         }
                     }
                 }
                 &.added {
                     &, & pre {
                         background-color: @diff-lgreen-bg;
+
+                        .dark & {
+                            background-color: @dark-diff-lgreen-bg;
+                        }
                     }
                     pre:before {
                         content: "+";
@@ -90,11 +107,20 @@
                     .row-num {
                         background-color: @diff-green-bg !important; //FIXME: `!important` will be removed after github.com/adobe/brackets/issues/7673
                         border-color: @diff-green-border;
+
+                        .dark & {
+                             background-color: @dark-diff-green-bg !important; //FIXME: `!important` will be removed after github.com/adobe/brackets/issues/7673
+                            border-color: @dark-diff-green-border;
+                        }
                     }
                 }
                 &.removed {
                     &, & pre {
                         background-color: @diff-lred-bg;
+
+                        .dark & {
+                            background-color: @dark-diff-lred-bg;
+                        }
                     }
                     pre:before {
                         content: "-";
@@ -102,6 +128,11 @@
                     .row-num {
                         background-color: @diff-red-bg !important; //FIXME: `!important` will be removed after github.com/adobe/brackets/issues/7673
                         border-color: @diff-red-border;
+
+                        .dark & {
+                            background-color: @dark-diff-red-bg !important;
+                            border-color: @dark-diff-red-border;
+                        }
                     }
                 }
                 &.unchanged {
@@ -119,6 +150,10 @@
                     &, & pre {
                         color: @diff-gray-text;
                         background-color: @diff-lgray-bg;
+
+                        .dark & {
+                            background-color: @diff-dgray-bg;
+                        }
                     }
                 }
             }
