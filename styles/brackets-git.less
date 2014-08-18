@@ -514,11 +514,19 @@
             a {
                 border: none;
                 border-radius: 0;
-                color: @defaultText;
+                color: @bc-text;
                 cursor: pointer;
+
+                .dark & {
+                    color: @dark-bc-text;
+                }
             }
             a:hover {
-                background-color: #e0f0fa;
+                background-color: @bc-bg-highlight;
+
+                .dark & {
+                    background-color: @dark-bc-bg-highlight;
+                }
             }
             .active {
                 background-color: #eee;

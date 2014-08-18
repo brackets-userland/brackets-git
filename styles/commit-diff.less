@@ -2,23 +2,23 @@
 
 .commit-diff {
     @lineHeight: 15px;
-    color: @bc-text;
+    color: @diff-gray-text;
     .selectable-text();
 
     .dark & {
-        color: @dark-bc-text;
+        color: @dark-diff-gray-text;
     }
 
     code, pre {
         background-color: @diff-lgray-bg;
-        color: @bc-text;
+        color: @diff-gray-text;
         border: none;
         padding: 0 3px;
         margin: 0;
 
         .dark & {
             background-color: @dark-diff-lgray-bg;
-            color: @dark-bc-text;
+            color: @dark-diff-gray-text;
         }
     }
     background-color: @diff-lgray-bg;
@@ -152,7 +152,7 @@
                         background-color: @diff-lgray-bg;
 
                         .dark & {
-                            background-color: @diff-dgray-bg;
+                            background-color: @dark-diff-dgray-bg;
                         }
                     }
                 }
