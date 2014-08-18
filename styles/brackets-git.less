@@ -215,7 +215,12 @@
             border-right: 0;
         }
         .caret {
+            border-bottom-color: @bc-text;
             margin: 7px 5px auto 0px;
+
+            .dark & {
+                border-bottom-color: @dark-bc-text;
+            }
         }
     }
     .git-remotes-dropdown {
