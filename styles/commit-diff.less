@@ -54,6 +54,10 @@
                     color: @blue-text;
                     padding: @lineHeight / 2;
                     text-align: left;
+
+                    .dark & {
+                        color: @dark-blue-text;
+                    }
                 }
                 &:not(:first-child) {
                     border-top: 1px dashed @bc-btn-border;
