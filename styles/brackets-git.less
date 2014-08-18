@@ -288,6 +288,30 @@
         }
     }
 
+    .git-file-history:active,
+    .git-history-toggle:active,
+    .btn.active:active {
+        background-color: @bc-bg-highlight !important;
+
+        .dark & {
+            background-color:@dark-bc-bg-highlight !important;
+        }
+    }
+
+    // Remove this once https://github.com/adobe/brackets/pull/8793/files is merged.
+    .btn.active:not([disabled]) {
+        background-image: none;
+        background-color: @bc-bg-highlight;
+        box-shadow: inset 0 1px 0 @bc-shadow-small;
+        color: @bc-text-alt;
+
+        .dark & {
+            background-color:@dark-bc-bg-highlight;
+            box-shadow: inset 0 1px 0 @dark-bc-shadow-small;
+            color: @dark-bc-text-alt;
+        }
+    }
+
 }
 
 /* Toolbar icon */
@@ -559,28 +583,4 @@ because there's no way to import them right now
 .flex-item(@grow: 0, @shrink: 1, @basis: auto) {
     -webkit-flex: @grow @shrink @basis;
     flex: @grow @shrink @basis;
-}
-
-.git-file-history:active,
-.git-history-toggle:active,
-.active:active {
-    background-color: @bc-bg-highlight !important;
-
-    .dark & {
-        background-color:@dark-bc-bg-highlight !important;
-    }
-}
-
-// Remove this once https://github.com/adobe/brackets/pull/8793/files is merged.
-.active:not([disabled]) {
-    background-image: none;
-    background-color: @bc-bg-highlight;
-    box-shadow: inset 0 1px 0 @bc-shadow-small;
-    color: @bc-text-alt;
-
-    .dark & {
-        background-color:@dark-bc-bg-highlight;
-        box-shadow: inset 0 1px 0 @dark-bc-shadow-small;
-        color: @dark-bc-text-alt;
-    }
 }
