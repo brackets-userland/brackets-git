@@ -311,7 +311,6 @@
             color: @dark-bc-text-alt;
         }
     }
-
 }
 
 /* Toolbar icon */
@@ -373,14 +372,14 @@
             background-color: rgba(0, 0, 0, 0.04);
         }
         > .active > a {
-            background-color: @bc-btn-bg !important;
+            background-color: @bc-panel-bg !important;
             border: 1px solid @bc-btn-border;
-            border-bottom: 1px solid @bc-btn-bg !important;
+            border-bottom: 1px solid @bc-panel-bg !important;
 
             .dark & {
-                background-color: @dark-bc-btn-bg !important;
+                background-color: @dark-bc-panel-bg !important;
                 border: 1px solid @dark-bc-btn-border;
-                border-bottom: 1px solid @dark-bc-btn-bg !important;
+                border-bottom: 1px solid @dark-bc-panel-bg !important;
             }
         }
     }
@@ -402,12 +401,20 @@
         margin: 1em 0;
     }
     h1, h2 {
-        color: #111111;
+        color: @bc-text-emphasized;
         margin-top: 0;
+
+        .dark & {
+            color: @dark-bc-text-emphasized;
+        }
     }
     h1 {
-        border-bottom: 1px solid #cdcdcd;
+        border-bottom: 1px solid @bc-panel-separator;
         font-size: 1.5em;
+
+        .dark & {
+            border-bottom: 1px solid @dark-bc-panel-separator;
+        }
     }
     h2 {
         font-size: 1.2em;
@@ -420,9 +427,13 @@
         margin-bottom: 1em;
     }
     code {
-        background-color: #f4f4f4;
+        background-color: @bc-menu-bg;
         border-radius: 3px;
         padding: 3px;
+
+        .dark & {
+            background-color: @dark-bc-menu-bg;
+        }
     }
     b, strong {
         font-weight: 500;
@@ -554,6 +565,21 @@
         &:hover {
             opacity: 1;
         }
+    }
+}
+
+pre.git-output {
+    font-size: 12px;
+    line-height: 18px;
+    background-color: @bc-input-bg;
+    border: 1px solid @bc-btn-border;
+    border-radius: @bc-border-radius;
+    color: @bc-text;
+
+    .dark & {
+        background-color: @dark-bc-input-bg;
+        border: 1px solid @dark-bc-btn-border;
+        color: @dark-bc-text;
     }
 }
 
