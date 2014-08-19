@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## ???
+* BUGFIX: Occasional issues with diff displaying incorrectly.
+
 ## 0.13.28
 * Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
 * Updated README by [Fez Vrasta](https://github.com/FezVrasta)

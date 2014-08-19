@@ -66,13 +66,39 @@ define(function (require, exports, module) {
             var lineClass   = "",
                 pushLine    = true;
 
-            if (line.match(/index\s[A-z0-9]{7}..[A-z0-9]{7}/)) {
+            if (line.indexOf("diff --git") === 0) {
+                lineClass = "diffCmd";
+
+                diffData.push({
+                    name: line.split("b/")[1],
+                    lines: []
+                });
+
                 if (!verbose) {
                     pushLine = false;
                 }
-            } else if (line.substr(0, 3) === "+++" || line.substr(0, 3) === "---" && !verbose) {
-                pushLine = false;
-            } else if (line[0] === "+" && line[1] !== "+") {
+            } else if (line.match(/index\s[A-z0-9]{7}\.\.[A-z0-9]{7}/)) {
+                if (!verbose) {
+                    pushLine = false;
+                }
+            } else if (line.substr(0, 3) === "+++" || line.substr(0, 3) === "---") {
+                if (!verbose) {
+                    pushLine = false;
+                }
+            } else if (line.indexOf("@@") === 0) {
+                lineClass = "position";
+
+                // Define the type of the line: Header
+                lastStatus = LINE_STATUS.HEADER;
+
+                // This read the start line for the diff and substract 1 for this line
+                var m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
+                var s1 = m[1].split(",");
+                var s2 = m[2].split(",");
+
+                numLineOld = s1[0] - 1;
+                numLineNew = s2[0] - 1;
+            } else if (line[0] === "+") {
                 lineClass = "added";
                 line = line.substring(1);
 
@@ -81,7 +107,7 @@ define(function (require, exports, module) {
 
                 // Add 1 to the num line for new document
                 numLineNew++;
-            } else if (line[0] === "-" && line[1] !== "-") {
+            } else if (line[0] === "-") {
                 lineClass = "removed";
                 line = line.substring(1);
 
@@ -100,30 +126,8 @@ define(function (require, exports, module) {
                 // Add 1 to old a new num lines
                 numLineOld++;
                 numLineNew++;
-            } else if (line.indexOf("@@") === 0) {
-                lineClass = "position";
-
-                // Define the type of the line: Header
-                lastStatus = LINE_STATUS.HEADER;
-
-                // This read the start line for the diff and substract 1 for this line
-                var m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
-                var s1 = m[1].split(",");
-                var s2 = m[2].split(",");
-
-                numLineOld = s1[0] - 1;
-                numLineNew = s2[0] - 1;
-            } else if (line.indexOf("diff --git") === 0) {
-                lineClass = "diffCmd";
-
-                diffData.push({
-                    name: line.split("b/")[1],
-                    lines: []
-                });
-
-                if (!verbose) {
-                    pushLine = false;
-                }
+            } else {
+                console.log("Unexpected line in diff: " + line);
             }
 
             if (pushLine) {
