@@ -459,8 +459,8 @@ define(function (require, exports) {
 
         var args = ["log", "-100"];
         if (skipCommits) { args.push("--skip=" + skipCommits); }
-        args.push("--format=" + format);
-        args.push(branch);
+        args.push("--format=" + format, branch, "--");
+
         // follow is too buggy - do not use
         // if (file) { args.push("--follow"); }
         if (file) { args.push(file); }

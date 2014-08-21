@@ -4,6 +4,7 @@
 
 ## ???
 * BUGFIX: Occasional issues with diff displaying incorrectly.
+* BUGFIX: Fix history problems when branch and folder have the same name.
 
 ## 0.13.28
 * Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
