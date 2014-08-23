@@ -1,6 +1,3 @@
-@import "brackets/brackets_colors.less";
-@import "brackets/brackets_variables.less";
-@import "brackets/brackets_theme_default.less";
 @import "colors.less";
 @import "common.less";
 @import "mixins.less";
@@ -12,7 +9,9 @@
 @import "dialogs/diff-dialog.less";
 @import "dialogs/error-dialog.less";
 @import "dialogs/pull-dialog.less";
-@import "theme-dark.less";
+// @import "theme-dark.less";
+@import "brackets/brackets_core_ui_variables.less";
+
 
 @gutterWidth: 0.65em; // using ems so that it'll be scalable on cmd +/-
 
@@ -52,7 +51,6 @@
     overflow: hidden;
     padding: 0 5px;
     white-space: nowrap;
-    .btn-alt-quiet();
 }
 #git-branch-dropdown {
     margin-left: -12px;
@@ -63,8 +61,14 @@
     &:focus {
         outline: none;
     }
+
+    a,
     a:hover {
-        color: @defaultText;
+        color: @bc-menu-text;
+
+        .dark & {
+            color: @dark-bc-menu-text;
+        }
     }
     .git-branch-new, .git-branch-link {
         padding: 5px 26px 5px 26px;
@@ -107,7 +111,11 @@
     a {
         padding: 5px 15px;
         &.selected {
-            background: @blue-background;
+            background: @bc-bg-highlight;
+
+            .dark & {
+                background: @dark-bc-bg-highlight;
+            }
         }
         &:not(.selected):hover {
             background: none;
@@ -183,9 +191,15 @@
         margin-right: 5px;
     }
     .btn-group.open .dropdown-toggle {
-        background-color: #d3d7d7;
-        box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
-        color: @defaultText;
+        background-color: @bc-btn-bg;
+        box-shadow: inset 0 1px 0 @bc-btn-bg-down;
+        color: @bc-text;
+
+        .dark & {
+            background-color: @dark-bc-btn-bg;
+            box-shadow: inset 0 1px 0 @dark-bc-btn-bg-down;
+            color: @dark-bc-text;
+        }
     }
     .git-more {
         border-radius: 0 4px 4px 0;
@@ -201,7 +215,12 @@
             border-right: 0;
         }
         .caret {
+            border-bottom-color: @bc-text;
             margin: 7px 5px auto 0px;
+
+            .dark & {
+                border-bottom-color: @dark-bc-text;
+            }
         }
     }
     .git-remotes-dropdown {
@@ -236,14 +255,6 @@
 
     .dropdown-menu();
 
-    // remove any kind of :focus state from buttons (because it's ugly)
-    .btn:focus {
-        border-color: #b2b5b5;
-        box-shadow: none;
-        color: @defaultText;
-        outline: none;
-    }
-
     // class for buttons that are performing an action
     .btn-loading, .btn-loading:active {
         background-size: 30px 30px;
@@ -277,6 +288,29 @@
         }
     }
 
+    .git-file-history:active,
+    .git-history-toggle:active,
+    .btn.active:active {
+        background-color: @bc-bg-highlight !important;
+
+        .dark & {
+            background-color:@dark-bc-bg-highlight !important;
+        }
+    }
+
+    // Remove this once https://github.com/adobe/brackets/pull/8793/files is merged.
+    .btn.active:not([disabled]) {
+        background-image: none;
+        background-color: @bc-bg-highlight;
+        box-shadow: inset 0 1px 0 @bc-shadow-small;
+        color: @bc-text-alt;
+
+        .dark & {
+            background-color:@dark-bc-bg-highlight;
+            box-shadow: inset 0 1px 0 @dark-bc-shadow-small;
+            color: @dark-bc-text-alt;
+        }
+    }
 }
 
 /* Toolbar icon */
@@ -320,18 +354,33 @@
         min-height: 410px; // this needs to be set to a height that'll prevent the dialog to change size when tabs are being switched.
     }
     .nav-tabs {
-        border-bottom: 1px solid #c3c6c5;
+        border-bottom: 1px solid @bc-panel-separator;
+
+        .dark & {
+            border-bottom: 1px solid @dark-bc-panel-separator;
+        }
+
         a {
-            color: @defaultText;
+            color: @bc-text;
             border: 1px solid transparent;
+
+            .dark & {
+                color: @dark-bc-text;
+            }
         }
         a:hover {
             background-color: rgba(0, 0, 0, 0.04);
         }
         > .active > a {
-            background-color: #dfe2e2 !important;
-            border: 1px solid #b4b7b7;
-            border-bottom: 1px solid #dfe2e2 !important;
+            background-color: @bc-panel-bg !important;
+            border: 1px solid @bc-btn-border;
+            border-bottom: 1px solid @bc-panel-bg !important;
+
+            .dark & {
+                background-color: @dark-bc-panel-bg !important;
+                border: 1px solid @dark-bc-btn-border;
+                border-bottom: 1px solid @dark-bc-panel-bg !important;
+            }
         }
     }
     .tab-content {
@@ -352,12 +401,20 @@
         margin: 1em 0;
     }
     h1, h2 {
-        color: #111111;
+        color: @bc-text-emphasized;
         margin-top: 0;
+
+        .dark & {
+            color: @dark-bc-text-emphasized;
+        }
     }
     h1 {
-        border-bottom: 1px solid #cdcdcd;
+        border-bottom: 1px solid @bc-panel-separator;
         font-size: 1.5em;
+
+        .dark & {
+            border-bottom: 1px solid @dark-bc-panel-separator;
+        }
     }
     h2 {
         font-size: 1.2em;
@@ -370,9 +427,13 @@
         margin-bottom: 1em;
     }
     code {
-        background-color: #f4f4f4;
+        background-color: @bc-menu-bg;
         border-radius: 3px;
         padding: 3px;
+
+        .dark & {
+            background-color: @dark-bc-menu-bg;
+        }
     }
     b, strong {
         font-weight: 500;
@@ -393,8 +454,8 @@
 #git-commit-dialog {
     .modal-body {
         .lint-errors {
-            background-color: @almostWhite;
-            border: 1px solid @darkGrey;
+            background-color: @bc-menu-bg;
+            border: 1px solid @bc-panel-separator;
             border-radius: 3px;
             margin-bottom: 1em;
             // no grow, no shrink
@@ -423,7 +484,7 @@
                 border-top-left-radius:0;
                 border-bottom-left-radius:0;
                 text-align: center;
-                color: @darkGrey;
+                color: @bc-panel-separator;
                 &.over50 {
                     color: @orange-text;
                 }
@@ -453,7 +514,7 @@
                 margin: 0 0 1em;
             }
             .extension {
-                color: @darkGrey;
+                color: @bc-panel-separator;
             }
         }
         .commit-diff {
@@ -464,11 +525,19 @@
             a {
                 border: none;
                 border-radius: 0;
-                color: @defaultText;
+                color: @bc-text;
                 cursor: pointer;
+
+                .dark & {
+                    color: @dark-bc-text;
+                }
             }
             a:hover {
-                background-color: #e0f0fa;
+                background-color: @bc-bg-highlight;
+
+                .dark & {
+                    background-color: @dark-bc-bg-highlight;
+                }
             }
             .active {
                 background-color: #eee;
@@ -496,7 +565,21 @@
         &:hover {
             opacity: 1;
         }
-        .btn-alt-quiet();
+    }
+}
+
+pre.git-output {
+    font-size: 12px;
+    line-height: 18px;
+    background-color: @bc-input-bg;
+    border: 1px solid @bc-btn-border;
+    border-radius: @bc-border-radius;
+    color: @bc-text;
+
+    .dark & {
+        background-color: @dark-bc-input-bg;
+        border: 1px solid @dark-bc-btn-border;
+        color: @dark-bc-text;
     }
 }
 
@@ -534,26 +617,4 @@ because there's no way to import them right now
 .flex-item(@grow: 0, @shrink: 1, @basis: auto) {
     -webkit-flex: @grow @shrink @basis;
     flex: @grow @shrink @basis;
-}
-
-// Remove it after fix of brackets imports in S38
-.btn-alt-quiet {
-    border: 1px solid transparent;
-    border-radius: 3px;
-    text-decoration: none;
-    &:hover {
-        border: 1px solid rgba(0, 0, 0, 0.24);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    }
-    &:active {
-        background: #404141;
-        border: 1px solid rgba(0, 0, 0, 0.24);
-        box-shadow: inset 0 1px 0 rgba(0,0,0,0.12);
-    }
-}
-
-.btn.active:not([disabled]) {
-    background-color: #e0f0fa;
-    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
-    color: #0083e8;
 }

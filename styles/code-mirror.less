@@ -15,7 +15,11 @@
         background-repeat: no-repeat;
         font-size: 1em;
         font-weight: bold;
-        color: #fff;
+        color: @bc-menu-bg;
+
+        .dark & {
+            color: @dark-bc-menu-bg;
+        }
     }
     .brackets-git-gutter-added {
         background-color: @green;
@@ -36,12 +40,22 @@
         content: "-";
     }
     .brackets-git-gutter-deleted-lines {
-        color: @tc-text;
+        color: @bc-text;
         background-color: lighten(@red, 25%);
         .selectable-text();
+
+        .dark & {
+            background-color: darken(@red, 25%);
+            color: @dark-bc-text;
+        }
     }
     .CodeMirror-linenumber.brackets-git-gutter-hover {
-        background-color: #e9e9e9;
-        color: #000;
+        background-color: @bc-panel-bg-alt;
+        color: @bc-text-thin;
+
+        .dark & {
+            background-color: @dark-bc-panel-bg-alt;
+            color: @dark-bc-text-alt !important;
+        }
     }
 }
