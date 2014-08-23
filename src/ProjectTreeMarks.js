@@ -73,7 +73,7 @@ define(function (require) {
 
                     // create the intial regexp here. We need the absolute path 'cause it could be that there
                     // are external files with the same name as a project file
-                    regex = regexEscape(projectRoot) + (leadingSlash ? "" : "((.+)/)?") + regexEscape(line) + (leadingSlash ? "" : "(/.{0,})?");
+                    regex = regexEscape(projectRoot) + (leadingSlash ? "" : "((.+)/)?") + regexEscape(line) + (trailingSlash ? "" : "(/.{0,})?");
                     // replace all the possible asterisks
                     regex = regex.replace(/\*\*$/g, "(.{0,})").replace(/(\*\*|\*$)/g, "(.+)").replace(/\*/g, "([^/]+)");
                     regex = "^" + regex + "$";
