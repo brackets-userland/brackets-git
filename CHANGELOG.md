@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.30
+* New Dark UI styling by [Larz](https://github.com/larz0)
+
 ## 0.13.29
 * BUGFIX: Occasional issues with diff displaying incorrectly.
 * BUGFIX: Fix history problems when branch and folder have the same name.

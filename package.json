@@ -24,7 +24,7 @@
     "i18n": ["en", "en-gb", "de", "fr", "it", "pt-br", "zh-cn"],
 
     "engines": {
-        "brackets": ">=0.40.0"
+        "brackets": ">=0.43.0"
     },
     "scripts": {
         "test": "grunt test"
