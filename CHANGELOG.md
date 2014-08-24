@@ -4,6 +4,7 @@
 
 ## 0.13.30
 * New Dark UI styling by [Larz](https://github.com/larz0)
+* BUGFIX: Fixed some of .gitignore negative logic by [Marcel Gerber](https://github.com/MarcelGerber)
 
 ## 0.13.29
 * BUGFIX: Occasional issues with diff displaying incorrectly.
