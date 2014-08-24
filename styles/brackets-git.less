@@ -453,8 +453,16 @@
 #git-commit-dialog {
     .modal-body {
         .lint-errors {
+
             background-color: @bc-menu-bg;
             border: 1px solid @bc-panel-separator;
+
+            .dark & {
+                background-color: @dark-diff-lgray-bg;
+                border: 1px solid @dark-bc-btn-border;
+                color: @dark-diff-gray-text;
+            }
+
             border-radius: 3px;
             margin-bottom: 1em;
             // no grow, no shrink

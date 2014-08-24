@@ -6,6 +6,8 @@
     .selectable-text();
 
     .dark & {
+        background-color: @dark-diff-lgray-bg;
+        border: 1px solid @dark-bc-btn-border;
         color: @dark-diff-gray-text;
     }
 
@@ -27,11 +29,6 @@
     margin-bottom: 1em;
     overflow: auto;
     padding: 0;
-
-    .dark & {
-        background-color: @dark-diff-lgray-bg;
-        border: 1px solid @dark-bc-btn-border;
-    }
 
     // FIXME: this part will be removed after github.com/adobe/brackets/issues/7673
     table:not(.table-striped) {
