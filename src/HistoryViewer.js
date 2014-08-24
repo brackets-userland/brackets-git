@@ -195,12 +195,14 @@ define(function (require, exports) {
 
         renderFiles(files);
 
-        var firstFile = selectedFile || $viewer.find(".commit-files ul li:first-child").text().trim();
-        if (firstFile) {
-            Git.getDiffOfFileFromCommit(commit.hash, firstFile).then(function (diff) {
-                $viewer.find(".commit-files a[data-file='" + firstFile + "']").first().addClass("active");
-                $viewer.find(".commit-diff").html(Utils.formatDiff(diff));
-            });
+        if (selectedFile) {
+            var $fileEntry = $viewer.find(".commit-files li[x-file='" + selectedFile + "'] a").first();
+            if ($fileEntry.length) {
+                toggleDiff($fileEntry);
+                window.setTimeout(function () {
+                    $viewer.find(".body").animate({ scrollTop: $fileEntry.position().top - 10 });
+                }, 80);
+            }
         }
 
         attachEvents();
