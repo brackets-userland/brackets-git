@@ -4,7 +4,9 @@
 
 ## 0.13.30
 * New Dark UI styling by [Larz](https://github.com/larz0)
+* Theme option has been removed from Settings, as it's now turned on automatically by [Marcel Gerber](https://github.com/MarcelGerber)
 * BUGFIX: Fixed some of .gitignore negative logic by [Marcel Gerber](https://github.com/MarcelGerber)
+* BUGFIX: In file history, expand file's diff automatically by [Marcel Gerber](https://github.com/MarcelGerber)
 
 ## 0.13.29
 * BUGFIX: Occasional issues with diff displaying incorrectly.
