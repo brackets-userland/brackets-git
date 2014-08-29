@@ -2,7 +2,8 @@ define(function (require) {
     "use strict";
 
     var _                 = brackets.getModule("thirdparty/lodash"),
-        FileSystem        = brackets.getModule("filesystem/FileSystem");
+        FileSystem        = brackets.getModule("filesystem/FileSystem"),
+        FileTreeView      = brackets.getModule("project/FileTreeView");
 
     var EventEmitter      = require("src/EventEmitter"),
         Events            = require("src/Events"),
@@ -107,6 +108,17 @@ define(function (require) {
         return modifiedPaths.indexOf(fullPath) !== -1;
     }
 
+    FileTreeView.addClassesProvider(function (data) {
+        var fullPath = data.fullPath;
+        if (isIgnored(fullPath)) {
+            return "git-ignored";
+        } else if (isNew(fullPath)) {
+            return "git-new";
+        } else if (isModified(fullPath)) {
+            return "git-modified";
+        }
+    });
+
     function _refreshProjectFiles(selector, dataEntry) {
         $(selector).find("li").each(function () {
             var $li = $(this),
@@ -114,35 +126,27 @@ define(function (require) {
             if (data) {
                 var fullPath = data.fullPath;
                 $li.toggleClass("git-ignored", isIgnored(fullPath))
-                   .toggleClass("git-new", isNew(fullPath))
-                   .toggleClass("git-modified", isModified(fullPath));
+                .toggleClass("git-new", isNew(fullPath))
+                .toggleClass("git-modified", isModified(fullPath));
             }
         });
     }
-
     var refreshOpenFiles = _.debounce(function () {
         _refreshProjectFiles("#open-files-container", "file");
     }, 100);
 
-    var refreshProjectFiles = _.debounce(function () {
-        _refreshProjectFiles("#project-files-container", "entry");
-    }, 100);
-
     function refreshBoth() {
         refreshOpenFiles();
-        refreshProjectFiles();
     }
 
     function attachEvents() {
         if (Preferences.get("markModifiedInTree")) {
             $("#open-files-container").on("contentChanged", refreshOpenFiles).triggerHandler("contentChanged");
-            $("#project-files-container").on("contentChanged after_open.jstree", refreshProjectFiles).triggerHandler("contentChanged");
         }
     }
 
     function detachEvents() {
         $("#open-files-container").off("contentChanged", refreshOpenFiles);
-        $("#project-files-container").off("contentChanged after_open.jstree", refreshProjectFiles);
     }
 
     // this will refresh ignore entries when .gitignore is modified
