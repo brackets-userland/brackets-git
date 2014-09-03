@@ -356,16 +356,21 @@ define(function (require, exports) {
     }
 
     function handleGitDiff(file) {
-        Git.diffFileNice(file).then(function (diff) {
-            // show the dialog with the diff
-            var compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file: file, Strings: Strings }),
-                dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-                $dialog          = dialog.getElement();
-            _makeDialogBig($dialog);
-            $dialog.find(".commit-diff").append(Utils.formatDiff(diff));
-        }).catch(function (err) {
-            ErrorHandler.showError(err, "Git Diff failed");
-        });
+        if (Preferences.get("useDifftool")) {
+            Git.difftool(file);
+        }
+        else {
+            Git.diffFileNice(file).then(function (diff) {
+                // show the dialog with the diff
+                var compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file: file, Strings: Strings }),
+                    dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+                    $dialog          = dialog.getElement();
+                _makeDialogBig($dialog);
+                $dialog.find(".commit-diff").append(Utils.formatDiff(diff));
+            }).catch(function (err) {
+                ErrorHandler.showError(err, "Git Diff failed");
+            });
+        }
     }
 
     function handleGitUndo(file) {

@@ -740,6 +740,17 @@ define(function (require, exports) {
         });
     }
 
+    function difftool(file) {
+        return _isFileStaged(file).then(function (staged) {
+            var args = ["difftool"];
+            if (staged) {
+                args.push("--staged");
+            }
+            args.push("--", file);
+            return git(args);
+        });
+    }
+
     function clean() {
         return git(["clean", "-f", "-d"]);
     }
@@ -752,6 +763,10 @@ define(function (require, exports) {
 
     function getDiffOfFileFromCommit(hash, file) {
         return git(["diff", "--no-ext-diff", "--no-color", hash + "^!", "--", file]);
+    }
+
+    function difftoolFromHash(hash, file) {
+        return git(["difftool", hash + "^!", "--", file]);
     }
 
     function rebaseInit(branchName) {
@@ -860,9 +875,11 @@ define(function (require, exports) {
     exports.status                    = status;
     exports.diffFile                  = diffFile;
     exports.diffFileNice              = diffFileNice;
+    exports.difftool                  = difftool;
     exports.clean                     = clean;
     exports.getFilesFromCommit        = getFilesFromCommit;
     exports.getDiffOfFileFromCommit   = getDiffOfFileFromCommit;
+    exports.difftoolFromHash          = difftoolFromHash;
     exports.rebase                    = rebase;
     exports.rebaseInit                = rebaseInit;
     exports.mergeRemote               = mergeRemote;

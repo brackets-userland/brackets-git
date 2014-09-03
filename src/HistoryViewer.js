@@ -20,6 +20,7 @@ define(function (require, exports) {
 
     var avatarType             = Preferences.get("avatarType"),
         enableAdvancedFeatures = Preferences.get("enableAdvancedFeatures"),
+        useDifftool            = Preferences.get("useDifftool"),
         isShown                = false,
         commit                 = null,
         previousFile           = null,
@@ -69,6 +70,11 @@ define(function (require, exports) {
         }
     }
 
+    function showDiff($el) {
+        var file = $el.closest("[x-file]").attr("x-file");
+        Git.difftoolFromHash(commit.hash, file);
+    }
+
     function expandAll() {
         $viewer.find(".commit-files a").not(".active").trigger("click");
         Preferences.set("autoExpandDiffsInHistory", true);
@@ -83,6 +89,10 @@ define(function (require, exports) {
         $viewer
             .on("click", ".commit-files a", function () {
                 toggleDiff($(this));
+            })
+            .on("click", ".commit-files .difftool", function (e) {
+                e.stopPropagation();
+                showDiff($(this));
             })
             .on("click", ".openFile", function (e) {
                 e.stopPropagation();
@@ -210,7 +220,9 @@ define(function (require, exports) {
 
     function renderFiles(files) {
         $viewer.find(".filesContainer").append(Mustache.render(historyViewerFilesTemplate, {
-            files: files
+            files: files,
+            Strings: Strings,
+            useDifftool: useDifftool
         }));
 
         // Activate/Deactivate load more button

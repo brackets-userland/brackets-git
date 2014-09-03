@@ -153,6 +153,8 @@ define({
     // TODO: localize DIALOG_RESET_SOFT to zh-cn
     // DIFF:                               "Diff",
     DIFF:                                  "运行 Diff 查看更改",
+    // DIFFTOOL:                           "Diff with difftool",
+    // TODO: localize DIFFTOOL to zh-cn
     // DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     // TODO: localize DIFF_FAILED_SEE_FILES to zh-cn
     // ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
@@ -431,6 +433,8 @@ define({
     // TODO: localize USE_REBASE to zh-cn
     // USE_VERBOSE_DIFF:                   "Show verbose output in diffs",
     // TODO: localize USE_VERBOSE_DIFF to zh-cn
+    // USE_DIFFTOOL:                       "Use difftool for diffs",
+    // TODO: localize USE_DIFFTOOL to zh-cn
     // USING_GIT_VERSION:                  "Git version",
     USING_GIT_VERSION:                     "Git 版本"
     // VIEW_AUTHORS_FILE:                  "View authors of file",

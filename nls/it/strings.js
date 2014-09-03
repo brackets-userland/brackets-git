@@ -153,6 +153,8 @@ define({
     DIALOG_RESET_SOFT:                     "Le modifiche effettuate dopo questo commit verranno preparate per un nuovo commit.",
     // DIFF:                               "Diff",
     DIFF:                                  "Differenze",
+    // DIFFTOOL:                           "Diff with difftool",
+    // TODO: localize DIFFTOOL to it
     // DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     DIFF_FAILED_SEE_FILES:                 "Git non è riuscito a fornire le differenze. Questa è la lista dei file staged su cui verrà effettuato il commit:",
     // ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
@@ -431,6 +433,8 @@ define({
     // TODO: localize USE_REBASE to it
     // USE_VERBOSE_DIFF:                   "Show verbose output in diffs",
     // TODO: localize USE_VERBOSE_DIFF to it
+    // USE_DIFFTOOL:                       "Use difftool for diffs",
+    // TODO: localize USE_DIFFTOOL to it
     // USING_GIT_VERSION:                  "Git version",
     USING_GIT_VERSION:                     "Versione di Git",
     // VIEW_AUTHORS_FILE:                  "View authors of file",
