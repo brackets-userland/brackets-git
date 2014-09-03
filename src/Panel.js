@@ -358,8 +358,7 @@ define(function (require, exports) {
     function handleGitDiff(file) {
         if (Preferences.get("useDifftool")) {
             Git.difftool(file);
-        }
-        else {
+        } else {
             Git.diffFileNice(file).then(function (diff) {
                 // show the dialog with the diff
                 var compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file: file, Strings: Strings }),
