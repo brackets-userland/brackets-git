@@ -20,7 +20,7 @@ define(function (require, exports) {
 
     var avatarType             = Preferences.get("avatarType"),
         enableAdvancedFeatures = Preferences.get("enableAdvancedFeatures"),
-        useDifftool            = Preferences.get("useDifftool"),
+        useDifftool            = false,
         isShown                = false,
         commit                 = null,
         previousFile           = null,
@@ -36,6 +36,10 @@ define(function (require, exports) {
     var PAGE_SIZE = 25;
     var currentPage = 0;
     var hasNextPage = false;
+
+    Git.getConfig("diff.tool").done(function (config) {
+        useDifftool = !!config;
+    });
 
     function toggleDiff($a) {
         if ($a.hasClass("active")) {
