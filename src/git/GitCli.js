@@ -747,7 +747,9 @@ define(function (require, exports) {
                 args.push("--staged");
             }
             args.push("--", file);
-            return git(args);
+            return git(args, {
+                timeout: false // never timeout this
+            });
         });
     }
 
@@ -766,7 +768,9 @@ define(function (require, exports) {
     }
 
     function difftoolFromHash(hash, file) {
-        return git(["difftool", hash + "^!", "--", file]);
+        return git(["difftool", hash + "^!", "--", file], {
+            timeout: false // never timeout this
+        });
     }
 
     function rebaseInit(branchName) {
