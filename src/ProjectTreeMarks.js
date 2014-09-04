@@ -176,7 +176,9 @@ define(function (require) {
             }
         });
 
-        ProjectManager.rerenderTree();
+        if (Preferences.get("markModifiedInTree")) {
+            ProjectManager.rerenderTree();
+        }
         refreshBoth();
     });
     // this will refresh ignore entries when git project is opened
