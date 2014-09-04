@@ -3,7 +3,7 @@ define(function (require) {
 
     var _                 = brackets.getModule("thirdparty/lodash"),
         FileSystem        = brackets.getModule("filesystem/FileSystem"),
-        FileTreeView      = brackets.getModule("project/FileTreeView");
+        ProjectManager    = brackets.getModule("project/ProjectManager");
 
     var EventEmitter      = require("src/EventEmitter"),
         Events            = require("src/Events"),
@@ -108,7 +108,7 @@ define(function (require) {
         return modifiedPaths.indexOf(fullPath) !== -1;
     }
 
-    FileTreeView.addClassesProvider(function (data) {
+    ProjectManager.addClassesProvider(function (data) {
         var fullPath = data.fullPath;
         if (isIgnored(fullPath)) {
             return "git-ignored";
@@ -176,6 +176,7 @@ define(function (require) {
             }
         });
 
+        ProjectManager.rerenderTree();
         refreshBoth();
     });
     // this will refresh ignore entries when git project is opened
