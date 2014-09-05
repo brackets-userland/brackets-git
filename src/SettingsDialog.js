@@ -8,6 +8,7 @@ define(function (require, exports) {
         Preferences             = require("./Preferences"),
         ChangelogDialog         = require("../src/ChangelogDialog"),
         Strings                 = require("../strings"),
+        Git                     = require("./git/Git"),
         settingsDialogTemplate  = require("text!templates/git-settings-dialog.html");
 
     var dialog,
@@ -48,6 +49,12 @@ define(function (require, exports) {
     }
 
     function assignActions() {
+        Git.getConfig("diff.tool").done(function (config) {
+            $("#git-settings-useDifftool").prop({ disabled: !config });
+            if (!config) {
+                $("#git-settings-useDifftool").prop({ checked: false });
+            }
+        });
         $("#git-settings-stripWhitespaceFromCommits", $dialog).on("change", function () {
             var on = $(this).is(":checked");
             $("#git-settings-addEndlineToTheEndOfFile,#git-settings-removeByteOrderMark,#git-settings-normalizeLineEndings", $dialog)
