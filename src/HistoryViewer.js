@@ -2,8 +2,6 @@ define(function (require, exports) {
     "use strict";
 
     var _               = brackets.getModule("thirdparty/lodash"),
-        EditorManager   = brackets.getModule("editor/EditorManager"),
-        CommandManager  = brackets.getModule("command/CommandManager"),
         FileUtils       = brackets.getModule("file/FileUtils");
 
     var marked        = require("marked"),
@@ -22,8 +20,9 @@ define(function (require, exports) {
         enableAdvancedFeatures = Preferences.get("enableAdvancedFeatures"),
         isShown                = false,
         commit                 = null,
-        previousFile           = null,
-        $viewer                = null;
+        $viewer                = null,
+        $editorHolder          = null,
+        $panes                 = null;
 
     var setExpandState = _.debounce(function () {
         var allFiles = $viewer.find(".commit-files a"),
@@ -88,6 +87,7 @@ define(function (require, exports) {
                 e.stopPropagation();
                 var file = $(this).closest("[x-file]").attr("x-file");
                 Utils.openEditorForFile(file, true);
+                hide();
             })
             .on("click", ".close", function () {
                 // Close history viewer
@@ -253,7 +253,7 @@ define(function (require, exports) {
         });
     }
 
-    function render(hash, $editorHolder) {
+    function render() {
         $viewer = $("<div>").addClass("git spinner large spin");
 
         currentPage = 0;
@@ -262,15 +262,14 @@ define(function (require, exports) {
         return $viewer.appendTo($editorHolder);
     }
 
-    function show(commitInfo, _previousFile) {
+    function show(commitInfo) {
         isShown       = true;
         commit        = commitInfo;
-        previousFile  = _previousFile;
-        // TODO: we will need to replace this with something ours later and not to use private API
-        EditorManager._showCustomViewer({
-            render: render,
-            onRemove: onRemove
-        }, commit.hash);
+
+        $editorHolder = $("#editor-holder");
+        $panes = $editorHolder.find(".view-pane");
+        $panes.hide();
+        render();
     }
 
     function onRemove() {
@@ -286,12 +285,9 @@ define(function (require, exports) {
     }
 
     function remove() {
-        if (previousFile && previousFile.file) {
-            // TODO: use utils?
-            CommandManager.execute("file.open", previousFile.file);
-        } else {
-            EditorManager._closeCustomViewer();
-        }
+        $viewer.remove();
+        onRemove();
+        $panes.show();
     }
 
     function isVisible() {

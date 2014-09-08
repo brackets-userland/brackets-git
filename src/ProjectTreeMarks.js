@@ -121,7 +121,7 @@ define(function (require) {
     }
 
     var refreshOpenFiles = _.debounce(function () {
-        _refreshProjectFiles("#open-files-container", "file");
+        _refreshProjectFiles(".open-files-container", "file");
     }, 100);
 
     var refreshProjectFiles = _.debounce(function () {
@@ -135,13 +135,13 @@ define(function (require) {
 
     function attachEvents() {
         if (Preferences.get("markModifiedInTree")) {
-            $("#open-files-container").on("contentChanged", refreshOpenFiles).triggerHandler("contentChanged");
+            $(".open-files-container").on("contentChanged", refreshOpenFiles).triggerHandler("contentChanged");
             $("#project-files-container").on("contentChanged after_open.jstree", refreshProjectFiles).triggerHandler("contentChanged");
         }
     }
 
     function detachEvents() {
-        $("#open-files-container").off("contentChanged", refreshOpenFiles);
+        $(".open-files-container").off("contentChanged", refreshOpenFiles);
         $("#project-files-container").off("contentChanged after_open.jstree", refreshProjectFiles);
     }
 
