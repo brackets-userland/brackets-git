@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.31
+* Updated Simplified Chinese translation by [Zhi](https://github.com/yfwz100)
+
 ## 0.13.30
 * New Dark UI styling by [Larz](https://github.com/larz0)
 * Theme option has been removed from Settings, as it's now turned on automatically by [Marcel Gerber](https://github.com/MarcelGerber)
