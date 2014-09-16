@@ -9,7 +9,8 @@ define(function (require, exports) {
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         StringUtils             = brackets.getModule("utils/StringUtils"),
         SidebarView             = brackets.getModule("project/SidebarView"),
-        DocumentManager         = brackets.getModule("document/DocumentManager");
+        DocumentManager         = brackets.getModule("document/DocumentManager"),
+        MainViewManager         = brackets.getModule("view/MainViewManager");
 
     var Git                     = require("src/git/Git"),
         Events                  = require("src/Events"),
@@ -281,7 +282,7 @@ define(function (require, exports) {
         // $(window).off("keydown", keydownHook);
 
         $dropdown = null;
-        EditorManager.focusEditor();
+        MainViewManager.focusActivePane();
     }
 
     function toggleDropdown(e) {

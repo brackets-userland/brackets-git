@@ -17,7 +17,7 @@ define(function (require, exports) {
         FileSystem         = brackets.getModule("filesystem/FileSystem"),
         Menus              = brackets.getModule("command/Menus"),
         FindInFiles        = brackets.getModule("search/FindInFiles"),
-        PanelManager       = brackets.getModule("view/PanelManager"),
+        WorkspaceManager   = brackets.getModule("view/WorkspaceManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         StringUtils        = brackets.getModule("utils/StringUtils"),
         Git                = require("src/git/Git"),
@@ -880,7 +880,7 @@ define(function (require, exports) {
         var $panelHtml = $(panelHtml);
         $panelHtml.find(".git-available, .git-not-available").hide();
 
-        gitPanel = PanelManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
+        gitPanel = WorkspaceManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
         $gitPanel = gitPanel.$panel;
 
         $gitPanel

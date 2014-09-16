@@ -130,7 +130,7 @@ define(function (require, exports) {
             return;
         }
         var projectCmenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
-        var workingCmenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_MENU);
+        var workingCmenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
         if (bool) {
             _divider1 = projectCmenu.addMenuDivider();
             _divider2 = workingCmenu.addMenuDivider();

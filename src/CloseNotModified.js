@@ -5,8 +5,8 @@ define(function (require, exports) {
     "use strict";
 
     var DocumentManager = brackets.getModule("document/DocumentManager"),
-        EditorManager   = brackets.getModule("editor/EditorManager"),
-        FileSystem      = brackets.getModule("filesystem/FileSystem");
+        FileSystem      = brackets.getModule("filesystem/FileSystem"),
+        MainViewManager = brackets.getModule("view/MainViewManager");
 
     var Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
@@ -58,7 +58,7 @@ define(function (require, exports) {
                 });
             }
 
-            EditorManager.focusEditor();
+            MainViewManager.focusActivePane();
         });
     }
 

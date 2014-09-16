@@ -4,7 +4,8 @@ define(function (require) {
     // Brackets modules
     var DocumentManager = brackets.getModule("document/DocumentManager"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
-        ProjectManager  = brackets.getModule("project/ProjectManager");
+        ProjectManager  = brackets.getModule("project/ProjectManager"),
+        MainViewManager = brackets.getModule("view/MainViewManager");
 
     // Local modules
     var Events        = require("src/Events"),
@@ -26,10 +27,12 @@ define(function (require) {
         }
     });
 
-    $(DocumentManager).on("currentDocumentChange", function (evt, currentDocument, previousDocument) {
+    $(MainViewManager).on("currentFileChange", function (evt, currentDocument, previousDocument) {
         currentDocument = currentDocument || DocumentManager.getCurrentDocument();
         if (!HistoryViewer.isVisible()) {
             EventEmitter.emit(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, evt, currentDocument, previousDocument);
+        } else {
+            HistoryViewer.hide();
         }
     });
 
