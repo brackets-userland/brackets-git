@@ -4,6 +4,7 @@
 
 ## 0.13.31
 * Updated Simplified Chinese translation by [Zhi](https://github.com/yfwz100)
+* Fixes for Brackets 0.44/1.0 by [Marcel Gerber](https://github.com/MarcelGerber)
 
 ## 0.13.30
 * New Dark UI styling by [Larz](https://github.com/larz0)
