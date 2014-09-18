@@ -3,6 +3,7 @@
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
 ## 0.13.31
+* Added custom difftool support by [Ivan Gilchrist](https://github.com/gilly3)
 * Updated Simplified Chinese translation by [Zhi](https://github.com/yfwz100)
 * Fixes for Brackets 0.44/1.0 by [Marcel Gerber](https://github.com/MarcelGerber)
 

@@ -70,7 +70,7 @@ define(function (require, exports) {
             args  = item[1],
             opts  = item[2];
         // execute git command in a queue so no two commands are running at the same time
-        _gitQueueBusy = true;
+        if (opts.nonblocking !== true) { _gitQueueBusy = true; }
         Cli.spawnCommand(getGitPath(), args, opts)
             .progressed(function () {
                 defer.progress.apply(defer, arguments);
@@ -84,7 +84,7 @@ define(function (require, exports) {
                 defer.reject(e);
             })
             .finally(function () {
-                _gitQueueBusy = false;
+                if (opts.nonblocking !== true) { _gitQueueBusy = false; }
                 _processQueue();
             });
     }
@@ -748,7 +748,8 @@ define(function (require, exports) {
             }
             args.push("--", file);
             return git(args, {
-                timeout: false // never timeout this
+                timeout: false, // never timeout this
+                nonblocking: true // allow running other commands before this command finishes its work
             });
         });
     }
