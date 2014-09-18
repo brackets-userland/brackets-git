@@ -69,7 +69,7 @@ define(function (require, exports) {
             .attr("title", Strings.TOOLTIP_CLOSE_NOT_MODIFIED)
             .html("<i class='octicon octicon-remove-close'></i>")
             .on("click", handleCloseNotModified)
-            .appendTo("#working-set-header");
+            .appendTo("#sidebar .working-set-header");
     }
 
     EventEmitter.on(Events.GIT_ENABLED, function () {
