@@ -23,6 +23,7 @@ define(function (require, exports, module) {
         "showReportBugButton": {            "type": "boolean",           "value": true              },
         "enableAdvancedFeatures": {         "type": "boolean",           "value": false             },
         "useVerboseDiff": {                 "type": "boolean",           "value": false             },
+        "useDifftool": {                    "type": "boolean",           "value": false             },
         // shortcuts
         "panelShortcut": {                  "type": "string",            "value": "Ctrl-Alt-G"      },
         "commitCurrentShortcut": {          "type": "string",            "value": null              },

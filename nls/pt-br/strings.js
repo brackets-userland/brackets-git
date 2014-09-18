@@ -153,6 +153,8 @@ define({
     // TODO: localize DIALOG_RESET_SOFT to pt-br
     // DIFF:                               "Diff",
     DIFF:                                  "Diff",
+    // DIFFTOOL:                           "Diff with difftool",
+    // TODO: localize DIFFTOOL to pt-br
     // DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     // TODO: localize DIFF_FAILED_SEE_FILES to pt-br
     // ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
@@ -431,6 +433,8 @@ define({
     USE_REBASE:                            "Usar REBASE",
     // USE_VERBOSE_DIFF:                   "Show verbose output in diffs",
     USE_VERBOSE_DIFF:                      "Mostrar saída detalhada em diffs",
+    // USE_DIFFTOOL:                       "Use difftool for diffs",
+    // TODO: localize USE_DIFFTOOL to pt-br
     // USING_GIT_VERSION:                  "Git version",
     USING_GIT_VERSION:                     "Versão do Git",
     // VIEW_AUTHORS_FILE:                  "View authors of file",

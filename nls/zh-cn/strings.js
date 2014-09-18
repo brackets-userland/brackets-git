@@ -152,6 +152,8 @@ define({
     DIALOG_RESET_SOFT:                     "此提交以后的更改都将进入提交状态。",
     // DIFF:                               "Diff",
     DIFF:                                  "运行 Diff 查看更改",
+    // DIFFTOOL:                           "Diff with difftool",
+    // TODO: localize DIFFTOOL to zh-cn
     // DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     DIFF_FAILED_SEE_FILES:                 "Git diff 尝试提供差异结果但失败了。下面是待提交的文件列表：",
     // ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
@@ -430,6 +432,8 @@ define({
     USE_REBASE:                            "启用基址重建（REBASE）",
     // USE_VERBOSE_DIFF:                   "Show verbose output in diffs",
     USE_VERBOSE_DIFF:                      "显示 diffs 的详细输出",
+    // USE_DIFFTOOL:                       "Use difftool for diffs",
+    // TODO: localize USE_DIFFTOOL to zh-cn
     // USING_GIT_VERSION:                  "Git version",
     USING_GIT_VERSION:                     "Git 版本",
     // VIEW_AUTHORS_FILE:                  "View authors of file",

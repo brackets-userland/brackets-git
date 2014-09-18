@@ -82,6 +82,8 @@ define({
     DIALOG_RESET_MIXED:                 "Änderungen nach diesem Commit werden nicht zum Commit vorgemerkt.",
     DIALOG_RESET_SOFT:                  "Änderungen nach diesem Commit werden für einen neuen Commit vorgemerkt.",
     DIFF:                               "Diff",
+    // DIFFTOOL:                        "Diff with difftool",
+    // TODO: localize DIFFTOOL to de
     DIFF_FAILED_SEE_FILES:              "Git diff konnte keine Unterschiede finden. Hier ist die Liste der zum Commit vorgemerkten Dateien, die committet werden:",
     DIFF_TOO_LONG:                      "Diff zu lang zum Anzeigen",
     ENABLE_ADVANCED_FEATURES:           "Erweiterte Funktionen aktivieren",
@@ -226,6 +228,8 @@ define({
     USE_GIT_GUTTER:                     "Git-Markierungen am Rand anzeigen",
     USE_REBASE:                         "REBASE nutzen",
     USE_VERBOSE_DIFF:                   "Ausführliche Angaben in Diffs anzeigen",
+    // USE_DIFFTOOL:                    "Use difftool for diffs",
+    // TODO: localize USE_DIFFTOOL to de
     USING_GIT_VERSION:                  "Git-Version",
     VIEW_AUTHORS_FILE:                  "Autoren der Datei anzeigen",
     VIEW_AUTHORS_SELECTION:             "Autoren der Auswahl anzeigen",
