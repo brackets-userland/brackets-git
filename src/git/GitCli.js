@@ -368,7 +368,7 @@ define(function (require, exports) {
     }
 
     function getCurrentBranchName() {
-        return git(["branch"]).then(function (stdout) {
+        return git(["branch", "--no-color"]).then(function (stdout) {
             var branchName = _.find(stdout.split("\n"), function (l) { return l[0] === "*"; });
             if (branchName) {
                 branchName = branchName.substring(1).trim();
