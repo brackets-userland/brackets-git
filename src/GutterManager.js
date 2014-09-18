@@ -5,6 +5,7 @@ define(function (require, exports) {
 
     // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),
+        CommandManager  = brackets.getModule("command/CommandManager"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
         EditorManager   = brackets.getModule("editor/EditorManager"),
         ErrorHandler    = require("src/ErrorHandler"),
@@ -104,9 +105,22 @@ define(function (require, exports) {
                 visible: false,
                 element: $("<div class='" + gutterName + "-deleted-lines'></div>")
             };
+            var $btn = $("<button/>")
+                .addClass("brackets-git-gutter-copy-button")
+                .text("R")
+                .on("click", function () {
+                    var doc = DocumentManager.getCurrentDocument();
+                    doc.replaceRange(mark.content + "\n", {
+                        line: mark.line,
+                        ch: 0
+                    });
+                    CommandManager.execute("file.save");
+                    refresh();
+                });
             $("<pre/>")
                 .attr("style", "tab-size:" + cm.getOption("tabSize"))
                 .text(mark.content || " ")
+                .append($btn)
                 .appendTo(mark.lineWidget.element);
         }
 

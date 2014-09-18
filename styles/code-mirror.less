@@ -48,6 +48,16 @@
             background-color: darken(@red, 25%);
             color: @dark-bc-text;
         }
+
+        position: relative;
+        .brackets-git-gutter-copy-button {
+            position: absolute;
+            left: 0;
+            top: 0;
+            padding: 1px;
+            height: 1.2em;
+            line-height: 0.5em;
+        }
     }
     .CodeMirror-linenumber.brackets-git-gutter-hover {
         background-color: @bc-panel-bg-alt;
