@@ -16,6 +16,8 @@ define(function (require, exports, module) {
 
     // Local modules
     var ChangelogDialog = require("src/ChangelogDialog"),
+        EventEmitter    = require("src/EventEmitter"),
+        Events          = require("src/Events"),
         ExtensionInfo   = require("src/ExtensionInfo"),
         Main            = require("src/Main"),
         Preferences     = require("src/Preferences"),
@@ -67,5 +69,13 @@ define(function (require, exports, module) {
     AppInit.appReady(function () {
         Main.init();
     });
+
+    // export API's for other extensions
+    if (typeof window === "object") {
+        window.bracketsGit = {
+            EventEmitter: EventEmitter,
+            Events: Events
+        };
+    }
 
 });
