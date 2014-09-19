@@ -28,7 +28,7 @@ define(function (require, exports) {
         return new Promise(function (resolve, reject) {
 
             // TODO: do this in two steps - first check user config and then check all
-            var pathsToLook = ["git", Preferences.get("gitPath")].concat(brackets.platform === "win" ? standardGitPathsWin : standardGitPathsNonWin);
+            var pathsToLook = [Preferences.get("gitPath"), "git"].concat(brackets.platform === "win" ? standardGitPathsWin : standardGitPathsNonWin);
             pathsToLook = _.unique(_.compact(pathsToLook));
 
             var results = [],
