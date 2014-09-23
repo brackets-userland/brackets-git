@@ -26,6 +26,10 @@ define(function (require, exports) {
                                     .addClass("loading")
                                     .appendTo($("#main-toolbar .buttons"));
 
+    EventEmitter.on(Events.GIT_STATUS_RESULTS, function (results) {
+        $icon.toggleClass("dirty", results.length !== 0);
+    });
+
     // This only launches when Git is available
     function initUi() {
         // FUTURE: do we really need to launch init from here?

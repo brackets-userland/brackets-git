@@ -315,17 +315,32 @@
 /* Toolbar icon */
 #git-toolbar-icon {
     background: url("icons/git-icon.svg") no-repeat 0 0;
+    &.dirty {
+        background-position: -24px 0;
+    }
     &.on {
         background-position: 0 -24px;
+    }
+    &.on.dirty {
+        background-position: -24px -24px;
     }
     &.ok {
         background-position: 0 -48px;
     }
+    &.ok.dirty {
+        background-position: -24px -48px;
+    }
     &.warning, &.loading {
         background-position: 0 -72px;
     }
+    &.warning.dirty, &.loading.dirty {
+        background-position: -24px -72px;
+    }
     &.error {
         background-position: 0 -96px;
+    }
+    &.error.dirty {
+        background-position: -24px -96px;
     }
 }
 
