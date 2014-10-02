@@ -23,7 +23,7 @@ define(function (require, exports) {
         }
 
         Git.status().then(function (modifiedFiles) {
-            var openFiles = DocumentManager.getWorkingSet(),
+            var openFiles   = MainViewManager.getWorkingSet(MainViewManager.ALL_PANES),
                 projectRoot = Utils.getProjectRoot();
 
             openFiles.forEach(function (openFile) {
@@ -43,8 +43,8 @@ define(function (require, exports) {
                     }
                 }
 
-                if (removeOpenFile) {
-                    DocumentManager.closeFullEditor(openFile);
+                if (removeOpenFile && !reopenModified) {
+                    MainViewManager._close(MainViewManager.ALL_PANES, openFile);
                 }
             });
 
@@ -54,7 +54,7 @@ define(function (require, exports) {
                 });
                 filesToReopen.forEach(function (fileObj) {
                     var fileEntry = FileSystem.getFileForPath(projectRoot + fileObj.file);
-                    DocumentManager.addToWorkingSet(fileEntry);
+                    MainViewManager.addToWorkingSet(MainViewManager.ACTIVE_PANE, fileEntry);
                 });
             }
 
@@ -69,7 +69,7 @@ define(function (require, exports) {
             .attr("title", Strings.TOOLTIP_CLOSE_NOT_MODIFIED)
             .html("<i class='octicon octicon-remove-close'></i>")
             .on("click", handleCloseNotModified)
-            .appendTo("#sidebar .working-set-header");
+            .appendTo("#sidebar");
     }
 
     EventEmitter.on(Events.GIT_ENABLED, function () {
