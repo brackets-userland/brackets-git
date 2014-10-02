@@ -4,6 +4,7 @@
 
 ## 0.13.31
 * Added revert change button to the gutter widgets.
+* Files excluded through .git/info/exclude file are now properly marked in the project tree as ignored.
 * Added dirty identifier to toolbar icon by [Larz](https://github.com/larz0)
 * Added custom difftool support by [Ivan Gilchrist](https://github.com/gilly3)
 * Updated Simplified Chinese translation by [Zhi](https://github.com/yfwz100)

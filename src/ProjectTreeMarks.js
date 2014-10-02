@@ -21,73 +21,86 @@ define(function (require) {
         return;
     }
 
+    function loadIgnoreContents() {
+        var defer = Promise.defer(),
+            projectRoot = Utils.getProjectRoot(),
+            excludeContents,
+            gitignoreContents;
+
+        var finish = _.after(2, function () {
+            defer.resolve(excludeContents + "\n" + gitignoreContents);
+        });
+
+        FileSystem.getFileForPath(projectRoot + ".git/info/exclude").read(function (err, content) {
+            excludeContents = err ? "" : content;
+            finish();
+        });
+
+        FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
+            gitignoreContents = err ? "" : content;
+            finish();
+        });
+
+        return defer.promise;
+    }
+
     function refreshIgnoreEntries() {
         function regexEscape(str) {
             // NOTE: We cannot use StringUtils.regexEscape() here because we don't wanna replace *
             return str.replace(/([.?+\^$\[\]\\(){}|\-])/g, "\\$1");
         }
 
-        return new Promise(function (resolve) {
-
+        return loadIgnoreContents().then(function (content) {
             var projectRoot = Utils.getProjectRoot();
 
-            FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
-                if (err) {
-                    ignoreEntries = [];
-                    return resolve();
+            ignoreEntries = _.compact(_.map(content.split("\n"), function (line) {
+                // Rules: http://git-scm.com/docs/gitignore
+                var type = "deny",
+                    leadingSlash,
+                    trailingSlash,
+                    regex;
+
+                line = line.trim();
+                if (!line || line.indexOf("#") === 0) {
+                    return;
                 }
 
-                ignoreEntries = _.compact(_.map(content.split("\n"), function (line) {
-                    // Rules: http://git-scm.com/docs/gitignore
-                    var type = "deny",
-                        leadingSlash,
-                        trailingSlash,
-                        regex;
+                // handle explicitly allowed files/folders with a leading !
+                if (line.indexOf("!") === 0) {
+                    line = line.slice(1);
+                    type = "accept";
+                }
+                // handle lines beginning with a backslash, which is used for escaping ! or #
+                if (line.indexOf("\\") === 0) {
+                    line = line.slice(1);
+                }
+                // handle lines beginning with a slash, which only matches files/folders in the root dir
+                if (line.indexOf("/") === 0) {
+                    line = line.slice(1);
+                    leadingSlash = true;
+                }
+                // handle lines ending with a slash, which only exludes dirs
+                if (line.lastIndexOf("/") === line.length) {
+                    // a line ending with a slash ends with **
+                    line += "**";
+                    trailingSlash = true;
+                }
 
-                    line = line.trim();
-                    if (!line || line.indexOf("#") === 0) {
-                        return;
-                    }
+                // NOTE: /(.{0,})/ is basically the same as /(.*)/, but we can't use it because the asterisk
+                // would be replaced later on
 
-                    // handle explicitly allowed files/folders with a leading !
-                    if (line.indexOf("!") === 0) {
-                        line = line.slice(1);
-                        type = "accept";
-                    }
-                    // handle lines beginning with a backslash, which is used for escaping ! or #
-                    if (line.indexOf("\\") === 0) {
-                        line = line.slice(1);
-                    }
-                    // handle lines beginning with a slash, which only matches files/folders in the root dir
-                    if (line.indexOf("/") === 0) {
-                        line = line.slice(1);
-                        leadingSlash = true;
-                    }
-                    // handle lines ending with a slash, which only exludes dirs
-                    if (line.lastIndexOf("/") === line.length) {
-                        // a line ending with a slash ends with **
-                        line += "**";
-                        trailingSlash = true;
-                    }
+                // create the intial regexp here. We need the absolute path 'cause it could be that there
+                // are external files with the same name as a project file
+                regex = regexEscape(projectRoot) + (leadingSlash ? "" : "((.+)/)?") + regexEscape(line) + (trailingSlash ? "" : "(/.{0,})?");
+                // replace all the possible asterisks
+                regex = regex.replace(/\*\*$/g, "(.{0,})").replace(/(\*\*|\*$)/g, "(.+)").replace(/\*/g, "([^/]+)");
+                regex = "^" + regex + "$";
 
-                    // NOTE: /(.{0,})/ is basically the same as /(.*)/, but we can't use it because the asterisk
-                    // would be replaced later on
-
-                    // create the intial regexp here. We need the absolute path 'cause it could be that there
-                    // are external files with the same name as a project file
-                    regex = regexEscape(projectRoot) + (leadingSlash ? "" : "((.+)/)?") + regexEscape(line) + (trailingSlash ? "" : "(/.{0,})?");
-                    // replace all the possible asterisks
-                    regex = regex.replace(/\*\*$/g, "(.{0,})").replace(/(\*\*|\*$)/g, "(.+)").replace(/\*/g, "([^/]+)");
-                    regex = "^" + regex + "$";
-
-                    return {
-                        regexp: new RegExp(regex),
-                        type: type
-                    };
-                }));
-
-                return resolve();
-            });
+                return {
+                    regexp: new RegExp(regex),
+                    type: type
+                };
+            }));
         });
     }
 
