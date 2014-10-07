@@ -22,8 +22,7 @@ define(function (require, exports) {
         isShown                = false,
         commit                 = null,
         $viewer                = null,
-        $editorHolder          = null,
-        $panes                 = null;
+        $editorHolder          = null;
 
     var setExpandState = _.debounce(function () {
         var allFiles = $viewer.find(".commit-files a"),
@@ -270,6 +269,10 @@ define(function (require, exports) {
     }
 
     function render() {
+        if ($viewer) {
+            remove();
+        }
+
         $viewer = $("<div>").addClass("git spinner large spin");
 
         currentPage = 0;
@@ -283,8 +286,6 @@ define(function (require, exports) {
         commit        = commitInfo;
 
         $editorHolder = $("#editor-holder");
-        $panes = $editorHolder.find(".view-pane");
-        $panes.hide();
         render();
     }
 
@@ -303,7 +304,6 @@ define(function (require, exports) {
     function remove() {
         $viewer.remove();
         onRemove();
-        $panes.show();
     }
 
     function isVisible() {
