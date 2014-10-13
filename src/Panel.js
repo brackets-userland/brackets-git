@@ -424,6 +424,12 @@ define(function (require, exports) {
         return ProgressDialog.show(Git.getDiffOfStagedFiles(),
                                    Strings.GETTING_STAGED_DIFF_PROGRESS,
                                    { preDelay: 3, postDelay: 1 })
+        .catch(function (err) {
+            if (ErrorHandler.contains(err, "cleanup")) {
+                return false; // will display list of staged files instead
+            }
+            throw err;
+        })
         .then(function (diff) {
             if (!diff) {
                 return Git.getListOfStagedFiles().then(function (filesList) {

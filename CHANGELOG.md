@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.32
+* BUGFIX: Allow the extension to continue with commit when it fails to read the diff (usually because the diff itself is too large).
+
 ## 0.13.31
 * Added revert change button to the gutter widgets.
 * Files excluded through .git/info/exclude file are now properly marked in the project tree as ignored.
