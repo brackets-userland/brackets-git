@@ -5,6 +5,7 @@
 ## 0.13.32
 * BUGFIX: Allow the extension to continue with commit when it fails to read the diff (usually because the diff itself is too large).
 * BUGFIX: Doubleclick on commit button won't launch commit dialog twice anymore.
+* BUGFIX: Fixed extension initialization problems on some machines.
 
 ## 0.13.31
 * Added revert change button to the gutter widgets.
