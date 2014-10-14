@@ -719,7 +719,9 @@ define(function (require, exports) {
     }
 
     function getListOfStagedFiles() {
-        return git(["diff", "--no-ext-diff", "--no-color", "--staged", "--name-only"]);
+        return git(["diff", "--no-ext-diff", "--no-color", "--staged", "--name-only"], {
+            timeout: false // never timeout this
+        });
     }
 
     function diffFile(file) {
@@ -727,7 +729,9 @@ define(function (require, exports) {
             var args = ["diff", "--no-ext-diff", "--no-color"];
             if (staged) { args.push("--staged"); }
             args.push("-U0", "--", file);
-            return git(args);
+            return git(args, {
+                timeout: false // never timeout this
+            });
         });
     }
 
@@ -736,7 +740,9 @@ define(function (require, exports) {
             var args = ["diff", "--no-ext-diff", "--no-color"];
             if (staged) { args.push("--staged"); }
             args.push("--", file);
-            return git(args);
+            return git(args, {
+                timeout: false // never timeout this
+            });
         });
     }
 
