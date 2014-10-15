@@ -1,0 +1,11 @@
+<svg
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="24px" height="60px">
+    <title>Octicons Terminal Icon</title>
+    <description>Octicons Terminal Icon by GitHub is licensed under the  SIL OFL 1.1 license.</description>
+    <path fill="#BBBBBB" d="M19.7,4.3H4.3C3.5,4.3,3,4.8,3,5.5v12.9c0,0.7,0.6,1.3,1.3,1.3h15.5c0.7,0,1.3-0.6,1.3-1.3V5.5
+                            C21,4.8,20.5,4.3,19.7,4.3z M5.5,13.3l2.6-2.6L5.5,8.1l1.3-1.3l3.9,3.9l-3.9,3.9L5.5,13.3z M15.9,14.6h-5.2v-1.3h5.2V14.6z"/>
+    <path fill="#78B2F2" d="M19.7,28.3H4.3c-0.7,0-1.3,0.6-1.3,1.3v12.9c0,0.7,0.6,1.3,1.3,1.3h15.5c0.7,0,1.3-0.6,1.3-1.3V29.5
+                            C21,28.8,20.5,28.3,19.7,28.3z M5.5,37.3l2.6-2.6l-2.6-2.6l1.3-1.3l3.9,3.9l-3.9,3.9L5.5,37.3z M15.9,38.6h-5.2v-1.3h5.2V38.6z"/>
+</svg>
