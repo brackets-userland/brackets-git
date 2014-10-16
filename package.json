@@ -21,7 +21,6 @@
         "url": "https://github.com/zaggino/brackets-git/issues",
         "email": "zaggino@gmail.com"
     },
-    "i18n": ["en", "en-gb", "de", "fr", "it", "pt-br", "zh-cn"],
 
     "engines": {
         "brackets": ">=0.44.0"
@@ -40,5 +39,13 @@
         "grunt-jscs-checker": "latest",
         "grunt-contrib-compress": "latest",
         "grunt-lineending": "latest"
+    },
+
+    "i18n": ["en", "en-gb", "de", "fr", "it", "pt-br", "zh-cn"],
+    "package-i18n": {
+        "de": {
+            "description": "Git-Integration für Brackets",
+            "keywords": ["git", "version-control", "source-control", "Versionsverwaltung", "Versionskontrollsystem"]
+        }
     }
 }
