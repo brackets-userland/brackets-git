@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.33
+* Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
+
 ## 0.13.32
 * BUGFIX: Allow the extension to continue with commit when it fails to read the diff (usually because the diff itself is too large).
 * BUGFIX: Doubleclick on commit button won't launch commit dialog twice anymore.
