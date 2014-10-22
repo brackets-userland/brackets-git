@@ -1,26 +1,43 @@
 #!/usr/bin/osascript
 on run argv
-    set dir to quoted form of (first item of argv)
-    set new_cmd to 0
+  set dir to quoted form of (first item of argv)
+  set new_cmd to 0
+  set doesExist to false
+  try
+    do shell script "osascript -e 'exists application \"iTerm\"'"
+      set doesExist to true
+  end try
+  if doesExist
+    tell application "iterm"
+      set myterm to (make new terminal)
+      tell myterm
+        launch session "Default session"
+        tell the last session
+          set name to dir
+          write text "cd " & dir
+        end tell
+      end tell
+    end tell    
+  else
     tell app "System Events"
-        if "Terminal" is not in name of processes then
-            launch app "Terminal"
-            
-            tell process "Terminal"
-                set frontmost to true
-            end tell
-            
-            set new_cmd to 1
-        end if
+      if "Terminal" is not in name of processes then
+        launch app "Terminal"
+
+        tell process "Terminal"
+          set frontmost to true
+        end tell
+
+        set new_cmd to 1
+      end if
     end tell
-    
     tell app "Terminal"
-        if (new_cmd) is 1 then
-            do script "cd " & dir in window 1
-        else
-            activate
-            do script "cd " & dir
-        end if
+      if (new_cmd) is 1 then
+        do script "cd " & dir in window 1
+      else
+        activate
+        do script "cd " & dir
+      end if
     end tell
-    do shell script "echo ok"
+  end if
+  do shell script "echo ok"
 end run
