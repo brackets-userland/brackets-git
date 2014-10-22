@@ -154,7 +154,7 @@ define({
     // DIFF:                               "Diff",
     DIFF:                                  "Diff",
     // DIFFTOOL:                           "Diff with difftool",
-    // TODO: localize DIFFTOOL to fr
+    DIFFTOOL:                              "Diff avec difftool",
     // DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     DIFF_FAILED_SEE_FILES:                 "L’outil de diff git n’a pas réussi à fournir de résultat diff. Ceci est la liste des fichiers indexés devant être commités :",
     // ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
@@ -434,7 +434,7 @@ define({
     // USE_VERBOSE_DIFF:                   "Show verbose output in diffs",
     USE_VERBOSE_DIFF:                      "Afficher un compte-rendu prolixe dans les diffs",
     // USE_DIFFTOOL:                       "Use difftool for diffs",
-    // TODO: localize USE_DIFFTOOL to fr
+    USE_DIFFTOOL:                          "Utiliser difftool pour les diffs",
     // USING_GIT_VERSION:                  "Git version",
     USING_GIT_VERSION:                     "Version de Git",
     // VIEW_AUTHORS_FILE:                  "View authors of file",
