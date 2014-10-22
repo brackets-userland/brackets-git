@@ -189,11 +189,15 @@ define(function (require, exports) {
     }
 
     function fetchRemote(remote) {
-        return git(["fetch", "--progress", remote]).catch(repositoryNotFoundHandler);
+        return git(["fetch", "--progress", remote], {
+            timeout: false // never timeout this
+        }).catch(repositoryNotFoundHandler);
     }
 
     function fetchAllRemotes() {
-        return git(["fetch", "--progress", "--all"]).catch(repositoryNotFoundHandler);
+        return git(["fetch", "--progress", "--all"], {
+            timeout: false // never timeout this
+        }).catch(repositoryNotFoundHandler);
     }
 
     /*
@@ -491,7 +495,9 @@ define(function (require, exports) {
     }
 
     function clone(remoteGitUrl, destinationFolder) {
-        return git(["clone", remoteGitUrl, destinationFolder, "--progress"]);
+        return git(["clone", remoteGitUrl, destinationFolder, "--progress"], {
+            timeout: false // never timeout this
+        });
     }
 
     function stage(file, updateIndex) {

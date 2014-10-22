@@ -4,6 +4,7 @@
 
 ## 0.13.33
 * Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
+* Removed timeouts from clone operations.
 * BUGFIX: Fixed dialog hidden by the full-screen history.
 * BUGFIX: Position of the 'Close-not-modified' icon is now changed properly when working set is empty.
 
