@@ -5,6 +5,7 @@
 ## 0.13.33
 * Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
 * BUGFIX: Fixed dialog hidden by the full-screen history.
+* BUGFIX: Position of the 'Close-not-modified' icon is now changed properly when working set is empty.
 
 ## 0.13.32
 * BUGFIX: Allow the extension to continue with commit when it fails to read the diff (usually because the diff itself is too large).

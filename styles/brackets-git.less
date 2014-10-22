@@ -570,7 +570,12 @@
 
 #sidebar .git-close-not-modified {
     position: absolute;
-    right: 56px;
+    &.working-set-available {
+        right: 56px;
+    }
+    &.working-set-not-available {
+        right: 31px;
+    }
     top: 7px;
     padding: 4px 6px;
     width: 13px;
