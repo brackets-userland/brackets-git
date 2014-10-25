@@ -346,7 +346,7 @@ define({
     // SET_ORIGIN_URL:                     "Set origin URL",
     SET_ORIGIN_URL:                        "Imposta URL di origine",
     // SET_THIS_BRANCH_AS_TRACKING:        "Set this branch as a new tracking branch",
-    SET_THIS_BRANCH_AS_TRACKING:           "Imposta questo branch come nuovo branch di riferimento",     
+    SET_THIS_BRANCH_AS_TRACKING:           "Imposta questo branch come nuovo branch di riferimento",
     // SHORTCUTS:                          "Shortcuts",
     SHORTCUTS:                             "Scorciatoie",
     // SHORTCUTS_HINT:                     "Separate keys with dash, like this: Ctrl-Alt-G<br>You can use the english key identifiers Ctrl, Cmd (Mac), Alt and Shift.",
