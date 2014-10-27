@@ -8,6 +8,7 @@ define(function (require, exports) {
         CommandManager  = brackets.getModule("command/CommandManager"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
         EditorManager   = brackets.getModule("editor/EditorManager"),
+        MainViewManager = brackets.getModule("view/MainViewManager"),
         ErrorHandler    = require("src/ErrorHandler"),
         Events          = require("src/Events"),
         EventEmitter    = require("src/EventEmitter"),
@@ -17,10 +18,10 @@ define(function (require, exports) {
         Strings         = require("strings");
 
     var currentFilePath = null,
-        guttersEnabled = false,
-        cm = null,
+        gitAvailable = false,
         results = null,
         gutterName = "brackets-git-gutter",
+        editorsWithGutters = [],
         openWidgets = [];
 
     function clearWidgets() {
@@ -36,7 +37,8 @@ define(function (require, exports) {
         return lines;
     }
 
-    function clearOld() {
+    function clearOld(editor) {
+        var cm = editor._codeMirror;
         if (!cm) { return; }
         var gutters = cm.getOption("gutters").slice(0),
             io = gutters.indexOf(gutterName);
@@ -49,29 +51,39 @@ define(function (require, exports) {
         clearWidgets();
     }
 
-    function prepareGutter(_cm) {
-        // if new instance is different from the old one, clean the old one
-        if (cm && cm !== _cm) {
-            clearOld();
-        }
-        cm = _cm;
-
-        // if called with null, just clean the old instance
-        if (!cm) {
-            return;
-        }
-
+    function prepareGutter(editor) {
         // add our gutter if its not already available
+        var cm = editor._codeMirror;
         var gutters = cm.getOption("gutters").slice(0);
         if (gutters.indexOf(gutterName) === -1) {
             gutters.unshift(gutterName);
             cm.setOption("gutters", gutters);
             cm.on("gutterClick", gutterClick);
         }
+        if (editorsWithGutters.indexOf(editor) === -1) {
+            editorsWithGutters.push(editor);
+        }
     }
 
-    function showGutters(_cm, _results) {
-        prepareGutter(_cm);
+    function prepareGutters(editors) {
+        editors.forEach(function (editor) {
+            prepareGutter(editor);
+        });
+        // clear the rest
+        var idx = editorsWithGutters.length;
+        while (idx--) {
+            if (editors.indexOf(editorsWithGutters[idx]) === -1) {
+                clearOld(editorsWithGutters[idx]);
+                editorsWithGutters.splice(idx, 1);
+            }
+        }
+    }
+
+    function showGutters(editor, _results) {
+        var cm = editor._codeMirror;
+
+        prepareGutter(editor);
+
         results = _.sortBy(_results, "line");
 
         // get line numbers of currently opened widgets
@@ -143,10 +155,82 @@ define(function (require, exports) {
         }
     }
 
-    function refresh() {
-        // FUTURE: this might be called too often, do not call if previous refresh isn't finished?
+    function getEditorFromPane(paneId) {
+        var currentPath = MainViewManager.getCurrentlyViewedPath(paneId),
+            doc = currentPath && DocumentManager.getOpenDocumentForPath(currentPath);
+        return doc && doc._masterEditor;
+    }
 
-        if (!guttersEnabled) {
+    function processDiffResults(editor, diff) {
+        var added = [],
+            removed = [],
+            modified = [],
+            changesets = diff.split(/\n@@/).map(function (str) { return "@@" + str; });
+
+        // remove part before first
+        changesets.shift();
+
+        changesets.forEach(function (str) {
+            var m = str.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
+            var s1 = m[1].split(",");
+            var s2 = m[2].split(",");
+
+            // removed stuff
+            var lineRemovedFrom;
+            var lineFrom = parseInt(s2[0], 10);
+            var lineCount = parseInt(s1[1], 10);
+            if (isNaN(lineCount)) { lineCount = 1; }
+            if (lineCount > 0) {
+                lineRemovedFrom = lineFrom - 1;
+                removed.push({
+                    type: "removed",
+                    line: lineRemovedFrom,
+                    content: str.split("\n")
+                                .filter(function (l) { return l.indexOf("-") === 0; })
+                                .map(function (l) { return l.substring(1); })
+                                .join("\n")
+                });
+            }
+
+            // added stuff
+            lineFrom = parseInt(s2[0], 10);
+            lineCount = parseInt(s2[1], 10);
+            if (isNaN(lineCount)) { lineCount = 1; }
+            var isModifiedMark = false;
+            var firstAddedMark = false;
+            for (var i = lineFrom, lineTo = lineFrom + lineCount; i < lineTo; i++) {
+                var lineNo = i - 1;
+                if (lineNo === lineRemovedFrom) {
+                    // modified
+                    var o = removed.pop();
+                    o.type = "modified";
+                    modified.push(o);
+                    isModifiedMark = o;
+                } else {
+                    var mark = {
+                        type: isModifiedMark ? "modified" : "added",
+                        line: lineNo,
+                        parentMark: isModifiedMark || firstAddedMark || null
+                    };
+                    if (!isModifiedMark && !firstAddedMark) {
+                        firstAddedMark = mark;
+                    }
+                    // added new
+                    added.push(mark);
+                }
+            }
+        });
+
+        // fix displaying of removed lines
+        removed.forEach(function (o) {
+            o.line = o.line + 1;
+        });
+
+        showGutters(editor, [].concat(added, removed, modified));
+    }
+
+    function refresh() {
+        if (!gitAvailable) {
             return;
         }
 
@@ -154,101 +238,45 @@ define(function (require, exports) {
             return;
         }
 
-        var currentDoc = DocumentManager.getCurrentDocument();
-        if (!currentDoc) { return; }
-
-        var editor = EditorManager.getActiveEditor();
-        if (!editor || !editor._codeMirror) {
-            return;
-        }
-        prepareGutter(editor._codeMirror);
-
-        currentFilePath = currentDoc.file.fullPath;
-
         var currentProjectRoot = Utils.getProjectRoot();
-        if (currentFilePath.indexOf(currentProjectRoot) !== 0) {
-            // file is not in the current project
-            return;
-        }
 
-        var filename = currentFilePath.substring(currentProjectRoot.length);
+        // we get a list of editors, which need to be refreshed
+        var editors = _.compact(_.map(MainViewManager.getPaneIdList(), function (paneId) {
+            return getEditorFromPane(paneId);
+        }));
 
-        Git.diffFile(filename).then(function (diff) {
-            var added = [],
-                removed = [],
-                modified = [],
-                changesets = diff.split(/\n@@/).map(function (str) { return "@@" + str; });
+        // we create empty gutters in all of these editors, all other editors lose their gutters
+        prepareGutters(editors);
 
-            // remove part before first
-            changesets.shift();
+        // now we launch a diff to fill the gutters in our editors
+        editors.forEach(function (editor) {
 
-            changesets.forEach(function (str) {
-                var m = str.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
-                var s1 = m[1].split(",");
-                var s2 = m[2].split(",");
+            currentFilePath = null;
+            if (editor.document && editor.document.file) {
+                currentFilePath = editor.document.file.fullPath;
+            }
 
-                // removed stuff
-                var lineRemovedFrom;
-                var lineFrom = parseInt(s2[0], 10);
-                var lineCount = parseInt(s1[1], 10);
-                if (isNaN(lineCount)) { lineCount = 1; }
-                if (lineCount > 0) {
-                    lineRemovedFrom = lineFrom - 1;
-                    removed.push({
-                        type: "removed",
-                        line: lineRemovedFrom,
-                        content: str.split("\n")
-                                    .filter(function (l) { return l.indexOf("-") === 0; })
-                                    .map(function (l) { return l.substring(1); })
-                                    .join("\n")
-                    });
-                }
-
-                // added stuff
-                lineFrom = parseInt(s2[0], 10);
-                lineCount = parseInt(s2[1], 10);
-                if (isNaN(lineCount)) { lineCount = 1; }
-                var isModifiedMark = false;
-                var firstAddedMark = false;
-                for (var i = lineFrom, lineTo = lineFrom + lineCount; i < lineTo; i++) {
-                    var lineNo = i - 1;
-                    if (lineNo === lineRemovedFrom) {
-                        // modified
-                        var o = removed.pop();
-                        o.type = "modified";
-                        modified.push(o);
-                        isModifiedMark = o;
-                    } else {
-                        var mark = {
-                            type: isModifiedMark ? "modified" : "added",
-                            line: lineNo,
-                            parentMark: isModifiedMark || firstAddedMark || null
-                        };
-                        if (!isModifiedMark && !firstAddedMark) {
-                            firstAddedMark = mark;
-                        }
-                        // added new
-                        added.push(mark);
-                    }
-                }
-            });
-
-            // fix displaying of removed lines
-            removed.forEach(function (o) {
-                o.line = o.line + 1;
-            });
-
-            showGutters(editor._codeMirror, [].concat(added, removed, modified));
-        }).catch(function (err) {
-            // if this is launched in a non-git repository, just ignore
-            if (ErrorHandler.contains(err, "Not a git repository")) {
+            if (currentFilePath.indexOf(currentProjectRoot) !== 0) {
+                // file is not in the current project
                 return;
             }
-            // if this file was moved or deleted before this command could be executed, ignore
-            if (ErrorHandler.contains(err, "No such file or directory")) {
-                return;
-            }
-            ErrorHandler.showError(err, "Refreshing gutter failed!");
+
+            var filename = currentFilePath.substring(currentProjectRoot.length);
+
+            Git.diffFile(filename).then(function (diff) {
+                processDiffResults(editor, diff);
+            }).catch(function (err) {
+                // if this is launched in a non-git repository, just ignore
+                if (ErrorHandler.contains(err, "Not a git repository")) {
+                    return;
+                }
+                // if this file was moved or deleted before this command could be executed, ignore
+                if (ErrorHandler.contains(err, "No such file or directory")) {
+                    return;
+                }
+                ErrorHandler.showError(err, "Refreshing gutter failed!");
+            });
+
         });
     }
 
@@ -330,14 +358,17 @@ define(function (require, exports) {
 
     // Event handlers
     EventEmitter.on(Events.GIT_ENABLED, function () {
-        guttersEnabled = true;
+        gitAvailable = true;
         refresh();
     });
     EventEmitter.on(Events.GIT_DISABLED, function () {
-        guttersEnabled = false;
-        clearOld();
+        gitAvailable = false;
+        // calling this with an empty array will remove gutters from all editor instances
+        prepareGutters([]);
     });
-    EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
+    EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function (evt, file) {
+        // NOTE: this gets launched even when switching panes
+        // TODO: check if we have this file in our array of open files, we may not need to refresh
         refresh();
     });
     EventEmitter.on(Events.GIT_COMMITED, function () {
@@ -350,7 +381,6 @@ define(function (require, exports) {
     });
 
     // API
-    exports.refresh = refresh;
     exports.goToPrev = goToPrev;
     exports.goToNext = goToNext;
 });

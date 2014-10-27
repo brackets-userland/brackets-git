@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.34
+* Updated Italian translation by [Pietro Albini](https://github.com/pietroalbini)
+
 ## 0.13.33
 * Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
 * Removed timeouts from clone operations.
