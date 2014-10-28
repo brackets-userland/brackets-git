@@ -4,6 +4,7 @@
 
 ## 0.13.34
 * Updated Italian translation by [Pietro Albini](https://github.com/pietroalbini)
+* BUGFIX: Fixed issues with Git gutters when changing panes in SplitView.
 
 ## 0.13.33
 * Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
