@@ -17,9 +17,7 @@ define(function (require, exports) {
         Utils           = require("src/Utils"),
         Strings         = require("strings");
 
-    var currentFilePath = null,
-        gitAvailable = false,
-        results = null,
+    var gitAvailable = false,
         gutterName = "brackets-git-gutter",
         editorsWithGutters = [],
         openWidgets = [];
@@ -31,7 +29,10 @@ define(function (require, exports) {
                 w.visible = false;
                 w.widget.clear();
             }
-            return mark.line;
+            return {
+                cm: mark.cm,
+                line: mark.line
+            };
         });
         openWidgets = [];
         return lines;
@@ -40,26 +41,33 @@ define(function (require, exports) {
     function clearOld(editor) {
         var cm = editor._codeMirror;
         if (!cm) { return; }
+
         var gutters = cm.getOption("gutters").slice(0),
             io = gutters.indexOf(gutterName);
+
         if (io !== -1) {
             gutters.splice(io, 1);
             cm.clearGutter(gutterName);
             cm.setOption("gutters", gutters);
             cm.off("gutterClick", gutterClick);
         }
+
+        delete cm.gitGutters;
+
         clearWidgets();
     }
 
     function prepareGutter(editor) {
         // add our gutter if its not already available
         var cm = editor._codeMirror;
+
         var gutters = cm.getOption("gutters").slice(0);
         if (gutters.indexOf(gutterName) === -1) {
             gutters.unshift(gutterName);
             cm.setOption("gutters", gutters);
             cm.on("gutterClick", gutterClick);
         }
+
         if (editorsWithGutters.indexOf(editor) === -1) {
             editorsWithGutters.push(editor);
         }
@@ -80,17 +88,16 @@ define(function (require, exports) {
     }
 
     function showGutters(editor, _results) {
-        var cm = editor._codeMirror;
-
         prepareGutter(editor);
 
-        results = _.sortBy(_results, "line");
+        var cm = editor._codeMirror;
+        cm.gitGutters = _.sortBy(_results, "line");
 
         // get line numbers of currently opened widgets
         var openBefore = clearWidgets();
 
         cm.clearGutter(gutterName);
-        results.forEach(function (obj) {
+        cm.gitGutters.forEach(function (obj) {
             var $marker = $("<div>")
                             .addClass(gutterName + "-" + obj.type + " gitline-" + (obj.line + 1))
                             .html("&nbsp;");
@@ -98,8 +105,8 @@ define(function (require, exports) {
         });
 
         // reopen widgets that were opened before refresh
-        openBefore.forEach(function (lineNumber) {
-            gutterClick(cm, lineNumber, gutterName);
+        openBefore.forEach(function (obj) {
+            gutterClick(obj.cm, obj.line, gutterName);
         });
     }
 
@@ -108,8 +115,12 @@ define(function (require, exports) {
             return;
         }
 
-        var mark = _.find(results, function (o) { return o.line === lineIndex; });
+        var mark = _.find(cm.gitGutters, function (o) { return o.line === lineIndex; });
         if (!mark || mark.type === "added") { return; }
+
+        // we need to be able to identify cm instance from any mark
+        mark.cm = cm;
+
         if (mark.parentMark) { mark = mark.parentMark; }
 
         if (!mark.lineWidget) {
@@ -251,7 +262,8 @@ define(function (require, exports) {
         // now we launch a diff to fill the gutters in our editors
         editors.forEach(function (editor) {
 
-            currentFilePath = null;
+            var currentFilePath = null;
+
             if (editor.document && editor.document.file) {
                 currentFilePath = editor.document.file.fullPath;
             }
@@ -284,6 +296,7 @@ define(function (require, exports) {
         var activeEditor = EditorManager.getActiveEditor();
         if (!activeEditor) { return; }
 
+        var results = activeEditor._codeMirror.gitGutters || [];
         var searched = _.filter(results, function (i) { return !i.parentMark; });
 
         var currentPos = activeEditor.getCursorPos();
@@ -303,6 +316,7 @@ define(function (require, exports) {
         var activeEditor = EditorManager.getActiveEditor();
         if (!activeEditor) { return; }
 
+        var results = activeEditor._codeMirror.gitGutters || [];
         var searched = _.filter(results, function (i) { return !i.parentMark; });
 
         var currentPos = activeEditor.getCursorPos();
@@ -367,15 +381,30 @@ define(function (require, exports) {
         prepareGutters([]);
     });
     EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function (evt, file) {
-        // NOTE: this gets launched even when switching panes
-        // TODO: check if we have this file in our array of open files, we may not need to refresh
-        refresh();
+        // file will be null when switching to an empty pane
+        if (!file) { return; }
+
+        // document change gets launched even when switching panes,
+        // so we check if the file hasn't already got the gutters
+        var alreadyOpened = _.filter(editorsWithGutters, function (editor) {
+            return editor.document.file.fullPath === file.fullPath;
+        }).length > 0;
+
+        if (!alreadyOpened) {
+            // TODO: here we could sent a particular file to be refreshed only
+            refresh();
+        }
     });
     EventEmitter.on(Events.GIT_COMMITED, function () {
         refresh();
     });
     EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function (evt, file) {
-        if (file.fullPath === currentFilePath) {
+        var alreadyOpened = _.filter(editorsWithGutters, function (editor) {
+            return editor.document.file.fullPath === file.fullPath;
+        }).length > 0;
+
+        if (alreadyOpened) {
+            // TODO: here we could sent a particular file to be refreshed only
             refresh();
         }
     });
