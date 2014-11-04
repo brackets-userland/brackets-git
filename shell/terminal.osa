@@ -4,9 +4,9 @@ on run argv
     set new_cmd to 0
     tell app "System Events"
         if "Terminal" is not in name of processes then
-            launch application "Terminal"
+            launch app "Terminal"
 
-            tell application "Terminal"
+            tell app "Terminal"
                 activate
                 do script ""
             end tell
@@ -15,7 +15,7 @@ on run argv
         end if
     end tell
 
-    tell application "Terminal"
+    tell app "Terminal"
         if (new_cmd) is 1 then
             do script "cd " & dir in window 1
         else
