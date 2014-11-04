@@ -5,15 +5,16 @@ on run argv
     tell app "System Events"
         if "Terminal" is not in name of processes then
             launch app "Terminal"
-            
-            tell process "Terminal"
-                set frontmost to true
+
+            tell app "Terminal"
+                activate
+                do script ""
             end tell
-            
+
             set new_cmd to 1
         end if
     end tell
-    
+
     tell app "Terminal"
         if (new_cmd) is 1 then
             do script "cd " & dir in window 1
