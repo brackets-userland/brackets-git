@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.36
+* BUGFIX: Fixed z-index problems with the project menu.
+
 ## 0.13.35
 * Added iTerm support for Mac by [dan](https://github.com/danthewolfe)
 * Updated French translation by [rainje](https://github.com/rainje)

@@ -11,7 +11,7 @@
 @import "dialogs/pull-dialog.less";
 @import "brackets/brackets_core_ui_variables.less";
 
-
+@baseZindex: 100;
 @gutterWidth: 0.65em; // using ems so that it'll be scalable on cmd +/-
 
 /* Project tree */
@@ -127,7 +127,7 @@
 
 /* Extension panel */
 #git-panel {
-    z-index: 999;
+    z-index: @baseZindex;
     position: relative;
 
     .toolbar {
