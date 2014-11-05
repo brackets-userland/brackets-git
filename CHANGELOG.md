@@ -2,6 +2,11 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.35
+* Added iTerm support for Mac by [dan](https://github.com/danthewolfe)
+* Updated French translation by [rainje](https://github.com/rainje)
+* BUGFIX: Fixed "Can’t get window 1" error on Mac by [jannae](https://github.com/jannae)
+
 ## 0.13.34
 * Updated Italian translation by [Pietro Albini](https://github.com/pietroalbini)
 * BUGFIX: Fixed issues with Git gutters when changing panes in SplitView.
