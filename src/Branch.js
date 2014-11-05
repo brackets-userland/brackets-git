@@ -362,9 +362,11 @@ define(function (require, exports) {
 
                     EventEmitter.emit(Events.REBASE_MERGE_MODE, mergeInfo.rebaseMode, mergeInfo.mergeMode);
 
+                    var MAX_LEN = 20;
+
                     $gitBranchName
-                        .text(branchName)
-                        .attr("title", branchName.length > 15 ? branchName : null)
+                        .text(branchName.length > MAX_LEN ? branchName.substring(0, MAX_LEN) + "\u2026" : branchName)
+                        .attr("title", branchName.length > MAX_LEN ? branchName : null)
                         .off("click")
                         .on("click", toggleDropdown)
                         .append($("<span class='dropdown-arrow' />"));

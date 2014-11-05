@@ -5,6 +5,7 @@
 ## 0.13.35
 * Added iTerm support for Mac by [dan](https://github.com/danthewolfe)
 * Updated French translation by [rainje](https://github.com/rainje)
+* BUGFIX: Display only first 20 letters of branch name next to the project name (full name on hover).
 * BUGFIX: Password is no longer visible on 'Git Push response' screen.
 * BUGFIX: Panel context menus are no longer covered by hisory view.
 * BUGFIX: Fixed "Can’t get window 1" error on Mac by [jannae](https://github.com/jannae)
