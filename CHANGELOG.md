@@ -4,6 +4,7 @@
 
 ## 0.13.36
 * Re-use existing iTerm session if already open by [Andrew Minion](https://github.com/macbookandrew)
+* Option to add Terminal shortcut to the toolbar panel by [Fez Vrasta](https://github.com/FezVrasta)
 * BUGFIX: Fixed z-index problems with the project menu.
 
 ## 0.13.35
