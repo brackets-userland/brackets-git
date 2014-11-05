@@ -3,6 +3,7 @@
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
 ## 0.13.36
+* Re-use existing iTerm session if already open by [Andrew Minion](https://github.com/macbookandrew)
 * BUGFIX: Fixed z-index problems with the project menu.
 
 ## 0.13.35
