@@ -186,8 +186,9 @@ define({
     SHORTCUTS:                          "Tastenkürzel",
     SHORTCUTS_HINT:                     "Trennen Sie Tasten mit Strichen, zum Beispiel: Ctrl-Alt-G<br>Sie können die englischen Bezeichnungen Ctrl (-> Strg), Cmd (Mac -> Command), Alt und Shift (-> Umschalt) nutzen.",
     SHOWN_DATE_FORMAT:                  "Anzeigeformat des Datums eines Commits im Verlauf",
-    SHOW_BASH_TERMINAL_BUTTON:          "Den Bash-Button im Panel anzeigen",
+    SHOW_BASH_TERMINAL_BUTTON:          "Terminal-Button im Panel anzeigen",
     SHOW_REPORT_BUG_BUTTON:             "Den \"Bug melden\"-Button im Panel anzeigen",
+    SHOW_TERMINAL_IN_TOOLBAR:           "Terminal-Icon in der Toolbar anzeigen",
     SHOW_UNTRACKED:                     "Unbeobachtete anzeigen",
     STRIP_WHITESPACE_FROM_COMMITS:      "Anhängende Leerzeichen von Commits entfernen",
     TARGET_BRANCH:                      "Ziel",
@@ -234,4 +235,4 @@ define({
     VIEW_THIS_FILE:                     "Diese Datei anzeigen"
 });
 
-/* Last translated for a89742d9aef4ddb4e06425cf7510fb1f62ed9b8e */
+/* Last translated for 2ab6942ef6841cc597c7239703a903c56d39298a */
