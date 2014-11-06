@@ -55,11 +55,32 @@ You'll need to push manually the first time to setup your username/password into
 **Working with SSH repositories:**
 SSH protocol is currently a bit more difficult, so you'll have to use command line or try to follow these [tips](https://github.com/zaggino/brackets-git/issues/524):
 
-- Mac
+- Mac OSX
 
-  - Create a ssh pair key with the following command on the terminal `$ ssh-keygen -t rsa -b 2048 -C "MyCommentedKey"` (Enter twice because we dont need password)
-  - Now add the `sshkeyfilename.pub` to the authorized_keys onto the git server. (see some tutorial about this, it is simple)
-  - Keep the private file `sshkeyfilename` on your mac, and now add this private key via terminal like this: `$ chmod 600 sshkeyfilename` and `$ ssh-add sshkeyfilename`
+  - Create a ssh pair key with the following command on the terminal `$ ssh-keygen -t rsa -b 2048 -C "your@email.com"`
+  - Enter a `"Secure"` parsephrase  Or alternativly hit Enter twice if you dont want a parsephrase `"Not Recommended"`
+  - You should be given a string like the following `"99:ff:ff:4b:bb:2d:d3:17:h6:6d:f0:55:4d:f0:b4:db your@email.com"`
+   - Pay attention to this line `"Your public key has been saved in /Users/USERNAME/.ssh/id_rsa.pub."` the *.pub is what you want here, Take note Names may vary. 
+  - Now start the SSH agent `"eval "$(ssh-agent -s)" "` Which should give you Output like this `"Agent pid 77398"`
+  - Next type `"ssh-add ~/.ssh/id_rsa"`
+  - Next we want to copy the SSH key into your clipboard, There are Two ways of doing this.
+   - Method #1 Type into Terminal `"pbcopy < ~/.ssh/id_rsa.pub"` Taking note of before that "Your file" is names `"id_rsa.pub"` If it is not, Change it to whatever yours may be called. That's it Proceed to Next step.  
+   - Method #2 If for some reason you cant do method one this is your alternative. Find the id_rsa.pub key or otherwise named.pub key. and open it with a text editor, Copy the while key including Email into your clipboard (command + c). That's it.
+   - DO NOT DELETE THE FILE!
+  
+  - Now we add the `SSHKEYFILE.pub` to the authorized_keys onto the git server (github website).
+  
+   -GIT HUB
+      - Login to Github
+      - Click the COG to the top right (settings)
+      - Click the left hand side Menu `"SSH KEYS"` >> ADD NEW SSH Key
+      - Input the Name of this Key, In my instance i named it `"Macbook Pro Git Key"`
+      - Paste your Key with (command + c) or right click Paste
+      - Click `"ADD KEY"` and Your done (NOTE: You may be asked for a Password) 
+      
+  - Now to test if everything is Working In Terminal Type after the $ `"ssh -T git@github.com"` Type `"Yes"` And close.
+  - If it does not connect. Check your Internet and that you have not Missed a Step. :)
+
 
 - Windows (Go to point 3 if you have already a rsa key already generated)
 
