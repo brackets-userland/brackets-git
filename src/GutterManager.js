@@ -111,6 +111,10 @@ define(function (require, exports) {
     }
 
     function gutterClick(cm, lineIndex, gutterId) {
+        if (!cm) {
+            return;
+        }
+
         if (gutterId !== gutterName && gutterId !== "CodeMirror-linenumbers") {
             return;
         }
