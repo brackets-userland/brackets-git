@@ -15,11 +15,12 @@ define(function (require, exports) {
     var Git                     = require("src/git/Git"),
         Events                  = require("src/Events"),
         EventEmitter            = require("src/EventEmitter"),
-        ErrorHandler            = require("./ErrorHandler"),
-        Panel                   = require("./Panel"),
+        ErrorHandler            = require("src/ErrorHandler"),
+        Panel                   = require("src/Panel"),
+        Preferences             = require("src/Preferences"),
         ProgressDialog          = require("src/dialogs/Progress"),
-        Strings                 = require("../strings"),
-        Utils                   = require("./Utils"),
+        Strings                 = require("strings"),
+        Utils                   = require("src/Utils"),
         branchesMenuTemplate    = require("text!templates/git-branches-menu.html"),
         newBranchTemplate       = require("text!templates/branch-new-dialog.html"),
         mergeBranchTemplate     = require("text!templates/branch-merge-dialog.html");
@@ -65,6 +66,8 @@ define(function (require, exports) {
 
             var $toBranch = $dialog.find("[name='branch-target']");
             var $useRebase = $dialog.find("[name='use-rebase']");
+            var $useNoff = $dialog.find("[name='use-noff']");
+
             if (fromBranch === "master") {
                 $useRebase.prop("checked", true);
             }
@@ -72,6 +75,7 @@ define(function (require, exports) {
                 $useRebase.prop("checked", false).prop("disabled", true);
             }
 
+            // fill merge message if possible
             var $mergeMessage = $dialog.find("[name='merge-message']");
             $mergeMessage.attr("placeholder", "Merge branch '" + fromBranch + "'");
             $dialog.find(".fill-pr").on("click", function () {
@@ -80,12 +84,29 @@ define(function (require, exports) {
                 $mergeMessage[0].setSelectionRange(prMsg.indexOf("???"), prMsg.indexOf("???") + 3);
             });
 
+            // load default value for --no-ff
+            var useNoffDefaultValue = Preferences.get("useNoffDefaultValue");
+            if (typeof useNoffDefaultValue !== "boolean") { useNoffDefaultValue = true; }
+            $useNoff.prop("checked", useNoffDefaultValue);
+
+            // can't use rebase and no-ff together so have a change handler for this
+            $useRebase.on("change", function () {
+                var useRebase = $useRebase.prop("checked");
+                $useNoff.prop("disabled", useRebase);
+                if (useRebase) { $useNoff.prop("checked", false); }
+            }).trigger("change");
+
             dialog.done(function (buttonId) {
+                // right now only merge to current branch without any configuration
+                // later delete merge branch and so ...
+                var useRebase = $useRebase.prop("checked");
+                var useNoff = $useNoff.prop("checked");
+                var mergeMsg = $mergeMessage.val();
+
+                // save state for next time branch merge is invoked
+                Preferences.set("useNoffDefaultValue", useNoff);
+
                 if (buttonId === "ok") {
-                    // right now only merge to current branch without any configuration
-                    // later delete merge branch and so ...
-                    var useRebase = $useRebase.prop("checked");
-                    var mergeMsg = $mergeMessage.val();
 
                     if (useRebase) {
 
@@ -98,7 +119,7 @@ define(function (require, exports) {
 
                     } else {
 
-                        Git.mergeBranch(fromBranch, mergeMsg).catch(function (err) {
+                        Git.mergeBranch(fromBranch, mergeMsg, useNoff).catch(function (err) {
                             throw ErrorHandler.showError(err, "Merge failed");
                         }).then(function (stdout) {
                             Utils.showOutput(stdout, Strings.MERGE_RESULT);
@@ -106,6 +127,7 @@ define(function (require, exports) {
                         });
 
                     }
+
                 }
             });
         });

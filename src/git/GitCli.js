@@ -289,8 +289,9 @@ define(function (require, exports) {
         });
     }
 
-    function mergeBranch(branchName, mergeMessage) {
-        var args = ["merge", "--no-ff"];
+    function mergeBranch(branchName, mergeMessage, useNoff) {
+        var args = ["merge"];
+        if (useNoff) { args.push("--no-ff"); }
         if (mergeMessage && mergeMessage.trim()) { args.push("-m", mergeMessage); }
         args.push(branchName);
         return git(args);

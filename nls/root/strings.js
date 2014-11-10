@@ -226,6 +226,7 @@ define({
     USE_CODE_INSPECTION:                "Use Code inspection",
     USE_GITFTP:                         "Use Git-FTP",
     USE_GIT_GUTTER:                     "Use Git gutter marks",
+    USE_NOFF:                           "Create a merge commit even when the merge resolves as a fast-forward (--no-ff)",
     USE_REBASE:                         "Use REBASE",
     USE_VERBOSE_DIFF:                   "Show verbose output in diffs",
     USE_DIFFTOOL:                       "Use difftool for diffs",

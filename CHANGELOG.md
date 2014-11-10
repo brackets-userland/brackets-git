@@ -6,6 +6,7 @@
 * Updated README for SSH configuration on Mac by [narcarsiss](https://github.com/narcarsiss)
 * Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
 * When commit dialog fails, commit message should be saved for another try.
+* Added ability to specify usage of --no-ff when merging local branches.
 * BUGFIX: Fixed occasional 'Refreshing gutter failed' error.
 
 ## 0.13.36
