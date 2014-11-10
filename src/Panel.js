@@ -48,7 +48,8 @@ define(function (require, exports) {
         gitPanelDisabled = null,
         gitPanelMode = null,
         showingUntracked = true,
-        $tableContainer = $(null);
+        $tableContainer = $(null),
+        lastCommitMessage = null;
 
     function lintFile(filename) {
         var fullPath = Utils.getProjectRoot() + filename,
@@ -252,10 +253,16 @@ define(function (require, exports) {
                 }
                 commitMessage = s.join("\n");
 
+                // save lastCommitMessage in case the commit will fail
+                lastCommitMessage = commitMessage;
+
                 // now we are going to be paranoid and we will check if some mofo didn't change our diff
                 _getStagedDiff().then(function (diff) {
                     if (diff === stagedDiff) {
-                        return Git.commit(commitMessage, amendCommit);
+                        return Git.commit(commitMessage, amendCommit).then(function () {
+                            // clear lastCommitMessage because the commit was successful
+                            lastCommitMessage = null;
+                        });
                     } else {
                         throw new ExpectedError("The files you were going to commit were modified while commit dialog was displayed. " +
                                                 "Aborting the commit as the result would be different then what was shown in the dialog.");
@@ -1088,7 +1095,7 @@ define(function (require, exports) {
     });
 
     EventEmitter.on(Events.HANDLE_GIT_COMMIT, function () {
-        handleGitCommit();
+        handleGitCommit(lastCommitMessage, false);
     });
 
     EventEmitter.on(Events.TERMINAL_DISABLE, function (where) {
