@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.38
+* BUGFIX: Fixed 'Expected end of line but found' error when opening Terminal on Mac by [Andrew Minion](https://github.com/macbookandrew)
+
 ## 0.13.37
 * Updated README for SSH configuration on Mac by [narcarsiss](https://github.com/narcarsiss)
 * Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
