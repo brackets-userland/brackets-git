@@ -2,6 +2,41 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.37
+* Updated README for SSH configuration on Mac by [narcarsiss](https://github.com/narcarsiss)
+* Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
+* When commit dialog fails, commit message should be saved for another try.
+* Added ability to specify usage of --no-ff when merging local branches.
+* BUGFIX: Fixed occasional 'Refreshing gutter failed' error.
+
+## 0.13.36
+* Re-use existing iTerm session if already open by [Andrew Minion](https://github.com/macbookandrew)
+* Option to add Terminal shortcut to the toolbar panel by [Fez Vrasta](https://github.com/FezVrasta)
+* BUGFIX: Fixed z-index problems with the project menu.
+
+## 0.13.35
+* Added iTerm support for Mac by [dan](https://github.com/danthewolfe)
+* Updated French translation by [rainje](https://github.com/rainje)
+* BUGFIX: Display only first 20 letters of branch name next to the project name (full name on hover).
+* BUGFIX: Password is no longer visible on 'Git Push response' screen.
+* BUGFIX: Panel context menus are no longer covered by hisory view.
+* BUGFIX: Fixed "Can’t get window 1" error on Mac by [jannae](https://github.com/jannae)
+
+## 0.13.34
+* Updated Italian translation by [Pietro Albini](https://github.com/pietroalbini)
+* BUGFIX: Fixed issues with Git gutters when changing panes in SplitView.
+
+## 0.13.33
+* Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
+* Removed timeouts from clone operations.
+* BUGFIX: Fixed dialog hidden by the full-screen history.
+* BUGFIX: Position of the 'Close-not-modified' icon is now changed properly when working set is empty.
+
+## 0.13.32
+* BUGFIX: Allow the extension to continue with commit when it fails to read the diff (usually because the diff itself is too large).
+* BUGFIX: Doubleclick on commit button won't launch commit dialog twice anymore.
+* BUGFIX: Fixed extension initialization problems on some machines.
+
 ## 0.13.31
 * Added revert change button to the gutter widgets.
 * Files excluded through .git/info/exclude file are now properly marked in the project tree as ignored.

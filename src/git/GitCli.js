@@ -189,11 +189,15 @@ define(function (require, exports) {
     }
 
     function fetchRemote(remote) {
-        return git(["fetch", "--progress", remote]).catch(repositoryNotFoundHandler);
+        return git(["fetch", "--progress", remote], {
+            timeout: false // never timeout this
+        }).catch(repositoryNotFoundHandler);
     }
 
     function fetchAllRemotes() {
-        return git(["fetch", "--progress", "--all"]).catch(repositoryNotFoundHandler);
+        return git(["fetch", "--progress", "--all"], {
+            timeout: false // never timeout this
+        }).catch(repositoryNotFoundHandler);
     }
 
     /*
@@ -285,8 +289,9 @@ define(function (require, exports) {
         });
     }
 
-    function mergeBranch(branchName, mergeMessage) {
-        var args = ["merge", "--no-ff"];
+    function mergeBranch(branchName, mergeMessage, useNoff) {
+        var args = ["merge"];
+        if (useNoff) { args.push("--no-ff"); }
         if (mergeMessage && mergeMessage.trim()) { args.push("-m", mergeMessage); }
         args.push(branchName);
         return git(args);
@@ -491,7 +496,9 @@ define(function (require, exports) {
     }
 
     function clone(remoteGitUrl, destinationFolder) {
-        return git(["clone", remoteGitUrl, destinationFolder, "--progress"]);
+        return git(["clone", remoteGitUrl, destinationFolder, "--progress"], {
+            timeout: false // never timeout this
+        });
     }
 
     function stage(file, updateIndex) {
@@ -719,7 +726,9 @@ define(function (require, exports) {
     }
 
     function getListOfStagedFiles() {
-        return git(["diff", "--no-ext-diff", "--no-color", "--staged", "--name-only"]);
+        return git(["diff", "--no-ext-diff", "--no-color", "--staged", "--name-only"], {
+            timeout: false // never timeout this
+        });
     }
 
     function diffFile(file) {
@@ -727,7 +736,9 @@ define(function (require, exports) {
             var args = ["diff", "--no-ext-diff", "--no-color"];
             if (staged) { args.push("--staged"); }
             args.push("-U0", "--", file);
-            return git(args);
+            return git(args, {
+                timeout: false // never timeout this
+            });
         });
     }
 
@@ -736,7 +747,9 @@ define(function (require, exports) {
             var args = ["diff", "--no-ext-diff", "--no-color"];
             if (staged) { args.push("--staged"); }
             args.push("--", file);
-            return git(args);
+            return git(args, {
+                timeout: false // never timeout this
+            });
         });
     }
 

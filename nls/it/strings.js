@@ -2,7 +2,7 @@
 
 define({
     // ACTION:                             "Action",
-    // TODO: localize ACTION to it
+    ACTION:                                "Azione",
     // ADD_ENDLINE_TO_THE_END_OF_FILE:     "Add endline at the end of file",
     ADD_ENDLINE_TO_THE_END_OF_FILE:        "Aggiungi fine riga alla fine del file",
     // ADD_TO_GITIGNORE:                   "Add to .gitignore",
@@ -14,19 +14,19 @@ define({
     // AMEND_COMMIT_FORBIDDEN:             "Cannot amend commit when there are no unpushed commits",
     AMEND_COMMIT_FORBIDDEN:                "Impossibile correggere un commit quando non ce ne sono di non inviati",
     // _ANOTHER_BRANCH:                    "another branch",
-    // TODO: localize _ANOTHER_BRANCH to it
+    _ANOTHER_BRANCH:                       "un altro branch",
     // AUTHOR:                             "Author",
     AUTHOR:                                "Autore",
     // AUTHORS_OF:                         "Authors of",
     AUTHORS_OF:                            "Autori di",
     // AVATAR_TYPE:                        "Avatar type",
-    // TODO: localize AVATAR_TYPE to it
+    AVATAR_TYPE:                           "Tipo di avatar",
     // BASH_NOT_AVAILABLE:                 "Bash is not available or properly configured",
     BASH_NOT_AVAILABLE:                    "Bash non è disponibile o non è correttamente configurato",
     // BASIC_CONFIGURATION:                "Basic configuration",
     BASIC_CONFIGURATION:                   "Configurazione di base",
     // BLACK_WHITE_AVATAR:                 "Black and white avatar",
-    // TODO: localize BLACK_WHITE_AVATAR to it
+    BLACK_WHITE_AVATAR:                    "Avatar nero e bianco",
     // BRACKETS_GIT_ERROR:                 "Brackets Git encountered an error\u2026",
     BRACKETS_GIT_ERROR:                    "Brackets Git ha rilevato un errore\u2026",
     // BRANCH_NAME:                        "Branch name",
@@ -46,19 +46,19 @@ define({
     // BUTTON_DEFAULTS:                    "Restore defaults",
     BUTTON_DEFAULTS:                       "Ripristina predefiniti",
     // BUTTON_FIND_CONFLICTS:              "Find conflicts\u2026",
-    // TODO: localize BUTTON_FIND_CONFLICTS to it
+    BUTTON_FIND_CONFLICTS:                 "Trova conflitti\u2026",
     // BUTTON_INIT:                        "Init",
     BUTTON_INIT:                           "Inizializza",
     // BUTTON_MERGE_ABORT:                 "Abort merge",
-    // TODO: localize BUTTON_MERGE_ABORT to it
+    BUTTON_MERGE_ABORT:                    "Annulla merge",
     // BUTTON_OK:                          "OK",
     BUTTON_OK:                             "OK",
     // BUTTON_REBASE_ABORT:                "Abort",
-    // TODO: localize BUTTON_REBASE_ABORT to it
+    BUTTON_REBASE_ABORT:                   "Annulla",
     // BUTTON_REBASE_CONTINUE:             "Continue rebase",
-    // TODO: localize BUTTON_REBASE_CONTINUE to it
+    BUTTON_REBASE_CONTINUE:                "Continua il rebase",
     // BUTTON_REBASE_SKIP:                 "Skip",
-    // TODO: localize BUTTON_REBASE_SKIP to it
+    BUTTON_REBASE_SKIP:                    "Salta",
     // BUTTON_REPORT:                      "Report",
     BUTTON_REPORT:                         "Segnala",
     // BUTTON_RESET:                       "Reset index",
@@ -72,7 +72,7 @@ define({
     // BUTTON_SAVE:                        "Save",
     BUTTON_SAVE:                           "Salva",
     // CANCEL:                             "Cancel",
-    // TODO: localize CANCEL to it
+    CANCEL:                                "Annulla",
     // CHANGELOG:                          "Changelog",
     CHANGELOG:                             "Changelog",
     // CHANGE_USER_EMAIL:                  "Change git email",
@@ -86,9 +86,9 @@ define({
     // CODE_INSPECTION_PROBLEMS:           "Code inspection problems:",
     CODE_INSPECTION_PROBLEMS:              "Problemi rilevati durante l’ispezione del codice:",
     // COLLAPSE_ALL:                       "Collapse all",
-    // TODO: localize COLLAPSE_ALL to it
+    COLLAPSE_ALL:                          "Rimpicciolisci tutti",
     // COLORED_AVATAR:                     "Colored avatar",
-    // TODO: localize COLORED_AVATAR to it
+    COLORED_AVATAR:                        "Avatar colorato",
     // COMMAND_ARGUMENTS:                  "Command arguments",
     COMMAND_ARGUMENTS:                     "Argomenti del comando",
     // COMMIT:                             "Commit",
@@ -106,9 +106,9 @@ define({
     // CREATE_NEW_REMOTE:                  "Create new remote\u2026",
     CREATE_NEW_REMOTE:                     "Crea un nuovo remote\u2026",
     // CURRENT_TRACKING_BRANCH:            "Current tracking branch",
-    // TODO: localize CURRENT_TRACKING_BRANCH to it
+    CURRENT_TRACKING_BRANCH:               "Branch remoto di riferimento",
     // _CURRENT_TRACKING_BRANCH:           "current tracking branch",
-    // TODO: localize _CURRENT_TRACKING_BRANCH to it
+    _CURRENT_TRACKING_BRANCH:              "branch remoto di riferimento",
     // CUSTOM_TERMINAL_COMMAND:            "Custom terminal command (sample: gnome-terminal or complete path to executable)",
     CUSTOM_TERMINAL_COMMAND:               "Comando del terminale personalizzato (esempio: gnome-terminal o il percorso completo all’eseguibile)",
     // CUSTOM_TERMINAL_COMMAND_HINT:       "Sample arguments: --window --working-directory=$1<br>$1 in arguments will be replaced by current project directory.",
@@ -142,9 +142,9 @@ define({
     // DIALOG_CHECKOUT:                    "When checking out a commit, the repo will go into a DETACHED HEAD state. You can't make any commits unless you create a branch based on this.",
     DIALOG_CHECKOUT:                       "Quando fai il checkout di un commit, il repository andrà in DETACHED HEAD. Non potrai fare nessun commit a meno che creerai un branch basato su questo.",
     // DIALOG_PULL_TITLE:                  "Pull from remote",
-    // TODO: localize DIALOG_PULL_TITLE to it
+    DIALOG_PULL_TITLE:                     "Scarica dal remote",
     // DIALOG_PUSH_TITLE:                  "Push to remote",
-    // TODO: localize DIALOG_PUSH_TITLE to it
+    DIALOG_PUSH_TITLE:                     "Carica nel remote",
     // DIALOG_RESET_HARD:                  "You will lose all changes after this commit!",
     DIALOG_RESET_HARD:                     "Perderai tutte le modifiche effettuate dopo questo commit!",
     // DIALOG_RESET_MIXED:                 "Changes after this commit will be unstaged.",
@@ -154,7 +154,7 @@ define({
     // DIFF:                               "Diff",
     DIFF:                                  "Differenze",
     // DIFFTOOL:                           "Diff with difftool",
-    // TODO: localize DIFFTOOL to it
+    DIFFTOOL:                              "Guarda le differenze con difftool",
     // DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     DIFF_FAILED_SEE_FILES:                 "Git non è riuscito a fornire le differenze. Questa è la lista dei file staged su cui verrà effettuato il commit:",
     // ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
@@ -182,7 +182,7 @@ define({
     // ERROR_TERMINAL_NOT_FOUND:           "Terminal was not found for your OS, you can define a custom Terminal command in the settings",
     ERROR_TERMINAL_NOT_FOUND:              "Il terminale non è stato trovato per il tuo sistema operativo, puoi definire un comando da terminale personalizzato nelle impostazioni",
     // EXPAND_ALL:                         "Expand all",
-    // TODO: localize EXPAND_ALL to it
+    EXPAND_ALL:                            "Espandi tutto",
     // EXTENDED_COMMIT_MESSAGE:            "EXTENDED",
     EXTENDED_COMMIT_MESSAGE:               "Forma estesa",
     // EXTENSION_WAS_UPDATED_TITLE:        "The extension was updated to {0}",
@@ -236,15 +236,15 @@ define({
     // GOTO_PREVIOUS_GIT_CHANGE:           "Go to previous Git change",
     GOTO_PREVIOUS_GIT_CHANGE:              "Vai alla modifica di Git precedente",
     // GUTTER_CLICK_DETAILS:               "Click for more details",
-    // TODO: localize GUTTER_CLICK_DETAILS to it
+    GUTTER_CLICK_DETAILS:                  "Clicca per maggiori dettagli",
     // HIDE_UNTRACKED:                     "Hide untracked",
     HIDE_UNTRACKED:                        "Nascondi i file non tracciati",
     // HISTORY:                            "History",
-    // TODO: localize HISTORY to it
+    HISTORY:                               "Storia",
     // HISTORY_COMMIT_BY:                  "by",
-    // TODO: localize HISTORY_COMMIT_BY to it
+    HISTORY_COMMIT_BY:                     "di",
     // IDENTICON:                          "Identicon (www.gravatar.com)",
-    // TODO: localize IDENTICON to it
+    IDENTICON:                             "Identicon (www.gravatar.com)",
     // INIT_GITFTP_SCOPE:                  "Initialize Git-FTP remote",
     INIT_GITFTP_SCOPE:                     "Inizializza il remote di Git-FTP",
     // INIT_GITFTP_SCOPE_NAME:             "Initialize Git-FTP remote \"{0}\"?",
@@ -268,15 +268,15 @@ define({
     // MERGE_RESULT:                       "Merge result",
     MERGE_RESULT:                          "Risultati del merge",
     // MORE_INFO:                          "More information\u2026",
-    // TODO: localize MORE_INFO to it
+    MORE_INFO:                             "Più informazioni\u2026",
     // NORMALIZE_LINE_ENDINGS:             "Normalize line endings (to \\n)",
     NORMALIZE_LINE_ENDINGS:                "Normalizza i fine linea (a \\n)",
     // NOTHING_TO_COMMIT:                  "Nothing to commit, working directory clean.",
     NOTHING_TO_COMMIT:                     "Nessun file su cui effettuare il commit, la cartella è pulita.",
     // OK:                                 "OK",
-    // TODO: localize OK to it
+    OK:                                    "OK",
     // OPERATION_IN_PROGRESS_TITLE:        "Git operation in progress\u2026",
-    // TODO: localize OPERATION_IN_PROGRESS_TITLE to it
+    OPERATION_IN_PROGRESS_TITLE:           "Operazione di Git in corso\u2026",
     // ORIGIN_BRANCH:                      "Origin branch",
     ORIGIN_BRANCH:                         "Branch di origine",
     // PANEL_COMMAND:                      "Show Git panel",
@@ -284,7 +284,7 @@ define({
     // PANEL_SHORTCUT:                     "Toggle panel",
     PANEL_SHORTCUT:                        "Mostra/nascondi pannello",
     // PASSWORD:                           "Password",
-    // TODO: localize PASSWORD to it
+    PASSWORD:                              "Password",
     // PASSWORDS:                          "Passwords",
     PASSWORDS:                             "Password",
     // PATH_TO_GIT_EXECUTABLE:             "Path to Git executable",
@@ -292,31 +292,31 @@ define({
     // PATH_TO_GIT_MSYSGIT:                "Path to msysgit folder",
     PATH_TO_GIT_MSYSGIT:                   "Percorso della cartella msysgit",
     // PICTURE:                            "Gravatar (www.gravatar.com)",
-    // TODO: localize PICTURE to it
+    PICTURE:                               "Gravatar (www.gravatar.com)",
     // PULL_AVOID_MERGING:                 "Avoid manual merging",
-    // TODO: localize PULL_AVOID_MERGING to it
+    PULL_AVOID_MERGING:                    "Evita il merge manuale",
     // PULL_DEFAULT:                       "Default merge",
-    // TODO: localize PULL_DEFAULT to it
+    PULL_DEFAULT:                          "Merge normale",
     // PULL_FROM:                          "Pull from",
-    // TODO: localize PULL_FROM to it
+    PULL_FROM:                             "Scarica da",
     // PULL_MERGE_NOCOMMIT:                "Merge without commit",
-    // TODO: localize PULL_MERGE_NOCOMMIT to it
+    PULL_MERGE_NOCOMMIT:                   "Merge senza un commit",
     // PULL_REBASE:                        "Use rebase",
-    // TODO: localize PULL_REBASE to it
+    PULL_REBASE:                           "Usa rebase",
     // PULL_RESET:                         "Use soft reset",
-    // TODO: localize PULL_RESET to it
+    PULL_RESET:                            "Usa il reset leggero",
     // PULL_SHORTCUT:                      "Pull from remote repository",
     PULL_SHORTCUT:                         "Scarica dal repository remoto",
     // PUSH_DEFAULT:                       "Default push",
-    // TODO: localize PUSH_DEFAULT to it
+    PUSH_DEFAULT:                          "Push normale",
     // PUSH_DELETE_BRANCH:                 "Delete remote branch",
-    // TODO: localize PUSH_DELETE_BRANCH to it
+    PUSH_DELETE_BRANCH:                    "Elimina il branch remoto",
     // PUSH_FORCED:                        "Forced push",
-    // TODO: localize PUSH_FORCED to it
+    PUSH_FORCED:                           "Push forzato",
     // PUSH_SHORTCUT:                      "Push to remote repository",
     PUSH_SHORTCUT:                         "Carica sul repository remoto",
     // PUSH_TO:                            "Push to",
-    // TODO: localize PUSH_TO to it
+    PUSH_TO:                               "Push su",
     // Q_DELETE_FILE:                      "Are you sure you wish to delete the file <span class='dialog-filename'>{0}</span>?",
     Q_DELETE_FILE:                         "Sei sicuro di voler cancellare il file <span class='dialog-filename'>{0}</span>?",
     // Q_RESTART_BRACKETS:                 "Do you wish to restart Brackets to apply new settings?",
@@ -324,13 +324,13 @@ define({
     // Q_UNDO_CHANGES:                     "Reset changes to file <span class='dialog-filename'>{0}</span>?",
     Q_UNDO_CHANGES:                        "Revertire le modifiche al file <span class='dialog-filename'>{0}</span>?",
     // REBASE_RESULT:                      "Rebase result",
-    // TODO: localize REBASE_RESULT to it
+    REBASE_RESULT:                         "Risultato del rebase",
     // REMOVE_BOM:                         "Remove BOM from files",
     REMOVE_BOM:                            "Rimuovi i BOM dai file",
     // REMOVE_FROM_GITIGNORE:              "Remove from .gitignore",
     REMOVE_FROM_GITIGNORE:                 "Rimuovi dal .gitignore",
     // REQ_INTERNET:                       "Requires internet connection",
-    // TODO: localize REQ_INTERNET to it
+    REQ_INTERNET:                          "Richiede una connessione ad internet",
     // RESET_LOCAL_REPO:                   "Discard all changes since last commit",
     RESET_LOCAL_REPO:                      "Annulla tutte le modifiche dall'ultimo commit",
     // RESET_LOCAL_REPO_CONFIRM:           "Do you wish to discard all changes done since last commit? This action can't be reverted.",
@@ -338,15 +338,15 @@ define({
     // RESTART:                            "Restart",
     RESTART:                               "Riavvia",
     // SAVE_CREDENTIALS_HELP:              "You don't need to fill out username/password if your credentials are managed elsewhere. Use this only when your operation keeps timing out.",
-    // TODO: localize SAVE_CREDENTIALS_HELP to it
+    SAVE_CREDENTIALS_HELP:                 "Non hai bisogno di inserire username/password se le credenziali sono gestite altrove. Usa questo solo se le operazioni continuano ad andare fuori tempo.",
     // SAVE_CREDENTIALS_IN_URL:            "Save credentials to remote url (in plain text)",
-    // TODO: localize SAVE_CREDENTIALS_IN_URL to it
+    SAVE_CREDENTIALS_IN_URL:               "Salva le credenziali dell'url del remote (non protette)",
     // SAVE_PASSWORD_QUESTION:             "Save username/password?",
     SAVE_PASSWORD_QUESTION:                "Ricordare nome utente/password?",
     // SET_ORIGIN_URL:                     "Set origin URL",
     SET_ORIGIN_URL:                        "Imposta URL di origine",
     // SET_THIS_BRANCH_AS_TRACKING:        "Set this branch as a new tracking branch",
-    // TODO: localize SET_THIS_BRANCH_AS_TRACKING to it
+    SET_THIS_BRANCH_AS_TRACKING:           "Imposta questo branch come nuovo branch di riferimento",
     // SHORTCUTS:                          "Shortcuts",
     SHORTCUTS:                             "Scorciatoie",
     // SHORTCUTS_HINT:                     "Separate keys with dash, like this: Ctrl-Alt-G<br>You can use the english key identifiers Ctrl, Cmd (Mac), Alt and Shift.",
@@ -378,7 +378,7 @@ define({
     // TOOLTIP_COMMIT:                     "Commit the selected files",
     TOOLTIP_COMMIT:                        "Commit i file selezionati",
     // TOOLTIP_FIND_CONFLICTS:             "Starts a search for Git merge/rebase conflicts in the project",
-    // TODO: localize TOOLTIP_FIND_CONFLICTS to it
+    TOOLTIP_FIND_CONFLICTS:                "Avvia una ricerca per conflitti di merge/rebase nel progetto",
     // TOOLTIP_GITPUSH:                    "Git-FTP Push",
     TOOLTIP_GITPUSH:                       "Git-FTP Push",
     // TOOLTIP_HIDE_FILE_HISTORY:          "Hide file history",
@@ -388,7 +388,7 @@ define({
     // TOOLTIP_INIT:                       "Initialize repository",
     TOOLTIP_INIT:                          "inizializza il repository",
     // TOOLTIP_MERGE_ABORT:                "Abort the merge operation and reset HEAD to the last local commit",
-    // TODO: localize TOOLTIP_MERGE_ABORT to it
+    TOOLTIP_MERGE_ABORT:                   "Annulla l'operazione di merge e resetta l'HEAD all'ultimo commit locale",
     // TOOLTIP_MORE:                       "More actions\u2026",
     TOOLTIP_MORE:                          "Più opzioni\u2026",
     // TOOLTIP_OPEN_BASH:                  "Open Bash/Terminal console",
@@ -400,11 +400,11 @@ define({
     // TOOLTIP_PUSH:                       "Git Push",
     TOOLTIP_PUSH:                          "Git Push",
     // TOOLTIP_REBASE_ABORT:               "Abort the rebase operation and reset HEAD to the original branch",
-    // TODO: localize TOOLTIP_REBASE_ABORT to it
+    TOOLTIP_REBASE_ABORT:                  "Annulla l'operazione di rebase e resetta l'HEAD al branch originale",
     // TOOLTIP_REBASE_CONTINUE:            "Restart the rebasing process after having resolved a merge conflict",
-    // TODO: localize TOOLTIP_REBASE_CONTINUE to it
+    TOOLTIP_REBASE_CONTINUE:               "Riavvia il processo di rebase dopo aver risolto i conflitti di merge",
     // TOOLTIP_REBASE_SKIP:                "Restart the rebasing process by skipping the current patch",
-    // TODO: localize TOOLTIP_REBASE_SKIP to it
+    TOOLTIP_REBASE_SKIP:                   "Riavvia il processo di rebase saltando la patch corrente",
     // TOOLTIP_REFRESH_PANEL:              "Refresh panel",
     TOOLTIP_REFRESH_PANEL:                 "Aggiorna pannello",
     // TOOLTIP_SHOW_FILE_HISTORY:          "Show file history",
@@ -418,7 +418,7 @@ define({
     // URL:                                "URL",
     URL:                                   "URL",
     // USERNAME:                           "Username",
-    // TODO: localize USERNAME to it
+    USERNAME:                              "Nome utente",
     // USER_ABORTED:                       "User aborted!",
     USER_ABORTED:                          "Annullato dall'utente!",
     // USER_DATE_FORMAT:                   "Own date format (<a href='http://momentjs.com/docs/#/displaying/format/'>Syntax</a>)",
@@ -430,11 +430,11 @@ define({
     // USE_GIT_GUTTER:                     "Use Git gutter marks",
     USE_GIT_GUTTER:                        "Usa la guida laterale di Git per mostrare gli indicatori",
     // USE_REBASE:                         "Use REBASE",
-    // TODO: localize USE_REBASE to it
+    USE_REBASE:                            "Usa il rebase",
     // USE_VERBOSE_DIFF:                   "Show verbose output in diffs",
-    // TODO: localize USE_VERBOSE_DIFF to it
+    USE_VERBOSE_DIFF:                      "Visualizza l'output più dettagliato nelle differenze",
     // USE_DIFFTOOL:                       "Use difftool for diffs",
-    // TODO: localize USE_DIFFTOOL to it
+    USE_DIFFTOOL:                          "Usa difftool per le differenze",
     // USING_GIT_VERSION:                  "Git version",
     USING_GIT_VERSION:                     "Versione di Git",
     // VIEW_AUTHORS_FILE:                  "View authors of file",

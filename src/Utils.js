@@ -28,7 +28,8 @@ define(function (require, exports, module) {
 
     // Implementation
     function getProjectRoot() {
-        return ProjectManager.getProjectRoot().fullPath;
+        var projectRoot = ProjectManager.getProjectRoot();
+        return projectRoot ? projectRoot.fullPath : null;
     }
 
     // returns "C:/Users/Zaggi/AppData/Roaming/Brackets/extensions/user/zaggino.brackets-git/"

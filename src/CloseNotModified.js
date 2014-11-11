@@ -62,6 +62,16 @@ define(function (require, exports) {
         });
     }
 
+    function updateIconState() {
+        if (MainViewManager.getPaneCount() === 1 && MainViewManager.getWorkingSetSize(MainViewManager.ACTIVE_PANE) === 0) {
+            $icon.toggleClass("working-set-not-available", true);
+            $icon.toggleClass("working-set-available", false);
+        } else {
+            $icon.toggleClass("working-set-not-available", false);
+            $icon.toggleClass("working-set-available", true);
+        }
+    }
+
     function init() {
         // Add close not modified button near working files list
         $icon = $("<div/>")
@@ -70,6 +80,7 @@ define(function (require, exports) {
             .html("<i class='octicon octicon-remove-close'></i>")
             .on("click", handleCloseNotModified)
             .appendTo("#sidebar");
+        updateIconState();
     }
 
     EventEmitter.on(Events.GIT_ENABLED, function () {
@@ -78,6 +89,10 @@ define(function (require, exports) {
 
     EventEmitter.on(Events.GIT_DISABLED, function () {
         $icon.hide();
+    });
+
+    $(MainViewManager).on("workingSetAdd workingSetAddList workingSetRemove workingSetRemoveList workingSetUpdate", function () {
+        updateIconState();
     });
 
     // Public API

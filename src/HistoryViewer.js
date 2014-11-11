@@ -35,10 +35,6 @@ define(function (require, exports) {
     var currentPage = 0;
     var hasNextPage = false;
 
-    Git.getConfig("diff.tool").done(function (config) {
-        useDifftool = !!config;
-    });
-
     function toggleDiff($a) {
         if ($a.hasClass("active")) {
             // Close the clicked diff
@@ -281,7 +277,15 @@ define(function (require, exports) {
         return $viewer.appendTo($editorHolder);
     }
 
+    var initialize = _.once(function () {
+        Git.getConfig("diff.tool").done(function (config) {
+            useDifftool = !!config;
+        });
+    });
+
     function show(commitInfo) {
+        initialize();
+
         isShown       = true;
         commit        = commitInfo;
 

@@ -165,6 +165,10 @@ define(function (require) {
     }
 
     function showPushResult(result) {
+        if (typeof result.remoteUrl === "string") {
+            result.remoteUrl = Utils.encodeSensitiveInformation(result.remoteUrl);
+        }
+
         var template = [
             "<h3>{{flagDescription}}</h3>",
             "Info:",
