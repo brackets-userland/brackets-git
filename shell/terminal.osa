@@ -63,10 +63,10 @@ on run argv
 
         tell app "Terminal"
             if (new_cmd) is 1 then
-                do script "cd " & dir in window 1
+                do script "cd " & dir & "; git status" in window 1
             else
                 activate
-                do script "cd " & dir
+                do script "cd " & dir & "; git status"
             end if
         end tell
 
