@@ -6,8 +6,9 @@ on run argv
 
     set doesExist to false
     try
-        do shell script "osascript -e 'exists application \"iTerm\"'"
-        set doesExist to true
+        if exists application "iTerm" then
+            set doesExist to true
+        end if
     end try
 
     if doesExist
