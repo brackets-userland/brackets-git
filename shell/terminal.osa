@@ -13,40 +13,10 @@ on run argv
     end try
 
     if doesExist then
-        tell application "System Events"
-            if "iTerm" is not in name of processes then
-                launch application "iTerm"
-
-                tell process "iTerm"
-                    set frontmost to true
-                end tell
-
-                set new_cmd to 1
-            end if
+        tell application "Finder"
+            set myPath to container of (path to me) as text
         end tell
-
-        tell application "iTerm"
-            if (new_cmd) is 1 then
-                -- iTerm was just launched
-                tell the current terminal
-                    set cur_session_name to get name of current session
-                    if cur_session_name is not "Brackets-Git (bash)" then
-                        launch session "Brackets-Git"
-                        set name of current session to "Brackets-Git"
-                        tell current session
-                            write text "cd " & dir & "; git status"
-                        end tell
-                    end if
-                end tell
-            else
-                -- iTerm was already open
-                activate
-                tell the current terminal
-                    select session "Brackets-Git (bash)"
-                end tell
-            end if
-        end tell
-        do shell script "echo ok"
+        run script (alias (myPath & "iterm.osa")) with parameters (argv)
 
     else
 
