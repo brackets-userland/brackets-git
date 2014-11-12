@@ -2,77 +2,20 @@
 on run argv
 
     set dir to quoted form of (first item of argv)
-    set new_cmd to 0
+    
+    tell application "System Events"
+        if "Terminal" is not in name of processes then
+            launch application "Terminal"
 
-    set doesExist to false
-    try
-        if exists application "iTerm" then
-            set doesExist to true
+            tell process "Terminal"
+                set frontmost to true
+            end tell
         end if
-    end try
-
-    if doesExist
-    
-        tell application "System Events"
-            if "iTerm" is not in name of processes then
-                launch application "iTerm"
-
-                tell process "iTerm"
-                    set frontmost to true
-                end tell
-
-                set new_cmd to 1
-            end if
-        end tell
-
-        tell application "iTerm"
-            if (new_cmd) is 1 then
-                make new terminal
-                tell the current terminal
-                    activate current session
-                    launch session "Default Session"
-                    tell the last session
-                        write text "cd " & dir & "; git status"
-                    end tell
-                end tell
-            else
-                activate
-                tell the current terminal
-                    activate current session
-                    tell the last session
-                        write text "cd " & dir & "; clear; pwd; git status"
-                    end tell
-                end tell
-            end if
-        end tell
-        do shell script "echo ok"
-
-    else
-    
-        tell app "System Events"
-            if "Terminal" is not in name of processes then
-                launch app "Terminal"
-
-                tell app "Terminal"
-                    activate
-                    do script ""
-                end tell
-
-                set new_cmd to 1
-            end if
-        end tell
-
-        tell app "Terminal"
-            if (new_cmd) is 1 then
-                do script "cd " & dir & "; git status" in window 1
-            else
-                activate
-                do script "cd " & dir & "; git status"
-            end if
-        end tell
-
-    end if
-
-    do shell script "echo ok"
+    end tell
+		
+    tell application "Terminal"
+        activate
+        do script "cd " & dir & "; git status"
+    end tell
     
 end run
