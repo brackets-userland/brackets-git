@@ -1,0 +1,49 @@
+#!/usr/bin/osascript
+on run argv
+
+    set dir to quoted form of (first item of argv)
+    set new_cmd to 0
+    tell application "System Events"
+        if "iTerm" is not in name of processes then
+            launch application "iTerm"
+
+            tell process "iTerm"
+                set frontmost to true
+            end tell
+
+            set new_cmd to 1
+        end if
+    end tell
+
+    tell application "iTerm"
+        if (new_cmd) is 1 then
+            -- iTerm was just launched
+            tell the current terminal
+                set cur_session_name to get name of current session
+                if cur_session_name is not "Brackets-Git (bash)" then
+                    launch session "Brackets-Git"
+                    set name of current session to "Brackets-Git"
+                    tell current session
+                        write text "cd " & dir & "; git status"
+                    end tell
+                end if
+            end tell
+        else
+            -- iTerm is already open
+            activate
+            tell the current terminal
+                try
+                    select session "Brackets-Git (bash)"
+                on error
+                    launch session "Brackets-Git"
+                    set name of current session to "Brackets-Git"
+                    tell current session
+                        write text "cd " & dir & "; git status"
+                    end tell
+                end try
+            end tell
+        end if
+    end tell
+    do shell script "echo ok"
+
+end run
