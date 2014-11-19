@@ -1,4 +1,4 @@
-# Brackets-Git
+# Brackets-Git [![build status](https://travis-ci.org/zaggino/brackets-git.svg?branch=master)](https://travis-ci.org/zaggino/brackets-git)
 
 Brackets-Git is an extension for [Brackets](http://brackets.io/) editor - it provides Git integration for Brackets.
 It's tested and works on any platform supported by Brackets (Windows, Mac OS X, GNU/Linux).
