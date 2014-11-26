@@ -4,6 +4,7 @@
 
 ## 0.13.40
 * Extension should now automatically detect change of current branch outside of Brackets (in terminal/command line).
+* BUGFIX: Branch list no longer overflows out of the screen when there're too many branches locally.
 
 ## 0.13.39
 * BUGFIX: Another attempt to fix Terminal opening on Mac by [Andrew Minion](https://github.com/macbookandrew)
