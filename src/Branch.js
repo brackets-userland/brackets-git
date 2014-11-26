@@ -5,6 +5,7 @@ define(function (require, exports) {
         CommandManager          = brackets.getModule("command/CommandManager"),
         Dialogs                 = brackets.getModule("widgets/Dialogs"),
         EditorManager           = brackets.getModule("editor/EditorManager"),
+        FileSystem              = brackets.getModule("filesystem/FileSystem"),
         Menus                   = brackets.getModule("command/Menus"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         StringUtils             = brackets.getModule("utils/StringUtils"),
@@ -228,13 +229,14 @@ define(function (require, exports) {
             });
 
         }).on("click", "a.git-branch-link .switch-branch", function (e) {
+
             e.stopPropagation();
             var newBranchName = $(this).parent().data("branch");
-            return Git.getCurrentBranchName().then(function (oldBranchName) {
+
+            Git.getCurrentBranchName().then(function (oldBranchName) {
                 Git.checkout(newBranchName).then(function () {
                     closeDropdown();
                     return closeNotExistingFiles(oldBranchName, newBranchName);
-
                 }).catch(function (err) { ErrorHandler.showError(err, "Switching branches failed."); });
             }).catch(function (err) { ErrorHandler.showError(err, "Getting current branch name failed."); });
 
@@ -344,6 +346,43 @@ define(function (require, exports) {
         });
     }
 
+    function _getHeadFilePath() {
+        return Utils.getProjectRoot() + ".git/HEAD";
+    }
+
+    function addHeadToTheFileIndex() {
+        FileSystem.resolve(_getHeadFilePath(), function (err) {
+            if (err) {
+                ErrorHandler.showError(err, "Resolving .git/HEAD file failed");
+                return;
+            }
+        });
+    }
+
+    function checkBranch() {
+        FileSystem.getFileForPath(_getHeadFilePath()).read(function (err, contents) {
+            if (err) {
+                ErrorHandler.showError(err, "Reading .git/HEAD file failed");
+                return;
+            }
+
+            contents = contents.trim();
+
+            var m = contents.match(/^ref:\s+refs\/heads\/(\S+)/);
+            if (!m) {
+                ErrorHandler.showError(err, "Failed parsing branch name from " + contents);
+                return;
+            }
+
+            var branchInHead  = m[1],
+                branchInUi    = $gitBranchName.text();
+
+            if (branchInHead !== branchInUi) {
+                refresh();
+            }
+        });
+    }
+
     function refresh() {
         if ($gitBranchName.length === 0) { return; }
 
@@ -363,6 +402,9 @@ define(function (require, exports) {
                 Panel.disable("not-repo");
                 return;
             }
+
+            // we are in a .git repo so read the head
+            addHeadToTheFileIndex();
 
             return Git.getCurrentBranchName().then(function (branchName) {
 
@@ -427,6 +469,12 @@ define(function (require, exports) {
             .appendTo("#project-files-header");
         refresh();
     }
+
+    EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function (evt, file) {
+        if (file.fullPath === _getHeadFilePath()) {
+            checkBranch();
+        }
+    });
 
     EventEmitter.on(Events.REFRESH_ALL, function () {
         CommandManager.execute("file.refresh");

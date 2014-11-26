@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.40
+* Extension should now automatically detect change of current branch outside of Brackets (in terminal/command line).
+
 ## 0.13.39
 * BUGFIX: Another attempt to fix Terminal opening on Mac by [Andrew Minion](https://github.com/macbookandrew)
 
