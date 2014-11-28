@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.41
+* BUGFIX: Fixed deprecation warning for DocumentManager.getWorkingSet.
+
 ## 0.13.40
 * Extension should now automatically detect change of current branch outside of Brackets (in terminal/command line).
 * BUGFIX: Branch list no longer overflows out of the screen when there're too many branches locally.

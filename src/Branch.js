@@ -144,7 +144,7 @@ define(function (require, exports) {
     function closeNotExistingFiles(oldBranchName, newBranchName) {
         return Git.getDeletedFiles(oldBranchName, newBranchName).then(function (deletedFiles) {
             var projectRoot = Utils.getProjectRoot(),
-                openedFiles = DocumentManager.getWorkingSet();
+                openedFiles = MainViewManager.getWorkingSet(MainViewManager.ALL_PANES);
             // Close files that does not exists anymore in the new selected branch
             deletedFiles.forEach(function (dFile) {
                 var oFile = _.find(openedFiles, function (oFile) {
