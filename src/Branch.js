@@ -340,6 +340,14 @@ define(function (require, exports) {
                 })
                 .appendTo($("body"));
 
+            // fix so it doesn't overflow the screen
+            var maxHeight = $dropdown.parent().height(),
+                height = $dropdown.height(),
+                topOffset = $dropdown.position().top;
+            if (height + topOffset >= maxHeight - 10) {
+                $dropdown.css("bottom", "10px");
+            }
+
             PopUpManager.addPopUp($dropdown, detachCloseEvents, true);
             attachCloseEvents();
             handleEvents();
