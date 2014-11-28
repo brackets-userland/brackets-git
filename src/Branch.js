@@ -5,6 +5,7 @@ define(function (require, exports) {
         CommandManager          = brackets.getModule("command/CommandManager"),
         Dialogs                 = brackets.getModule("widgets/Dialogs"),
         EditorManager           = brackets.getModule("editor/EditorManager"),
+        FileSyncManager         = brackets.getModule("project/FileSyncManager"),
         FileSystem              = brackets.getModule("filesystem/FileSystem"),
         Menus                   = brackets.getModule("command/Menus"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
@@ -114,6 +115,7 @@ define(function (require, exports) {
                         Git.rebaseInit(fromBranch).catch(function (err) {
                             throw ErrorHandler.showError(err, "Rebase failed");
                         }).then(function (stdout) {
+                            FileSyncManager.syncOpenDocuments();
                             Utils.showOutput(stdout, Strings.REBASE_RESULT);
                             EventEmitter.emit(Events.REFRESH_ALL);
                         });
@@ -123,6 +125,7 @@ define(function (require, exports) {
                         Git.mergeBranch(fromBranch, mergeMsg, useNoff).catch(function (err) {
                             throw ErrorHandler.showError(err, "Merge failed");
                         }).then(function (stdout) {
+                            FileSyncManager.syncOpenDocuments();
                             Utils.showOutput(stdout, Strings.MERGE_RESULT);
                             EventEmitter.emit(Events.REFRESH_ALL);
                         });

@@ -4,6 +4,7 @@
 
 ## 0.13.41
 * BUGFIX: Fixed deprecation warning for DocumentManager.getWorkingSet.
+* BUGFIX: Invoke syncOpenDocuments function after rebase or merge has finished to check for changes.
 
 ## 0.13.40
 * Extension should now automatically detect change of current branch outside of Brackets (in terminal/command line).
