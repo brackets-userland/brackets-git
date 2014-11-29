@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.42
+* BUGFIX: "Resolving .git/HEAD file failed error: Unknown" should stop popping up.
+
 ## 0.13.41
 * BUGFIX: Fixed deprecation warning for DocumentManager.getWorkingSet.
 * BUGFIX: Invoke syncOpenDocuments function after rebase or merge has finished to check for changes.
