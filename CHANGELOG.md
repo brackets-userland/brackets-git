@@ -4,6 +4,7 @@
 
 ## 0.13.42
 * BUGFIX: "Resolving .git/HEAD file failed error: Unknown" should stop popping up.
+* BUGFIX: syncOpenDocuments is now called after using manual refresh button in panel.
 
 ## 0.13.41
 * BUGFIX: Fixed deprecation warning for DocumentManager.getWorkingSet.

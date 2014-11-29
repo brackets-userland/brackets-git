@@ -5,7 +5,6 @@ define(function (require) {
     var _               = brackets.getModule("thirdparty/lodash"),
         DefaultDialogs  = brackets.getModule("widgets/DefaultDialogs"),
         Dialogs         = brackets.getModule("widgets/Dialogs"),
-        FileSyncManager = brackets.getModule("project/FileSyncManager"),
         StringUtils     = brackets.getModule("utils/StringUtils");
 
     // Local modules
@@ -292,8 +291,7 @@ define(function (require) {
                         })
                         .then(function (result) {
                             return ProgressDialog.waitForClose().then(function () {
-                                FileSyncManager.syncOpenDocuments();
-                                Utils.showOutput(result, Strings.GIT_PULL_RESPONSE);
+                                return Utils.showOutput(result, Strings.GIT_PULL_RESPONSE);
                             });
                         })
                         .catch(function (err) {

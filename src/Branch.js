@@ -115,9 +115,10 @@ define(function (require, exports) {
                         Git.rebaseInit(fromBranch).catch(function (err) {
                             throw ErrorHandler.showError(err, "Rebase failed");
                         }).then(function (stdout) {
-                            FileSyncManager.syncOpenDocuments();
-                            Utils.showOutput(stdout, Strings.REBASE_RESULT);
-                            EventEmitter.emit(Events.REFRESH_ALL);
+                            Utils.showOutput(stdout, Strings.REBASE_RESULT).finally(function () {
+                                EventEmitter.emit(Events.REFRESH_ALL);
+                            });
+
                         });
 
                     } else {
@@ -125,9 +126,9 @@ define(function (require, exports) {
                         Git.mergeBranch(fromBranch, mergeMsg, useNoff).catch(function (err) {
                             throw ErrorHandler.showError(err, "Merge failed");
                         }).then(function (stdout) {
-                            FileSyncManager.syncOpenDocuments();
-                            Utils.showOutput(stdout, Strings.MERGE_RESULT);
-                            EventEmitter.emit(Events.REFRESH_ALL);
+                            Utils.showOutput(stdout, Strings.MERGE_RESULT).finally(function () {
+                                EventEmitter.emit(Events.REFRESH_ALL);
+                            });
                         });
 
                     }
@@ -497,6 +498,7 @@ define(function (require, exports) {
     });
 
     EventEmitter.on(Events.REFRESH_ALL, function () {
+        FileSyncManager.syncOpenDocuments();
         CommandManager.execute("file.refresh");
         refresh();
     });
