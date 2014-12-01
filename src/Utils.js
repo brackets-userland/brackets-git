@@ -154,6 +154,9 @@ define(function (require, exports, module) {
                         _numLineNew = numLineNew;
                 }
 
+                // removes ZERO WIDTH NO-BREAK SPACE character (BOM)
+                line = line.replace(/\uFEFF/g, "");
+
                 line = _.escape(line).replace(/\s/g, "&nbsp;");
                 line = line.replace(/(&nbsp;)+$/g, function (trailingWhitespace) {
                     return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
@@ -372,8 +375,8 @@ define(function (require, exports, module) {
                         }
 
                         if (removeBom) {
-                            // remove BOM - \ufeff
-                            text = text.replace(/\ufeff/g, "");
+                            // remove BOM - \uFEFF
+                            text = text.replace(/\uFEFF/g, "");
                         }
                         if (normalizeLineEndings) {
                             // normalizes line endings
