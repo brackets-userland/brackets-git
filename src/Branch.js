@@ -364,19 +364,10 @@ define(function (require, exports) {
 
     function addHeadToTheFileIndex() {
         FileSystem.resolve(_getHeadFilePath(), function (err) {
-
-            var msg = "Resolving .git/HEAD file failed";
-
-            if (err === "Unknown") {
-                ErrorHandler.logError(err, msg);
-                return;
-            }
-
             if (err) {
-                ErrorHandler.showError(err, msg);
+                ErrorHandler.logError(err, "Resolving .git/HEAD file failed");
                 return;
             }
-
         });
     }
 

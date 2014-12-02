@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.13.43
+* BUGFIX: Another "Resolving .git/HEAD file failed error" fixed.
+
 ## 0.13.42
 * BUGFIX: "Resolving .git/HEAD file failed error: Unknown" should stop popping up.
 * BUGFIX: syncOpenDocuments is now called after using manual refresh button in panel.
