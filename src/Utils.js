@@ -387,11 +387,15 @@ define(function (require, exports, module) {
 
                         if (lineNumbers) {
                             lineNumbers.forEach(function (lineNumber) {
-                                lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                                if (typeof lines[lineNumber] === "string") {
+                                    lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                                }
                             });
                         } else {
                             lines.forEach(function (ln, lineNumber) {
-                                lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                                if (typeof lines[lineNumber] === "string") {
+                                    lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
+                                }
                             });
                         }
 

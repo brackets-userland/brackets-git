@@ -4,6 +4,7 @@
 
 ## 0.13.43
 * BUGFIX: Another "Resolving .git/HEAD file failed error" fixed.
+* BUGFIX: "Cannot call method replace of undefined" fixed in whitespace cleanup functionality.
 
 ## 0.13.42
 * BUGFIX: "Resolving .git/HEAD file failed error: Unknown" should stop popping up.
