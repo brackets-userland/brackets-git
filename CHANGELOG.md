@@ -2,6 +2,9 @@
 
 **If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.0
+* You can now experimentally use extension when not working directly from a Git root folder.
+
 ## 0.13.43
 * BUGFIX: Another "Resolving .git/HEAD file failed error" fixed.
 * BUGFIX: "Cannot call method replace of undefined" fixed in whitespace cleanup functionality.

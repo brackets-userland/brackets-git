@@ -591,6 +591,8 @@ define(function (require, exports) {
         return git(["status", "-u", "--porcelain"]).then(function (stdout) {
             if (!stdout) { return []; }
 
+            var currentSubFolder = Preferences.get("currentGitSubfolder");
+
             // files that are modified both in index and working tree should be resetted
             var isEscaped = false,
                 needReset = [],
@@ -661,6 +663,11 @@ define(function (require, exports) {
                     io = file.indexOf("->");
                 if (io !== -1) {
                     file = file.substring(io + 2).trim();
+                }
+
+                // we don't want to display paths that lead to this file outside the project
+                if (currentSubFolder && display.indexOf(currentSubFolder) === 0) {
+                    display = display.substring(currentSubFolder.length);
                 }
 
                 results.push({
@@ -861,7 +868,9 @@ define(function (require, exports) {
     }
 
     function getGitRoot() {
-        return git(["rev-parse", "--show-toplevel"])
+        return git(["rev-parse", "--show-toplevel"], {
+                cwd: Utils.getProjectRoot()
+            })
             .then(function (root) {
                 // directory should end with a slash
                 return root + "/";

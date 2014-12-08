@@ -52,7 +52,7 @@ define(function (require, exports) {
         lastCommitMessage = null;
 
     function lintFile(filename) {
-        var fullPath = Utils.getProjectRoot() + filename,
+        var fullPath = Preferences.get("currentGitRoot") + filename,
             codeInspectionPromise;
 
         try {

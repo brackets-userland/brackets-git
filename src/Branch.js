@@ -359,7 +359,7 @@ define(function (require, exports) {
     }
 
     function _getHeadFilePath() {
-        return Utils.getProjectRoot() + ".git/HEAD";
+        return Preferences.get("currentGitRoot") + ".git/HEAD";
     }
 
     function addHeadToTheFileIndex() {
@@ -405,17 +405,21 @@ define(function (require, exports) {
                 .show();
 
         return Git.getGitRoot().then(function (gitRoot) {
-            var isRepositoryRoot = gitRoot === Utils.getProjectRoot();
+            var projectRoot             = Utils.getProjectRoot(),
+                isRepositoryRootOrChild = gitRoot && projectRoot.indexOf(gitRoot) === 0;
 
-            $gitBranchName.parent().toggle(isRepositoryRoot);
+            $gitBranchName.parent().toggle(isRepositoryRootOrChild);
 
-            if (!isRepositoryRoot) {
+            if (!isRepositoryRootOrChild) {
                 $gitBranchName
                     .off("click")
                     .text("not a git repo");
                 Panel.disable("not-repo");
                 return;
             }
+
+            Preferences.set("currentGitRoot", gitRoot);
+            Preferences.set("currentGitSubfolder", projectRoot.substring(gitRoot.length));
 
             // we are in a .git repo so read the head
             addHeadToTheFileIndex();
