@@ -404,7 +404,9 @@ define(function (require, exports) {
             .parent()
                 .show();
 
-        return Git.isProjectRepositoryRoot().then(function (isRepositoryRoot) {
+        return Git.getGitRoot().then(function (gitRoot) {
+            var isRepositoryRoot = gitRoot === Utils.getProjectRoot();
+
             $gitBranchName.parent().toggle(isRepositoryRoot);
 
             if (!isRepositoryRoot) {

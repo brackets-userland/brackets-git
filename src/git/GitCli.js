@@ -860,6 +860,20 @@ define(function (require, exports) {
         });
     }
 
+    function getGitRoot() {
+        return git(["rev-parse", "--show-toplevel"])
+            .then(function (root) {
+                // directory should end with a slash
+                return root + "/";
+            })
+            .catch(function (e) {
+                if (ErrorHandler.contains(e, "Not a git repository")) {
+                    return null;
+                }
+                throw e;
+            });
+    }
+
     // Public API
     exports._git                      = git;
     exports.setGitPath                = setGitPath;
@@ -910,5 +924,6 @@ define(function (require, exports) {
     exports.getDiffOfStagedFiles      = getDiffOfStagedFiles;
     exports.getListOfStagedFiles      = getListOfStagedFiles;
     exports.getBlame                  = getBlame;
+    exports.getGitRoot                = getGitRoot;
 
 });

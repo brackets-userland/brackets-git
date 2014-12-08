@@ -35,11 +35,5 @@
     "requireCapitalizedConstructors":               true,
     "safeContextKeyword":                           ["self"],
     "disallowYodaConditions":                       true,
-    "requireSpaceAfterLineComment":                 true,
-    
-    "additionalRules":                              ["tools/jscs-rules/*.js"],
-    "forbiddenFunctions":                           [
-                                                        "$.",
-                                                        ["$.map","_.map"], ["$.each","_.each"]
-                                                    ]
+    "requireSpaceAfterLineComment":                 true
 }
