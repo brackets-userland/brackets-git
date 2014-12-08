@@ -4,6 +4,7 @@
 
 ## 0.14.0
 * You can now experimentally use extension when not working directly from a Git root folder.
+* BUGFIX: Push should work when using push hooks.
 
 ## 0.13.43
 * BUGFIX: Another "Resolving .git/HEAD file failed error" fixed.

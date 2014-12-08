@@ -334,8 +334,13 @@ define(function (require, exports) {
         return git(args)
             .catch(repositoryNotFoundHandler)
             .then(function (stdout) {
+                // this should clear lines from push hooks
+                var lines = stdout.split("\n");
+                while (lines.length > 0 && lines[0].match(/^To/) === null) {
+                    lines.shift();
+                }
+
                 var retObj = {},
-                    lines = stdout.split("\n"),
                     lineTwo = lines[1].split("\t");
 
                 retObj.remoteUrl = lines[0].trim().split(" ")[1];
