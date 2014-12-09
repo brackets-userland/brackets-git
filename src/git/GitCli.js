@@ -54,6 +54,16 @@ define(function (require, exports) {
         _gitPath = path;
     }
 
+    function fixCygwinPath(path) {
+        if (typeof path === "string" && brackets.platform === "win" && path.indexOf("/cygdrive/") === 0) {
+            path = path.substring("/cygdrive/".length)
+                       .replace(/^([a-z]+)\//, function (a, b) {
+                           return b.toUpperCase() + ":/";
+                       });
+        }
+        return path;
+    }
+
     function _processQueue() {
         // do nothing if the queue is busy
         if (_gitQueueBusy) {
@@ -877,6 +887,7 @@ define(function (require, exports) {
                 cwd: Utils.getProjectRoot()
             })
             .then(function (root) {
+                root = fixCygwinPath(root);
                 // directory should end with a slash
                 return root + "/";
             })

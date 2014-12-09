@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.1
+* BUGFIX: Fix issue where extension can't detect repository correctly on cygwin.
+
 ## 0.14.0
 * You can now experimentally use extension when not working directly from a Git root folder.
 * BUGFIX: Push should work when using push hooks.
