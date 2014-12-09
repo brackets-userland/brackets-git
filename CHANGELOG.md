@@ -1,6 +1,6 @@
 # Changelog
 
-**If you'll get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
+**If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
 ## 0.14.0
 * You can now experimentally use extension when not working directly from a Git root folder.
