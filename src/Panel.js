@@ -824,7 +824,7 @@ define(function (require, exports) {
                     return;
                 }
                 CommandManager.execute(Commands.FILE_OPEN, {
-                    fullPath: Utils.getProjectRoot() + $this.attr("x-file")
+                    fullPath: Preferences.get("currentGitRoot") + $this.attr("x-file")
                 });
             })
             .on("dblclick", ".modified-file", function (e) {

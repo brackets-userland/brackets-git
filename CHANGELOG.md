@@ -4,6 +4,8 @@
 
 ## 0.14.2 (10/12/2014)
 * BUGFIX: Improved detection of git which should work on linux with symlinks.
+* BUGFIX: Fix whitespace cleanup not working when using Git subfolder.
+* BUGFIX: Fix error when clicking on the panel entries when using Git subfolder.
 
 ## 0.14.1 (10/12/2014)
 * BUGFIX: Fix issue where extension can't detect repository correctly on cygwin.

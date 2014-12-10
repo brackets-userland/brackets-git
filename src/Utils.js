@@ -360,7 +360,7 @@ define(function (require, exports, module) {
     function stripWhitespaceFromFile(filename, clearWholeFile) {
         return new Promise(function (resolve, reject) {
 
-            var fullPath                  = getProjectRoot() + filename,
+            var fullPath                  = Preferences.get("currentGitRoot") + filename,
                 addEndlineToTheEndOfFile  = Preferences.get("addEndlineToTheEndOfFile"),
                 removeBom                 = Preferences.get("removeByteOrderMark"),
                 normalizeLineEndings      = Preferences.get("normalizeLineEndings");
