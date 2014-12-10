@@ -24,7 +24,9 @@ define(function (require, exports, module) {
     var formatDiffTemplate      = require("text!templates/format-diff.html"),
         questionDialogTemplate  = require("text!templates/git-question-dialog.html"),
         outputDialogTemplate    = require("text!templates/git-output.html"),
-        writeTestResults        = {};
+        writeTestResults        = {},
+        debugOn                 = Preferences.get("debugMode"),
+        EXT_NAME                = "[brackets-git] ";
 
     // Implementation
     function getProjectRoot() {
@@ -328,6 +330,12 @@ define(function (require, exports, module) {
         console[type || "log"](encodeSensitiveInformation(msg));
     }
 
+    function consoleDebug(msg) {
+        if (debugOn) {
+            console.log(EXT_NAME + encodeSensitiveInformation(msg));
+        }
+    }
+
     /**
      * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
      *
@@ -528,6 +536,7 @@ define(function (require, exports, module) {
     exports.setLoading                  = setLoading;
     exports.unsetLoading                = unsetLoading;
     exports.consoleLog                  = consoleLog;
+    exports.consoleDebug                = consoleDebug;
     exports.encodeSensitiveInformation  = encodeSensitiveInformation;
     exports.reloadDoc                   = reloadDoc;
     exports.stripWhitespaceFromFiles    = stripWhitespaceFromFiles;

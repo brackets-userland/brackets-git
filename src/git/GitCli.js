@@ -54,6 +54,16 @@ define(function (require, exports) {
         _gitPath = path;
     }
 
+    function strEndsWith(subjectString, searchString, position) {
+        if (position === undefined || position > subjectString.length) {
+            position = subjectString.length;
+        }
+        position -= searchString.length;
+        var lastIndex = subjectString.indexOf(searchString, position);
+        return lastIndex !== -1 && lastIndex === position;
+    }
+
+    /*
     function fixCygwinPath(path) {
         if (typeof path === "string" && brackets.platform === "win" && path.indexOf("/cygdrive/") === 0) {
             path = path.substring("/cygdrive/".length)
@@ -63,6 +73,7 @@ define(function (require, exports) {
         }
         return path;
     }
+    */
 
     function _processQueue() {
         // do nothing if the queue is busy
@@ -883,19 +894,62 @@ define(function (require, exports) {
     }
 
     function getGitRoot() {
+        var projectRoot = Utils.getProjectRoot();
         return git(["rev-parse", "--show-toplevel"], {
-                cwd: Utils.getProjectRoot()
-            })
-            .then(function (root) {
-                root = fixCygwinPath(root);
-                // directory should end with a slash
-                return root + "/";
+                cwd: projectRoot
             })
             .catch(function (e) {
                 if (ErrorHandler.contains(e, "Not a git repository")) {
                     return null;
                 }
                 throw e;
+            })
+            .then(function (root) {
+                if (root === null) {
+                    return root;
+                }
+
+                // paths on cygwin look a bit different
+                // root = fixCygwinPath(root);
+
+                // we know projectRoot is in a Git repo now
+                // because --show-toplevel didn't return Not a git repository
+                // we need to find closest .git
+
+                function checkPathRecursive(path) {
+
+                    if (strEndsWith(path, "/")) {
+                        path = path.slice(0, -1);
+                    }
+
+                    Utils.consoleDebug("Checking path for .git: " + path);
+
+                    return new Promise(function (resolve) {
+                        // use fs.stat here to avoid putting the entry to the brackets's index
+                        brackets.fs.stat(path + "/.git", function (err, stat) {
+
+                            var exists = err ? false : (stat.isFile() || stat.isDirectory());
+
+                            if (exists) {
+                                Utils.consoleDebug("Found .git in path: " + path);
+                                resolve(path);
+                            } else {
+                                Utils.consoleDebug("Failed to find .git in path: " + path);
+                                path = path.split("/");
+                                path.pop();
+                                path = path.join("/");
+                                resolve(checkPathRecursive(path));
+                            }
+
+                        });
+                    });
+
+                }
+
+                return checkPathRecursive(projectRoot).then(function (path) {
+                    return path + "/";
+                });
+
             });
     }
 

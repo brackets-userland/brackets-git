@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.2 (10/12/2014)
+* BUGFIX: Improved detection of git which should work on linux with symlinks.
+
 ## 0.14.1 (10/12/2014)
 * BUGFIX: Fix issue where extension can't detect repository correctly on cygwin.
 

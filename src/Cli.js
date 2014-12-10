@@ -15,7 +15,6 @@ define(function (require, exports, module) {
         debugOn           = Preferences.get("debugMode"),
         TIMEOUT_VALUE     = Preferences.get("TIMEOUT_VALUE"),
         domainName        = "brackets-git",
-        extName           = "[brackets-git] ",
         nodeConnection    = new NodeConnection(),
         nextCliId         = 0,
         deferredMap       = {};
@@ -109,9 +108,9 @@ define(function (require, exports, module) {
             processInfo.push("ID=" + opts.cliId);
         }
 
-        var msg = extName + "cmd-" + method + "-" + type + " (" + processInfo.join(";") + ")";
+        var msg = "cmd-" + method + "-" + type + " (" + processInfo.join(";") + ")";
         if (out) { msg += ": \"" + out + "\""; }
-        Utils.consoleLog(msg);
+        Utils.consoleDebug(msg);
     }
 
     function cliHandler(method, cmd, args, opts, retry) {
@@ -136,9 +135,9 @@ define(function (require, exports, module) {
         // log all cli communication into console when debug mode is on
         if (debugOn) {
             var startTime = (new Date()).getTime();
-            Utils.consoleLog(extName + "cmd-" + method + (watchProgress ? "-watch" : "") + ": " +
-                             opts.cwd + " -> " +
-                             cmd + " " + args.join(" "));
+            Utils.consoleDebug("cmd-" + method + (watchProgress ? "-watch" : "") + ": " +
+                               opts.cwd + " -> " +
+                               cmd + " " + args.join(" "));
         }
 
         // we connect to node (promise is returned immediately if we are already connected)
@@ -251,12 +250,12 @@ define(function (require, exports, module) {
                             var diff = currentTime - lastProgressTime;
                             if (diff > timeoutLength) {
                                 if (debugOn) {
-                                    Utils.consoleLog(extName + "cmd(" + cliId + ") - last progress message was sent " + diff + "ms ago - timeout");
+                                    Utils.consoleDebug("cmd(" + cliId + ") - last progress message was sent " + diff + "ms ago - timeout");
                                 }
                                 timeoutPromise();
                             } else {
                                 if (debugOn) {
-                                    Utils.consoleLog(extName + "cmd(" + cliId + ") - last progress message was sent " + diff + "ms ago - delay");
+                                    Utils.consoleDebug("cmd(" + cliId + ") - last progress message was sent " + diff + "ms ago - delay");
                                 }
                                 timeoutCall();
                             }
