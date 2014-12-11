@@ -11,18 +11,18 @@ define(function (require) {
     var Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
         HistoryViewer = require("src/HistoryViewer"),
-        Utils         = require("src/Utils");
+        Preferences   = require("src/Preferences");
 
     FileSystem.on("change", function (evt, file) {
         // we care only for files in current project
-        if (file && file.fullPath.indexOf(Utils.getProjectRoot()) === 0) {
+        if (file && file.fullPath.indexOf(Preferences.get("currentGitRoot")) === 0) {
             EventEmitter.emit(Events.BRACKETS_FILE_CHANGED, evt, file);
         }
     });
 
     $(DocumentManager).on("documentSaved", function (evt, doc) {
         // we care only for files in current project
-        if (doc.file.fullPath.indexOf(Utils.getProjectRoot()) === 0) {
+        if (doc.file.fullPath.indexOf(Preferences.get("currentGitRoot")) === 0) {
             EventEmitter.emit(Events.BRACKETS_DOCUMENT_SAVED, evt, doc);
         }
     });

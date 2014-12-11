@@ -14,6 +14,7 @@ define(function (require) {
         ExpectedError   = require("src/ExpectedError"),
         ProgressDialog  = require("src/dialogs/Progress"),
         Git             = require("src/git/Git"),
+        Preferences     = require("src/Preferences"),
         Utils           = require("src/Utils");
 
     // Templates
@@ -24,7 +25,7 @@ define(function (require) {
     // Implementation
 
     function createGitIgnore() {
-        var gitIgnorePath = Utils.getProjectRoot() + ".gitignore";
+        var gitIgnorePath = Preferences.get("currentGitRoot") + ".gitignore";
         return Utils.pathExists(gitIgnorePath).then(function (exists) {
             if (!exists) {
                 return Promise.cast(FileUtils.writeText(FileSystem.getFileForPath(gitIgnorePath), gitignoreTemplate));

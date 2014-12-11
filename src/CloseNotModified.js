@@ -11,7 +11,7 @@ define(function (require, exports) {
     var Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
         Git           = require("src/git/Git"),
-        Utils         = require("src/Utils"),
+        Preferences   = require("src/Preferences"),
         Strings       = require("strings");
 
     var $icon = $(null);
@@ -23,13 +23,13 @@ define(function (require, exports) {
         }
 
         Git.status().then(function (modifiedFiles) {
-            var openFiles   = MainViewManager.getWorkingSet(MainViewManager.ALL_PANES),
-                projectRoot = Utils.getProjectRoot();
+            var openFiles      = MainViewManager.getWorkingSet(MainViewManager.ALL_PANES),
+                currentGitRoot = Preferences.get("currentGitRoot");
 
             openFiles.forEach(function (openFile) {
                 var removeOpenFile = true;
                 modifiedFiles.forEach(function (modifiedFile) {
-                    if (projectRoot + modifiedFile.file === openFile.fullPath) {
+                    if (currentGitRoot + modifiedFile.file === openFile.fullPath) {
                         removeOpenFile = false;
                         modifiedFile.isOpen = true;
                     }
@@ -53,7 +53,7 @@ define(function (require, exports) {
                     return !modifiedFile.isOpen;
                 });
                 filesToReopen.forEach(function (fileObj) {
-                    var fileEntry = FileSystem.getFileForPath(projectRoot + fileObj.file);
+                    var fileEntry = FileSystem.getFileForPath(currentGitRoot + fileObj.file);
                     MainViewManager.addToWorkingSet(MainViewManager.ACTIVE_PANE, fileEntry);
                 });
             }

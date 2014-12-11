@@ -9,8 +9,7 @@ define(function (require) {
         Events            = require("src/Events"),
         Git               = require("src/git/Git"),
         Preferences       = require("src/Preferences"),
-        Promise           = require("bluebird"),
-        Utils             = require("src/Utils");
+        Promise           = require("bluebird");
 
     var ignoreEntries = [],
         newPaths      = [],
@@ -23,7 +22,7 @@ define(function (require) {
 
     function loadIgnoreContents() {
         var defer = Promise.defer(),
-            projectRoot = Utils.getProjectRoot(),
+            gitRoot = Preferences.get("currentGitRoot"),
             excludeContents,
             gitignoreContents;
 
@@ -31,12 +30,12 @@ define(function (require) {
             defer.resolve(excludeContents + "\n" + gitignoreContents);
         });
 
-        FileSystem.getFileForPath(projectRoot + ".git/info/exclude").read(function (err, content) {
+        FileSystem.getFileForPath(gitRoot + ".git/info/exclude").read(function (err, content) {
             excludeContents = err ? "" : content;
             finish();
         });
 
-        FileSystem.getFileForPath(projectRoot + ".gitignore").read(function (err, content) {
+        FileSystem.getFileForPath(gitRoot + ".gitignore").read(function (err, content) {
             gitignoreContents = err ? "" : content;
             finish();
         });
@@ -51,7 +50,7 @@ define(function (require) {
         }
 
         return loadIgnoreContents().then(function (content) {
-            var projectRoot = Utils.getProjectRoot();
+            var gitRoot = Preferences.get("currentGitRoot");
 
             ignoreEntries = _.compact(_.map(content.split("\n"), function (line) {
                 // Rules: http://git-scm.com/docs/gitignore
@@ -91,7 +90,7 @@ define(function (require) {
 
                 // create the intial regexp here. We need the absolute path 'cause it could be that there
                 // are external files with the same name as a project file
-                regex = regexEscape(projectRoot) + (leadingSlash ? "" : "((.+)/)?") + regexEscape(line) + (trailingSlash ? "" : "(/.{0,})?");
+                regex = regexEscape(gitRoot) + (leadingSlash ? "" : "((.+)/)?") + regexEscape(line) + (trailingSlash ? "" : "(/.{0,})?");
                 // replace all the possible asterisks
                 regex = regex.replace(/\*\*$/g, "(.{0,})").replace(/(\*\*|\*$)/g, "(.+)").replace(/\*/g, "([^/]+)");
                 regex = "^" + regex + "$";
@@ -160,7 +159,7 @@ define(function (require) {
 
     // this will refresh ignore entries when .gitignore is modified
     EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function (evt, file) {
-        if (file.fullPath === Utils.getProjectRoot() + ".gitignore") {
+        if (file.fullPath === Preferences.get("currentGitRoot") + ".gitignore") {
             refreshIgnoreEntries().finally(function () {
                 refreshOpenFiles();
             });
@@ -169,7 +168,7 @@ define(function (require) {
 
     // this will refresh new/modified paths on every status results
     EventEmitter.on(Events.GIT_STATUS_RESULTS, function (files) {
-        var projectRoot = Utils.getProjectRoot();
+        var gitRoot = Preferences.get("currentGitRoot");
 
         newPaths = [];
         modifiedPaths = [];
@@ -178,7 +177,7 @@ define(function (require) {
             var isNew = entry.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
                         entry.status.indexOf(Git.FILE_STATUS.ADDED) !== -1;
 
-            var fullPath = projectRoot + entry.file;
+            var fullPath = gitRoot + entry.file;
             if (isNew) {
                 newPaths.push(fullPath);
             } else {

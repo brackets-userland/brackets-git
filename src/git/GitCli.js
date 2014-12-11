@@ -277,7 +277,7 @@ define(function (require, exports) {
         args.push(remote + "/" + branch);
 
         var readMergeMessage = function () {
-            return Utils.loadPathContent(Utils.getProjectRoot() + "/.git/MERGE_MSG").then(function (msg) {
+            return Utils.loadPathContent(Preferences.get("currentGitRoot") + "/.git/MERGE_MSG").then(function (msg) {
                 return msg;
             });
         };
@@ -552,7 +552,7 @@ define(function (require, exports) {
         } else {
             return new Promise(function (resolve, reject) {
                 // FUTURE: maybe use git commit --file=-
-                var fileEntry = FileSystem.getFileForPath(Utils.getProjectRoot() + ".bracketsGitTemp");
+                var fileEntry = FileSystem.getFileForPath(Preferences.get("currentGitRoot") + ".bracketsGitTemp");
                 Promise.cast(FileUtils.writeText(fileEntry, message))
                     .then(function () {
                         args.push("-F", ".bracketsGitTemp");

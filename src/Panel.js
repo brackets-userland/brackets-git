@@ -315,11 +315,11 @@ define(function (require, exports) {
     }
 
     function _getCurrentFilePath(editor) {
-        var projectRoot = Utils.getProjectRoot(),
+        var gitRoot = Preferences.get("currentGitRoot"),
             document = editor ? editor.document : DocumentManager.getCurrentDocument(),
             filePath = document.file.fullPath;
-        if (filePath.indexOf(projectRoot) === 0) {
-            filePath = filePath.substring(projectRoot.length);
+        if (filePath.indexOf(gitRoot) === 0) {
+            filePath = filePath.substring(gitRoot.length);
         }
         return filePath;
     }
@@ -388,9 +388,9 @@ define(function (require, exports) {
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
             if (buttonId === "ok") {
                 Git.discardFileChanges(file).then(function () {
-                    var currentProjectRoot = Utils.getProjectRoot();
+                    var gitRoot = Preferences.get("currentGitRoot");
                     DocumentManager.getAllOpenDocuments().forEach(function (doc) {
-                        if (doc.file.fullPath === currentProjectRoot + file) {
+                        if (doc.file.fullPath === gitRoot + file) {
                             Utils.reloadDoc(doc);
                         }
                     });
@@ -410,7 +410,7 @@ define(function (require, exports) {
         });
         Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
             if (buttonId === "ok") {
-                FileSystem.resolve(Utils.getProjectRoot() + file, function (err, fileEntry) {
+                FileSystem.resolve(Preferences.get("currentGitRoot") + file, function (err, fileEntry) {
                     if (err) {
                         ErrorHandler.showError(err, "Could not resolve file");
                         return;
@@ -469,7 +469,7 @@ define(function (require, exports) {
     }
 
     function commitMerge() {
-        Utils.loadPathContent(Utils.getProjectRoot() + "/.git/MERGE_MSG").then(function (msg) {
+        Utils.loadPathContent(Preferences.get("currentGitRoot") + "/.git/MERGE_MSG").then(function (msg) {
             handleGitCommit(msg, true);
             EventEmitter.once(Events.GIT_COMMITED, function () {
                 EventEmitter.emit(Events.REFRESH_ALL);
@@ -570,13 +570,13 @@ define(function (require, exports) {
     }
 
     function refreshCurrentFile() {
-        var currentProjectRoot = Utils.getProjectRoot();
+        var gitRoot = Preferences.get("currentGitRoot");
         var currentDoc = DocumentManager.getCurrentDocument();
         if (currentDoc) {
             $gitPanel.find("tr").each(function () {
                 var currentFullPath = currentDoc.file.fullPath,
                     thisFile = $(this).attr("x-file");
-                $(this).toggleClass("selected", currentProjectRoot + thisFile === currentFullPath);
+                $(this).toggleClass("selected", gitRoot + thisFile === currentFullPath);
             });
         } else {
             $gitPanel.find("tr").removeClass("selected");
@@ -706,10 +706,10 @@ define(function (require, exports) {
                 return Git.resetIndex();
             })
             .then(function () {
-                var currentProjectRoot = Utils.getProjectRoot();
+                var gitRoot = Preferences.get("currentGitRoot");
                 var currentDoc = DocumentManager.getCurrentDocument();
                 if (currentDoc) {
-                    var relativePath = currentDoc.file.fullPath.substring(currentProjectRoot.length);
+                    var relativePath = currentDoc.file.fullPath.substring(gitRoot.length);
                     return Git.stage(relativePath).then(function () {
                         return handleGitCommit();
                     });
@@ -832,7 +832,7 @@ define(function (require, exports) {
                 if ($this.attr("x-status") === Git.FILE_STATUS.DELETED) {
                     return;
                 }
-                FileViewController.addToWorkingSetAndSelect(Utils.getProjectRoot() + $this.attr("x-file"));
+                FileViewController.addToWorkingSetAndSelect(Preferences.get("currentGitRoot") + $this.attr("x-file"));
             });
 
     }

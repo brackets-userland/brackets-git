@@ -40,7 +40,7 @@ define(function (require) {
 
     function getDefaultRemote(allRemotes) {
         var defaultRemotes = Preferences.get("defaultRemotes") || {},
-            candidate = defaultRemotes[Utils.getProjectRoot()];
+            candidate = defaultRemotes[Preferences.get("currentGitRoot")];
 
         var exists = _.find(allRemotes, function (remote) {
             return remote.name === candidate;
@@ -57,7 +57,7 @@ define(function (require) {
 
     function setDefaultRemote(remoteName) {
         var defaultRemotes = Preferences.get("defaultRemotes") || {};
-        defaultRemotes[Utils.getProjectRoot()] = remoteName;
+        defaultRemotes[Preferences.get("currentGitRoot")] = remoteName;
         Preferences.persist("defaultRemotes", defaultRemotes);
     }
 

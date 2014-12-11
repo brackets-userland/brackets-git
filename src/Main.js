@@ -17,6 +17,7 @@ define(function (require, exports) {
         Branch            = require("./Branch"),
         CloseNotModified  = require("./CloseNotModified"),
         Setup             = require("src/utils/Setup"),
+        Preferences       = require("src/Preferences"),
         Utils             = require("src/Utils");
 
     var CMD_ADD_TO_IGNORE      = "git.addToIgnore",
@@ -41,9 +42,9 @@ define(function (require, exports) {
     }
 
     function _addRemoveItemInGitignore(selectedEntry, method) {
-        var projectRoot = Utils.getProjectRoot(),
-            entryPath = "/" + selectedEntry.fullPath.substring(projectRoot.length),
-            gitignoreEntry = FileSystem.getFileForPath(projectRoot + ".gitignore");
+        var gitRoot = Preferences.get("currentGitRoot"),
+            entryPath = "/" + selectedEntry.fullPath.substring(gitRoot.length),
+            gitignoreEntry = FileSystem.getFileForPath(gitRoot + ".gitignore");
 
         gitignoreEntry.read(function (err, content) {
             if (err) {
@@ -86,13 +87,13 @@ define(function (require, exports) {
 
     function addItemToGitingoreFromPanel() {
         var filePath = Panel.getPanel().find("tr.selected").attr("x-file"),
-            fileEntry = FileSystem.getFileForPath(Utils.getProjectRoot() + filePath);
+            fileEntry = FileSystem.getFileForPath(Preferences.get("currentGitRoot") + filePath);
         return _addRemoveItemInGitignore(fileEntry, "add");
     }
 
     function removeItemFromGitingoreFromPanel() {
         var filePath = Panel.getPanel().find("tr.selected").attr("x-file"),
-            fileEntry = FileSystem.getFileForPath(Utils.getProjectRoot() + filePath);
+            fileEntry = FileSystem.getFileForPath(Preferences.get("currentGitRoot") + filePath);
         return _addRemoveItemInGitignore(fileEntry, "remove");
     }
 

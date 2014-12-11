@@ -14,7 +14,6 @@ define(function (require, exports) {
         EventEmitter    = require("src/EventEmitter"),
         Git             = require("src/git/Git"),
         Preferences     = require("./Preferences"),
-        Utils           = require("src/Utils"),
         Strings         = require("strings");
 
     var gitAvailable = false,
@@ -253,7 +252,7 @@ define(function (require, exports) {
             return;
         }
 
-        var currentProjectRoot = Utils.getProjectRoot();
+        var currentGitRoot = Preferences.get("currentGitRoot");
 
         // we get a list of editors, which need to be refreshed
         var editors = _.compact(_.map(MainViewManager.getPaneIdList(), function (paneId) {
@@ -272,12 +271,12 @@ define(function (require, exports) {
                 currentFilePath = editor.document.file.fullPath;
             }
 
-            if (currentFilePath.indexOf(currentProjectRoot) !== 0) {
+            if (currentFilePath.indexOf(currentGitRoot) !== 0) {
                 // file is not in the current project
                 return;
             }
 
-            var filename = currentFilePath.substring(currentProjectRoot.length);
+            var filename = currentFilePath.substring(currentGitRoot.length);
 
             Git.diffFile(filename).then(function (diff) {
                 processDiffResults(editor, diff);
