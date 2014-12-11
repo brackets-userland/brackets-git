@@ -2,6 +2,10 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.3 (11/12/2014)
+* BUGFIX: Some more issues when working from a subfolder has been fixed.
+* BUGFIX: Wrapped some node domain code to avoid uncaught exceptions at top level.
+
 ## 0.14.2 (10/12/2014)
 * BUGFIX: Improved detection of git which should work on linux with symlinks.
 * BUGFIX: Fix whitespace cleanup not working when using Git subfolder.
