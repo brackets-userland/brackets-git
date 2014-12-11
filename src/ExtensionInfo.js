@@ -1,10 +1,11 @@
 define(function (require, exports, module) {
     "use strict";
 
-    var ExtensionManager  = brackets.getModule("extensibility/ExtensionManager"),
-        ExtensionUtils    = brackets.getModule("utils/ExtensionUtils"),
-        FileSystem        = brackets.getModule("filesystem/FileSystem"),
-        FileUtils         = brackets.getModule("file/FileUtils");
+    var _                = brackets.getModule("thirdparty/lodash"),
+        ExtensionManager = brackets.getModule("extensibility/ExtensionManager"),
+        ExtensionUtils   = brackets.getModule("utils/ExtensionUtils"),
+        FileSystem       = brackets.getModule("filesystem/FileSystem"),
+        FileUtils        = brackets.getModule("file/FileUtils");
 
     var Promise           = require("bluebird");
 
@@ -64,5 +65,18 @@ define(function (require, exports, module) {
                 callback(has, packageJson.version, registryVersion);
             }
         });
+    };
+
+    exports.getInstalledExtensions = function () {
+        var rv = {};
+        _.each(ExtensionManager.extensions, function (obj, name) {
+            if (obj.installInfo && obj.installInfo.locationType !== "default") {
+                rv[name] = {
+                    name: obj.installInfo.metadata.title,
+                    version: obj.installInfo.metadata.version
+                };
+            }
+        });
+        return rv;
     };
 });

@@ -50,15 +50,9 @@
 
     function spawn(directory, command, args, opts, callback) {
         // https://github.com/creationix/node-git
-        var child;
-        try {
-            child = ChildProcess.spawn(command, args, {
-                cwd: directory
-            });
-        } catch (err) {
-            callback(err, undefined);
-            return;
-        }
+        var child = ChildProcess.spawn(command, args, {
+            cwd: directory
+        });
 
         processMap[opts.cliId] = child;
 

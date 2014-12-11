@@ -8,11 +8,13 @@
 define(function (require, exports, module) {
 
     // Brackets modules
-    var AppInit         = brackets.getModule("utils/AppInit"),
+    var _               = brackets.getModule("thirdparty/lodash"),
+        AppInit         = brackets.getModule("utils/AppInit"),
         CommandManager  = brackets.getModule("command/CommandManager"),
         Commands        = brackets.getModule("command/Commands"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
-        Menus           = brackets.getModule("command/Menus");
+        Menus           = brackets.getModule("command/Menus"),
+        NodeConnection  = brackets.getModule("utils/NodeConnection");
 
     // Local modules
     var ChangelogDialog = require("src/ChangelogDialog"),
@@ -78,5 +80,56 @@ define(function (require, exports, module) {
             Events: Events
         };
     }
+
+    var nodeDomains = {};
+
+    // keeps a track of who is accessing node domains
+    NodeConnection.prototype.loadDomains = _.wrap(NodeConnection.prototype.loadDomains, function (loadDomains) {
+
+        var paths = arguments[1];
+        if (!Array.isArray(paths)) { paths = [paths]; }
+
+        var extId = "unknown";
+        var stack = new Error().stack.split("\n").slice(2).join("\n");
+        var m = stack.match(/extensions\/user\/([^\/]+)/);
+        if (m) {
+            extId = m[1];
+        }
+
+        if (!nodeDomains[extId]) { nodeDomains[extId] = []; }
+        nodeDomains[extId] = _.uniq(nodeDomains[extId].concat(paths));
+
+        // call the original method
+        return loadDomains.apply(this, _.toArray(arguments).slice(1));
+    });
+
+    // keeps checking errors coming into console and logs all installed extensions when node problem is encountered
+    window.console.error = _.wrap(window.console.error, function (consoleError) {
+        // inspect the error
+        var msg = arguments[1];
+        if (typeof msg !== "string") {
+            msg = msg.toString();
+        }
+        var hasCommonError = _.any([
+            "[Launcher] uncaught exception at top level, exiting.",
+            "Max connection attempts reached"
+        ], function (str) {
+            return msg.indexOf(str) !== -1;
+        });
+        if (hasCommonError) {
+            var installedExtensions = ExtensionInfo.getInstalledExtensions();
+            _.each(nodeDomains, function (domains, key) {
+                if (installedExtensions[key]) {
+                    installedExtensions[key]["node-domains"] = "YES";
+                }
+            });
+            console.table(installedExtensions);
+            console.log("These files were using Brackets' NodeConnection:\n" + _.map(nodeDomains, function (arr) {
+                return arr.join("\n");
+            }).join("\n"));
+        }
+        // call the normal console error
+        return consoleError.apply(this, _.toArray(arguments).slice(1));
+    });
 
 });
