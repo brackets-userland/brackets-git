@@ -77,7 +77,10 @@ define(function (require, exports, module) {
     if (typeof window === "object") {
         window.bracketsGit = {
             EventEmitter: EventEmitter,
-            Events: Events
+            Events: Events,
+            getInstalledExtensions: function () {
+                window.console.error("[brackets-git] getInstalledExtensions");
+            }
         };
     }
 
@@ -112,7 +115,8 @@ define(function (require, exports, module) {
         }
         var hasCommonError = _.any([
             "[Launcher] uncaught exception at top level, exiting.",
-            "Max connection attempts reached"
+            "Max connection attempts reached",
+            "[brackets-git] getInstalledExtensions"
         ], function (str) {
             return msg.indexOf(str) !== -1;
         });
