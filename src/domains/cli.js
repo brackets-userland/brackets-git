@@ -53,6 +53,9 @@
         var child = ChildProcess.spawn(command, args, {
             cwd: directory
         });
+        child.on("error", function (err) {
+            callback(err.stack, undefined);
+        });
 
         processMap[opts.cliId] = child;
 

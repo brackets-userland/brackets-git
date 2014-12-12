@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.5 (12/12/2014)
+* BUGFIX: Prevent domain code from causing "uncaught exception at top level" while spawning invalid executable.
+
 ## 0.14.4 (12/12/2014)
 * When a NodeConnection exception is encountered, list of all installed extensions will be dumped into the console to help with locating the issue.
 

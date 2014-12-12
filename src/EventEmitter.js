@@ -36,7 +36,9 @@ define(function (require, exports, module) {
             }).join(", ");
             if (argsString) { argsString = " - " + argsString; }
             argsString = argsString + " (" + listenersCount + " listeners)";
-            Utils.consoleLog("[brackets-git] Event invoked: " + eventName + argsString);
+            if (listenersCount > 0) {
+                Utils.consoleLog("[brackets-git] Event invoked: " + eventName + argsString);
+            }
 
             return this._emit.apply(this, arguments);
         };
