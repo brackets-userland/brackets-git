@@ -415,10 +415,14 @@ define(function (require, exports) {
             $gitBranchName.parent().toggle(isRepositoryRootOrChild);
 
             if (!isRepositoryRootOrChild) {
+                Preferences.set("currentGitRoot", projectRoot);
+                Preferences.set("currentGitSubfolder", "");
+
                 $gitBranchName
                     .off("click")
                     .text("not a git repo");
                 Panel.disable("not-repo");
+
                 return;
             }
 
