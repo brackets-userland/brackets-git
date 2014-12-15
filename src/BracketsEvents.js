@@ -15,7 +15,10 @@ define(function (require) {
 
     FileSystem.on("change", function (evt, file) {
         // we care only for files in current project
-        if (file && file.fullPath.indexOf(Preferences.get("currentGitRoot")) === 0) {
+        var currentGitRoot = Preferences.get("currentGitRoot");
+        if (file &&
+            file.fullPath !== currentGitRoot + ".git/" &&
+            file.fullPath.indexOf(currentGitRoot) === 0) {
             EventEmitter.emit(Events.BRACKETS_FILE_CHANGED, evt, file);
         }
     });
