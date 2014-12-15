@@ -925,10 +925,10 @@ define(function (require, exports) {
                     Utils.consoleDebug("Checking path for .git: " + path);
 
                     return new Promise(function (resolve) {
-                        // use fs.stat here to avoid putting the entry to the brackets's index
-                        brackets.fs.stat(path + "/.git", function (err, stat) {
 
-                            var exists = err ? false : (stat.isFile() || stat.isDirectory());
+                        FileSystem.resolve(path + "/.git", function (err, item, stat) {
+
+                            var exists = err ? false : (stat.isFile || stat.isDirectory);
 
                             if (exists) {
                                 Utils.consoleDebug("Found .git in path: " + path);
