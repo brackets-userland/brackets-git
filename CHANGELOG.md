@@ -2,6 +2,11 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.6 (16/12/2014)
+* Added settings option to clear whitespace on save in addition to cleaning it before commiting (default off).
+* BUGFIX: Fixed problems when initializing new repository in an empty directory.
+* BUGFIX: Fixed integration issues with Intel XDK by [Albertina Durante](https://github.com/albertinad)
+
 ## 0.14.5 (12/12/2014)
 * BUGFIX: Prevent domain code from causing "uncaught exception at top level" while spawning invalid executable.
 

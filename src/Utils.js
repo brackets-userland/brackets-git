@@ -15,6 +15,8 @@ define(function (require, exports, module) {
 
     // Local modules
     var ErrorHandler    = require("src/ErrorHandler"),
+        Events          = require("src/Events"),
+        EventEmitter    = require("src/EventEmitter"),
         Git             = require("src/git/Git"),
         Preferences     = require("src/Preferences"),
         Promise         = require("bluebird"),
@@ -521,6 +523,15 @@ define(function (require, exports, module) {
         }
         CommandManager.execute(Commands.FILE_OPEN, {
             fullPath: file
+        });
+    }
+
+    if (Preferences.get("clearWhitespaceOnSave")) {
+        EventEmitter.on(Events.BRACKETS_DOCUMENT_SAVED, function (evt, doc) {
+            var fullPath       = doc.file.fullPath,
+                currentGitRoot = Preferences.get("currentGitRoot"),
+                path           = fullPath.substring(currentGitRoot.length);
+            stripWhitespaceFromFile(path);
         });
     }
 

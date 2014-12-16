@@ -44,6 +44,7 @@ define({
     CLEAN_FILE_END:                     "File cleaned",
     CLEAN_FILE_START:                   "Cleaning file",
     CLEANING_WHITESPACE_PROGRESS:       "Cleaning whitespace from files\u2026",
+    CLEAR_WHITESPACE_ON_FILE_SAVE:      "Clear whitespace on file save",
     CLONE_REPOSITORY:                   "Clone repository",
     CODE_INSPECTION_PROBLEMS:           "Code inspection problems:",
     COLLAPSE_ALL:                       "Collapse all",
