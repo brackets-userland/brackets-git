@@ -71,6 +71,8 @@ define(function (require) {
             return commitGitIgnore("Initial commit");
         }).catch(function (err) {
             ErrorHandler.showError(err, "Initializing new repository failed");
+        }).then(function () {
+            EventEmitter.emit(Events.REFRESH_ALL);
         });
     }
 

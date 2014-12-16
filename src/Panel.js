@@ -651,7 +651,12 @@ define(function (require, exports) {
         $tableContainer.find("#git-history-list").remove();
         $tableContainer.find(".git-edited-list").show();
 
-        var p1 = Git.status();
+        var p1 = Git.status().catch(function (err) {
+            // this is an expected "error"
+            if (ErrorHandler.contains(err, "Not a git repository")) {
+                return;
+            }
+        });
 
         //  Push button
         var $pushBtn = $gitPanel.find(".git-push");
