@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.7 (17/12/2014)
+* BUGFIX: Fixed an issue with Git detection when you delete a project folder which Brackets is supposed to open on startup.
+
 ## 0.14.6 (16/12/2014)
 * Added settings option to clear whitespace on save in addition to cleaning it before commiting (default off).
 * BUGFIX: Fixed problems when initializing new repository in an empty directory.
