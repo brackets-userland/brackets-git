@@ -15,7 +15,10 @@ define(function (require, exports) {
         ErrorHandler      = require("./ErrorHandler"),
         Panel             = require("./Panel"),
         Branch            = require("./Branch"),
+        ChangelogDialog   = require("src/ChangelogDialog"),
+        SettingsDialog    = require("src/SettingsDialog"),
         CloseNotModified  = require("./CloseNotModified"),
+        ExtensionInfo     = require("src/ExtensionInfo"),
         Setup             = require("src/utils/Setup"),
         Preferences       = require("src/Preferences"),
         Utils             = require("src/Utils");
@@ -105,6 +108,26 @@ define(function (require, exports) {
             // Try to get Git version, if succeeds then Git works
             Setup.findGit().then(function (version) {
                 Strings.GIT_VERSION = version;
+
+                // Display settings panel on first start / changelog dialog on version change
+                ExtensionInfo.get().then(function (packageJson) {
+                    // do not display dialogs when running tests
+                    if (window.isBracketsTestWindow) {
+                        return;
+                    }
+
+                    var lastVersion    = Preferences.get("lastVersion"),
+                        currentVersion = packageJson.version;
+
+                    if (!lastVersion) {
+                        Preferences.persist("lastVersion", "firstStart");
+                        SettingsDialog.show();
+                    } else if (lastVersion !== currentVersion) {
+                        Preferences.persist("lastVersion", currentVersion);
+                        ChangelogDialog.show();
+                    }
+                });
+
                 initUi();
             }).catch(function (err) {
                 $icon.addClass("error").attr("title", Strings.CHECK_GIT_SETTINGS + " - " + err.toString());

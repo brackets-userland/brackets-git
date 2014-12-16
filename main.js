@@ -17,8 +17,7 @@ define(function (require, exports, module) {
         NodeConnection  = brackets.getModule("utils/NodeConnection");
 
     // Local modules
-    var ChangelogDialog = require("src/ChangelogDialog"),
-        EventEmitter    = require("src/EventEmitter"),
+    var EventEmitter    = require("src/EventEmitter"),
         Events          = require("src/Events"),
         ExtensionInfo   = require("src/ExtensionInfo"),
         Main            = require("src/Main"),
@@ -44,25 +43,6 @@ define(function (require, exports, module) {
     ExtensionUtils.loadStyleSheet(module, "styles/brackets-git.less");
     ExtensionUtils.loadStyleSheet(module, "styles/fonts/octicon.less");
     if (Preferences.get("useGitFtp")) { ExtensionUtils.loadStyleSheet(module, "styles/src/ftp/styles/ftp.less"); }
-
-    // Display settings panel on first start / changelog dialog on version change
-    ExtensionInfo.get().then(function (packageJson) {
-        // do not display dialogs when running tests
-        if (window.isBracketsTestWindow) {
-            return;
-        }
-
-        var lastVersion    = Preferences.get("lastVersion"),
-            currentVersion = packageJson.version;
-
-        if (!lastVersion) {
-            Preferences.persist("lastVersion", "firstStart");
-            SettingsDialog.show();
-        } else if (lastVersion !== currentVersion) {
-            Preferences.persist("lastVersion", currentVersion);
-            ChangelogDialog.show();
-        }
-    });
 
     // Register command and add it to the menu.
     var SETTINGS_COMMAND_ID = "brackets-git.settings";
