@@ -17,12 +17,12 @@ define(function (require, exports, module) {
         NodeConnection  = brackets.getModule("utils/NodeConnection");
 
     // Local modules
-    var EventEmitter    = require("src/EventEmitter"),
+    var SettingsDialog  = require("src/SettingsDialog"),
+        EventEmitter    = require("src/EventEmitter"),
         Events          = require("src/Events"),
         ExtensionInfo   = require("src/ExtensionInfo"),
         Main            = require("src/Main"),
         Preferences     = require("src/Preferences"),
-        SettingsDialog  = require("src/SettingsDialog"),
         Strings         = require("strings");
 
     // Load extension modules that are not included by core
