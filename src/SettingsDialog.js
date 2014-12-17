@@ -54,11 +54,11 @@ define(function (require, exports) {
             if (!config) {
                 $("#git-settings-useDifftool").prop({ checked: false });
             }
-        }).catch(function (error) {
-            // an error with git, disabling git use diff tool configuration
+        }).catch(function () {
+            // an error with git, uncheck git use diff tool configuration
             $("#git-settings-useDifftool").prop({
-                disabled: false,
-                checked: false
+                checked: false,
+                disabled: true
             });
         });
 
