@@ -49,12 +49,19 @@ define(function (require, exports) {
     }
 
     function assignActions() {
-        Git.getConfig("diff.tool").done(function (config) {
+        Git.getConfig("diff.tool").then(function (config) {
             $("#git-settings-useDifftool").prop({ disabled: !config });
             if (!config) {
                 $("#git-settings-useDifftool").prop({ checked: false });
             }
+        }).catch(function (error) {
+            // an error with git, disabling git use diff tool configuration
+            $("#git-settings-useDifftool").prop({
+                disabled: false,
+                checked: false
+            });
         });
+
         $("#git-settings-stripWhitespaceFromCommits", $dialog).on("change", function () {
             var on = $(this).is(":checked");
             $("#git-settings-addEndlineToTheEndOfFile,#git-settings-removeByteOrderMark,#git-settings-normalizeLineEndings", $dialog)

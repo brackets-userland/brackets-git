@@ -108,8 +108,16 @@ define(function (require, exports) {
             // Try to get Git version, if succeeds then Git works
             Setup.findGit().then(function (version) {
                 Strings.GIT_VERSION = version;
+                initUi();
 
-                // Display settings panel on first start / changelog dialog on version change
+            }).catch(function (err) {
+                $icon.addClass("error").attr("title", Strings.CHECK_GIT_SETTINGS + " - " + err.toString());
+
+                var expected = new ExpectedError(err);
+                expected.detailsUrl = "https://github.com/zaggino/brackets-git#dependencies";
+                ErrorHandler.showError(expected, Strings.CHECK_GIT_SETTINGS);
+            }).done(function () {
+                 // Display settings panel on first start / changelog dialog on version change
                 ExtensionInfo.get().then(function (packageJson) {
                     // do not display dialogs when running tests
                     if (window.isBracketsTestWindow) {
@@ -127,14 +135,6 @@ define(function (require, exports) {
                         ChangelogDialog.show();
                     }
                 });
-
-                initUi();
-            }).catch(function (err) {
-                $icon.addClass("error").attr("title", Strings.CHECK_GIT_SETTINGS + " - " + err.toString());
-
-                var expected = new ExpectedError(err);
-                expected.detailsUrl = "https://github.com/zaggino/brackets-git#dependencies";
-                ErrorHandler.showError(expected, Strings.CHECK_GIT_SETTINGS);
             });
 
             // register commands for project tree / working files
