@@ -11,14 +11,18 @@ define(function (require, exports) {
     var ExpectedError     = require("src/ExpectedError"),
         Events            = require("src/Events"),
         EventEmitter      = require("src/EventEmitter"),
-        Strings           = require("../strings"),
-        ErrorHandler      = require("./ErrorHandler"),
-        Panel             = require("./Panel"),
-        Branch            = require("./Branch"),
-        CloseNotModified  = require("./CloseNotModified"),
+        Strings           = require("strings"),
+        ErrorHandler      = require("src/ErrorHandler"),
+        Panel             = require("src/Panel"),
+        Branch            = require("src/Branch"),
+        ChangelogDialog   = require("src/ChangelogDialog"),
+        SettingsDialog    = require("src/SettingsDialog"),
+        CloseNotModified  = require("src/CloseNotModified"),
+        ExtensionInfo     = require("src/ExtensionInfo"),
         Setup             = require("src/utils/Setup"),
         Preferences       = require("src/Preferences"),
-        Utils             = require("src/Utils");
+        Utils             = require("src/Utils"),
+        Promise           = require("bluebird");
 
     var CMD_ADD_TO_IGNORE      = "git.addToIgnore",
         CMD_REMOVE_FROM_IGNORE = "git.removeFromIgnore",
@@ -97,6 +101,30 @@ define(function (require, exports) {
         return _addRemoveItemInGitignore(fileEntry, "remove");
     }
 
+    function _displayExtensionInfoIfNeeded() {
+        return new Promise(function (resolve) {
+            // Display settings panel on first start / changelog dialog on version change
+            ExtensionInfo.get().then(function (packageJson) {
+                // do not display dialogs when running tests
+                if (window.isBracketsTestWindow) {
+                    return;
+                }
+                var lastVersion    = Preferences.get("lastVersion"),
+                    currentVersion = packageJson.version;
+
+                if (!lastVersion) {
+                    Preferences.persist("lastVersion", "firstStart");
+                    SettingsDialog.show();
+                } else if (lastVersion !== currentVersion) {
+                    Preferences.persist("lastVersion", currentVersion);
+                    ChangelogDialog.show();
+                }
+
+                resolve();
+            });
+        });
+    }
+
     function init() {
         // Initialize items dependent on HTML DOM
         AppInit.htmlReady(function () {
@@ -104,14 +132,22 @@ define(function (require, exports) {
 
             // Try to get Git version, if succeeds then Git works
             Setup.findGit().then(function (version) {
+
                 Strings.GIT_VERSION = version;
+
+                _displayExtensionInfoIfNeeded();
+
                 initUi();
+
             }).catch(function (err) {
                 $icon.addClass("error").attr("title", Strings.CHECK_GIT_SETTINGS + " - " + err.toString());
 
-                var expected = new ExpectedError(err);
-                expected.detailsUrl = "https://github.com/zaggino/brackets-git#dependencies";
-                ErrorHandler.showError(expected, Strings.CHECK_GIT_SETTINGS);
+                _displayExtensionInfoIfNeeded().then(function () {
+                    var expected = new ExpectedError(err);
+                    expected.detailsUrl = "https://github.com/zaggino/brackets-git#dependencies";
+                    ErrorHandler.showError(expected, Strings.CHECK_GIT_SETTINGS);
+                });
+
             });
 
             // register commands for project tree / working files

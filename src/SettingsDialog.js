@@ -49,25 +49,49 @@ define(function (require, exports) {
     }
 
     function assignActions() {
-        Git.getConfig("diff.tool").done(function (config) {
-            $("#git-settings-useDifftool").prop({ disabled: !config });
-            if (!config) {
-                $("#git-settings-useDifftool").prop({ checked: false });
+        var $useDifftoolCheckbox = $("#git-settings-useDifftool", $dialog);
+
+        Git.getConfig("diff.tool").then(function (diffToolConfiguration) {
+
+            if (!diffToolConfiguration) {
+                $useDifftoolCheckbox.prop({
+                    checked: false,
+                    disabled: true
+                });
+            } else {
+                $useDifftoolCheckbox.prop({
+                    disabled: false
+                });
             }
+
+        }).catch(function () {
+
+            // an error with git
+            // we were not able to check whether diff tool is configured or not
+            // so we disable it just to be sure
+            $useDifftoolCheckbox.prop({
+                checked: false,
+                disabled: true
+            });
+
         });
+
         $("#git-settings-stripWhitespaceFromCommits", $dialog).on("change", function () {
             var on = $(this).is(":checked");
             $("#git-settings-addEndlineToTheEndOfFile,#git-settings-removeByteOrderMark,#git-settings-normalizeLineEndings", $dialog)
                 .prop("checked", on)
                 .prop("disabled", !on);
         });
+
         $("#git-settings-dateMode", $dialog).on("change", function () {
             $("#git-settings-dateFormat-container", $dialog).toggle($("option:selected", this).prop("value") === "3");
         });
+
         $("button[data-button-id='defaults']", $dialog).on("click", function (e) {
             e.stopPropagation();
             setValues(Preferences.getDefaults());
         });
+
         $("button[data-button-id='changelog']", $dialog).on("click", function (e) {
             e.stopPropagation();
             ChangelogDialog.show();
