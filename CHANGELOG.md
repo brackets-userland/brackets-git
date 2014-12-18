@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.8 (19/12/2014)
+* BUGFIX: Ctrl key in keyboard shortcuts should no longer be replaced by Cmd when using Mac.
+
 ## 0.14.7 (17/12/2014)
 * BUGFIX: Fixed an issue with Git detection when you delete a project folder which Brackets is supposed to open on startup.
 

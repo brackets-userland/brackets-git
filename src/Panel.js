@@ -986,28 +986,28 @@ define(function (require, exports) {
         // Add command to menu.
         // Register command for opening bottom panel.
         CommandManager.register(Strings.PANEL_COMMAND, PANEL_COMMAND_ID, toggle);
-        KeyBindingManager.addBinding(PANEL_COMMAND_ID, Preferences.get("panelShortcut"));
+        KeyBindingManager.addBinding(PANEL_COMMAND_ID, Preferences.get("panelShortcut"), brackets.platform);
 
         CommandManager.register(Strings.COMMIT_CURRENT_SHORTCUT, COMMIT_CURRENT_CMD, commitCurrentFile);
-        KeyBindingManager.addBinding(COMMIT_CURRENT_CMD, Preferences.get("commitCurrentShortcut"));
+        KeyBindingManager.addBinding(COMMIT_CURRENT_CMD, Preferences.get("commitCurrentShortcut"), brackets.platform);
 
         CommandManager.register(Strings.COMMIT_ALL_SHORTCUT, COMMIT_ALL_CMD, commitAllFiles);
-        KeyBindingManager.addBinding(COMMIT_ALL_CMD, Preferences.get("commitAllShortcut"));
+        KeyBindingManager.addBinding(COMMIT_ALL_CMD, Preferences.get("commitAllShortcut"), brackets.platform);
 
         CommandManager.register(Strings.LAUNCH_BASH_SHORTCUT, BASH_CMD, EventEmitter.emitFactory(Events.TERMINAL_OPEN));
-        KeyBindingManager.addBinding(BASH_CMD, Preferences.get("bashShortcut"));
+        KeyBindingManager.addBinding(BASH_CMD, Preferences.get("bashShortcut"), brackets.platform);
 
         CommandManager.register(Strings.PUSH_SHORTCUT, PUSH_CMD, EventEmitter.emitFactory(Events.HANDLE_PUSH));
-        KeyBindingManager.addBinding(PUSH_CMD, Preferences.get("pushShortcut"));
+        KeyBindingManager.addBinding(PUSH_CMD, Preferences.get("pushShortcut"), brackets.platform);
 
         CommandManager.register(Strings.PULL_SHORTCUT, PULL_CMD, EventEmitter.emitFactory(Events.HANDLE_PULL));
-        KeyBindingManager.addBinding(PULL_CMD, Preferences.get("pullShortcut"));
+        KeyBindingManager.addBinding(PULL_CMD, Preferences.get("pullShortcut"), brackets.platform);
 
         CommandManager.register(Strings.GOTO_PREVIOUS_GIT_CHANGE, GOTO_PREV_CHANGE, GutterManager.goToPrev);
-        KeyBindingManager.addBinding(GOTO_PREV_CHANGE, Preferences.get("gotoPrevChangeShortcut"));
+        KeyBindingManager.addBinding(GOTO_PREV_CHANGE, Preferences.get("gotoPrevChangeShortcut"), brackets.platform);
 
         CommandManager.register(Strings.GOTO_NEXT_GIT_CHANGE, GOTO_NEXT_CHANGE, GutterManager.goToNext);
-        KeyBindingManager.addBinding(GOTO_NEXT_CHANGE, Preferences.get("gotoNextChangeShortcut"));
+        KeyBindingManager.addBinding(GOTO_NEXT_CHANGE, Preferences.get("gotoNextChangeShortcut"), brackets.platform);
 
         // Init moment - use the correct language
         moment.lang(brackets.getLocale());
