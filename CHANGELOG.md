@@ -4,6 +4,7 @@
 
 ## 0.14.8 (19/12/2014)
 * BUGFIX: Ctrl key in keyboard shortcuts should no longer be replaced by Cmd when using Mac.
+* BUFFIX: Fixed line number being shown next to the 'No newline at end of file' message.
 * BUGFIX: Fixed an error in the settings dialog when it's loaded for the first time on a fresh installation by [Albertina Durante](https://github.com/albertinad)
 
 ## 0.14.7 (17/12/2014)

@@ -56,7 +56,8 @@ define(function (require, exports, module) {
             HEADER: 0,
             UNCHANGED: 1,
             REMOVED: 2,
-            ADDED: 3
+            ADDED: 3,
+            EOF: 4
         };
 
         var diffSplit = diff.split("\n");
@@ -131,6 +132,9 @@ define(function (require, exports, module) {
                 // Add 1 to old a new num lines
                 numLineOld++;
                 numLineNew++;
+            } else if (line === "\\ No newline at end of file") {
+                lastStatus = LINE_STATUS.EOF;
+                lineClass = "end-of-file";
             } else {
                 console.log("Unexpected line in diff: " + line);
             }
@@ -141,6 +145,7 @@ define(function (require, exports, module) {
 
                 switch (lastStatus) {
                     case LINE_STATUS.HEADER:
+                    case LINE_STATUS.EOF:
                         // _numLineOld = "";
                         // _numLineNew = "";
                         break;
