@@ -4,6 +4,7 @@
 
 ## 0.14.8 (19/12/2014)
 * BUGFIX: Ctrl key in keyboard shortcuts should no longer be replaced by Cmd when using Mac.
+* BUGFIX: Fixed an error in the settings dialog when it's loaded for the first time on a fresh installation by [Albertina Durante](https://github.com/albertinad)
 
 ## 0.14.7 (17/12/2014)
 * BUGFIX: Fixed an issue with Git detection when you delete a project folder which Brackets is supposed to open on startup.
