@@ -2,7 +2,8 @@ define(function (require) {
     "use strict";
 
     // Brackets modules
-    var DocumentManager = brackets.getModule("document/DocumentManager"),
+    var _               = brackets.getModule("thirdparty/lodash"),
+        DocumentManager = brackets.getModule("document/DocumentManager"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
         MainViewManager = brackets.getModule("view/MainViewManager");
@@ -11,14 +12,29 @@ define(function (require) {
     var Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
         HistoryViewer = require("src/HistoryViewer"),
-        Preferences   = require("src/Preferences");
+        Preferences   = require("src/Preferences"),
+        Utils         = require("src/Utils");
+
+    // White-list for .git file watching
+    var watchedInsideGit = ["HEAD"];
 
     FileSystem.on("change", function (evt, file) {
         // we care only for files in current project
         var currentGitRoot = Preferences.get("currentGitRoot");
-        if (file &&
-            file.fullPath !== currentGitRoot + ".git/" &&
-            file.fullPath.indexOf(currentGitRoot) === 0) {
+        if (file && file.fullPath.indexOf(currentGitRoot) === 0) {
+
+            if (file.fullPath.indexOf(currentGitRoot + ".git/") === 0) {
+
+                var whitelisted = _.any(watchedInsideGit, function (entry) {
+                    return file.fullPath === currentGitRoot + ".git/" + entry;
+                });
+                if (!whitelisted) {
+                    Utils.consoleDebug("Ignored FileSystem.change event: " + file.fullPath);
+                    return;
+                }
+
+            }
+
             EventEmitter.emit(Events.BRACKETS_FILE_CHANGED, evt, file);
         }
     });

@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.9 (23/12/2014)
+* BUGFIX: Fixed cases where extension goes into infinite loop due to Brackets watching files inside the .git directory.
+
 ## 0.14.8 (19/12/2014)
 * BUGFIX: Ctrl key in keyboard shortcuts should no longer be replaced by Cmd when using Mac.
 * BUFFIX: Fixed line number being shown next to the 'No newline at end of file' message.
