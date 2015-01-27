@@ -19,6 +19,7 @@ define(function (require, exports) {
 
     var standardGitPathsNonWin = [
         "/usr/local/git/bin/git",
+        "/usr/local/bin/git",
         "/usr/bin/git"
     ];
 

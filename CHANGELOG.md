@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.10 (???)
+* BUGFIX: /usr/local/bin/git has been added to the Git search paths as a common Git location on Mac.
+
 ## 0.14.9 (23/12/2014)
 * BUGFIX: Fixed cases where extension goes into infinite loop due to Brackets watching files inside the .git directory.
 
