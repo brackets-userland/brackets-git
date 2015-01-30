@@ -4,6 +4,7 @@
 
 ## 0.14.10 (???)
 * BUGFIX: /usr/local/bin/git has been added to the Git search paths as a common Git location on Mac.
+* BUGFIX: bower_components and node_modules have been added to the default .gitignore file.
 
 ## 0.14.9 (23/12/2014)
 * BUGFIX: Fixed cases where extension goes into infinite loop due to Brackets watching files inside the .git directory.
