@@ -15,7 +15,7 @@ define(function (require) {
         GitFtp        = require("src/ftp/GitFtp");
 
     // Module variables
-    var ftpScopesTemplate = require("text!src/ftp/templates/remotes-picker.html"),
+    var ftpScopesTemplate = require("text!templates/ftp/remotes-picker.html"),
         $gitPanel = null,
         $remotesDropdown = null;
 
