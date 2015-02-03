@@ -12,7 +12,6 @@
     "disallowEmptyBlocks":                          true,
     "disallowSpacesInsideArrayBrackets":            "all",
     "disallowSpacesInsideParentheses":              true,
-    "requireSpacesInsideObjectBrackets":            "all",
     "disallowSpaceAfterObjectKeys":                 true,
     "requireCommaBeforeLineBreak":                  true,
     "requireOperatorBeforeLineBreak":               ["?", "=", "+", "-", "/", "*", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
