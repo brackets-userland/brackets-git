@@ -42,7 +42,7 @@ define(function (require, exports, module) {
     // Load CSS
     ExtensionUtils.loadStyleSheet(module, "styles/brackets-git.less");
     ExtensionUtils.loadStyleSheet(module, "styles/fonts/octicon.less");
-    if (Preferences.get("useGitFtp")) { ExtensionUtils.loadStyleSheet(module, "styles/src/ftp/styles/ftp.less"); }
+    if (Preferences.get("useGitFtp")) { ExtensionUtils.loadStyleSheet(module, "src/ftp/styles/ftp.less"); }
 
     // Register command and add it to the menu.
     var SETTINGS_COMMAND_ID = "brackets-git.settings";
