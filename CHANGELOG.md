@@ -2,9 +2,10 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.14.10 (???)
+## 0.14.10 (10/02/2015)
 * BUGFIX: /usr/local/bin/git has been added to the Git search paths as a common Git location on Mac.
 * BUGFIX: bower_components and node_modules have been added to the default .gitignore file.
+* BUGFIX: Fixed an issue when it's not possible to delete a new file that's staged in index.
 
 ## 0.14.9 (23/12/2014)
 * BUGFIX: Fixed cases where extension goes into infinite loop due to Brackets watching files inside the .git directory.

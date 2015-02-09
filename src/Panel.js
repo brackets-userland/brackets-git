@@ -396,7 +396,7 @@ define(function (require, exports) {
                     });
                     refresh();
                 }).catch(function (err) {
-                    ErrorHandler.showError(err, "Git Checkout failed");
+                    ErrorHandler.showError(err, "Discard changes to a file failed");
                 });
             }
         });
@@ -625,7 +625,9 @@ define(function (require, exports) {
                 file.allowDiff = file.status.indexOf(Git.FILE_STATUS.UNTRACKED) === -1 &&
                                  file.status.indexOf(Git.FILE_STATUS.RENAMED) === -1 &&
                                  file.status.indexOf(Git.FILE_STATUS.DELETED) === -1;
-                file.allowDelete = file.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1;
+                file.allowDelete = file.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
+                                   file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1 &&
+                                   file.status.indexOf(Git.FILE_STATUS.ADDED) !== -1;
                 file.allowUndo = !file.allowDelete;
             });
             $tableContainer.append(Mustache.render(gitPanelResultsTemplate, {
