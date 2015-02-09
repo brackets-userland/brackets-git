@@ -40,7 +40,9 @@ define(function (require, exports) {
             if (type === "checkbox") {
                 Preferences.set(property, $this.prop("checked"));
             } else if (prefType === "number") {
-                Preferences.set(property, parseInt($this.val().trim(), 10));
+                var newValue = parseInt($this.val().trim(), 10);
+                if (isNaN(newValue)) { newValue = Preferences.getDefaults()[property]; }
+                Preferences.set(property, newValue);
             } else {
                 Preferences.set(property, $this.val().trim() || null);
             }

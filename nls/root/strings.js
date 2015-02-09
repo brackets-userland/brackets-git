@@ -69,6 +69,7 @@ define({
     DATE_MODE_4:                        "Original Git date",
     DEBUG:                              "Debug",
     DEBUG_MODE_SETTING:                 "DEBUG mode &mdash; Leave this OFF unless you need to find a problem with the extension. All Git communication will be forwarded to Brackets console!",
+    DEFAULT_GIT_TIMEOUT:                "Default Git operation timeout (in seconds)",
     DELETE_FILE:                        "Delete file",
     DELETE_LOCAL_BRANCH:                "Delete local branch",
     DELETE_LOCAL_BRANCH_NAME:           "Do you really wish to delete local branch \"{0}\"?",

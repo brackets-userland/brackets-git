@@ -37,7 +37,7 @@ define(function (require, exports, module) {
         "showTerminalIcon": {               "type": "boolean",           "value": false             },
         // system
         "debugMode": {                      "type": "boolean",           "value": false             },
-        "TIMEOUT_VALUE": {                  "type": "number",            "value": 30000             },
+        "gitTimeout": {                     "type": "number",            "value": 30                },
         "gitPath": {                        "type": "string",            "value": ""                },
         "terminalCommand": {                "type": "string",            "value": ""                },
         "terminalCommandArgs": {            "type": "string",            "value": ""                }

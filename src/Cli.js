@@ -13,7 +13,7 @@ define(function (require, exports, module) {
     var moduleDirectory   = ExtensionUtils.getModulePath(module),
         domainModulePath  = moduleDirectory + "domains/cli",
         debugOn           = Preferences.get("debugMode"),
-        TIMEOUT_VALUE     = Preferences.get("TIMEOUT_VALUE"),
+        gitTimeout        = Preferences.get("gitTimeout") * 1000,
         domainName        = "brackets-git",
         nodeConnection    = new NodeConnection(),
         nextCliId         = 0,
@@ -147,7 +147,7 @@ define(function (require, exports, module) {
         }).then(function (wasConnected) {
 
             var resolved      = false,
-                timeoutLength = opts.timeout ? (opts.timeout * 1000) : TIMEOUT_VALUE;
+                timeoutLength = opts.timeout ? (opts.timeout * 1000) : gitTimeout;
 
             var domainOpts = {
                 cliId: cliId,
