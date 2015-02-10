@@ -4,7 +4,7 @@
     "title": "Brackets Git",
     "description": "Integration of Git into Brackets",
     "keywords": ["git", "version-control", "source-control"],
-    "version": "0.14.9",
+    "version": "0.14.10",
 
     "license": "MIT",
     "homepage": "https://github.com/zaggino/brackets-git",
@@ -23,7 +23,7 @@
     },
 
     "engines": {
-        "brackets": ">=0.44.0"
+        "brackets": ">=1.0.0"
     },
     "scripts": {
         "test": "grunt test"
