@@ -20,7 +20,6 @@ define(function (require, exports, module) {
     var SettingsDialog  = require("src/SettingsDialog"),
         EventEmitter    = require("src/EventEmitter"),
         Events          = require("src/Events"),
-        ExtensionInfo   = require("src/ExtensionInfo"),
         Main            = require("src/Main"),
         Preferences     = require("src/Preferences"),
         Strings         = require("strings");
@@ -87,6 +86,7 @@ define(function (require, exports, module) {
     });
 
     // keeps checking errors coming into console and logs all installed extensions when node problem is encountered
+    /* remove, see https://github.com/zaggino/brackets-git/issues/906
     window.console.error = _.wrap(window.console.error, function (consoleError) {
         // inspect the error
         var msg = arguments[1];
@@ -115,5 +115,6 @@ define(function (require, exports, module) {
         // call the normal console error
         return consoleError.apply(this, _.toArray(arguments).slice(1));
     });
+    */
 
 });

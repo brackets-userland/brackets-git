@@ -386,7 +386,7 @@ define(function (require, exports) {
 
             var m = contents.match(/^ref:\s+refs\/heads\/(\S+)/);
             if (!m) {
-                ErrorHandler.showError(err, "Failed parsing branch name from " + contents);
+                ErrorHandler.showError(new Error("Failed parsing branch name from " + contents));
                 return;
             }
 
