@@ -27,7 +27,10 @@
         }
         // http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
         var toExec = command + " " + args.join(" ");
-        var child = ChildProcess.exec(toExec, { cwd: directory }, function (err, stdout, stderr) {
+        var child = ChildProcess.exec(toExec, {
+            cwd: directory,
+            maxBuffer: 20*1024*1024
+        }, function (err, stdout, stderr) {
             delete processMap[opts.cliId];
             callback(err ? fixEOL(stderr) : undefined, err ? undefined : fixEOL(stdout));
         });
@@ -51,7 +54,8 @@
     function spawn(directory, command, args, opts, callback) {
         // https://github.com/creationix/node-git
         var child = ChildProcess.spawn(command, args, {
-            cwd: directory
+            cwd: directory,
+            maxBuffer: 20*1024*1024
         });
         child.on("error", function (err) {
             callback(err.stack, undefined);
