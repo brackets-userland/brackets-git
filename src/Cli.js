@@ -31,7 +31,7 @@ define(function (require, exports, module) {
     }
 
     function attachEventHandlers() {
-        $(nodeConnection)
+        nodeConnection
             .off(EVENT_NAMESPACE)
             .on(domainName + ":progress" + EVENT_NAMESPACE, function (err, cliId, time, message) {
                 var deferred = deferredMap[cliId];
