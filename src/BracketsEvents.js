@@ -39,14 +39,14 @@ define(function (require) {
         }
     });
 
-    $(DocumentManager).on("documentSaved", function (evt, doc) {
+    DocumentManager.on("documentSaved", function (evt, doc) {
         // we care only for files in current project
         if (doc.file.fullPath.indexOf(Preferences.get("currentGitRoot")) === 0) {
             EventEmitter.emit(Events.BRACKETS_DOCUMENT_SAVED, evt, doc);
         }
     });
 
-    $(MainViewManager).on("currentFileChange", function (evt, currentDocument, previousDocument) {
+    MainViewManager.on("currentFileChange", function (evt, currentDocument, previousDocument) {
         currentDocument = currentDocument || DocumentManager.getCurrentDocument();
         if (!HistoryViewer.isVisible()) {
             EventEmitter.emit(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, evt, currentDocument, previousDocument);
@@ -55,15 +55,15 @@ define(function (require) {
         }
     });
 
-    $(ProjectManager).on("projectOpen", function () {
+    ProjectManager.on("projectOpen", function () {
         EventEmitter.emit(Events.BRACKETS_PROJECT_CHANGE);
     });
 
-    $(ProjectManager).on("projectRefresh", function () {
+    ProjectManager.on("projectRefresh", function () {
         EventEmitter.emit(Events.BRACKETS_PROJECT_REFRESH);
     });
 
-    $(ProjectManager).on("beforeProjectClose", function () {
+    ProjectManager.on("beforeProjectClose", function () {
         // Disable Git when closing a project so listeners won't fire before new is opened
         EventEmitter.emit(Events.GIT_DISABLED);
     });

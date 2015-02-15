@@ -23,7 +23,7 @@
     },
 
     "engines": {
-        "brackets": ">=1.0.0"
+        "brackets": ">=1.1.0"
     },
     "scripts": {
         "test": "grunt test"

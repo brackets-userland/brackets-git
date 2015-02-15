@@ -199,7 +199,7 @@ define(function (require, exports) {
     });
     // TODO: investigate this event
     EventEmitter.on(Events.HANDLE_PROJECT_REFRESH, function () {
-        $(ProjectManager).triggerHandler("projectRefresh");
+        ProjectManager.triggerHandler("projectRefresh");
     });
 
     // API

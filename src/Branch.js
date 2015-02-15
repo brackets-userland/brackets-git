@@ -290,7 +290,7 @@ define(function (require, exports) {
     function attachCloseEvents() {
         $("html").on("click", closeDropdown);
         $("#project-files-container").on("scroll", closeDropdown);
-        $(SidebarView).on("hide", closeDropdown);
+        SidebarView.on("hide", closeDropdown);
         $("#titlebar .nav").on("click", closeDropdown);
 
         currentEditor = EditorManager.getCurrentFullEditor();

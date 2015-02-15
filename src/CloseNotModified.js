@@ -91,7 +91,7 @@ define(function (require, exports) {
         $icon.hide();
     });
 
-    $(MainViewManager).on("workingSetAdd workingSetAddList workingSetRemove workingSetRemoveList workingSetUpdate", function () {
+    MainViewManager.on("workingSetAdd workingSetAddList workingSetRemove workingSetRemoveList workingSetUpdate", function () {
         updateIconState();
     });
 
