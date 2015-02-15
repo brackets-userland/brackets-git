@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.11 (Unreleased)
+* Fixed deprecation warnings by [Marcel Gerber](https://github.com/MarcelGerber)
+
 ## 0.14.10 (10/02/2015)
 * You can now configure timeout for Git operations in the settings dialog.
 * BUGFIX: /usr/local/bin/git has been added to the Git search paths as a common Git location on Mac.
