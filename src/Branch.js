@@ -10,7 +10,6 @@ define(function (require, exports) {
         Menus                   = brackets.getModule("command/Menus"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         StringUtils             = brackets.getModule("utils/StringUtils"),
-        SidebarView             = brackets.getModule("project/SidebarView"),
         DocumentManager         = brackets.getModule("document/DocumentManager"),
         MainViewManager         = brackets.getModule("view/MainViewManager");
 
@@ -290,7 +289,6 @@ define(function (require, exports) {
     function attachCloseEvents() {
         $("html").on("click", closeDropdown);
         $("#project-files-container").on("scroll", closeDropdown);
-        SidebarView.on("hide", closeDropdown);
         $("#titlebar .nav").on("click", closeDropdown);
 
         currentEditor = EditorManager.getCurrentFullEditor();
@@ -304,7 +302,6 @@ define(function (require, exports) {
     function detachCloseEvents() {
         $("html").off("click", closeDropdown);
         $("#project-files-container").off("scroll", closeDropdown);
-        $(SidebarView).off("hide", closeDropdown);
         $("#titlebar .nav").off("click", closeDropdown);
 
         if (currentEditor) {
