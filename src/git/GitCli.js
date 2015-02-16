@@ -926,10 +926,27 @@ define(function (require, exports) {
 
                     return new Promise(function (resolve) {
 
+                        // keep .git away from file tree for now
+                        // this branch of code will not run for intel xdk
+                        if (typeof brackets !== "undefined" && brackets.fs && brackets.fs.stat) {
+                            brackets.fs.stat(path + "/.git", function (err, result) {
+                                var exists = err ? false : (result.isFile() || result.isDirectory());
+                                if (exists) {
+                                    Utils.consoleDebug("Found .git in path: " + path);
+                                    resolve(path);
+                                } else {
+                                    Utils.consoleDebug("Failed to find .git in path: " + path);
+                                    path = path.split("/");
+                                    path.pop();
+                                    path = path.join("/");
+                                    resolve(checkPathRecursive(path));
+                                }
+                            });
+                            return;
+                        }
+
                         FileSystem.resolve(path + "/.git", function (err, item, stat) {
-
                             var exists = err ? false : (stat.isFile || stat.isDirectory);
-
                             if (exists) {
                                 Utils.consoleDebug("Found .git in path: " + path);
                                 resolve(path);
@@ -940,8 +957,8 @@ define(function (require, exports) {
                                 path = path.join("/");
                                 resolve(checkPathRecursive(path));
                             }
-
                         });
+
                     });
 
                 }
