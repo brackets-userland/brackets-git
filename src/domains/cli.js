@@ -54,8 +54,7 @@
     function spawn(directory, command, args, opts, callback) {
         // https://github.com/creationix/node-git
         var child = ChildProcess.spawn(command, args, {
-            cwd: directory,
-            maxBuffer: 20*1024*1024
+            cwd: directory
         });
         child.on("error", function (err) {
             callback(err.stack, undefined);
