@@ -2,7 +2,7 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.14.11 (Unreleased)
+## 0.14.11 (16/02/2015)
 * Fixed deprecation warnings by [Marcel Gerber](https://github.com/MarcelGerber)
 
 ## 0.14.10 (10/02/2015)

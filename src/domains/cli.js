@@ -29,7 +29,7 @@
         var toExec = command + " " + args.join(" ");
         var child = ChildProcess.exec(toExec, {
             cwd: directory,
-            maxBuffer: 20*1024*1024
+            maxBuffer: 20 * 1024 * 1024
         }, function (err, stdout, stderr) {
             delete processMap[opts.cliId];
             callback(err ? fixEOL(stderr) : undefined, err ? undefined : fixEOL(stdout));
