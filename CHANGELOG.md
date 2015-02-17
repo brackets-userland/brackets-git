@@ -4,6 +4,7 @@
 
 ## 0.14.12 (Unreleased)
 * Fixed toolbar icon staying marked as dirty after switching to a non-git project.
+* Fixed terminal shortcut to work on Mac Yosemite 10.10.2, doesn't try to detect custom terminals so PRs are needed for that.
 
 ## 0.14.11 (16/02/2015)
 * Fixed deprecation warnings by [Marcel Gerber](https://github.com/MarcelGerber)

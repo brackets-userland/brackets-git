@@ -1,0 +1,51 @@
+#!/usr/bin/osascript
+on run argv
+
+    set dir to quoted form of (first item of argv)
+    set new_cmd to 0
+
+    set doesExist to false
+    try
+        tell application "Finder" to get application file id "com.googlecode.iterm2"
+        set doesExist to true
+    on error
+        set doesExist to false
+    end try
+
+    if doesExist then
+        tell application "Finder"
+            set myPath to container of (path to me) as text
+        end tell
+        run script (alias (myPath & "iterm.osa")) with parameters (argv)
+
+    else
+
+        tell application "System Events"
+            if "Terminal" is not in name of processes then
+                launch application "Terminal"
+
+                tell application "Terminal"
+                    activate
+                    do script ""
+                end tell
+
+                set new_cmd to 1
+            end if
+        end tell
+
+        tell application "Terminal"
+            if (new_cmd) is 1 then
+                -- Terminal was just launched
+                do script "cd " & dir & "; git status" in window 1
+            else
+                -- Terminal was already open
+                activate
+                do script "cd " & dir & "; git status"
+            end if
+        end tell
+
+    end if
+
+    do shell script "echo ok"
+
+end run
