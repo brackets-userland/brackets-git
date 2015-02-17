@@ -2,7 +2,7 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.14.12 (Unreleased)
+## 0.14.12 (18/02/2015)
 * Fixed toolbar icon staying marked as dirty after switching to a non-git project.
 * Fixed terminal shortcut to work on Mac Yosemite 10.10.2, doesn't try to detect custom terminals so PRs are needed for that.
 
