@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.12 (Unreleased)
+* Fixed toolbar icon staying marked as dirty after switching to a non-git project.
+
 ## 0.14.11 (16/02/2015)
 * Fixed deprecation warnings by [Marcel Gerber](https://github.com/MarcelGerber)
 

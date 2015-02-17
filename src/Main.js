@@ -31,6 +31,10 @@ define(function (require, exports) {
                                     .addClass("loading")
                                     .appendTo($("#main-toolbar .buttons"));
 
+    EventEmitter.on(Events.GIT_DISABLED, function () {
+        $icon.removeClass("dirty");
+    });
+
     EventEmitter.on(Events.GIT_STATUS_RESULTS, function (results) {
         $icon.toggleClass("dirty", results.length !== 0);
     });
