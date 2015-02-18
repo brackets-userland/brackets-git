@@ -201,10 +201,6 @@ define(function (require, exports) {
     EventEmitter.on(Events.GIT_DISABLED, function () {
         toggleMenuEntries(false);
     });
-    // TODO: investigate this event
-    EventEmitter.on(Events.HANDLE_PROJECT_REFRESH, function () {
-        ProjectManager.triggerHandler("projectRefresh");
-    });
 
     // API
     exports.$icon = $icon;

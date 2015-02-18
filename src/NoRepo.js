@@ -38,8 +38,6 @@ define(function (require) {
             return Git.stage(".gitignore");
         }).then(function () {
             return Git.commit(msg || ".gitignore created by brackets-git extension");
-        }).then(function () {
-            return EventEmitter.emit(Events.HANDLE_PROJECT_REFRESH);
         });
     }
 
