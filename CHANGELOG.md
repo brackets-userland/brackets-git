@@ -2,7 +2,7 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.14.13 (Unreleased)
+## 0.14.13 (18/02/2015)
 * Fixed new repo initialization error.
 
 ## 0.14.12 (18/02/2015)
