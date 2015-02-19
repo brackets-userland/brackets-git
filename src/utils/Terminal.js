@@ -24,13 +24,21 @@ define(function (require) {
         return (url.substring(0, 1) === "//" && brackets.platform === "win") ? url.replace("/", "\\") : url;
     }
 
-    function chmodTerminalScript() {
-        var file = Utils.getExtensionDirectory() + "shell/" +
-                (brackets.platform === "mac" ? "terminal.osa" : "terminal.sh");
-        return Cli.executeCommand("chmod", [
-            "+x",
-            Cli.escapeShellArg(file)
-        ]);
+    function chmodTerminalScript(allowExec) {
+        var files = brackets.platform === "mac" ? [
+            // mac
+            "terminal.osa",
+            "iterm.osa"
+        ] : [
+            // linux
+            "terminal.sh"
+        ];
+
+        var args = [allowExec ? "+x" : "-x"].concat(files.map(function (file) {
+            return Cli.escapeShellArg(Utils.getExtensionDirectory() + "shell/" + file);
+        }));
+
+        return Cli.executeCommand("chmod", args);
     }
 
     function open(event) {
@@ -63,7 +71,7 @@ define(function (require) {
             throw new Error(err + ": " + pathExecuted);
         }).catch(function (err) {
             if (event !== "retry" && ErrorHandler.contains(err, "Permission denied")) {
-                chmodTerminalScript().catch(function (err) {
+                chmodTerminalScript(true).catch(function (err) {
                     throw ErrorHandler.showError(err);
                 }).then(function () {
                     open("retry");
@@ -130,6 +138,14 @@ define(function (require) {
                 });
             });
 
+        }).then(function (result) {
+            // my mac yosemite will actually fail if the scripts are executable!
+            // so do -x here and then do +x when permission denied is encountered
+            // TODO: explore linux/ubuntu behaviour
+            return chmodTerminalScript(false)
+                .then(function () {
+                    return result;
+                });
         });
     });
 

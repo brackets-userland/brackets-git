@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.14 (19/02/2015)
+* Found the permissions bug with the original terminal scripts, so fit that and revert the scripts.
+
 ## 0.14.13 (18/02/2015)
 * Fixed new repo initialization error.
 
