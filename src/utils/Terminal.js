@@ -108,8 +108,6 @@ define(function (require) {
                         // nothing meaningful found, so restore default configuration
                         Preferences.set("terminalCommand", paths[1]);
                         Preferences.set("terminalCommandArgs", "$1");
-                        // and then disabled the button for this session
-                        EventEmitter.emit(Events.TERMINAL_DISABLE, paths[0]);
                         resolve(false);
                         return;
                     }
@@ -142,20 +140,30 @@ define(function (require) {
             // my mac yosemite will actually fail if the scripts are executable!
             // so do -x here and then do +x when permission denied is encountered
             // TODO: explore linux/ubuntu behaviour
-            return chmodTerminalScript(false)
-                .then(function () {
+            if (brackets.platform === "mac") {
+                return chmodTerminalScript(false).then(function () {
                     return result;
                 });
+            }
+            return result;
         });
     });
 
     // Event subscriptions
     EventEmitter.on(Events.TERMINAL_OPEN, function () {
-        setup().then(function (configuredOk) {
-            if (configuredOk) {
-                open();
-            }
-        });
+        setup()
+            .then(function (configuredOk) {
+                if (configuredOk) {
+                    open();
+                } else {
+                    throw new Error("Terminal configuration invalid, restoring defaults. Restart Brackets to apply.");
+                }
+            })
+            .catch(function (err) {
+                // disable the button for this session
+                EventEmitter.emit(Events.TERMINAL_DISABLE);
+                ErrorHandler.showError(err);
+            });
     });
 
 });

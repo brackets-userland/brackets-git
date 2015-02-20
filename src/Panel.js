@@ -1105,8 +1105,8 @@ define(function (require, exports) {
         handleGitCommit(lastCommitMessage, false);
     });
 
-    EventEmitter.on(Events.TERMINAL_DISABLE, function (where) {
-        $gitPanel.find(".git-bash").prop("disabled", true).attr("title", Strings.TERMINAL_DISABLED + " @ " + where);
+    EventEmitter.on(Events.TERMINAL_DISABLE, function () {
+        $gitPanel.find(".git-bash").prop("disabled", true).attr("title", Strings.TERMINAL_DISABLED);
     });
 
     exports.init = init;
