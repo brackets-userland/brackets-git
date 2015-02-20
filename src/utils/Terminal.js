@@ -53,9 +53,9 @@ define(function (require) {
             };
 
         cmd = customCmd;
-        args = customArgs.split(" ").map(function (arg) {
+        args = customArgs ? customArgs.split(" ").map(function (arg) {
             return arg.replace("$1", Cli.escapeShellArg(normalizeUncUrls(folder)));
-        });
+        }) : [];
 
         if (brackets.platform === "mac" && cmd.match(/\.osa$/)) {
             args.unshift(Cli.escapeShellArg(cmd));

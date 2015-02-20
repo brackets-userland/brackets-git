@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.16 (Unreleased)
+* Fix another terminal opening error.
+
 ## 0.14.15 (20/02/2015)
 * Fixed terminal not working on Windows (chmod error).
 * Fixed some console errors when using keyboard shortcuts.
