@@ -708,7 +708,8 @@ define(function (require, exports) {
     }
 
     function commitCurrentFile() {
-        return Promise.cast(CommandManager.execute("file.save"))
+        // do not return anything here, core expects jquery promise
+        Promise.cast(CommandManager.execute("file.save"))
             .then(function () {
                 return Git.resetIndex();
             })
@@ -725,7 +726,8 @@ define(function (require, exports) {
     }
 
     function commitAllFiles() {
-        return Promise.cast(CommandManager.execute("file.saveAll"))
+        // do not return anything here, core expects jquery promise
+        Promise.cast(CommandManager.execute("file.saveAll"))
             .then(function () {
                 return Git.resetIndex();
             })

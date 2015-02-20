@@ -4,6 +4,7 @@
 
 ## 0.14.15 (20/02/2015)
 * Fixed terminal not working on Windows (chmod error).
+* Fixed some console errors when using keyboard shortcuts.
 
 ## 0.14.14 (19/02/2015)
 * Found the permissions bug with the original terminal scripts, so fit that and revert the scripts.
