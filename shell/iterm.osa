@@ -2,48 +2,45 @@
 on run argv
 
     set dir to quoted form of (first item of argv)
-    set new_cmd to 0
-    tell application "System Events"
-        if "iTerm" is not in name of processes then
-            launch application "iTerm"
+    set run_cmd to "cd " & dir & " && git status"
+    set repo_name to basename(dir)
 
-            tell process "iTerm"
-                set frontmost to true
-            end tell
-
-            set new_cmd to 1
-        end if
-    end tell
-
+    -- set tab/session title
+    set tab_title to "Brackets-Git - " & repo_name
+    set bter to 0
+    set bses to 0
     tell application "iTerm"
-        if (new_cmd) is 1 then
-            -- iTerm was just launched
-            tell the current terminal
-                set cur_session_name to get name of current session
-                if cur_session_name is not "Brackets-Git (bash)" then
-                    launch session "Brackets-Git"
-                    set name of current session to "Brackets-Git"
-                    tell current session
-                        write text "cd " & dir & "; git status"
-                    end tell
+        if it is not running then launch
+        activate
+        repeat with ter in terminals
+            repeat with ses in sessions of ter
+                if the name of ses contains tab_title then
+                    set bter to ter
+                    set bses to ses
+                    exit repeat
                 end if
-            end tell
-        else
-            -- iTerm is already open
-            activate
-            tell the current terminal
-                try
-                    select session "Brackets-Git (bash)"
-                on error
-                    launch session "Brackets-Git"
-                    set name of current session to "Brackets-Git"
-                    tell current session
-                        write text "cd " & dir & "; git status"
-                    end tell
-                end try
-            end tell
+            end repeat
+        end repeat
+        if bter is 0 then
+            if bses is 0 then
+                tell the current terminal
+                    set bses to launch session tab_title
+                    set the name of bses to tab_title
+                    set tt to (get the tty of bses as text)
+                    tell bses to write text run_cmd
+                end tell
+            end if
         end if
+        select bter
+        select bses
     end tell
-    do shell script "echo ok"
-
 end run
+
+-- adapted from http://macscripter.net/viewtopic.php?id=13286
+on basename(thePath) -- Requires POSIX path
+    set ASTID to AppleScript's text item delimiters
+    set AppleScript's text item delimiters to "/"
+    set thePath to text item -2 of thePath
+    set AppleScript's text item delimiters to ASTID
+    return thePath
+end basename
