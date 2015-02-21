@@ -2,7 +2,7 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.14.16 (Unreleased)
+## 0.14.16 (21/02/2015)
 * Fix another terminal opening error.
 
 ## 0.14.15 (20/02/2015)
