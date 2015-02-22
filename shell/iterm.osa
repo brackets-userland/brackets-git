@@ -6,7 +6,7 @@ on run argv
     set repo_name to basename(dir)
 
     -- set tab/session title
-    set tab_title to "Brackets-Git - " & repo_name
+    set tab_title to "git: " & repo_name
     set bter to 0
     set bses to 0
     tell application "iTerm"
