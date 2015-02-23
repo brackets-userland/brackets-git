@@ -10,27 +10,33 @@ on run argv
     set bter to 0
     set bses to 0
     tell application "iTerm"
-        if it is not running then launch
         activate
-        repeat with ter in terminals
-            repeat with ses in sessions of ter
-                if the name of ses contains tab_title then
-                    set bter to ter
-                    set bses to ses
-                    exit repeat
-                end if
+        
+        -- check for an existing session with this name
+        if (count of terminals) > 0 then
+            repeat with ter in terminals
+                repeat with ses in sessions of ter
+                    if the name of ses contains tab_title then
+                        set bter to ter
+                        set bses to ses
+                        exit repeat
+                    end if
+                end repeat
             end repeat
-        end repeat
-        if bter is 0 then
-            if bses is 0 then
-                tell the current terminal
-                    set bses to launch session tab_title
-                    set the name of bses to tab_title
-                    set tt to (get the tty of bses as text)
-                    tell bses to write text run_cmd
-                end tell
-            end if
+        else
+            -- if not found, create a new terminal and this session
+            set bter to (make new terminal)
+            tell bter
+                set bses to launch session tab_title
+                set bses to launch session tab_title
+                set the name of bses to tab_title
+                set tt to (get the tty of bses as text)
+                tell bses to write text run_cmd
+            end tell
+            set bses to 0
         end if
+
+        -- select the session
         select bter
         select bses
     end tell
