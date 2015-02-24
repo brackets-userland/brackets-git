@@ -2,45 +2,58 @@
 on run argv
 
     set dir to quoted form of (first item of argv)
+
+    -- set list of shells and other misc variables
+    set shells to {"bash", "zsh", "ksh", "tcsh", "sh"}
     set run_cmd to "cd " & dir & " && git status"
     set repo_name to basename(dir)
 
     -- set tab/session title
     set tab_title to "git: " & repo_name
-    set bter to 0
-    set bses to 0
+    set git_terminal to null
+    set git_session to null
+
     tell application "iTerm"
-        if it is not running then launch
         activate
-        repeat with ter in terminals
-            repeat with ses in sessions of ter
-                if the name of ses contains tab_title then
-                    set bter to ter
-                    set bses to ses
-                    exit repeat
-                end if
+
+        if (count of terminals) > 0 then -- loop through all terminals
+            repeat with ter in terminals
+                repeat with ses in sessions of ter
+                    set this_session_name to name of ses
+                    if the this_session_name contains tab_title then -- check for terminal with this project’s name
+                        repeat with i from 1 to (length of shells) -- check the session title for the default OS X shells
+                            if the this_session_name contains item i of shells then -- the session title includes the currently-running command (uses the name of the shell if no other command is running)
+                                set git_terminal to ter
+                                set git_session to this_session_name
+                                exit repeat
+                            end if
+                        end repeat
+                        exit repeat
+                    end if
+                end repeat
             end repeat
-        end repeat
-        if bter is 0 then
-            if bses is 0 then
-                tell the current terminal
-                    set bses to launch session tab_title
-                    set the name of bses to tab_title
-                    set tt to (get the tty of bses as text)
-                    tell bses to write text run_cmd
-                end tell
-            end if
         end if
-        select bter
-        select bses
+
+        if git_session is null then -- if no terminals exist, create a session
+            if git_terminal is null then set git_terminal to (make new terminal) -- create a new terminal if necessary
+            tell git_terminal
+                set git_session to launch session tab_title
+                set the name of git_session to tab_title
+                tell git_session to write text run_cmd
+            end tell
+        end if
+
+        -- select the session
+        select git_terminal
+        select git_session
     end tell
 end run
 
 -- adapted from http://macscripter.net/viewtopic.php?id=13286
-on basename(thePath) -- Requires POSIX path
+on basename(the_path) -- Requires POSIX path
     set ASTID to AppleScript's text item delimiters
     set AppleScript's text item delimiters to "/"
-    set thePath to text item -2 of thePath
+    set the_path to text item -2 of the_path
     set AppleScript's text item delimiters to ASTID
-    return thePath
+    return the_path
 end basename
