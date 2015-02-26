@@ -2,7 +2,7 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.14.17 (Unreleased)
+## 0.14.17 (27/02/2015)
 * Improved iTerm script by [Andrew Minion](https://github.com/macbookandrew)
 * Fixed a case when close not modified icon collided with configure working set icon.
 
