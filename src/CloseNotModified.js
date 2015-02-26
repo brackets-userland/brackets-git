@@ -63,7 +63,8 @@ define(function (require, exports) {
     }
 
     function updateIconState() {
-        if (MainViewManager.getPaneCount() === 1 && MainViewManager.getWorkingSetSize(MainViewManager.ACTIVE_PANE) === 0) {
+        if (MainViewManager.getPaneCount() === 1 &&
+            MainViewManager.getWorkingSetSize(MainViewManager.ACTIVE_PANE) === 0) {
             $icon.toggleClass("working-set-not-available", true);
             $icon.toggleClass("working-set-available", false);
         } else {
@@ -91,7 +92,15 @@ define(function (require, exports) {
         $icon.hide();
     });
 
-    MainViewManager.on("workingSetAdd workingSetAddList workingSetRemove workingSetRemoveList workingSetUpdate", function () {
+    MainViewManager.on([
+        "workingSetAdd",
+        "workingSetAddList",
+        "workingSetRemove",
+        "workingSetRemoveList",
+        "workingSetUpdate",
+        "paneCreate",
+        "paneDestroy"
+    ].join(" "), function () {
         updateIconState();
     });
 

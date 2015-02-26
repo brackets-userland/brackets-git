@@ -3,7 +3,8 @@
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
 ## 0.14.17 (Unreleased)
-* Improved iTerm script by [Andrew Minion](https://github.com/macbookandrew) 
+* Improved iTerm script by [Andrew Minion](https://github.com/macbookandrew)
+* Fixed a case when close not modified icon collided with configure working set icon.
 
 ## 0.14.16 (21/02/2015)
 * Fix another terminal opening error.
