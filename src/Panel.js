@@ -882,6 +882,26 @@ define(function (require, exports) {
         });
     });
 
+    EventEmitter.on(Events.GERRIT_TOGGLE_PUSH_REF, function (event, callback) {
+        return Git.getConfig("gerrit.pushref").then(function (enabled) {
+            if ("true" === enabled) {
+                enabled = "false";
+            } else {
+                enabled = "true";
+            }
+            return Git.setConfig("gerrit.pushref", enabled, true)
+                .catch(function (err) {
+                    ErrorHandler.showError(err, "Impossible to enable gerrit push ref");
+                    }).then(function () {
+                        EventEmitter.emit(Events.GERRIT_PUSH_REF_TOGGLED, enabled);
+                    }).finally(function () {
+                        if (callback) {
+                            callback(enabled);
+                        }
+                });
+        });
+    });
+
     function discardAllChanges() {
         return Utils.askQuestion(Strings.RESET_LOCAL_REPO, Strings.RESET_LOCAL_REPO_CONFIRM, { booleanResponse: true })
             .then(function (response) {
@@ -962,6 +982,7 @@ define(function (require, exports) {
             })
             .on("click", ".change-user-name", EventEmitter.emitFactory(Events.GIT_CHANGE_USERNAME))
             .on("click", ".change-user-email", EventEmitter.emitFactory(Events.GIT_CHANGE_EMAIL))
+            .on("click", ".toggle-gerrit-push-ref", EventEmitter.emitFactory(Events.GERRIT_TOGGLE_PUSH_REF))
             .on("click", ".undo-last-commit", undoLastLocalCommit)
             .on("click", ".git-bash", EventEmitter.emitFactory(Events.TERMINAL_OPEN))
             .on("click", ".reset-all", discardAllChanges);

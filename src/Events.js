@@ -21,6 +21,10 @@ define(function (require, exports) {
     exports.GIT_CHANGE_USERNAME = "git.change.username";
     exports.GIT_CHANGE_EMAIL = "git.change.email";
 
+    // Gerrit events
+    exports.GERRIT_TOGGLE_PUSH_REF = "gerrit.toggle.push.ref";
+    exports.GERRIT_PUSH_REF_TOGGLED = "gerrit.push.ref.changed";
+
     // Startup events
     exports.REFRESH_ALL = "git.refresh.all";
     exports.GIT_ENABLED = "git.enabled";

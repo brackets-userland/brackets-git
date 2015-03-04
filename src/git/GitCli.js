@@ -348,54 +348,60 @@ define(function (require, exports) {
         }
         args.push(remoteName);
 
-        if (remoteBranch) {
-            args.push(remoteBranch);
-        }
-
-        return git(args)
-            .catch(repositoryNotFoundHandler)
-            .then(function (stdout) {
-                // this should clear lines from push hooks
-                var lines = stdout.split("\n");
-                while (lines.length > 0 && lines[0].match(/^To/) === null) {
-                    lines.shift();
+        return getConfig("gerrit.pushref").then(function (gerritEnabled) {
+            if (remoteBranch) {
+                if ("true" === gerritEnabled) {
+                    args.push("HEAD:refs/for/" + remoteBranch);
+                } else {
+                    args.push(remoteBranch);
                 }
+            }
 
-                var retObj = {},
-                    lineTwo = lines[1].split("\t");
+            return git(args)
+                .catch(repositoryNotFoundHandler)
+                .then(function (stdout) {
+                    // this should clear lines from push hooks
+                    var lines = stdout.split("\n");
+                    while (lines.length > 0 && lines[0].match(/^To/) === null) {
+                        lines.shift();
+                    }
 
-                retObj.remoteUrl = lines[0].trim().split(" ")[1];
-                retObj.flag = lineTwo[0];
-                retObj.from = lineTwo[1].split(":")[0];
-                retObj.to = lineTwo[1].split(":")[1];
-                retObj.summary = lineTwo[2];
-                retObj.status = lines[2];
+                    var retObj = {},
+                        lineTwo = lines[1].split("\t");
 
-                switch (retObj.flag) {
-                    case " ":
-                        retObj.flagDescription = "Successfully pushed fast-forward";
-                        break;
-                    case "+":
-                        retObj.flagDescription = "Successful forced update";
-                        break;
-                    case "-":
-                        retObj.flagDescription = "Successfully deleted ref";
-                        break;
-                    case "*":
-                        retObj.flagDescription = "Successfully pushed new ref";
-                        break;
-                    case "!":
-                        retObj.flagDescription = "Ref was rejected or failed to push";
-                        break;
-                    case "=":
-                        retObj.flagDescription = "Ref was up to date and did not need pushing";
-                        break;
-                    default:
-                        retObj.flagDescription = "Unknown push flag received: " + retObj.flag;
-                }
+                    retObj.remoteUrl = lines[0].trim().split(" ")[1];
+                    retObj.flag = lineTwo[0];
+                    retObj.from = lineTwo[1].split(":")[0];
+                    retObj.to = lineTwo[1].split(":")[1];
+                    retObj.summary = lineTwo[2];
+                    retObj.status = lines[2];
 
-                return retObj;
-            });
+                    switch (retObj.flag) {
+                        case " ":
+                            retObj.flagDescription = "Successfully pushed fast-forward";
+                            break;
+                        case "+":
+                            retObj.flagDescription = "Successful forced update";
+                            break;
+                        case "-":
+                            retObj.flagDescription = "Successfully deleted ref";
+                            break;
+                        case "*":
+                            retObj.flagDescription = "Successfully pushed new ref";
+                            break;
+                        case "!":
+                            retObj.flagDescription = "Ref was rejected or failed to push";
+                            break;
+                        case "=":
+                            retObj.flagDescription = "Ref was up to date and did not need pushing";
+                            break;
+                        default:
+                            retObj.flagDescription = "Unknown push flag received: " + retObj.flag;
+                    }
+
+                    return retObj;
+                });
+        });
     }
 
     function getCurrentBranchName() {
