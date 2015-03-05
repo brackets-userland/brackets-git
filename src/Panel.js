@@ -674,8 +674,28 @@ define(function (require, exports) {
         // Clone button
         $gitPanel.find(".git-clone").prop("disabled", false);
 
+        var p3 = Git.getConfig("gerrit.pushref").then(function (enabled) {
+            var gerritPreference = Preferences.get("gerrit.pushref");
+            if (gerritPreference !== undefined && gerritPreference) {
+                setGerritCheckState(enabled);
+            }
+        });
+
         // FUTURE: who listens for this?
-        return Promise.all([p1, p2]);
+        return Promise.all([p1, p2, p3]);
+    }
+
+    function setGerritCheckState(enabled) {
+        var gerritPushEnabled = "true" === enabled;
+        var target = $gitPanel.find(".toggle-gerrit-push-ref");
+        target = target.find(".checkmark");
+        if (gerritPushEnabled) {
+            target.removeClass("checkmark-disabled");
+            target.addClass("checkmark-enabled");
+        } else {
+            target.removeClass("checkmark-enabled");
+            target.addClass("checkmark-disabled");
+        }
     }
 
     function toggle(bool) {
@@ -885,22 +905,16 @@ define(function (require, exports) {
     EventEmitter.on(Events.GERRIT_TOGGLE_PUSH_REF, function (event, callback) {
         //update menu item state
         var target = event.target;
-        var gerritState = Preferences.get("gerrit.pushref") !== undefined ? Preferences.get("gerrit.pushref") : false;
-        target = $(target).children(".checkmark");
-        if (gerritState) {
-            target.removeClass("checkmark-enabled");
-            target.addClass("checkmark-disabled");
-        } else {
-            target.removeClass("checkmark-disabled");
-            target.addClass("checkmark-enabled");
+        if (Preferences.get("gerrit.pushref") === undefined) {
+            Preferences.persist("gerrit.pushref", true);
         }
+        target = $(target).children(".checkmark");
         return Git.getConfig("gerrit.pushref").then(function (enabled) {
             if ("true" === enabled) {
                 enabled = "false";
             } else {
                 enabled = "true";
             }
-            Preferences.persist("gerrit.pushref", "true" === enabled);
             return Git.setConfig("gerrit.pushref", enabled, true)
                 .catch(function (err) {
                     ErrorHandler.showError(err, "Impossible to enable gerrit push ref");
@@ -912,6 +926,10 @@ define(function (require, exports) {
                         }
                 });
         });
+    });
+
+    EventEmitter.on(Events.GERRIT_PUSH_REF_TOGGLED, function(enabled) {
+        setGerritCheckState(enabled);
     });
 
     function discardAllChanges() {
@@ -929,12 +947,10 @@ define(function (require, exports) {
 
     function init() {
         // Add panel
-        var gerritState = Preferences.get("gerrit.pushref") !== undefined ? Preferences.get("gerrit.pushref") : false;
         var panelHtml = Mustache.render(gitPanelTemplate, {
             enableAdvancedFeatures: Preferences.get("enableAdvancedFeatures"),
             showBashButton: Preferences.get("showBashButton"),
             showReportBugButton: Preferences.get("showReportBugButton"),
-            gerritEnabled: gerritState,
             S: Strings
         });
         var $panelHtml = $(panelHtml);

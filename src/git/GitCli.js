@@ -348,17 +348,29 @@ define(function (require, exports) {
             args = args.concat(additionalArgs);
         }
         args.push(remoteName);
-        var gerritEnabled  = Preferences.get("gerrit.pushref");
+        var gerritPreference  = Preferences.get("gerrit.pushref");
 
-        if (remoteBranch) {
-            if (gerritEnabled) {
-                args.push("HEAD:refs/for/" + remoteBranch);
-            } else {
+        if (gerritPreference) {
+            return getConfig("gerrit.pushref").then(function (gerritEnabled) {
+                if (remoteBranch) {
+                    if ("true" === gerritEnabled) {
+                        args.push("HEAD:refs/for/" + remoteBranch);
+                    } else {
+                        args.push(remoteBranch);
+                    }
+                }
+                return doPushWithArgs(args);
+            });
+        } else {
+            if (remoteBranch) {
                 args.push(remoteBranch);
             }
+            return doPushWithArgs(args);
         }
+    }
 
-        return git(args)
+    function doPushWithArgs(args) {
+       return git(args)
             .catch(repositoryNotFoundHandler)
             .then(function (stdout) {
                 // this should clear lines from push hooks
