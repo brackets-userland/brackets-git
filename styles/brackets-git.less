@@ -256,45 +256,10 @@
 
     .dropdown-menu();
 
-    .checkmark {
-        height: 22px;
-        width: 22px;
-        float: right;
-        -ms-transform: rotate(45deg); /* IE 9 */
-        -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
-        transform: rotate(45deg);
-    }
-
-    .checkmark-enabled {
-        display:inline-block;
-    }
-
-    .checkmark-disabled {
-        display:none;
-    }
-
-    .stem {
-        position: absolute;
-        width:3px;
-        height:9px;
-        left:11px;
-        top:6px;
-        background-color:@bc-bg-highlight;
-        .dark & {
-            background-color:@dark-bc-bg-highlight !important;
-        }
-    }
-
-    .kick {
-        position: absolute;
-        width:3px;
-        height:3px;
-        left:8px;
-        top:12px;
-        background-color:@bc-bg-highlight;
-        .dark & {
-            background-color:@dark-bc-bg-highlight !important;
-        }
+    .dropdown-menu > li > a.checkmark::before {
+        content: "✓";
+        margin-left: -11px;
+        margin-right: 3px;
     }
 
     // class for buttons that are performing an action

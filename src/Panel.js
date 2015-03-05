@@ -688,13 +688,10 @@ define(function (require, exports) {
     function setGerritCheckState(enabled) {
         var gerritPushEnabled = "true" === enabled;
         var target = $gitPanel.find(".toggle-gerrit-push-ref");
-        target = target.find(".checkmark");
         if (gerritPushEnabled) {
-            target.removeClass("checkmark-disabled");
-            target.addClass("checkmark-enabled");
+            target.removeClass("checkmark");
         } else {
-            target.removeClass("checkmark-enabled");
-            target.addClass("checkmark-disabled");
+            target.addClass("checkmark");
         }
     }
 
