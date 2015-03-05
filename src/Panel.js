@@ -883,12 +883,24 @@ define(function (require, exports) {
     });
 
     EventEmitter.on(Events.GERRIT_TOGGLE_PUSH_REF, function (event, callback) {
+        //update menu item state
+        var target = event.target;
+        var gerritState = Preferences.get("gerrit.pushref") !== undefined ? Preferences.get("gerrit.pushref") : false;
+        target = $(target).children(".checkmark");
+        if (gerritState) {
+            target.removeClass("checkmark-enabled");
+            target.addClass("checkmark-disabled");
+        } else {
+            target.removeClass("checkmark-disabled");
+            target.addClass("checkmark-enabled");
+        }
         return Git.getConfig("gerrit.pushref").then(function (enabled) {
             if ("true" === enabled) {
                 enabled = "false";
             } else {
                 enabled = "true";
             }
+            Preferences.persist("gerrit.pushref", "true" === enabled);
             return Git.setConfig("gerrit.pushref", enabled, true)
                 .catch(function (err) {
                     ErrorHandler.showError(err, "Impossible to enable gerrit push ref");
@@ -917,10 +929,12 @@ define(function (require, exports) {
 
     function init() {
         // Add panel
+        var gerritState = Preferences.get("gerrit.pushref") !== undefined ? Preferences.get("gerrit.pushref") : false;
         var panelHtml = Mustache.render(gitPanelTemplate, {
             enableAdvancedFeatures: Preferences.get("enableAdvancedFeatures"),
             showBashButton: Preferences.get("showBashButton"),
             showReportBugButton: Preferences.get("showReportBugButton"),
+            gerritEnabled: gerritState,
             S: Strings
         });
         var $panelHtml = $(panelHtml);
