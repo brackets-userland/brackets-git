@@ -287,8 +287,16 @@ define(function (require, exports) {
                 });
 
             } else {
-                // this will trigger refreshing where appropriate
-                Git.status();
+                Git.status().then(function (files) {
+                    files = _.filter(files, function (file) {
+                        return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
+                    });
+                    files.forEach(function (file) {
+                        var filePath = file.file;
+                        Git.unstage(filePath);
+                    });
+                    refresh();
+                });
             }
         });
     }
