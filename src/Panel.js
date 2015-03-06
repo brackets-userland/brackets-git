@@ -676,7 +676,7 @@ define(function (require, exports) {
 
         var p3 = Git.getConfig("gerrit.pushref").then(function (enabled) {
             var gerritPreference = Preferences.get("gerrit.pushref");
-            if ("true" === enabled && (gerritPreference === undefined || !gerritPreference )) {
+            if (enabled === "true" && (gerritPreference === undefined || !gerritPreference)) {
                 // Handles the case where we switched to a repo that is using gerrit
                 Preferences.persist("gerrit.pushref", true);
             }
@@ -688,7 +688,7 @@ define(function (require, exports) {
     }
 
     function setGerritCheckState(enabled) {
-        var gerritPushEnabled = "true" === enabled;
+        var gerritPushEnabled = enabled === "true";
         var target = $gitPanel.find(".toggle-gerrit-push-ref");
         if (gerritPushEnabled) {
             target.addClass("checkmark");
@@ -902,7 +902,7 @@ define(function (require, exports) {
     });
 
     EventEmitter.on(Events.GERRIT_TOGGLE_PUSH_REF, function (event, callback) {
-        //update menu item state
+        // update menu item state
         var gerritPushref = Preferences.get("gerrit.pushref");
         if (gerritPushref === undefined || !gerritPushref) {
             // Saving a preference to tell the GitCli.push() method to check for gerrit push ref enablement
@@ -910,7 +910,7 @@ define(function (require, exports) {
             Preferences.persist("gerrit.pushref", true);
         }
         return Git.getConfig("gerrit.pushref").then(function (enabled) {
-            if ("true" === enabled) {
+            if (enabled === "true") {
                 enabled = "false";
             } else {
                 enabled = "true";
@@ -918,17 +918,17 @@ define(function (require, exports) {
             return Git.setConfig("gerrit.pushref", enabled, true)
                 .catch(function (err) {
                     ErrorHandler.showError(err, "Impossible to toggle gerrit push ref");
-                    }).then(function () {
-                        EventEmitter.emit(Events.GERRIT_PUSH_REF_TOGGLED, enabled);
-                    }).finally(function () {
-                        if (callback) {
-                            callback(enabled);
-                        }
+                }).then(function () {
+                    EventEmitter.emit(Events.GERRIT_PUSH_REF_TOGGLED, enabled);
+                }).finally(function () {
+                    if (callback) {
+                        callback(enabled);
+                    }
                 });
         });
     });
 
-    EventEmitter.on(Events.GERRIT_PUSH_REF_TOGGLED, function(enabled) {
+    EventEmitter.on(Events.GERRIT_PUSH_REF_TOGGLED, function (enabled) {
         setGerritCheckState(enabled);
     });
 

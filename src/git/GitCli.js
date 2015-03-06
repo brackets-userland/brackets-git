@@ -350,7 +350,7 @@ define(function (require, exports) {
 
         if (remoteBranch && Preferences.get("gerrit.pushref")) {
             return getConfig("gerrit.pushref").then(function (gerritEnabled) {
-                if ("true" === gerritEnabled) {
+                if (gerritEnabled === "true") {
                     args.push("HEAD:refs/for/" + remoteBranch);
                 } else {
                     args.push(remoteBranch);
@@ -366,7 +366,7 @@ define(function (require, exports) {
     }
 
     function doPushWithArgs(args) {
-       return git(args)
+        return git(args)
             .catch(repositoryNotFoundHandler)
             .then(function (stdout) {
                 // this should clear lines from push hooks
