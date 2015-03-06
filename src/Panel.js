@@ -676,9 +676,11 @@ define(function (require, exports) {
 
         var p3 = Git.getConfig("gerrit.pushref").then(function (enabled) {
             var gerritPreference = Preferences.get("gerrit.pushref");
-            if (gerritPreference !== undefined && gerritPreference) {
-                setGerritCheckState(enabled);
+            if ("true" === enabled && (gerritPreference === undefined || !gerritPreference )) {
+                // Handles the case where we switched to a repo that is using gerrit
+                Preferences.persist("gerrit.pushref", true);
             }
+            setGerritCheckState(enabled);
         });
 
         // FUTURE: who listens for this?
@@ -689,9 +691,9 @@ define(function (require, exports) {
         var gerritPushEnabled = "true" === enabled;
         var target = $gitPanel.find(".toggle-gerrit-push-ref");
         if (gerritPushEnabled) {
-            target.removeClass("checkmark");
-        } else {
             target.addClass("checkmark");
+        } else {
+            target.removeClass("checkmark");
         }
     }
 
@@ -901,11 +903,12 @@ define(function (require, exports) {
 
     EventEmitter.on(Events.GERRIT_TOGGLE_PUSH_REF, function (event, callback) {
         //update menu item state
-        var target = event.target;
-        if (Preferences.get("gerrit.pushref") === undefined) {
+        var gerritPushref = Preferences.get("gerrit.pushref");
+        if (gerritPushref === undefined || !gerritPushref) {
+            // Saving a preference to tell the GitCli.push() method to check for gerrit push ref enablement
+            // so we don't slow down people who aren't using gerrit.
             Preferences.persist("gerrit.pushref", true);
         }
-        target = $(target).children(".checkmark");
         return Git.getConfig("gerrit.pushref").then(function (enabled) {
             if ("true" === enabled) {
                 enabled = "false";
@@ -914,7 +917,7 @@ define(function (require, exports) {
             }
             return Git.setConfig("gerrit.pushref", enabled, true)
                 .catch(function (err) {
-                    ErrorHandler.showError(err, "Impossible to enable gerrit push ref");
+                    ErrorHandler.showError(err, "Impossible to toggle gerrit push ref");
                     }).then(function () {
                         EventEmitter.emit(Events.GERRIT_PUSH_REF_TOGGLED, enabled);
                     }).finally(function () {

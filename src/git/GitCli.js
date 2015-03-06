@@ -22,7 +22,6 @@ define(function (require, exports) {
         ExpectedError = require("src/ExpectedError"),
         Preferences   = require("src/Preferences"),
         Utils         = require("src/Utils");
-        Preferences   = require("src/Preferences");
 
     // Module variables
     var _gitPath = null,
@@ -348,25 +347,22 @@ define(function (require, exports) {
             args = args.concat(additionalArgs);
         }
         args.push(remoteName);
-        var gerritPreference  = Preferences.get("gerrit.pushref");
 
-        if (gerritPreference) {
+        if (remoteBranch && Preferences.get("gerrit.pushref")) {
             return getConfig("gerrit.pushref").then(function (gerritEnabled) {
-                if (remoteBranch) {
-                    if ("true" === gerritEnabled) {
-                        args.push("HEAD:refs/for/" + remoteBranch);
-                    } else {
-                        args.push(remoteBranch);
-                    }
+                if ("true" === gerritEnabled) {
+                    args.push("HEAD:refs/for/" + remoteBranch);
+                } else {
+                    args.push(remoteBranch);
                 }
                 return doPushWithArgs(args);
             });
-        } else {
-            if (remoteBranch) {
-                args.push(remoteBranch);
-            }
-            return doPushWithArgs(args);
         }
+
+        if (remoteBranch) {
+            args.push(remoteBranch);
+        }
+        return doPushWithArgs(args);
     }
 
     function doPushWithArgs(args) {

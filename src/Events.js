@@ -23,7 +23,7 @@ define(function (require, exports) {
 
     // Gerrit events
     exports.GERRIT_TOGGLE_PUSH_REF = "gerrit.toggle.push.ref";
-    exports.GERRIT_PUSH_REF_TOGGLED = "gerrit.push.ref.changed";
+    exports.GERRIT_PUSH_REF_TOGGLED = "gerrit.push.ref.toggled";
 
     // Startup events
     exports.REFRESH_ALL = "git.refresh.all";
