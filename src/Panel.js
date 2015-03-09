@@ -289,6 +289,8 @@ define(function (require, exports) {
                     lastCommitMessage = null;
                 });
             } else {
+                // this will trigger refreshing where appropriate
+                Git.status();
                 throw new ExpectedError("The files you were going to commit were modified while commit dialog was displayed. " +
                                         "Aborting the commit as the result would be different then what was shown in the dialog.");
             }
