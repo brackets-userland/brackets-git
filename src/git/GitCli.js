@@ -780,8 +780,18 @@ define(function (require, exports) {
         });
     }
 
-    function getDiffOfAllIndexFiles() {
-        return git(["diff", "--no-ext-diff", "--no-color", "--full-index"], {
+    function getDiffOfAllIndexFiles(files) {
+        var args = ["diff", "--no-ext-diff", "--no-color", "--full-index"];
+        if (files !== undefined) {
+            if ($.isArray(files)) {
+                _.forEach(function (next) {
+                    args.push(next);
+                });
+            } else {
+                args.push(files);
+            }
+        }
+        return git(args, {
             timeout: false // never timeout this
         });
     }

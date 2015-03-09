@@ -45,7 +45,8 @@ define(function (require, exports) {
 
     var COMMIT_SHOURTCUT_TYPE = {
         CURRENT: "CURRENT",
-        ALL: "ALL"
+        ALL: "ALL",
+        DEFAULT: "DEFAULT"
     };
 
     var gitPanel = null,
@@ -461,8 +462,8 @@ define(function (require, exports) {
         });
     }
 
-    function _getStagedDiff(shortcutType) {
-        return ProgressDialog.show(_getStagedDiffForShortcutType(shortcutType),
+    function _getStagedDiff(shortcutType, files) {
+        return ProgressDialog.show(_getStagedDiffForShortcutType(shortcutType, files),
                                    Strings.GETTING_STAGED_DIFF_PROGRESS,
                                    { preDelay: 3, postDelay: 1 })
         .catch(function (err) {
@@ -481,8 +482,13 @@ define(function (require, exports) {
         });
     }
 
-    function _getStagedDiffForShortcutType(shortcutTpe) {
-        if (shortcutTpe === COMMIT_SHOURTCUT_TYPE.ALL || shortcutTpe === COMMIT_SHOURTCUT_TYPE.CURRENT) {
+    function _getStagedDiffForShortcutType(shortcutType, files) {
+        if (shortcutType === COMMIT_SHOURTCUT_TYPE.ALL) {
+            return Git.getDiffOfAllIndexFiles();
+        } else if (shortcutType === COMMIT_SHOURTCUT_TYPE.CURRENT) {
+            if (files !== undefined && $.isArray(files)) {
+                return Git.getDiffOfAllIndexFiles(files[0].file);
+            }
             return Git.getDiffOfAllIndexFiles();
         }
         return Git.getDiffOfStagedFiles();
@@ -511,7 +517,7 @@ define(function (require, exports) {
 
     function commitMerge() {
         Utils.loadPathContent(Preferences.get("currentGitRoot") + "/.git/MERGE_MSG").then(function (msg) {
-            handleGitCommit(msg, true);
+            handleGitCommit(msg, true, COMMIT_SHOURTCUT_TYPE.DEFAULT);
             EventEmitter.once(Events.GIT_COMMITED, function () {
                 EventEmitter.emit(Events.REFRESH_ALL);
             });
@@ -569,7 +575,7 @@ define(function (require, exports) {
         Utils.setLoading($gitPanel.find(".git-commit"));
 
         // First reset staged files, then add selected files to the index.
-        if (shortuctType === undefined) {
+        if (shortuctType === COMMIT_SHOURTCUT_TYPE.DEFAULT) {
             Git.status().then(function (files) {
                 files = _.filter(files, function (file) {
                     return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
@@ -613,7 +619,7 @@ define(function (require, exports) {
 
         if (stripWhitespace) {
             queue = queue.then(function () {
-                return ProgressDialog.show(Utils.stripWhitespaceFromFiles(files, shortuctType === undefined),
+                return ProgressDialog.show(Utils.stripWhitespaceFromFiles(files, shortuctType === COMMIT_SHOURTCUT_TYPE.DEFAULT),
                                            Strings.CLEANING_WHITESPACE_PROGRESS,
                                            { preDelay: 3, postDelay: 1 });
             });
@@ -629,7 +635,7 @@ define(function (require, exports) {
 
         return queue.then(function () {
             // All files are in the index now, get the diff and show dialog.
-            return _getStagedDiff(shortuctType).then(function (diff) {
+            return _getStagedDiff(shortuctType, files).then(function (diff) {
                 return _showCommitDialog(diff, lintResults, prefilledMessage, shortuctType, files);
             });
         });
@@ -1204,7 +1210,7 @@ define(function (require, exports) {
     });
 
     EventEmitter.on(Events.HANDLE_GIT_COMMIT, function () {
-        handleGitCommit(lastCommitMessage, false);
+        handleGitCommit(lastCommitMessage, false, COMMIT_SHOURTCUT_TYPE.DEFAULT);
     });
 
     EventEmitter.on(Events.TERMINAL_DISABLE, function () {
