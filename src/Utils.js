@@ -476,7 +476,7 @@ define(function (require, exports, module) {
         });
     }
 
-    function stripWhitespaceFromFiles(gitStatusResults) {
+    function stripWhitespaceFromFiles(gitStatusResults, stageChanges) {
         var notificationDefer = Promise.defer(),
             startTime = (new Date()).getTime(),
             queue = Promise.resolve();
@@ -499,11 +499,13 @@ define(function (require, exports, module) {
 
                         return stripWhitespaceFromFile(fileObj.file, clearWholeFile).then(function () {
                             // stage the files again to include stripWhitespace changes
-                            return Git.stage(fileObj.file).then(function () {
+                            if (stageChanges) {
+                                return Git.stage(fileObj.file).then(function () {
 
-                                var t = (new Date()).getTime() - startTime;
-                                notificationDefer.progress(t + "ms - " + Strings.CLEAN_FILE_END + ": " + fileObj.file);
-                            });
+                                    var t = (new Date()).getTime() - startTime;
+                                    notificationDefer.progress(t + "ms - " + Strings.CLEAN_FILE_END + ": " + fileObj.file);
+                                });
+                            }
                         });
                     });
 

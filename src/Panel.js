@@ -43,6 +43,11 @@ define(function (require, exports) {
 
     var showFileWhiteList = /^\.gitignore$/;
 
+    var COMMIT_SHOURTCUT_TYPE = {
+        CURRENT: "CURRENT",
+        ALL: "ALL"
+    };
+
     var gitPanel = null,
         $gitPanel = $(null),
         gitPanelDisabled = null,
@@ -90,7 +95,7 @@ define(function (require, exports) {
         return { width: desiredWidth, height: desiredHeight };
     }
 
-    function _showCommitDialog(stagedDiff, lintResults, prefilledMessage) {
+    function _showCommitDialog(stagedDiff, lintResults, prefilledMessage, shortcutType, files) {
         lintResults = lintResults || [];
 
         // Flatten the error structure from various providers
@@ -242,63 +247,70 @@ define(function (require, exports) {
 
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
-                // this event won't launch when commit-message is empty so its safe to assume that it is not
-                var commitMessage = getCommitMessageElement().val(),
-                    amendCommit = $dialog.find(".amend-commit").prop("checked");
-
-                // if commit message is extended and has a newline, put an empty line after first line to separate subject and body
-                var s = commitMessage.split("\n");
-                if (s.length > 1 && s[1].trim() !== "") {
-                    s.splice(1, 0, "");
+                if (shortcutType === COMMIT_SHOURTCUT_TYPE.ALL || shortcutType === COMMIT_SHOURTCUT_TYPE.CURRENT) {
+                    var filesPath = [];
+                    _.forEach(files, function (next) {
+                        filesPath.push(next.file);
+                    });
+                    Git.stage(filesPath).then(function () {
+                        _getStagedDiff().then(function (diff) {
+                            _doGitCommit($dialog, getCommitMessageElement, diff);
+                        });
+                    });
+                } else {
+                    _doGitCommit($dialog, getCommitMessageElement, stagedDiff);
                 }
-                commitMessage = s.join("\n");
-
-                // save lastCommitMessage in case the commit will fail
-                lastCommitMessage = commitMessage;
-
-                // now we are going to be paranoid and we will check if some mofo didn't change our diff
-                _getStagedDiff().then(function (diff) {
-                    if (diff === stagedDiff) {
-                        return Git.commit(commitMessage, amendCommit).then(function () {
-                            // clear lastCommitMessage because the commit was successful
-                            lastCommitMessage = null;
-                        });
-                    } else {
-                        throw new ExpectedError("The files you were going to commit were modified while commit dialog was displayed. " +
-                                                "Aborting the commit as the result would be different then what was shown in the dialog.");
-                    }
-                }).catch(function (err) {
-
-                    if (ErrorHandler.contains(err, "Please tell me who you are")) {
-                        var defer = Promise.defer();
-                        EventEmitter.emit(Events.GIT_CHANGE_USERNAME, null, function () {
-                            EventEmitter.emit(Events.GIT_CHANGE_EMAIL, null, function () {
-                                defer.resolve();
-                            });
-                        });
-                        return defer.promise;
-                    }
-
-                    ErrorHandler.showError(err, "Git Commit failed");
-
-                }).finally(function () {
-                    EventEmitter.emit(Events.GIT_COMMITED);
-                    refresh();
-                });
-
             } else {
-                Git.status().then(function (files) {
-                    files = _.filter(files, function (file) {
-                        return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
-                    });
-                    files.forEach(function (file) {
-                        var filePath = file.file;
-                        Git.unstage(filePath);
-                    });
-                    refresh();
-                });
+                Git.status();
             }
         });
+    }
+
+    function _doGitCommit($dialog, getCommitMessageElement, stagedDiff) {
+        // this event won't launch when commit-message is empty so its safe to assume that it is not
+        var commitMessage = getCommitMessageElement().val(),
+            amendCommit = $dialog.find(".amend-commit").prop("checked");
+        
+        // if commit message is extended and has a newline, put an empty line after first line to separate subject and body
+        var s = commitMessage.split("\n");
+        if (s.length > 1 && s[1].trim() !== "") {
+            s.splice(1, 0, "");
+        }
+        commitMessage = s.join("\n");
+        
+        // save lastCommitMessage in case the commit will fail
+        lastCommitMessage = commitMessage;
+        
+        // now we are going to be paranoid and we will check if some mofo didn't change our diff
+        _getStagedDiff().then(function (diff) {
+            if (diff === stagedDiff) {
+                return Git.commit(commitMessage, amendCommit).then(function () {
+                    // clear lastCommitMessage because the commit was successful
+                    lastCommitMessage = null;
+                });
+            } else {
+                throw new ExpectedError("The files you were going to commit were modified while commit dialog was displayed. " +
+                                        "Aborting the commit as the result would be different then what was shown in the dialog.");
+            }
+        }).catch(function (err) {
+
+            if (ErrorHandler.contains(err, "Please tell me who you are")) {
+                var defer = Promise.defer();
+                EventEmitter.emit(Events.GIT_CHANGE_USERNAME, null, function () {
+                    EventEmitter.emit(Events.GIT_CHANGE_EMAIL, null, function () {
+                        defer.resolve();
+                    });
+                });
+                return defer.promise;
+            }
+
+            ErrorHandler.showError(err, "Git Commit failed");
+
+        }).finally(function () {
+            EventEmitter.emit(Events.GIT_COMMITED);
+            refresh();
+        });
+
     }
 
     function _showAuthors(file, blame, fromLine, toLine) {
@@ -447,8 +459,8 @@ define(function (require, exports) {
         });
     }
 
-    function _getStagedDiff() {
-        return ProgressDialog.show(Git.getDiffOfStagedFiles(),
+    function _getStagedDiff(shortcutType) {
+        return ProgressDialog.show(_getStagedDiffForShortcutType(shortcutType),
                                    Strings.GETTING_STAGED_DIFF_PROGRESS,
                                    { preDelay: 3, postDelay: 1 })
         .catch(function (err) {
@@ -465,6 +477,13 @@ define(function (require, exports) {
             }
             return diff;
         });
+    }
+
+    function _getStagedDiffForShortcutType(shortcutTpe) {
+        if (shortcutTpe === COMMIT_SHOURTCUT_TYPE.ALL || shortcutTpe === COMMIT_SHOURTCUT_TYPE.CURRENT) {
+            return Git.getDiffOfAllIndexFiles();
+        }
+        return Git.getDiffOfStagedFiles();
     }
 
     // whatToDo gets values "continue" "skip" "abort"
@@ -539,7 +558,7 @@ define(function (require, exports) {
         });
     }
 
-    function handleGitCommit(prefilledMessage, isMerge) {
+    function handleGitCommit(prefilledMessage, isMerge, shortuctType) {
 
         var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
         var codeInspectionEnabled = Preferences.get("useCodeInspection");
@@ -548,44 +567,69 @@ define(function (require, exports) {
         Utils.setLoading($gitPanel.find(".git-commit"));
 
         // First reset staged files, then add selected files to the index.
-        Git.status().then(function (files) {
-            files = _.filter(files, function (file) {
-                return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
+        if (shortuctType === undefined) {
+            Git.status().then(function (files) {
+                files = _.filter(files, function (file) {
+                    return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
+                });
+
+                if (shortuctType === undefined && files.length === 0 && !isMerge) {
+                    return ErrorHandler.showError(new Error("Commit button should have been disabled"), "Nothing staged to commit");
+                }
+                handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, shortuctType, prefilledMessage);
+
+            }).catch(function (err) {
+                ErrorHandler.showError(err, "Preparing commit dialog failed");
+            }).finally(function () {
+                Utils.unsetLoading($gitPanel.find(".git-commit"));
             });
-
-            if (files.length === 0 && !isMerge) {
-                return ErrorHandler.showError(new Error("Commit button should have been disabled"), "Nothing staged to commit");
-            }
-
-            var queue = Promise.resolve();
-            var lintResults;
-
-            if (stripWhitespace) {
-                queue = queue.then(function () {
-                    return ProgressDialog.show(Utils.stripWhitespaceFromFiles(files),
-                                               Strings.CLEANING_WHITESPACE_PROGRESS,
-                                               { preDelay: 3, postDelay: 1 });
+        } else {
+            if (shortuctType === COMMIT_SHOURTCUT_TYPE.ALL) {
+                Git.status().then(function (files) {
+                    handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, shortuctType, prefilledMessage);
+                });
+            } else if (shortuctType === COMMIT_SHOURTCUT_TYPE.CURRENT) {
+                Git.status().then(function (files) {
+                    var gitRoot = Preferences.get("currentGitRoot");
+                    var currentDoc = DocumentManager.getCurrentDocument();
+                    if (currentDoc) {
+                        var relativePath = currentDoc.file.fullPath.substring(gitRoot.length);
+                        var currentFile = _.filter(files, function (next) {
+                            return relativePath === next.file;
+                        });
+                        handleGitCommitInternal(stripWhitespace, currentFile, codeInspectionEnabled, shortuctType, prefilledMessage);
+                    }
                 });
             }
 
-            if (codeInspectionEnabled) {
-                queue = queue.then(function () {
-                    return inspectFiles(files).then(function (_lintResults) {
-                        lintResults = _lintResults;
-                    });
-                });
-            }
+        }
+    }
 
-            return queue.then(function () {
-                // All files are in the index now, get the diff and show dialog.
-                return _getStagedDiff().then(function (diff) {
-                    return _showCommitDialog(diff, lintResults, prefilledMessage);
+    function handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, shortuctType, prefilledMessage) {
+        var queue = Promise.resolve();
+        var lintResults;
+
+        if (stripWhitespace) {
+            queue = queue.then(function () {
+                return ProgressDialog.show(Utils.stripWhitespaceFromFiles(files, shortuctType === undefined),
+                                           Strings.CLEANING_WHITESPACE_PROGRESS,
+                                           { preDelay: 3, postDelay: 1 });
+            });
+        }
+
+        if (codeInspectionEnabled) {
+            queue = queue.then(function () {
+                return inspectFiles(files).then(function (_lintResults) {
+                    lintResults = _lintResults;
                 });
             });
-        }).catch(function (err) {
-            ErrorHandler.showError(err, "Preparing commit dialog failed");
-        }).finally(function () {
-            Utils.unsetLoading($gitPanel.find(".git-commit"));
+        }
+
+        return queue.then(function () {
+            // All files are in the index now, get the diff and show dialog.
+            return _getStagedDiff(shortuctType).then(function (diff) {
+                return _showCommitDialog(diff, lintResults, prefilledMessage, shortuctType, files);
+            });
         });
     }
 
@@ -734,14 +778,7 @@ define(function (require, exports) {
                 return Git.resetIndex();
             })
             .then(function () {
-                var gitRoot = Preferences.get("currentGitRoot");
-                var currentDoc = DocumentManager.getCurrentDocument();
-                if (currentDoc) {
-                    var relativePath = currentDoc.file.fullPath.substring(gitRoot.length);
-                    return Git.stage(relativePath).then(function () {
-                        return handleGitCommit();
-                    });
-                }
+                return handleGitCommit(undefined, false, COMMIT_SHOURTCUT_TYPE.CURRENT);
             });
     }
 
@@ -752,9 +789,7 @@ define(function (require, exports) {
                 return Git.resetIndex();
             })
             .then(function () {
-                return Git.stageAll().then(function () {
-                    return handleGitCommit();
-                });
+                return handleGitCommit(undefined, false, COMMIT_SHOURTCUT_TYPE.ALL);
             });
     }
 
