@@ -532,9 +532,7 @@ define(function (require, exports) {
         if (updateIndex) { args.push("-u"); }
         if ($.isArray(file)) {
             args.push("--");
-            _.forEach(file, function (next) {
-                args.push(next);
-            });
+            args.concat(file);
         } else {
             args.push("--", file);
         }
@@ -769,9 +767,7 @@ define(function (require, exports) {
         var args = ["diff", "--no-ext-diff", "--no-color", "--full-index"];
         if (files !== undefined) {
             if ($.isArray(files)) {
-                _.forEach(function (next) {
-                    args.push(next);
-                });
+                args.concat(files);
             } else {
                 args.push(files);
             }

@@ -255,7 +255,9 @@ define(function (require, exports) {
                     });
                     Git.stage(filesPath).then(function () {
                         _getStagedDiff().then(function (diff) {
-                            _doGitCommit($dialog, getCommitMessageElement, diff);
+                            return _doGitCommit($dialog, getCommitMessageElement, diff);
+                        }).catch(function (err) {
+                            ErrorHandler.showError(err, "Can get diff for staged files");
                         });
                     });
                 } else {
@@ -290,8 +292,6 @@ define(function (require, exports) {
                     lastCommitMessage = null;
                 });
             } else {
-                // this will trigger refreshing where appropriate
-                Git.status();
                 throw new ExpectedError("The files you were going to commit were modified while commit dialog was displayed. " +
                                         "Aborting the commit as the result would be different then what was shown in the dialog.");
             }
@@ -568,10 +568,10 @@ define(function (require, exports) {
                     return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
                 });
 
-                if (commitMode === undefined && files.length === 0 && !isMerge) {
+                if (files.length === 0 && !isMerge) {
                     return ErrorHandler.showError(new Error("Commit button should have been disabled"), "Nothing staged to commit");
                 }
-                handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, commitMode, prefilledMessage);
+                return handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, commitMode, prefilledMessage);
 
             }).catch(function (err) {
                 ErrorHandler.showError(err, "Preparing commit dialog failed");
@@ -581,7 +581,11 @@ define(function (require, exports) {
         } else {
             if (commitMode === COMMIT_MODE.ALL) {
                 Git.status().then(function (files) {
-                    handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, commitMode, prefilledMessage);
+                    return handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, commitMode, prefilledMessage);
+                }).catch(function (err) {
+                    ErrorHandler.showError(err, "Preparing commit dialog failed");
+                }).finally(function () {
+                    Utils.unsetLoading($gitPanel.find(".git-commit"));
                 });
             } else if (commitMode === COMMIT_MODE.CURRENT) {
                 Git.status().then(function (files) {
@@ -592,8 +596,12 @@ define(function (require, exports) {
                         var currentFile = _.filter(files, function (next) {
                             return relativePath === next.file;
                         });
-                        handleGitCommitInternal(stripWhitespace, currentFile, codeInspectionEnabled, commitMode, prefilledMessage);
+                        return handleGitCommitInternal(stripWhitespace, currentFile, codeInspectionEnabled, commitMode, prefilledMessage);
                     }
+                }).catch(function (err) {
+                    ErrorHandler.showError(err, "Preparing commit dialog failed");
+                }).finally(function () {
+                    Utils.unsetLoading($gitPanel.find(".git-commit"));
                 });
             }
 
