@@ -43,7 +43,7 @@ define(function (require, exports) {
 
     var showFileWhiteList = /^\.gitignore$/;
 
-    var COMMIT_SHOURTCUT_TYPE = {
+    var COMMIT_MODE = {
         CURRENT: "CURRENT",
         ALL: "ALL",
         DEFAULT: "DEFAULT"
@@ -96,7 +96,7 @@ define(function (require, exports) {
         return { width: desiredWidth, height: desiredHeight };
     }
 
-    function _showCommitDialog(stagedDiff, lintResults, prefilledMessage, shortcutType, files) {
+    function _showCommitDialog(stagedDiff, lintResults, prefilledMessage, commitMode, files) {
         lintResults = lintResults || [];
 
         // Flatten the error structure from various providers
@@ -248,7 +248,7 @@ define(function (require, exports) {
 
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
-                if (shortcutType === COMMIT_SHOURTCUT_TYPE.ALL || shortcutType === COMMIT_SHOURTCUT_TYPE.CURRENT) {
+                if (commitMode === COMMIT_MODE.ALL || commitMode === COMMIT_MODE.CURRENT) {
                     var filesPath = [];
                     _.forEach(files, function (next) {
                         filesPath.push(next.file);
@@ -449,8 +449,8 @@ define(function (require, exports) {
         });
     }
 
-    function _getStagedDiff(shortcutType, files) {
-        return ProgressDialog.show(_getStagedDiffForShortcutType(shortcutType, files),
+    function _getStagedDiff(commitMode, files) {
+        return ProgressDialog.show(_getStagedDiffForCommitMode(commitMode, files),
                                    Strings.GETTING_STAGED_DIFF_PROGRESS,
                                    { preDelay: 3, postDelay: 1 })
         .catch(function (err) {
@@ -469,10 +469,10 @@ define(function (require, exports) {
         });
     }
 
-    function _getStagedDiffForShortcutType(shortcutType, files) {
-        if (shortcutType === COMMIT_SHOURTCUT_TYPE.ALL) {
+    function _getStagedDiffForCommitMode(commitMode, files) {
+        if (commitMode === COMMIT_MODE.ALL) {
             return Git.getDiffOfAllIndexFiles();
-        } else if (shortcutType === COMMIT_SHOURTCUT_TYPE.CURRENT) {
+        } else if (commitMode === COMMIT_MODE.CURRENT) {
             if (files !== undefined && $.isArray(files)) {
                 return Git.getDiffOfAllIndexFiles(files[0].file);
             }
@@ -504,7 +504,7 @@ define(function (require, exports) {
 
     function commitMerge() {
         Utils.loadPathContent(Preferences.get("currentGitRoot") + "/.git/MERGE_MSG").then(function (msg) {
-            handleGitCommit(msg, true, COMMIT_SHOURTCUT_TYPE.DEFAULT);
+            handleGitCommit(msg, true, COMMIT_MODE.DEFAULT);
             EventEmitter.once(Events.GIT_COMMITED, function () {
                 EventEmitter.emit(Events.REFRESH_ALL);
             });
@@ -553,7 +553,7 @@ define(function (require, exports) {
         });
     }
 
-    function handleGitCommit(prefilledMessage, isMerge, shortuctType) {
+    function handleGitCommit(prefilledMessage, isMerge, commitMode) {
 
         var stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
         var codeInspectionEnabled = Preferences.get("useCodeInspection");
@@ -562,16 +562,16 @@ define(function (require, exports) {
         Utils.setLoading($gitPanel.find(".git-commit"));
 
         // First reset staged files, then add selected files to the index.
-        if (shortuctType === COMMIT_SHOURTCUT_TYPE.DEFAULT) {
+        if (commitMode === COMMIT_MODE.DEFAULT) {
             Git.status().then(function (files) {
                 files = _.filter(files, function (file) {
                     return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
                 });
 
-                if (shortuctType === undefined && files.length === 0 && !isMerge) {
+                if (commitMode === undefined && files.length === 0 && !isMerge) {
                     return ErrorHandler.showError(new Error("Commit button should have been disabled"), "Nothing staged to commit");
                 }
-                handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, shortuctType, prefilledMessage);
+                handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, commitMode, prefilledMessage);
 
             }).catch(function (err) {
                 ErrorHandler.showError(err, "Preparing commit dialog failed");
@@ -579,11 +579,11 @@ define(function (require, exports) {
                 Utils.unsetLoading($gitPanel.find(".git-commit"));
             });
         } else {
-            if (shortuctType === COMMIT_SHOURTCUT_TYPE.ALL) {
+            if (commitMode === COMMIT_MODE.ALL) {
                 Git.status().then(function (files) {
-                    handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, shortuctType, prefilledMessage);
+                    handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, commitMode, prefilledMessage);
                 });
-            } else if (shortuctType === COMMIT_SHOURTCUT_TYPE.CURRENT) {
+            } else if (commitMode === COMMIT_MODE.CURRENT) {
                 Git.status().then(function (files) {
                     var gitRoot = Preferences.get("currentGitRoot");
                     var currentDoc = DocumentManager.getCurrentDocument();
@@ -592,7 +592,7 @@ define(function (require, exports) {
                         var currentFile = _.filter(files, function (next) {
                             return relativePath === next.file;
                         });
-                        handleGitCommitInternal(stripWhitespace, currentFile, codeInspectionEnabled, shortuctType, prefilledMessage);
+                        handleGitCommitInternal(stripWhitespace, currentFile, codeInspectionEnabled, commitMode, prefilledMessage);
                     }
                 });
             }
@@ -600,13 +600,13 @@ define(function (require, exports) {
         }
     }
 
-    function handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, shortuctType, prefilledMessage) {
+    function handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, commitMode, prefilledMessage) {
         var queue = Promise.resolve();
         var lintResults;
 
         if (stripWhitespace) {
             queue = queue.then(function () {
-                return ProgressDialog.show(Utils.stripWhitespaceFromFiles(files, shortuctType === COMMIT_SHOURTCUT_TYPE.DEFAULT),
+                return ProgressDialog.show(Utils.stripWhitespaceFromFiles(files, commitMode === COMMIT_MODE.DEFAULT),
                                            Strings.CLEANING_WHITESPACE_PROGRESS,
                                            { preDelay: 3, postDelay: 1 });
             });
@@ -622,8 +622,8 @@ define(function (require, exports) {
 
         return queue.then(function () {
             // All files are in the index now, get the diff and show dialog.
-            return _getStagedDiff(shortuctType, files).then(function (diff) {
-                return _showCommitDialog(diff, lintResults, prefilledMessage, shortuctType, files);
+            return _getStagedDiff(commitMode, files).then(function (diff) {
+                return _showCommitDialog(diff, lintResults, prefilledMessage, commitMode, files);
             });
         });
     }
@@ -773,7 +773,7 @@ define(function (require, exports) {
                 return Git.resetIndex();
             })
             .then(function () {
-                return handleGitCommit(undefined, false, COMMIT_SHOURTCUT_TYPE.CURRENT);
+                return handleGitCommit(undefined, false, COMMIT_MODE.CURRENT);
             });
     }
 
@@ -784,7 +784,7 @@ define(function (require, exports) {
                 return Git.resetIndex();
             })
             .then(function () {
-                return handleGitCommit(undefined, false, COMMIT_SHOURTCUT_TYPE.ALL);
+                return handleGitCommit(undefined, false, COMMIT_MODE.ALL);
             });
     }
 
@@ -1154,7 +1154,7 @@ define(function (require, exports) {
     });
 
     EventEmitter.on(Events.HANDLE_GIT_COMMIT, function () {
-        handleGitCommit(lastCommitMessage, false, COMMIT_SHOURTCUT_TYPE.DEFAULT);
+        handleGitCommit(lastCommitMessage, false, COMMIT_MODE.DEFAULT);
     });
 
     EventEmitter.on(Events.TERMINAL_DISABLE, function () {
