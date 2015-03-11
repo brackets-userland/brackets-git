@@ -348,9 +348,9 @@ define(function (require, exports) {
         }
         args.push(remoteName);
 
-        if (remoteBranch && Preferences.get("gerrit.pushref")) {
-            return getConfig("gerrit.pushref").then(function (gerritEnabled) {
-                if (gerritEnabled === "true") {
+        if (remoteBranch && Preferences.get("gerritPushref")) {
+            return getConfig("gerrit.pushref").then(function (strGerritEnabled) {
+                if (strGerritEnabled === "true") {
                     args.push("HEAD:refs/for/" + remoteBranch);
                 } else {
                     args.push(remoteBranch);

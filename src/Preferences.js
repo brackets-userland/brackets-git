@@ -25,6 +25,7 @@ define(function (require, exports, module) {
         "useVerboseDiff": {                 "type": "boolean",           "value": false             },
         "useDifftool": {                    "type": "boolean",           "value": false             },
         "clearWhitespaceOnSave": {          "type": "boolean",           "value": false             },
+        "gerritPushref": {                  "type": "boolean",           "value": false             },
         // shortcuts
         "panelShortcut": {                  "type": "string",            "value": "Ctrl-Alt-G"      },
         "commitCurrentShortcut": {          "type": "string",            "value": null              },

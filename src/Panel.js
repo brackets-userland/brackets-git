@@ -674,27 +674,8 @@ define(function (require, exports) {
         // Clone button
         $gitPanel.find(".git-clone").prop("disabled", false);
 
-        var p3 = Git.getConfig("gerrit.pushref").then(function (enabled) {
-            var gerritPreference = Preferences.get("gerrit.pushref");
-            if (enabled === "true" && (gerritPreference === undefined || !gerritPreference)) {
-                // Handles the case where we switched to a repo that is using gerrit
-                Preferences.persist("gerrit.pushref", true);
-            }
-            setGerritCheckState(enabled);
-        });
-
         // FUTURE: who listens for this?
-        return Promise.all([p1, p2, p3]);
-    }
-
-    function setGerritCheckState(enabled) {
-        var gerritPushEnabled = enabled === "true";
-        var target = $gitPanel.find(".toggle-gerrit-push-ref");
-        if (gerritPushEnabled) {
-            target.addClass("checkmark");
-        } else {
-            target.removeClass("checkmark");
-        }
+        return Promise.all([p1, p2]);
     }
 
     function toggle(bool) {
@@ -902,27 +883,25 @@ define(function (require, exports) {
     });
 
     EventEmitter.on(Events.GERRIT_TOGGLE_PUSH_REF, function (event, callback) {
-        // update menu item state
+        // Set the global preference
         var gerritPushref = Preferences.get("gerrit.pushref");
-        if (gerritPushref === undefined || !gerritPushref) {
+        if (!gerritPushref) {
             // Saving a preference to tell the GitCli.push() method to check for gerrit push ref enablement
             // so we don't slow down people who aren't using gerrit.
             Preferences.persist("gerrit.pushref", true);
         }
-        return Git.getConfig("gerrit.pushref").then(function (enabled) {
-            if (enabled === "true") {
-                enabled = "false";
-            } else {
-                enabled = "true";
-            }
-            return Git.setConfig("gerrit.pushref", enabled, true)
+
+        // update preference and emit so the menu item updates
+        return Git.getConfig("gerrit.pushref").then(function (strEnabled) {
+            var newEnabled = strEnabled !== "true";
+            return Git.setConfig("gerrit.pushref", newEnabled, true)
                 .catch(function (err) {
                     ErrorHandler.showError(err, "Impossible to toggle gerrit push ref");
                 }).then(function () {
-                    EventEmitter.emit(Events.GERRIT_PUSH_REF_TOGGLED, enabled);
+                    EventEmitter.emit(Events.GERRIT_PUSH_REF_TOGGLED, newEnabled);
                 }).finally(function () {
                     if (callback) {
-                        callback(enabled);
+                        callback(newEnabled);
                     }
                 });
         });
@@ -931,6 +910,15 @@ define(function (require, exports) {
     EventEmitter.on(Events.GERRIT_PUSH_REF_TOGGLED, function (enabled) {
         setGerritCheckState(enabled);
     });
+
+    function setGerritCheckState(enabled) {
+        var target = $gitPanel.find(".toggle-gerrit-push-ref");
+        if (enabled) {
+            target.addClass("checkmark");
+        } else {
+            target.removeClass("checkmark");
+        }
+    }
 
     function discardAllChanges() {
         return Utils.askQuestion(Strings.RESET_LOCAL_REPO, Strings.RESET_LOCAL_REPO_CONFIRM, { booleanResponse: true })
@@ -1128,6 +1116,15 @@ define(function (require, exports) {
         });
         Git.getConfig("user.email").then(function (currentEmail) {
             EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
+        });
+        Git.getConfig("gerrit.pushref").then(function (strEnabled) {
+            var enabled = strEnabled === "true";
+            var gerritPreference = Preferences.get("gerritPushref");
+            if (enabled && !gerritPreference) {
+                // Handles the case where we switched to a repo that is using gerrit
+                Preferences.persist("gerritPushref", true);
+            }
+            EventEmitter.emit(Events.GERRIT_PUSH_REF_TOGGLED, enabled);
         });
     });
 
