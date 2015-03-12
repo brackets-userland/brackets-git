@@ -894,6 +894,40 @@ define(function (require, exports) {
         });
     });
 
+    EventEmitter.on(Events.GERRIT_TOGGLE_PUSH_REF, function (event, callback) {
+        // update preference and emit so the menu item updates
+        return Git.getConfig("gerrit.pushref").then(function (strEnabled) {
+            var toggledValue = strEnabled !== "true";
+
+            // Set the global preference
+            // Saving a preference to tell the GitCli.push() method to check for gerrit push ref enablement
+            // so we don't slow down people who aren't using gerrit.
+            Preferences.persist("gerritPushref", toggledValue);
+
+            return Git.setConfig("gerrit.pushref", toggledValue, true)
+                .then(function () {
+                    EventEmitter.emit(Events.GERRIT_PUSH_REF_TOGGLED, toggledValue);
+                })
+                .finally(function () {
+                    if (callback) {
+                        callback(toggledValue);
+                    }
+                });
+        }).catch(function (err) {
+            ErrorHandler.showError(err, "Impossible to toggle gerrit push ref");
+        });
+    });
+
+    EventEmitter.on(Events.GERRIT_PUSH_REF_TOGGLED, function (enabled) {
+        setGerritCheckState(enabled);
+    });
+
+    function setGerritCheckState(enabled) {
+        $gitPanel
+            .find(".toggle-gerrit-push-ref")
+            .toggleClass("checkmark", enabled);
+    }
+
     function discardAllChanges() {
         return Utils.askQuestion(Strings.RESET_LOCAL_REPO, Strings.RESET_LOCAL_REPO_CONFIRM, { booleanResponse: true })
             .then(function (response) {
@@ -974,6 +1008,7 @@ define(function (require, exports) {
             })
             .on("click", ".change-user-name", EventEmitter.emitFactory(Events.GIT_CHANGE_USERNAME))
             .on("click", ".change-user-email", EventEmitter.emitFactory(Events.GIT_CHANGE_EMAIL))
+            .on("click", ".toggle-gerrit-push-ref", EventEmitter.emitFactory(Events.GERRIT_TOGGLE_PUSH_REF))
             .on("click", ".undo-last-commit", undoLastLocalCommit)
             .on("click", ".git-bash", EventEmitter.emitFactory(Events.TERMINAL_OPEN))
             .on("click", ".reset-all", discardAllChanges);
@@ -1089,6 +1124,14 @@ define(function (require, exports) {
         });
         Git.getConfig("user.email").then(function (currentEmail) {
             EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
+        });
+        Git.getConfig("gerrit.pushref").then(function (strEnabled) {
+            var enabled = strEnabled === "true";
+            // Handle the case where we switched to a repo that is using gerrit
+            if (enabled && !Preferences.get("gerritPushref")) {
+                Preferences.persist("gerritPushref", true);
+            }
+            EventEmitter.emit(Events.GERRIT_PUSH_REF_TOGGLED, enabled);
         });
     });
 

@@ -88,6 +88,7 @@ define({
     DIFF_FAILED_SEE_FILES:              "Git diff failed to provide diff results. This is the list of staged files to be commited:",
     DIFF_TOO_LONG:                      "Diff too long to display",
     ENABLE_ADVANCED_FEATURES:           "Enable advanced features",
+    ENABLE_GERRIT_PUSH_REF:             "Use Gerrit-compatible push ref",
     ENTER_GITFTP_SCOPE_NAME:            "Enter name of the new Git-FTP remote:",
     ENTER_GITFTP_SCOPE_URL:             "Enter FTP URL of the new Git-FTP remote specifing username and password:",
     ENTER_NEW_USER_EMAIL:               "Enter email",

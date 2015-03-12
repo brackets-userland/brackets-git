@@ -348,10 +348,25 @@ define(function (require, exports) {
         }
         args.push(remoteName);
 
+        if (remoteBranch && Preferences.get("gerritPushref")) {
+            return getConfig("gerrit.pushref").then(function (strGerritEnabled) {
+                if (strGerritEnabled === "true") {
+                    args.push("HEAD:refs/for/" + remoteBranch);
+                } else {
+                    args.push(remoteBranch);
+                }
+                return doPushWithArgs(args);
+            });
+        }
+
         if (remoteBranch) {
             args.push(remoteBranch);
         }
 
+        return doPushWithArgs(args);
+    }
+
+    function doPushWithArgs(args) {
         return git(args)
             .catch(repositoryNotFoundHandler)
             .then(function (stdout) {

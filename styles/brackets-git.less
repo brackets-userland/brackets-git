@@ -256,6 +256,12 @@
 
     .dropdown-menu();
 
+    .dropdown-menu > li > a.checkmark::before {
+        content: "✓";
+        margin-left: -11px;
+        margin-right: 3px;
+    }
+
     // class for buttons that are performing an action
     .btn-loading, .btn-loading:active {
         background-size: 30px 30px;
