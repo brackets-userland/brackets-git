@@ -273,17 +273,17 @@ define(function (require, exports) {
         // this event won't launch when commit-message is empty so its safe to assume that it is not
         var commitMessage = getCommitMessageElement().val(),
             amendCommit = $dialog.find(".amend-commit").prop("checked");
-        
+
         // if commit message is extended and has a newline, put an empty line after first line to separate subject and body
         var s = commitMessage.split("\n");
         if (s.length > 1 && s[1].trim() !== "") {
             s.splice(1, 0, "");
         }
         commitMessage = s.join("\n");
-        
+
         // save lastCommitMessage in case the commit will fail
         lastCommitMessage = commitMessage;
-        
+
         // now we are going to be paranoid and we will check if some mofo didn't change our diff
         _getStagedDiff().then(function (diff) {
             if (diff === stagedDiff) {
@@ -296,7 +296,7 @@ define(function (require, exports) {
                                         "Aborting the commit as the result would be different then what was shown in the dialog.");
             }
         }).catch(function (err) {
-             if (ErrorHandler.contains(err, "Please tell me who you are")) {
+            if (ErrorHandler.contains(err, "Please tell me who you are")) {
                 var defer = Promise.defer();
                 EventEmitter.emit(Events.GIT_CHANGE_USERNAME, null, function () {
                     EventEmitter.emit(Events.GIT_CHANGE_EMAIL, null, function () {
