@@ -296,8 +296,7 @@ define(function (require, exports) {
                                         "Aborting the commit as the result would be different then what was shown in the dialog.");
             }
         }).catch(function (err) {
-
-            if (ErrorHandler.contains(err, "Please tell me who you are")) {
+             if (ErrorHandler.contains(err, "Please tell me who you are")) {
                 var defer = Promise.defer();
                 EventEmitter.emit(Events.GIT_CHANGE_USERNAME, null, function () {
                     EventEmitter.emit(Events.GIT_CHANGE_EMAIL, null, function () {
@@ -313,7 +312,6 @@ define(function (require, exports) {
             EventEmitter.emit(Events.GIT_COMMITED);
             refresh();
         });
-
     }
 
     function _showAuthors(file, blame, fromLine, toLine) {
