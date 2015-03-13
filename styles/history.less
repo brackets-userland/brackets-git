@@ -134,6 +134,9 @@
                 margin-right: 10px;
                 display: inline-block;
             }
+            .git-reset-label + .caret {
+                margin-left: 5px;
+            }
             .dropdown-menu {
                 left: auto;
                 right: 0;
@@ -148,7 +151,9 @@
         overflow-y: scroll;
         li > a {
             background: @bc-btn-bg;
-            border: none;
+            border: 1px solid transparent;
+            border-right: 0;
+            border-left: 0;
             color: @bc-text;
             margin: 10px;
             margin-bottom: 0;
@@ -171,7 +176,7 @@
             padding-bottom: 0;
             border-top: 0;
             margin-top: 0px;
-            border-radius: 0 0 4px 4px;
+            border-radius: 0 0 3px 3px;
             border-color: @bc-btn-border;
             margin-bottom: 0;
 
@@ -228,6 +233,7 @@
             border-left: 4px solid transparent;
             border-right: 4px solid transparent;
             border-top: 5px solid @bc-text;
+            margin-right: 2px;
 
             .dark & {
                 border-top: 5px solid @dark-bc-text;
@@ -237,6 +243,8 @@
             border-bottom: 4px solid transparent;
             border-top: 4px solid transparent;
             border-left: 5px solid @bc-text;
+            margin-right: -1px;
+            margin-left: 3px;
 
             .dark & {
                 border-left: 5px solid @dark-bc-text;
@@ -248,7 +256,8 @@
         .commit-files {
             padding: 0 20px;
             .openFile, .difftool {
-                margin-left: 20px;
+                vertical-align: -1px;
+                margin-left: 10px;
                 cursor: pointer;
                 opacity: 0.7;
             }
@@ -280,6 +289,9 @@
         }
         .expand {
             vertical-align: middle;
+        }
+        span.expand {
+            margin-left: 2px;
         }
         &.opened {
             .expand {

@@ -190,6 +190,7 @@
     }
     .octicon:not(:only-child) {
         margin-right: 5px;
+        vertical-align: -1px;
     }
     .btn-group.open .dropdown-toggle {
         background-color: @bc-btn-bg;
@@ -301,20 +302,15 @@
         background-color: @bc-bg-highlight !important;
 
         .dark & {
-            background-color:@dark-bc-bg-highlight !important;
+            background-color: @dark-bc-bg-highlight !important;
         }
     }
 
-    // Remove this once https://github.com/adobe/brackets/pull/8793/files is merged.
     .btn.active:not([disabled]) {
-        background-image: none;
-        background-color: @bc-bg-highlight;
-        box-shadow: inset 0 1px 0 @bc-shadow-small;
-        color: @bc-text-alt;
+        color: @bc-text-link;
 
         .dark & {
-            background-color:@dark-bc-bg-highlight;
-            box-shadow: inset 0 1px 0 @dark-bc-shadow-small;
+            background-color: @dark-bc-bg-highlight;
             color: @dark-bc-text-alt;
         }
     }
