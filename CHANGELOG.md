@@ -4,6 +4,7 @@
 
 ## 0.14.18 (Unreleased)
 * Added support for Gerrit push operations by [Jed Anderson](https://github.com/jedkcanderson) and [Ignacio Moreno](https://github.com/nmorenor)
+* Various visual style improvements by [cheesypoof](https://github.com/cheesypoof)
 
 ## 0.14.17 (27/02/2015)
 * Improved iTerm script by [Andrew Minion](https://github.com/macbookandrew)
