@@ -542,16 +542,10 @@ define(function (require, exports) {
         });
     }
 
-    function stage(file, updateIndex) {
+    function stage(fileOrFiles, updateIndex) {
         var args = ["add"];
         if (updateIndex) { args.push("-u"); }
-        if ($.isArray(file)) {
-            args.push("--");
-            args.concat(file);
-        } else {
-            args.push("--", file);
-        }
-        return git(args);
+        return git(args.concat("--", fileOrFiles));
     }
 
     function stageAll() {
@@ -780,12 +774,8 @@ define(function (require, exports) {
 
     function getDiffOfAllIndexFiles(files) {
         var args = ["diff", "--no-ext-diff", "--no-color", "--full-index"];
-        if (files !== undefined) {
-            if ($.isArray(files)) {
-                args.concat(files);
-            } else {
-                args.push(files);
-            }
+        if (files) {
+            args = args.concat("--", files);
         }
         return git(args, {
             timeout: false // never timeout this

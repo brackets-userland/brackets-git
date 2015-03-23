@@ -792,7 +792,7 @@ define(function (require, exports) {
                 return Git.resetIndex();
             })
             .then(function () {
-                return handleGitCommit(undefined, false, COMMIT_MODE.CURRENT);
+                return handleGitCommit(lastCommitMessage, false, COMMIT_MODE.CURRENT);
             });
     }
 
@@ -803,7 +803,7 @@ define(function (require, exports) {
                 return Git.resetIndex();
             })
             .then(function () {
-                return handleGitCommit(undefined, false, COMMIT_MODE.ALL);
+                return handleGitCommit(lastCommitMessage, false, COMMIT_MODE.ALL);
             });
     }
 

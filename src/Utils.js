@@ -505,6 +505,9 @@ define(function (require, exports, module) {
                                     var t = (new Date()).getTime() - startTime;
                                     notificationDefer.progress(t + "ms - " + Strings.CLEAN_FILE_END + ": " + fileObj.file);
                                 });
+                            } else {
+                                var t = (new Date()).getTime() - startTime;
+                                notificationDefer.progress(t + "ms - " + Strings.CLEAN_FILE_END + ": " + fileObj.file);
                             }
                         });
                     });
