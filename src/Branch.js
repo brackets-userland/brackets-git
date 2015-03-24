@@ -382,6 +382,10 @@ define(function (require, exports) {
             contents = contents.trim();
 
             var m = contents.match(/^ref:\s+refs\/heads\/(\S+)/);
+
+            // alternately try to parse the hash
+            if (!m) { m = contents.match(/^([a-f0-9]{40})$/); }
+
             if (!m) {
                 ErrorHandler.showError(new Error("Failed parsing branch name from " + contents));
                 return;

@@ -3,8 +3,9 @@
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
 ## 0.14.19 (25/03/2015)
-* Fixed issue with displaying merge commit diff by [Marcel Gerber](https://github.com/MarcelGerber)
 * Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
+* Fixed issue parsing a branch name from HEAD file when rebasing.
+* Fixed issue with displaying merge commit diff by [Marcel Gerber](https://github.com/MarcelGerber)
 
 ## 0.14.18 (20/03/2015)
 * Added support for Gerrit push operations by [Jed Anderson](https://github.com/jedkcanderson) and [Ignacio Moreno](https://github.com/nmorenor)
