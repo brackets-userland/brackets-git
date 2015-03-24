@@ -820,17 +820,17 @@ define(function (require, exports) {
     }
 
     function getFilesFromCommit(hash) {
-        return git(["diff", "--no-ext-diff", "--name-only", hash + "^!"]).then(function (stdout) {
+        return git(["diff", "--no-ext-diff", "--name-only", hash + "^.." + hash]).then(function (stdout) {
             return !stdout ? [] : stdout.split("\n");
         });
     }
 
     function getDiffOfFileFromCommit(hash, file) {
-        return git(["diff", "--no-ext-diff", "--no-color", hash + "^!", "--", file]);
+        return git(["diff", "--no-ext-diff", "--no-color", hash + "^.." + hash, "--", file]);
     }
 
     function difftoolFromHash(hash, file) {
-        return git(["difftool", hash + "^!", "--", file], {
+        return git(["difftool", hash + "^.." + hash, "--", file], {
             timeout: false // never timeout this
         });
     }
