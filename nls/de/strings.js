@@ -44,6 +44,7 @@ define({
     CLEAN_FILE_END:                     "Datei gesäubert",
     CLEAN_FILE_START:                   "Datei wird gesäubert",
     CLEANING_WHITESPACE_PROGRESS:       "Anhängende Leerzeichen werden von den Dateien entfernt\u2026",
+    CLEAR_WHITESPACE_ON_FILE_SAVE:      "Anhängende Leerzeichen beim Speichern entfernen",
     CLONE_REPOSITORY:                   "Repository klonen",
     CODE_INSPECTION_PROBLEMS:           "Fehler beim Linten:",
     COLLAPSE_ALL:                       "Alle einklappen",
@@ -68,6 +69,7 @@ define({
     DATE_MODE_4:                        "Git-Datum",
     DEBUG:                              "Debug",
     DEBUG_MODE_SETTING:                 "DEBUG-Modus &mdash; Aktivieren Sie diesen Modus nur, wenn Sie ein Problem mit der Erweiterung eingrenzen müssen. Alle Git-Vorgänge werden in die Brackets-Konsole weitergeleitet!",
+    DEFAULT_GIT_TIMEOUT:                "Standard-Timeout für Git-Vorgänge (in Sekunden)",
     DELETE_FILE:                        "Datei löschen",
     DELETE_LOCAL_BRANCH:                "Lokalen Branch entfernen",
     DELETE_LOCAL_BRANCH_NAME:           "Wollen Sie den lokalen Branch \"{0}\" wirklich entfernen?",
@@ -86,6 +88,7 @@ define({
     DIFF_FAILED_SEE_FILES:              "Git diff konnte keine Unterschiede finden. Hier ist die Liste der zum Commit vorgemerkten Dateien, die committet werden:",
     DIFF_TOO_LONG:                      "Diff zu lang zum Anzeigen",
     ENABLE_ADVANCED_FEATURES:           "Erweiterte Funktionen aktivieren",
+    ENABLE_GERRIT_PUSH_REF:             "Mit Gerrit kompatibles Versenden nutzen",
     ENTER_GITFTP_SCOPE_NAME:            "Geben Sie den Namen des neuen Git-FTP Remote-Repositories ein:",
     ENTER_GITFTP_SCOPE_URL:             "Geben Sie die FTP-URL des neuen Git-FTP Remote-Repositories unter Angabe von Nutzername und Passwort ein:",
     ENTER_NEW_USER_EMAIL:               "E-Mail-Adresse eingeben",
@@ -226,6 +229,7 @@ define({
     USE_CODE_INSPECTION:                "Linter nutzen",
     USE_GITFTP:                         "Git-FTP benutzen",
     USE_GIT_GUTTER:                     "Git-Markierungen am Rand anzeigen",
+    USE_NOFF:                           "Einen Merge-Commit auch dann erstellen, wenn der Merge ein Vorspulen war (--no-ff)",
     USE_REBASE:                         "REBASE nutzen",
     USE_VERBOSE_DIFF:                   "Ausführliche Angaben in Diffs anzeigen",
     USE_DIFFTOOL:                       "Externes Diff-Programm für Diffs verwenden",
@@ -235,4 +239,4 @@ define({
     VIEW_THIS_FILE:                     "Diese Datei anzeigen"
 });
 
-/* Last translated for 2ab6942ef6841cc597c7239703a903c56d39298a */
+/* Last translated for bd54da4560c24f411b010b061078642fef999ed0 */
