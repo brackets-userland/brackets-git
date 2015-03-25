@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.20 (Unreleased)
+* Staged files are now remembered when using shortcuts to commit a single file or commit all files by [Ignacio Moreno](https://github.com/nmorenor)
+
 ## 0.14.19 (25/03/2015)
 * Updated German translation by [Marcel Gerber](https://github.com/MarcelGerber)
 * Fixed issue parsing a branch name from HEAD file when rebasing.
