@@ -542,11 +542,10 @@ define(function (require, exports) {
         });
     }
 
-    function stage(file, updateIndex) {
+    function stage(fileOrFiles, updateIndex) {
         var args = ["add"];
         if (updateIndex) { args.push("-u"); }
-        args.push("--", file);
-        return git(args);
+        return git(args.concat("--", fileOrFiles));
     }
 
     function stageAll() {
@@ -769,6 +768,16 @@ define(function (require, exports) {
 
     function getDiffOfStagedFiles() {
         return git(["diff", "--no-ext-diff", "--no-color", "--staged"], {
+            timeout: false // never timeout this
+        });
+    }
+
+    function getDiffOfAllIndexFiles(files) {
+        var args = ["diff", "--no-ext-diff", "--no-color", "--full-index"];
+        if (files) {
+            args = args.concat("--", files);
+        }
+        return git(args, {
             timeout: false // never timeout this
         });
     }
@@ -1032,9 +1041,9 @@ define(function (require, exports) {
     exports.getCommitsAhead           = getCommitsAhead;
     exports.getLastCommitMessage      = getLastCommitMessage;
     exports.mergeBranch               = mergeBranch;
+    exports.getDiffOfAllIndexFiles    = getDiffOfAllIndexFiles;
     exports.getDiffOfStagedFiles      = getDiffOfStagedFiles;
     exports.getListOfStagedFiles      = getListOfStagedFiles;
     exports.getBlame                  = getBlame;
     exports.getGitRoot                = getGitRoot;
-
 });
