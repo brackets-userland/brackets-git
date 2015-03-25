@@ -502,7 +502,7 @@ define(function (require, exports, module) {
                             var notifyProgress = function () {
                                 var t = (new Date()).getTime() - startTime;
                                 notificationDefer.progress(t + "ms - " + Strings.CLEAN_FILE_END + ": " + fileObj.file);
-                            }
+                            };
                             if (stageChanges) {
                                 return Git.stage(fileObj.file).then(notifyProgress);
                             } else {
