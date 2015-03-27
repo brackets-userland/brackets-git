@@ -18,6 +18,9 @@
                 <i class="octicon octicon-git-commit"></i>&nbsp;<span class="selectable-text">{{commit.hashShort}}</span>
                 <a href="#" class="git-extend-sha">&hellip;</a>
             </span>
+            <span class="commit-time">
+                <i class="octicon octicon-calendar"></i>&nbsp;<span class="selectable-text">{{commit.date}}</span>
+            </span>
             <div class="actions">
                 {{#enableAdvancedFeatures}}
                 <button class="git-advanced-features btn-checkout btn" title="{{Strings.TOOLTIP_CHECKOUT_COMMIT}}">{{Strings.BUTTON_CHECKOUT_COMMIT}}</button>
