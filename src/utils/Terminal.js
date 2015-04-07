@@ -9,6 +9,7 @@ define(function (require) {
         ErrorHandler  = require("src/ErrorHandler"),
         Events        = require("src/Events"),
         EventEmitter  = require("src/EventEmitter"),
+        ExpectedError = require("src/ExpectedError"),
         Preferences   = require("src/Preferences"),
         Promise       = require("bluebird"),
         Utils         = require("src/Utils");
@@ -156,7 +157,7 @@ define(function (require) {
                 if (configuredOk) {
                     open();
                 } else {
-                    throw new Error("Terminal configuration invalid, restoring defaults. Restart Brackets to apply.");
+                    throw new ExpectedError("Terminal configuration invalid, restoring defaults. Restart Brackets to apply.");
                 }
             })
             .catch(function (err) {
