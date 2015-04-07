@@ -51,7 +51,9 @@ define(function (require) {
             .on("click.history", ".history-commit", function () {
                 var hash = $(this).attr("x-hash");
                 var commit = _.find(commitCache, function (commit) { return commit.hash === hash; });
-                HistoryViewer.show(commit, getCurrentDocument());
+                HistoryViewer.show(commit, getCurrentDocument(), {
+                    isInitial: $(this).attr("x-initial-commit") === "true"
+                });
             });
     }
 
@@ -147,6 +149,10 @@ define(function (require) {
                     return p.then(function (commits) {
                         if (commits.length === 0) {
                             $historyList.attr("x-finished", "true");
+                            // marks initial commit as first
+                            $historyList
+                                .find("tr.history-commit:last-child")
+                                .attr("x-initial-commit", "true");
                             return;
                         }
 
