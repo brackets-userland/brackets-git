@@ -53,7 +53,7 @@ define(function (require, exports) {
                 relativeFilePath = $li.attr("x-file"),
                 $diffContainer = $li.find(".commit-diff");
 
-            Git.getDiffOfFileFromCommit(commit.hash, relativeFilePath, isInitial).then(function (diff) {
+            Git.getDiffOfFileFromCommit(commit.hash, relativeFilePath).then(function (diff) {
                 $diffContainer.html(Utils.formatDiff(diff));
                 $diffContainer.scrollTop($a.attr("scrollPos") || 0);
 
@@ -71,7 +71,7 @@ define(function (require, exports) {
 
     function showDiff($el) {
         var file = $el.closest("[x-file]").attr("x-file");
-        Git.difftoolFromHash(commit.hash, file);
+        Git.difftoolFromHash(commit.hash, file, isInitial);
     }
 
     function expandAll() {
@@ -236,7 +236,7 @@ define(function (require, exports) {
     }
 
     function loadMoreFiles() {
-        Git.getFilesFromCommit(commit.hash, isInitial).then(function (files) {
+        Git.getFilesFromCommit(commit.hash).then(function (files) {
 
             hasNextPage = files.slice((currentPage + 1) * PAGE_SIZE).length > 0;
             files = files.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);

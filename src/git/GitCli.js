@@ -828,23 +828,23 @@ define(function (require, exports) {
         return git(["clean", "-f", "-d"]);
     }
 
-    function getFilesFromCommit(hash, isInitial) {
-        var args = ["diff", "--no-ext-diff", "--name-only"];
-        args = args.concat(isInitial ? hash : hash + "^.." + hash);
+    function getFilesFromCommit(hash) {
+        var args = ["diff-tree", "-m", "--no-ext-diff", "--name-only"];
+        args = args.concat(hash);
         return git(args).then(function (stdout) {
             return !stdout ? [] : stdout.split("\n");
         });
     }
 
-    function getDiffOfFileFromCommit(hash, file, isInitial) {
-        var args = ["diff", "--no-ext-diff", "--no-color"];
-        args = args.concat(isInitial ? hash : hash + "^.." + hash);
+    function getDiffOfFileFromCommit(hash, file) {
+        var args = ["diff-tree", "-m", "--no-ext-diff", "--no-color"];
+        args = args.concat(hash);
         args = args.concat("--", file);
         return git(args);
     }
 
-    function difftoolFromHash(hash, file) {
-        return git(["difftool", hash + "^.." + hash, "--", file], {
+    function difftoolFromHash(hash, file, isInitial) {
+        return git(["difftool", isInitial ? hash + "^!" : hash + "^.." + hash, "--", file], {
             timeout: false // never timeout this
         });
     }
