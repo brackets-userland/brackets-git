@@ -14,6 +14,10 @@
                 <span class="commit-author-name">{{commit.author}}</span>
                 <span class="commit-author-email">&lt;{{commit.email}}&gt;</span>
             </span>
+            <span class="commit-time" title="{{commit.date.title}}">
+                <i class="octicon octicon-calendar"></i>&nbsp;
+                <span class="selectable-text">{{commit.date.shown}}</span>
+            </span>
             <span class="commit-hash" data-hash="{{commit.hash}}">
                 <i class="octicon octicon-git-commit"></i>&nbsp;<span class="selectable-text">{{commit.hashShort}}</span>
                 <a href="#" class="git-extend-sha">&hellip;</a>

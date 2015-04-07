@@ -2,7 +2,10 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.14.20 (Unreleased)
+## 0.14.21 (07/04/2015)
+* Added commit date to file history viewer by [Andrew Minion](https://github.com/macbookandrew)
+
+## 0.14.20 (25/03/2015)
 * Staged files are now remembered when using shortcuts to commit a single file or commit all files by [Ignacio Moreno](https://github.com/nmorenor)
 
 ## 0.14.19 (25/03/2015)
