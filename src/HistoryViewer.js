@@ -71,7 +71,7 @@ define(function (require, exports) {
 
     function showDiff($el) {
         var file = $el.closest("[x-file]").attr("x-file");
-        Git.difftoolFromHash(commit.hash, file);
+        Git.difftoolFromHash(commit.hash, file, isInitial);
     }
 
     function expandAll() {

@@ -830,7 +830,7 @@ define(function (require, exports) {
 
     function getFilesFromCommit(hash, isInitial) {
         var args = ["diff", "--no-ext-diff", "--name-only"];
-        args = args.concat(isInitial ? hash : hash + "^.." + hash);
+        args = args.concat(isInitial ? hash + "^!" : hash + "^.." + hash);
         return git(args).then(function (stdout) {
             return !stdout ? [] : stdout.split("\n");
         });
@@ -838,13 +838,13 @@ define(function (require, exports) {
 
     function getDiffOfFileFromCommit(hash, file, isInitial) {
         var args = ["diff", "--no-ext-diff", "--no-color"];
-        args = args.concat(isInitial ? hash : hash + "^.." + hash);
+        args = args.concat(isInitial ? hash + "^!" : hash + "^.." + hash);
         args = args.concat("--", file);
         return git(args);
     }
 
-    function difftoolFromHash(hash, file) {
-        return git(["difftool", hash + "^.." + hash, "--", file], {
+    function difftoolFromHash(hash, file, isInitial) {
+        return git(["difftool", isInitial ? hash + "^!" : hash + "^.." + hash, "--", file], {
             timeout: false // never timeout this
         });
     }
