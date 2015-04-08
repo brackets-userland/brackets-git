@@ -41,6 +41,9 @@ define(function (require, exports) {
         UNMERGED: "UNMERGED"
     };
 
+    // This SHA1 represents the empty tree. You get it using `git mktree < /dev/null`
+    var EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
+
     // Implementation
     function getGitPath() {
         if (_gitPath) { return _gitPath; }
@@ -830,7 +833,7 @@ define(function (require, exports) {
 
     function getFilesFromCommit(hash, isInitial) {
         var args = ["diff", "--no-ext-diff", "--name-only"];
-        args = args.concat(isInitial ? hash + "^!" : hash + "^.." + hash);
+        args = args.concat((isInitial ? EMPTY_TREE : hash + "^") + ".." + hash);
         return git(args).then(function (stdout) {
             return !stdout ? [] : stdout.split("\n");
         });
@@ -838,13 +841,13 @@ define(function (require, exports) {
 
     function getDiffOfFileFromCommit(hash, file, isInitial) {
         var args = ["diff", "--no-ext-diff", "--no-color"];
-        args = args.concat(isInitial ? hash + "^!" : hash + "^.." + hash);
+        args = args.concat((isInitial ? EMPTY_TREE : hash + "^") + ".." + hash);
         args = args.concat("--", file);
         return git(args);
     }
 
     function difftoolFromHash(hash, file, isInitial) {
-        return git(["difftool", isInitial ? hash + "^!" : hash + "^.." + hash, "--", file], {
+        return git(["difftool", (isInitial ? EMPTY_TREE : hash + "^") + ".." + hash, "--", file], {
             timeout: false // never timeout this
         });
     }
