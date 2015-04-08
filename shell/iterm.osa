@@ -34,8 +34,12 @@ on run argv
             end repeat
         end if
 
-        if git_session is null then -- if no terminals exist, create a session
-            if git_terminal is null then set git_terminal to (make new terminal) -- create a new terminal if necessary
+        if git_session is null then -- if no sessions exist, create a session
+            if (count of terminals) is 0 then
+                set git_terminal to (make new terminal) -- create a new terminal if necessary
+            else
+                set git_terminal to front terminal
+            end if
             tell git_terminal
                 set git_session to launch session tab_title
                 set the name of git_session to tab_title
