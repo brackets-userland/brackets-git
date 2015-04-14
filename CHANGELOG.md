@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.24 (14/04/2015)
+* Fixed displaying of tabs in diffs.
+
 ## 0.14.23 (10/04/2015)
 * Fixed previous fix for initial commit diff by [Marcel Gerber](https://github.com/MarcelGerber)
 

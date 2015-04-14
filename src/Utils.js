@@ -45,12 +45,17 @@ define(function (require, exports, module) {
     function formatDiff(diff) {
         var DIFF_MAX_LENGTH = 2000;
 
-        var tabSize      = Preferences.getGlobal("tabSize"),
+        var tabReplace   = "",
             verbose      = Preferences.get("useVerboseDiff"),
             numLineOld   = 0,
             numLineNew   = 0,
             lastStatus   = 0,
             diffData     = [];
+
+        var i = Preferences.getGlobal("tabSize");
+        while (i--) {
+            tabReplace += "&nbsp;";
+        }
 
         var LINE_STATUS = {
             HEADER: 0,
@@ -166,7 +171,10 @@ define(function (require, exports, module) {
                 // removes ZERO WIDTH NO-BREAK SPACE character (BOM)
                 line = line.replace(/\uFEFF/g, "");
 
-                line = _.escape(line).replace(/\s/g, "&nbsp;");
+                line = _.escape(line)
+                    .replace(/\t/g, tabReplace)
+                    .replace(/\s/g, "&nbsp;");
+
                 line = line.replace(/(&nbsp;)+$/g, function (trailingWhitespace) {
                     return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
                 });
@@ -176,8 +184,7 @@ define(function (require, exports, module) {
                         "numLineOld": _numLineOld,
                         "numLineNew": _numLineNew,
                         "line": line,
-                        "lineClass": lineClass,
-                        "tabSize": tabSize
+                        "lineClass": lineClass
                     });
                 }
             }
