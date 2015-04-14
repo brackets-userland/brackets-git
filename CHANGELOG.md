@@ -4,6 +4,8 @@
 
 ## 0.14.24 (14/04/2015)
 * Fixed displaying of tabs in diffs.
+* Improved error handling for `spawn ENOENT` errors.
+* Size of diff dialog has been slightly increased.
 
 ## 0.14.23 (10/04/2015)
 * Fixed previous fix for initial commit diff by [Marcel Gerber](https://github.com/MarcelGerber)

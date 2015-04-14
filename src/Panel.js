@@ -81,7 +81,7 @@ define(function (require, exports) {
             minHeight = 300,
             maxWidth = $wrapper.width(),
             maxHeight = $wrapper.height(),
-            desiredWidth = maxWidth / 2,
+            desiredWidth = maxWidth / 1.5,
             desiredHeight = maxHeight / 2;
 
         if (desiredWidth < minWidth) { desiredWidth = minWidth; }
