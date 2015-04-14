@@ -175,6 +175,13 @@ define(function (require, exports, module) {
 
                         err = ErrorHandler.toError(err);
 
+                        // spawn ENOENT error
+                        var invalidCwdErr = "spawn ENOENT";
+                        if (err.stack && err.stack.indexOf(invalidCwdErr)) {
+                            err.message = err.message.replace(invalidCwdErr, invalidCwdErr + " (" + opts.cwd + ")");
+                            err.stack = err.stack.replace(invalidCwdErr, invalidCwdErr + " (" + opts.cwd + ")");
+                        }
+
                         // socket was closed so we should try this once again (if not already retrying)
                         if (err.stack && err.stack.indexOf("WebSocket.self._ws.onclose") !== -1 && !retry) {
                             cliHandler(method, cmd, args, opts, true)
