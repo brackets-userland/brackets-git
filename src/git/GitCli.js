@@ -785,6 +785,14 @@ define(function (require, exports) {
         });
     }
 
+    function getDiffOfUntrackedFile(file) {
+        var args = ["diff", "--no-ext-diff", "--no-color", "--", "/dev/null"];
+        args = args.concat(file);
+        return git(args, {
+            timeout: false // never timeout this
+        });
+    }
+
     function getListOfStagedFiles() {
         return git(["diff", "--no-ext-diff", "--no-color", "--staged", "--name-only"], {
             timeout: false // never timeout this
@@ -1050,6 +1058,7 @@ define(function (require, exports) {
     exports.getLastCommitMessage      = getLastCommitMessage;
     exports.mergeBranch               = mergeBranch;
     exports.getDiffOfAllIndexFiles    = getDiffOfAllIndexFiles;
+    exports.getDiffOfUntrackedFile    = getDiffOfUntrackedFile;
     exports.getDiffOfStagedFiles      = getDiffOfStagedFiles;
     exports.getListOfStagedFiles      = getListOfStagedFiles;
     exports.getBlame                  = getBlame;
