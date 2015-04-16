@@ -526,15 +526,17 @@ define(function (require, exports) {
         return new Promise(function (resolve) {
             return Git.stage(fileArray, false).then(function () {
                 return new Promise(function () {
-                    Git.getDiffOfStagedFiles().then(function (diff) {
-                        Git.resetIndex().then(function () {
+                    return Git.getDiffOfStagedFiles().then(function (diff) {
+                        return Git.resetIndex().then(function () {
                             resolve(diff);
                         });
                     });
                 });
             }).catch(function () {
-                Git.resetIndex().then(function () {
+                return Git.resetIndex().then(function () {
                     return Git.getDiffOfAllIndexFiles(fileArray);
+                }).catch(function (err) {
+                    ErrorHandler.showError(err, "Unable to reset index to calculate diff.");
                 });
             });
         });
