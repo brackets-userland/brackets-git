@@ -523,22 +523,14 @@ define(function (require, exports) {
     function _getDiffForUntrackedFiles(files) {
         var fileArray = [];
         fileArray = fileArray.concat(files);
-        return new Promise(function (resolve) {
-            return Git.stage(fileArray, false).then(function () {
-                return new Promise(function () {
-                    return Git.getDiffOfStagedFiles().then(function (diff) {
-                        return Git.resetIndex().then(function () {
-                            resolve(diff);
-                        });
-                    });
-                });
-            }).catch(function () {
-                return Git.resetIndex().then(function () {
-                    return Git.getDiffOfAllIndexFiles(fileArray);
-                }).catch(function (err) {
-                    ErrorHandler.showError(err, "Unable to reset index to calculate diff.");
-                });
-            });
+        var diff;
+        return Git.stage(fileArray, false).then(function () {
+            return Git.getDiffOfStagedFiles();
+        }).then(function (_diff) {
+            diff = _diff;
+            return Git.resetIndex();
+        }).then(function () {
+            return diff;
         });
     }
 
