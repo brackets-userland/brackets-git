@@ -483,16 +483,62 @@ define(function (require, exports) {
     }
 
     function _getStagedDiffForCommitMode(commitMode, files) {
+
         if (commitMode === COMMIT_MODE.ALL) {
-            return Git.getDiffOfAllIndexFiles();
-        } else if (commitMode === COMMIT_MODE.CURRENT) {
-            if (files !== undefined && _.isArray(files)) {
-                // TODO: what if files.length > 1 ?
+            return _getStaggedDiffForAllFiles();
+        }
+
+        if (commitMode === COMMIT_MODE.CURRENT && _.isArray(files)) {
+            if (files.length > 1) {
+                return Promise.reject("_getStagedDiffForCommitMode() got files.length > 1");
+            }
+
+            var isUntracked = files[0].status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1;
+            if (isUntracked) {
+                return _getDiffForUntrackedFiles(files[0].file);
+            } else {
                 return Git.getDiffOfAllIndexFiles(files[0].file);
             }
-            return Git.getDiffOfAllIndexFiles();
         }
+
         return Git.getDiffOfStagedFiles();
+    }
+
+    function _getStaggedDiffForAllFiles() {
+        return Git.status().then(function (statusFiles) {
+            var untrackedFiles = [];
+            var fileArray = [];
+
+            statusFiles.forEach(function (fileObject) {
+                var isUntracked = fileObject.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1;
+                if (isUntracked) {
+                    untrackedFiles.push(fileObject.file);
+                } else {
+                    fileArray.push(fileObject.file);
+                }
+            });
+
+            if (untrackedFiles.length > 0) {
+                return _getDiffForUntrackedFiles(fileArray.concat(untrackedFiles));
+            } else {
+                return Git.getDiffOfAllIndexFiles(fileArray);
+            }
+        });
+    }
+
+    function _getDiffForUntrackedFiles(files) {
+        var diff;
+        return Git.stage(files, false)
+            .then(function () {
+                return Git.getDiffOfStagedFiles();
+            })
+            .then(function (_diff) {
+                diff = _diff;
+                return Git.resetIndex();
+            })
+            .then(function () {
+                return diff;
+            });
     }
 
     // whatToDo gets values "continue" "skip" "abort"
