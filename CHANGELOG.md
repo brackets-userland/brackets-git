@@ -2,6 +2,12 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.25 (04/05/2015)
+* Fixed 'Clone' button being disabled after clone fails.
+* Fixed branch name displayed as 'true' when opening an empty repo without branches.
+* Fixed conflict with code folding, no longer shows '+' sign on gutter hover.
+* Fixed commit all files shortcut for unstaged files by [Ignacio Moreno](https://github.com/nmorenor)
+
 ## 0.14.24 (14/04/2015)
 * Fixed displaying of tabs in diffs.
 * Improved error handling for `spawn ENOENT` errors.
