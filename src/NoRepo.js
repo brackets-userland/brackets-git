@@ -117,7 +117,10 @@ define(function (require) {
         handleGitClone();
     });
     EventEmitter.on(Events.GIT_NO_BRANCH_EXISTS, function () {
-        commitGitIgnore();
+        commitGitIgnore()
+            .then(function () {
+                EventEmitter.emit(Events.REFRESH_ALL);
+            });
     });
 
 });
