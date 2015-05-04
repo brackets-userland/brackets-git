@@ -13,8 +13,7 @@ define(function (require, exports) {
         Events          = require("src/Events"),
         EventEmitter    = require("src/EventEmitter"),
         Git             = require("src/git/Git"),
-        Preferences     = require("./Preferences"),
-        Strings         = require("strings");
+        Preferences     = require("./Preferences");
 
     var gitAvailable = false,
         gutterName = "brackets-git-gutter",
@@ -334,6 +333,7 @@ define(function (require, exports) {
         }
     }
 
+    /* // disable because of https://github.com/zaggino/brackets-git/issues/1019
     var _timer;
     var $line = $(),
         $gitGutterLines = $();
@@ -372,6 +372,7 @@ define(function (require, exports) {
                 $target.removeClass("brackets-git-gutter-hover");
             }, 500);
         });
+    */
 
     // Event handlers
     EventEmitter.on(Events.GIT_ENABLED, function () {
