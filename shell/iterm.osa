@@ -18,13 +18,15 @@ on run argv
 
         if (count of terminals) > 0 then -- loop through all terminals
             repeat with ter in terminals
+                set counter to 0
                 repeat with ses in sessions of ter
+                    set counter to counter + 1
                     set this_session_name to name of ses
-                    if the this_session_name contains tab_title then -- check for terminal with this project’s name
+                    if this_session_name contains tab_title then -- check for terminal with this project’s name
                         repeat with i from 1 to (length of shells) -- check the session title for the default OS X shells
                             if the this_session_name contains item i of shells then -- the session title includes the currently-running command (uses the name of the shell if no other command is running)
                                 set git_terminal to ter
-                                set git_session to this_session_name
+                                set git_session to counter
                                 exit repeat
                             end if
                         end repeat
@@ -45,11 +47,11 @@ on run argv
                 set the name of git_session to tab_title
                 tell git_session to write text run_cmd
             end tell
+        else
+            -- select a currently-running session
+            select git_terminal
+            select session git_session of front terminal
         end if
-
-        -- select the session
-        select git_terminal
-        select git_session
     end tell
 end run
 
