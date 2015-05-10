@@ -3,7 +3,8 @@
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
 ## 0.14.26 (Planned)
-* * Updated iTerm launch script for Mac by [Andrew Minion](https://github.com/macbookandrew)
+* Added shortcut option for refreshing Git status.
+* Updated iTerm launch script for Mac by [Andrew Minion](https://github.com/macbookandrew)
 
 ## 0.14.25 (04/05/2015)
 * Fixed 'Clone' button being disabled after clone fails.

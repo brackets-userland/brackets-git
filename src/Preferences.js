@@ -35,6 +35,7 @@ define(function (require, exports, module) {
         "pullShortcut": {                   "type": "string",            "value": null              },
         "gotoPrevChangeShortcut": {         "type": "string",            "value": null              },
         "gotoNextChangeShortcut": {         "type": "string",            "value": null              },
+        "refreshShortcut": {                "type": "string",            "value": null              },
         "showTerminalIcon": {               "type": "boolean",           "value": false             },
         // system
         "debugMode": {                      "type": "boolean",           "value": false             },

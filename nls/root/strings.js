@@ -175,6 +175,7 @@ define({
     Q_RESTART_BRACKETS:                 "Do you wish to restart Brackets to apply new settings?",
     Q_UNDO_CHANGES:                     "Reset changes to file <span class='dialog-filename'>{0}</span>?",
     REBASE_RESULT:                      "Rebase result",
+    REFRESH_GIT:                        "Refresh Git",
     REMOVE_BOM:                         "Remove BOM from files",
     REMOVE_FROM_GITIGNORE:              "Remove from .gitignore",
     REQ_INTERNET:                       "Requires internet connection",

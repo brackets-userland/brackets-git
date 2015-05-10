@@ -1143,7 +1143,8 @@ define(function (require, exports) {
             PUSH_CMD           = "brackets-git.push",
             PULL_CMD           = "brackets-git.pull",
             GOTO_PREV_CHANGE   = "brackets-git.gotoPrevChange",
-            GOTO_NEXT_CHANGE   = "brackets-git.gotoNextChange";
+            GOTO_NEXT_CHANGE   = "brackets-git.gotoNextChange",
+            REFRESH_GIT        = "brackets-git.refreshAll";
 
         // Add command to menu.
         // Register command for opening bottom panel.
@@ -1170,6 +1171,9 @@ define(function (require, exports) {
 
         CommandManager.register(Strings.GOTO_NEXT_GIT_CHANGE, GOTO_NEXT_CHANGE, GutterManager.goToNext);
         KeyBindingManager.addBinding(GOTO_NEXT_CHANGE, Preferences.get("gotoNextChangeShortcut"), brackets.platform);
+
+        CommandManager.register(Strings.REFRESH_GIT, REFRESH_GIT, EventEmitter.emitFactory(Events.REFRESH_ALL));
+        KeyBindingManager.addBinding(REFRESH_GIT, Preferences.get("refreshShortcut"), brackets.platform);
 
         // Init moment - use the correct language
         moment.lang(brackets.getLocale());
