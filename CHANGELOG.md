@@ -2,7 +2,7 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.14.26 (Planned)
+## 0.14.26 (10/05/2015)
 * Added shortcut option for refreshing Git status.
 * Updated iTerm launch script for Mac by [Andrew Minion](https://github.com/macbookandrew)
 
