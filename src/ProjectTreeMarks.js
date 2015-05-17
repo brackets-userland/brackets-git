@@ -46,7 +46,7 @@ define(function (require) {
     function refreshIgnoreEntries() {
         function regexEscape(str) {
             // NOTE: We cannot use StringUtils.regexEscape() here because we don't wanna replace *
-            return str.replace(/([.?+\^$\\(){}|\-])/g, "\\$1");
+            return str.replace(/([.?+\^$\\(){}|])/g, "\\$1");
         }
 
         return loadIgnoreContents().then(function (content) {
