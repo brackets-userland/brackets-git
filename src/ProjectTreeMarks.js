@@ -46,7 +46,7 @@ define(function (require) {
     function refreshIgnoreEntries() {
         function regexEscape(str) {
             // NOTE: We cannot use StringUtils.regexEscape() here because we don't wanna replace *
-            return str.replace(/([.?+\^$\[\]\\(){}|\-])/g, "\\$1");
+            return str.replace(/([.?+\^$\\(){}|])/g, "\\$1");
         }
 
         return loadIgnoreContents().then(function (content) {
@@ -92,7 +92,7 @@ define(function (require) {
                 // are external files with the same name as a project file
                 regex = regexEscape(gitRoot) + (leadingSlash ? "" : "((.+)/)?") + regexEscape(line) + (trailingSlash ? "" : "(/.{0,})?");
                 // replace all the possible asterisks
-                regex = regex.replace(/\*\*$/g, "(.{0,})").replace(/(\*\*|\*$)/g, "(.+)").replace(/\*/g, "([^/]+)");
+                regex = regex.replace(/\*\*$/g, "(.{0,})").replace(/(\*\*|\*$)/g, "(.+)").replace(/\*/g, "([^/]*)");
                 regex = "^" + regex + "$";
 
                 return {
