@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.27 (19/05/2015)
+* Fixed .gitignore parsing by [Phillip Haydon](https://github.com/phillip-haydon)
+
 ## 0.14.26 (10/05/2015)
 * Added shortcut option for refreshing Git status.
 * Updated iTerm launch script for Mac by [Andrew Minion](https://github.com/macbookandrew)
