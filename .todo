@@ -1,6 +1,0 @@
-{
-    "search": {
-        "scope": "project",
-        "excludeFolders": [ "thirdparty", "node_modules", "nls" ]
-    }
-}
