@@ -1,2 +1,4 @@
 /.DS_Store
 /.disabled
+/node_modules/
+/dist/

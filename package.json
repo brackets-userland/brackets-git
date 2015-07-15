@@ -1,30 +1,65 @@
 {
-    "name": "zaggino.brackets-git",
-    "title": "Brackets Git",
-    "version": "1.0.0",
-    "engines": { "brackets": ">=1.4.0" },
-    "description": "Integration of Git into Brackets",
-    "keywords": ["brackets-extension", "git", "version-control", "source-control"],
-    "homepage": "https://github.com/zaggino/brackets-git",
-    "bugs": "https://github.com/zaggino/brackets-git/issues",
-    "license": "MIT",
-    "author": {
-        "name": "Martin Zagora",
-        "email": "zaggino@gmail.com",
-        "url": "https://github.com/zaggino"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/zaggino/brackets-git.git"
-    },
-    "scripts": {},
-    "dependencies": {},
-    "devDependencies": {},
-    "i18n": ["en", "en-gb", "de", "fr", "it", "pt-br", "zh-cn"],
-    "package-i18n": {
-        "de": {
-            "description": "Git-Integration für Brackets",
-            "keywords": ["git", "version-control", "source-control", "Versionsverwaltung", "Versionskontrollsystem"]
-        }
+  "name": "brackets-git",
+  "version": "1.0.0",
+  "description": "Git integration for Brackets",
+  "keywords": [
+    "brackets-extension",
+    "git",
+    "version-control",
+    "source-control"
+  ],
+  "homepage": "https://github.com/zaggino/brackets-git",
+  "bugs": "https://github.com/zaggino/brackets-git/issues",
+  "license": "MIT",
+  "author": {
+    "name": "Martin Zagora",
+    "email": "zaggino@gmail.com",
+    "url": "https://github.com/zaggino"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zaggino/brackets-git.git"
+  },
+  "scripts": {
+    "test": "gulp test",
+    "install": "gulp build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-eslint": "^3.1.23",
+    "fs-extra": "^0.22.1",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.1.0",
+    "gulp-eslint": "^0.15.0",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-util": "^3.0.6",
+    "gulp-watch": "^4.3.1",
+    "rimraf": "^2.4.1",
+    "through2": "^2.0.0"
+  },
+  "engines": {
+    "brackets": ">=1.4.0"
+  },
+  "i18n": [
+    "en",
+    "en-gb",
+    "de",
+    "fr",
+    "it",
+    "pt-br",
+    "zh-cn"
+  ],
+  "package-i18n": {
+    "de": {
+      "description": "Git-Integration für Brackets",
+      "keywords": [
+        "brackets-extension",
+        "git",
+        "version-control",
+        "source-control",
+        "versionsverwaltung",
+        "versionskontrollsystem"
+      ]
     }
+  }
 }
