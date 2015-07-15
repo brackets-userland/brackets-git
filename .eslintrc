@@ -10,6 +10,9 @@ env:
   es6: true
   node: true
   
+globals:
+  define: false
+  
 rules:
   #Possible Errors
   comma-dangle: [2, "never"] #disallow trailing commas
@@ -96,7 +99,7 @@ rules:
   yoda: 2 #require or disallow Yoda conditions
   
   #Strict Mode
-  strict: [2, "global"] #controls location of Use Strict Directives
+  strict: [2, "never"] #controls location of Use Strict Directives
   
   #Variables
   no-catch-shadow: 2 #disallow the catch clause parameter name being the same as a variable in the outer scope
@@ -107,7 +110,7 @@ rules:
   no-undef: 2 #disallow use of undeclared variables unless mentioned in a /*global */ block
   no-undef-init: 2 #disallow use of undefined when initializing variables
   no-undefined: 2 #disallow use of undefined variable
-  no-unused-vars: 2 #disallow declaration of variables that are not used in the code
+  no-unused-vars: [2, {"vars": "all", "args": "none"}] #disallow declaration of variables that are not used in the code
   no-use-before-define: 2 #disallow use of variables before they are defined
   
   #Node.js
@@ -157,7 +160,7 @@ rules:
   operator-linebreak: [1, "after"] #enforce operators to be placed before or after line breaks
   padded-blocks: 0 #enforce padding within blocks
   quote-props: [1, "as-needed"] #require quotes around object literal property names
-  quotes: [1, "backtick"] #specify whether backticks, double or single quotes should be used
+  quotes: [1, "single"] #specify whether backticks, double or single quotes should be used
   semi-spacing: [1, {"before": false, "after": true}] #enforce spacing before and after semicolons  
   semi: [1, "always"] #require or disallow use of semicolons instead of ASI
   sort-vars: 0 #sort variables within the same declaration block
