@@ -1,8 +1,8 @@
 {
     "name": "zaggino.brackets-git",
     "title": "Brackets Git",
-    "version": "0.14.27",
-    "engines": { "brackets": ">=1.2.0" },
+    "version": "1.0.0",
+    "engines": { "brackets": ">=1.4.0" },
     "description": "Integration of Git into Brackets",
     "keywords": ["brackets-extension", "git", "version-control", "source-control"],
     "homepage": "https://github.com/zaggino/brackets-git",
@@ -17,21 +17,9 @@
         "type": "git",
         "url": "https://github.com/zaggino/brackets-git.git"
     },
-    "scripts": {
-        "test": "grunt test"
-    },
-    "dependencies": {
-
-    },
-    "devDependencies": {
-        "grunt": "latest",
-        "grunt-contrib-jshint": "latest",
-        "grunt-jslint": "latest",
-        "grunt-lesslint": "latest",
-        "grunt-jscs": "latest",
-        "grunt-zip": "latest",
-        "grunt-lineending": "latest"
-    },
+    "scripts": {},
+    "dependencies": {},
+    "devDependencies": {},
     "i18n": ["en", "en-gb", "de", "fr", "it", "pt-br", "zh-cn"],
     "package-i18n": {
         "de": {
