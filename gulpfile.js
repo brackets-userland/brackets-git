@@ -17,7 +17,7 @@ var DIST_DIR = './dist/';
 
 // options for transpiling es6 to es5
 var babelOptions = {
-  modules: 'brackets-babel-formatter'
+  modules: 'brackets-babel-module-formatter'
 };
 
 // we need to check OS here because Linux doesn't have CEF with generators
