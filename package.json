@@ -24,7 +24,11 @@
     "test": "gulp test",
     "install": "gulp build"
   },
-  "dependencies": {},
+  "dependencies": {
+    "babel-core": "^5.7.2",
+    "bluebird": "^2.9.34",
+    "eventemitter2": "^0.4.14"
+  },
   "devDependencies": {
     "babel-eslint": "^3.1.23",
     "fs-extra": "^0.22.1",

@@ -1,0 +1,7 @@
+{
+  "paths": {
+    "babel-polyfill": "./node_modules/babel-core/browser-polyfill.min",
+    "bluebird": "./node_modules/bluebird/js/browser/bluebird.min",
+    "eventemitter": "./node_modules/eventemitter2/lib/eventemitter2"
+  }
+}

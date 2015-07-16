@@ -19,7 +19,7 @@ rules:
   #Possible Errors
   comma-dangle: [2, "never"] #disallow trailing commas
   no-cond-assign: 2 #disallow assignment in conditional expressions
-  no-console: 2 #disallow use of console - use logging library instead
+  no-console: 1 #disallow use of console - use logging library instead
   no-constant-condition: 2 #disallow use of constant expressions in conditions
   no-control-regex: 2 #disallow control characters in regular expressions
   no-debugger: 2 #disallow use of debugger
@@ -112,7 +112,7 @@ rules:
   no-undef: 2 #disallow use of undeclared variables unless mentioned in a /*global */ block
   no-undef-init: 2 #disallow use of undefined when initializing variables
   no-undefined: 2 #disallow use of undefined variable
-  no-unused-vars: [2, {"vars": "all", "args": "none"}] #disallow declaration of variables that are not used in the code
+  no-unused-vars: [1, {"vars": "all", "args": "none"}] #disallow declaration of variables that are not used in the code
   no-use-before-define: 2 #disallow use of variables before they are defined
   
   #Node.js
