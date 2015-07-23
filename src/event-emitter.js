@@ -1,1 +1,1 @@
-exports.eventEmitter = true;
+export const eventEmitter = true;

@@ -1,1 +1,3 @@
-exports.events = true;
+export default {
+  GIT_INIT: true
+};
