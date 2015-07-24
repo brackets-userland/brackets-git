@@ -818,7 +818,6 @@ define(function (require, exports) {
             bool = !gitPanel.isVisible();
         }
         Preferences.persist("panelEnabled", bool);
-        Main.$icon.toggleClass("on", bool);
         gitPanel.setVisible(bool);
 
         // Mark menu item as enabled/disabled.
@@ -1191,8 +1190,6 @@ define(function (require, exports) {
         //
         $gitPanel.find(".git-available").show();
         $gitPanel.find(".git-not-available").hide();
-        //
-        Main.$icon.removeClass("warning").removeAttr("title");
         gitPanelDisabled = false;
         // after all is enabled
         refresh();
@@ -1206,7 +1203,6 @@ define(function (require, exports) {
             $gitPanel.find(".git-available").hide();
             $gitPanel.find(".git-not-available").show();
         } else {
-            Main.$icon.addClass("warning").attr("title", cause);
             toggle(false);
             gitPanelDisabled = true;
         }

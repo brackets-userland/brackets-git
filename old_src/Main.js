@@ -25,19 +25,7 @@ define(function (require, exports) {
         Promise           = require("bluebird");
 
     var CMD_ADD_TO_IGNORE      = "git.addToIgnore",
-        CMD_REMOVE_FROM_IGNORE = "git.removeFromIgnore",
-        $icon                  = $("<a id='git-toolbar-icon' href='#'></a>")
-                                    .attr("title", Strings.LOADING)
-                                    .addClass("loading")
-                                    .appendTo($("#main-toolbar .buttons"));
-
-    EventEmitter.on(Events.GIT_DISABLED, function () {
-        $icon.removeClass("dirty");
-    });
-
-    EventEmitter.on(Events.GIT_STATUS_RESULTS, function (results) {
-        $icon.toggleClass("dirty", results.length !== 0);
-    });
+        CMD_REMOVE_FROM_IGNORE = "git.removeFromIgnore";
 
     // This only launches when Git is available
     function initUi() {
@@ -45,8 +33,6 @@ define(function (require, exports) {
         Panel.init();
         Branch.init();
         CloseNotModified.init();
-        // Attach events
-        $icon.on("click", Panel.toggle);
     }
 
     function _addRemoveItemInGitignore(selectedEntry, method) {
@@ -132,7 +118,6 @@ define(function (require, exports) {
     function init() {
         // Initialize items dependent on HTML DOM
         AppInit.htmlReady(function () {
-            $icon.removeClass("loading").removeAttr("title");
 
             // Try to get Git version, if succeeds then Git works
             Setup.findGit().then(function (version) {
@@ -144,7 +129,6 @@ define(function (require, exports) {
                 initUi();
 
             }).catch(function (err) {
-                $icon.addClass("error").attr("title", Strings.CHECK_GIT_SETTINGS + " - " + err.toString());
 
                 _displayExtensionInfoIfNeeded().then(function () {
                     var expected = new ExpectedError(err);
@@ -203,7 +187,6 @@ define(function (require, exports) {
     });
 
     // API
-    exports.$icon = $icon;
     exports.init = init;
 
 });

@@ -12,6 +12,7 @@ env:
   node: true
   
 globals:
+  $: false
   brackets: false
   define: false
   
