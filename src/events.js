@@ -1,3 +1,4 @@
+// TODO: make sure all these are actually emitted
 export default {
   GIT_WORKING: 'GIT_WORKING', // git executable has been found
   GIT_NOT_WORKING: 'GIT_NOT_WORKING', // extension failed to locate git executable
