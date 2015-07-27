@@ -24,9 +24,6 @@ define(function (require, exports) {
         Utils             = require("src/Utils"),
         Promise           = require("bluebird");
 
-    var CMD_ADD_TO_IGNORE      = "git.addToIgnore",
-        CMD_REMOVE_FROM_IGNORE = "git.removeFromIgnore";
-
     // This only launches when Git is available
     function initUi() {
         // FUTURE: do we really need to launch init from here?
@@ -150,41 +147,6 @@ define(function (require, exports) {
             panelCmenu.addMenuItem(CMD_REMOVE_FROM_IGNORE + "2");
         });
     }
-
-    var _toggleMenuEntriesState = false,
-        _divider1 = null,
-        _divider2 = null;
-    function toggleMenuEntries(bool) {
-        if (bool === _toggleMenuEntriesState) {
-            return;
-        }
-        var projectCmenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
-        var workingCmenu = Menus.getContextMenu(Menus.ContextMenuIds.WORKING_SET_CONTEXT_MENU);
-        if (bool) {
-            _divider1 = projectCmenu.addMenuDivider();
-            _divider2 = workingCmenu.addMenuDivider();
-            projectCmenu.addMenuItem(CMD_ADD_TO_IGNORE);
-            workingCmenu.addMenuItem(CMD_ADD_TO_IGNORE);
-            projectCmenu.addMenuItem(CMD_REMOVE_FROM_IGNORE);
-            workingCmenu.addMenuItem(CMD_REMOVE_FROM_IGNORE);
-        } else {
-            projectCmenu.removeMenuDivider(_divider1.id);
-            workingCmenu.removeMenuDivider(_divider2.id);
-            projectCmenu.removeMenuItem(CMD_ADD_TO_IGNORE);
-            workingCmenu.removeMenuItem(CMD_ADD_TO_IGNORE);
-            projectCmenu.removeMenuItem(CMD_REMOVE_FROM_IGNORE);
-            workingCmenu.removeMenuItem(CMD_REMOVE_FROM_IGNORE);
-        }
-        _toggleMenuEntriesState = bool;
-    }
-
-    // Event handlers
-    EventEmitter.on(Events.GIT_ENABLED, function () {
-        toggleMenuEntries(true);
-    });
-    EventEmitter.on(Events.GIT_DISABLED, function () {
-        toggleMenuEntries(false);
-    });
 
     // API
     exports.init = init;

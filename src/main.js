@@ -6,6 +6,9 @@ import Strings from 'strings';
 import { log } from './log';
 import { getExtensionName } from './extension-info';
 
+// load without importing
+import { } from './menu-entries';
+
 // load stylesheets
 ExtensionUtils.loadStyleSheet(module, '../styles/main.less');
 
