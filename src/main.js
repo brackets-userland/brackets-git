@@ -1,10 +1,13 @@
-import { CommandManager, Commands, ExtensionUtils, Menus } from './brackets';
+import { AppInit, CommandManager, Commands, ExtensionUtils, Menus } from './brackets';
 import EventEmitter from './event-emitter';
 import Events from './events';
+import * as Preferences from './preferences';
+import ChangelogDialog from './dialogs/changelog-dialog';
 import SettingsDialog from './dialogs/settings-dialog';
 import Strings from 'strings';
-import { log } from './log';
-import { getExtensionName } from './extension-info';
+import { getExtensionName, getExtensionVersion } from './extension-info';
+import { findGit } from './git/find-git';
+import { handleError } from './error-handler';
 
 // load without importing
 import { } from './menu-entries';
@@ -28,8 +31,43 @@ if (typeof window === 'object') {
   };
 }
 
-async function init() {
-  log(`${getExtensionName()} started!`);
+// display settings panel on first start / changelog dialog on version change
+async function _displayExtensionInfoIfNeeded() {
+
+  // do not display dialogs when running tests
+  if (window.isBracketsTestWindow) { return; }
+
+  let lastVersion = Preferences.get('lastVersion');
+  let currentVersion = getExtensionVersion();
+
+  if (!lastVersion) {
+    Preferences.set('lastVersion', 'firstStart');
+    await SettingsDialog.show();
+  } else if (lastVersion !== currentVersion) {
+    Preferences.set('lastVersion', currentVersion);
+    await ChangelogDialog.show();
+  }
 }
 
-init();
+function initUi() {
+  // TODO: implement
+  // FUTURE: do we really need to launch init from here?
+  // Panel.init();
+  // Branch.init();
+  // CloseNotModified.init();
+}
+
+async function init() {
+
+  try {
+    Strings.GIT_VERSION = await findGit();
+  } catch (err) {
+    await handleError(Strings.CHECK_GIT_SETTINGS, err);
+  }
+
+  _displayExtensionInfoIfNeeded();
+  initUi();
+
+}
+
+AppInit.htmlReady(() => init());
