@@ -9,7 +9,7 @@
         </div>
     </td>
     <td><span title="{{date.title}}">{{date.shown}}</span> {{Strings.HISTORY_COMMIT_BY}} <span class="commit-author">{{author}}</span></td>
-    <td class="commit-title"><span>{{subject}}</span></td>
+    <td class="commit-title"><span>{{subject}} </span>{{#hasTag}}<span class="commit-tags" title="{{tags}}"><i class="octicon octicon-tag"></i>{{tags}}</span>{{/hasTag}}</td>
     <td>{{hashShort}}</td>
 </tr>
 {{/commits}}

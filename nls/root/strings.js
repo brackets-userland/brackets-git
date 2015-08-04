@@ -237,5 +237,7 @@ define({
     USING_GIT_VERSION:                  "Git version",
     VIEW_AUTHORS_FILE:                  "View authors of file",
     VIEW_AUTHORS_SELECTION:             "View authors of selection",
-    VIEW_THIS_FILE:                     "View this file"
+    VIEW_THIS_FILE:                     "View this file",
+    TAG_NAME_PLACEHOLDER:               "Enter tag name here\u2026",
+    TAG_NAME:                           "Tag"
 });

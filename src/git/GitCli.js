@@ -503,7 +503,8 @@ define(function (require, exports) {
                 "%ai", // author date, ISO 8601 format
                 "%ae", // author email
                 "%s",  // subject
-                "%b"   // body
+                "%b",  // body
+                "%d"   // tags
             ].join(separator) + newline;
 
         var args = ["log", "-100"];
@@ -528,6 +529,17 @@ define(function (require, exports) {
                 commit.email      = data[4];
                 commit.subject    = data[5];
                 commit.body       = data[6];
+
+                if (data[7]) {
+                    var    tags       = data[7];
+                    var regex = new RegExp("tag: ([^,|\)]+)", 'g');
+                    var tags = tags.match(regex);
+
+                    for (key in tags) {
+                        tags[key] = tags[key].replace("tag:", '');
+                    }
+                    commit.tags = tags;
+                }
 
                 return commit;
 
@@ -1002,6 +1014,12 @@ define(function (require, exports) {
             });
     }
 
+    function setTagName(tagname) {
+        return git(["tag", tagname]).then(function (stdout) {
+            return stdout.trim();
+        });
+    }
+
     // Public API
     exports._git                      = git;
     exports.setGitPath                = setGitPath;
@@ -1054,4 +1072,5 @@ define(function (require, exports) {
     exports.getListOfStagedFiles      = getListOfStagedFiles;
     exports.getBlame                  = getBlame;
     exports.getGitRoot                = getGitRoot;
+    exports.setTagName                = setTagName;
 });
