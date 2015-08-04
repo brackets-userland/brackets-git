@@ -195,7 +195,12 @@ define(function (require) {
 
         PushDialog.show(pushConfig)
             .then(function (pushConfig) {
-                var q = Promise.resolve();
+                var q = Promise.resolve(),
+                    additionalArgs = [];
+
+                if (pushConfig.tags) {
+                    additionalArgs.push("--tags");
+                }
 
                 // set a new tracking branch if desired
                 if (pushConfig.branch && pushConfig.setBranchAsTracking) {
@@ -216,7 +221,7 @@ define(function (require) {
                     if (pushConfig.pushToNew) {
                         op = Git.pushToNewUpstream(pushConfig.remote, pushConfig.branch);
                     } else if (pushConfig.strategy === "DEFAULT") {
-                        op = Git.push(pushConfig.remote, pushConfig.branch);
+                        op = Git.push(pushConfig.remote, pushConfig.branch, additionalArgs);
                     } else if (pushConfig.strategy === "FORCED") {
                         op = Git.pushForced(pushConfig.remote, pushConfig.branch);
                     } else if (pushConfig.strategy === "DELETE_BRANCH") {

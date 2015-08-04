@@ -168,6 +168,7 @@ define({
     PULL_SHORTCUT:                      "Pull from remote repository",
     PUSH_DEFAULT:                       "Default push",
     PUSH_DELETE_BRANCH:                 "Delete remote branch",
+    PUSH_SEND_TAGS:                     "Send tags",
     PUSH_FORCED:                        "Forced push",
     PUSH_SHORTCUT:                      "Push to remote repository",
     PUSH_TO:                            "Push to",
