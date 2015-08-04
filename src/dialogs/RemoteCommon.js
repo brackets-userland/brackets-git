@@ -111,6 +111,7 @@ define(function (require, exports) {
         }
 
         config.strategy = $dialog.find("input[name='strategy']:checked").val();
+        config.tags = $dialog.find("input[name='send_tags']:checked").val();
 
         config.remoteUsername = $dialog.find("input[name='username']").val();
         config.remotePassword = $dialog.find("input[name='password']").val();
