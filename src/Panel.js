@@ -38,6 +38,7 @@ define(function (require, exports) {
         gitPanelResultsTemplate     = require("text!templates/git-panel-results.html"),
         gitAuthorsDialogTemplate    = require("text!templates/authors-dialog.html"),
         gitCommitDialogTemplate     = require("text!templates/git-commit-dialog.html"),
+        gitTagDialogTemplate        = require("text!templates/git-tag-dialog.html"),
         gitDiffDialogTemplate       = require("text!templates/git-diff-dialog.html"),
         questionDialogTemplate      = require("text!templates/git-question-dialog.html");
 
@@ -412,6 +413,24 @@ define(function (require, exports) {
                 ErrorHandler.showError(err, "Git Diff failed");
             });
         }
+    }
+
+    function handleGitTag(file) {
+        // Open the Tag Dialog
+        var compiledTemplate = Mustache.render(gitTagDialogTemplate, { file: file, Strings: Strings }),
+            dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+            $dialog          = dialog.getElement();
+        _makeDialogBig($dialog);
+
+        $dialog.find("button.primary").on("click", function () {
+            var tagname = $dialog.find("input.commit-message").val();
+            Git.setTagName(tagname).then(function () {
+                refresh();
+                EventEmitter.emit(Events.HISTORY_SHOW, "GLOBAL");
+            }).catch(function (err) {
+                ErrorHandler.showError(err, "Create tag failed");
+            });
+        });
     }
 
     function handleGitUndo(file) {
@@ -1122,6 +1141,10 @@ define(function (require, exports) {
             .on("click", ".toggle-gerrit-push-ref", EventEmitter.emitFactory(Events.GERRIT_TOGGLE_PUSH_REF))
             .on("click", ".undo-last-commit", undoLastLocalCommit)
             .on("click", ".git-bash", EventEmitter.emitFactory(Events.TERMINAL_OPEN))
+            .on("click", ".tags", function (e) {
+                e.stopPropagation();
+                handleGitTag($(e.target).closest("tr").attr("x-file"));
+            })
             .on("click", ".reset-all", discardAllChanges);
 
         /* Put here event handlers for advanced actions
@@ -1182,7 +1205,7 @@ define(function (require, exports) {
         if (Preferences.get("panelEnabled")) {
             toggle(true);
         }
-    }
+    } // function init() {
 
     function enable() {
         EventEmitter.emit(Events.GIT_ENABLED);

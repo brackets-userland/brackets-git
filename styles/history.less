@@ -52,7 +52,12 @@
             }
         }
         &:nth-child(3) { // commit title
-
+            .commit-tags {
+                float: right;
+                max-width: 150px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
         &:last-child { // commit hash
             width: 50px;

@@ -168,6 +168,7 @@ define({
     PULL_SHORTCUT:                      "Pull from remote repository",
     PUSH_DEFAULT:                       "Default push",
     PUSH_DELETE_BRANCH:                 "Delete remote branch",
+    PUSH_SEND_TAGS:                     "Send tags",
     PUSH_FORCED:                        "Forced push",
     PUSH_SHORTCUT:                      "Push to remote repository",
     PUSH_TO:                            "Push to",
@@ -237,5 +238,7 @@ define({
     USING_GIT_VERSION:                  "Git version",
     VIEW_AUTHORS_FILE:                  "View authors of file",
     VIEW_AUTHORS_SELECTION:             "View authors of selection",
-    VIEW_THIS_FILE:                     "View this file"
+    VIEW_THIS_FILE:                     "View this file",
+    TAG_NAME_PLACEHOLDER:               "Enter tag name here\u2026",
+    TAG_NAME:                           "Tag"
 });

@@ -250,6 +250,7 @@ define(function (require) {
                     break;
                 /* mode 4 (Original Git date) is handled above */
             }
+            commit.hasTag = (commit.tags) ? true : false;
         });
 
         return commits;

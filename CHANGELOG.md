@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.28 (05/08/2015)
+* Added feature to create tags and push them to remote by [rodrigojt](https://github.com/rodrigojt)
+
 ## 0.14.27 (19/05/2015)
 * Fixed .gitignore parsing by [Phillip Haydon](https://github.com/phillip-haydon)
 
