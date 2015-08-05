@@ -2,14 +2,16 @@
 
 import { getExtensionName } from './extension-info';
 
+const prefix = `[${getExtensionName()}]`;
+
 export function log(...args) {
-  console.log(`[${getExtensionName()}]`, ...args);
+  console.log(prefix, ...args);
 }
 
 export function warn(...args) {
-  console.warn(`[${getExtensionName()}]`, ...args);
+  console.warn(prefix, ...args);
 }
 
 export function logError(...args) {
-  console.error(`[${getExtensionName()}]`, ...args);
+  console.error(prefix, ...args);
 }

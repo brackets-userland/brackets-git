@@ -36,12 +36,6 @@ define(function (require, exports, module) {
         return projectRoot ? projectRoot.fullPath : null;
     }
 
-    // returns "C:/Users/Zaggi/AppData/Roaming/Brackets/extensions/user/zaggino.brackets-git/"
-    function getExtensionDirectory() {
-        var modulePath = ExtensionUtils.getModulePath(module);
-        return modulePath.slice(0, -1 * "src/".length);
-    }
-
     function formatDiff(diff) {
         var DIFF_MAX_LENGTH = 2000;
 
