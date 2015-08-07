@@ -1,4 +1,4 @@
-/* eslint no-sync: 0, no-var: 0 */
+/* eslint no-sync: 0, no-var: 0, object-shorthand: 0 */
 
 var babel = require('gulp-babel');
 var eslint = require('gulp-eslint');
@@ -57,7 +57,16 @@ function doBabel(globs, singleFile) {
     .pipe(babel(babelOptions))
     .on('error', swallowError)
     .pipe(sourcemaps.write('.', {
-      // sourceMappingURLPrefix: path.resolve(__dirname, 'dist') + '/'
+      sourceMappingURLPrefix: function (file) {
+        var retVal = 'file:///' + file.cwd.replace(/\\/g, '/') + '/dist';
+        var pathRelative = path.relative(file.base, file.path).replace(/\\/g, '/');
+
+        if (pathRelative.indexOf('/') === -1) {
+          retVal += '/';
+        }
+
+        return retVal;
+      }
     }))
     .pipe(gulp.dest(DIST_DIR));
 
