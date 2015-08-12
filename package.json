@@ -1,7 +1,7 @@
 {
     "name": "zaggino.brackets-git",
     "title": "Brackets Git",
-    "version": "0.14.28",
+    "version": "0.14.29",
     "engines": { "brackets": ">=1.2.0" },
     "description": "Integration of Git into Brackets",
     "keywords": ["brackets-extension", "git", "version-control", "source-control"],

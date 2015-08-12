@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.29 (12/08/2015)
+* Fixed issue with history when not having project root also a git root by [Hyunchul Kwak](https://github.com/hyunchulkwak)
+
 ## 0.14.28 (05/08/2015)
 * Added feature to create tags and push them to remote by [rodrigojt](https://github.com/rodrigojt)
 
