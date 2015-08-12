@@ -3,7 +3,6 @@ define(function (require) {
     // Brackets modules
     var _ = brackets.getModule("thirdparty/lodash"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
-        ProjectManager = brackets.getModule("project/ProjectManager"),
         FileUtils = brackets.getModule("file/FileUtils");
 
     // Local modules
