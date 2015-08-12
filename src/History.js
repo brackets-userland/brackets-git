@@ -3,7 +3,8 @@ define(function (require) {
     // Brackets modules
     var _ = brackets.getModule("thirdparty/lodash"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
-        ProjectManager = brackets.getModule("project/ProjectManager");
+        ProjectManager = brackets.getModule("project/ProjectManager"),
+        FileUtils = brackets.getModule("file/FileUtils");
 
     // Local modules
     var moment = require("moment"),
@@ -300,7 +301,7 @@ define(function (require) {
             if (doc) {
                 file = {};
                 file.absolute = doc.file.fullPath;
-                file.relative = ProjectManager.makeProjectRelativeIfPossible(file.absolute);
+                file.relative = FileUtils.getRelativeFilename(Preferences.get("currentGitRoot"), file.absolute);
             } else {
                 // we want a file history but no file was found
                 historyEnabled = false;
