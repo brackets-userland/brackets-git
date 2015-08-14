@@ -15,8 +15,13 @@ on run argv
     if doesExist then
         tell application "Finder"
             set myPath to container of (path to me) as text
+            set app_version to (get version of application "iTerm")
         end tell
-        run script (alias (myPath & "iterm.osa")) with parameters (argv)
+        if app_version > 2.1 then
+            run script (alias (myPath & "iterm.2.9.osa")) with parameters (argv)
+        else
+            run script (alias (myPath & "iterm.osa")) with parameters (argv)
+        end
 
     else
 
