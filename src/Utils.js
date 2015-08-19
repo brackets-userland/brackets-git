@@ -171,6 +171,11 @@ define(function (require, exports, module) {
                 // removes ZERO WIDTH NO-BREAK SPACE character (BOM)
                 line = line.replace(/\uFEFF/g, "");
 
+                // exposes other potentially harmful characters
+                line = line.replace(/[\u2000-\uFFFF]/g, function (x) {
+                    return "<U+" + x.charCodeAt(0).toString(16).toUpperCase() + ">";
+                });
+
                 line = _.escape(line)
                     .replace(/\t/g, tabReplace)
                     .replace(/\s/g, "&nbsp;");
