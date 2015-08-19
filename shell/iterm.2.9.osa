@@ -1,0 +1,67 @@
+#!/usr/bin/osascript
+on run argv
+
+    set dir to quoted form of (first item of argv)
+
+    -- set list of shells and other misc variables
+    set shells to {"bash", "zsh", "ksh", "tcsh", "sh"}
+    set run_cmd to "cd " & dir & " && git status"
+    set repo_name to basename(dir)
+
+    set git_window to null
+    set git_tab to null
+    set git_session to null
+
+    tell application "iTerm"
+        if ((count of windows) > 0) then
+            repeat with this_window in windows
+                tell this_window
+                    repeat with this_tab in tabs of this_window
+                        repeat with this_session in sessions of this_tab
+                            if name of this_session contains repo_name then
+                                repeat with i from 1 to (length of shells) -- check the session title for the default OS X shells
+                                    if name of current session of this_tab contains item i of shells then -- the session title includes the currently-running command (uses the name of the shell if no other command is running)
+                                        set git_session to this_session
+                                        set git_tab to this_tab
+                                        set git_window to (number of this_window)
+                                    end if
+                                end repeat
+                            end if
+                        end repeat
+                    end repeat
+                end tell
+            end repeat
+        end if
+
+        if (count of windows) is 0 then -- if no windows exist, create a window
+            create window with default profile -- create a new window if necessary
+            set git_window to 1
+        end if
+        if git_tab is null then -- if windows exist but no git sessions exist, create a new tab
+            tell current window
+                set git_tab to create tab with default profile -- create a new tab in existing window
+                set name of current session to repo_name
+                tell current session to write text run_cmd
+            end tell
+            set git_window to 1
+        end if
+
+        activate
+        select window git_window
+        select git_tab
+        tell git_session
+            write text run_cmd
+        end tell
+
+    end tell
+
+end run
+
+-- adapted from http://macscripter.net/viewtopic.php?id=13286
+on basename(the_path) -- Requires POSIX path
+    set ASTID to AppleScript's text item delimiters
+    set AppleScript's text item delimiters to "/"
+    set the_path to text item -2 of the_path
+    set AppleScript's text item delimiters to ASTID
+    return the_path
+end basename
