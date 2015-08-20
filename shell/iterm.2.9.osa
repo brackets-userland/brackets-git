@@ -44,14 +44,15 @@ on run argv
                 tell current session to write text run_cmd
             end tell
             set git_window to 1
+        else
+            select window git_window
+            select git_tab
+            tell git_session
+                write text run_cmd
+            end tell
         end if
 
         activate
-        select window git_window
-        select git_tab
-        tell git_session
-            write text run_cmd
-        end tell
 
     end tell
 
