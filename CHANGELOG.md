@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.14.31 (21/08/2015)
+* Updated iTerm launch scripts by [Andrew Minion](https://github.com/macbookandrew)
+
 ## 0.14.30 (20/08/2015)
 * Fixed an issue where some characters were not visible in the diff dialog.
 * Updated iTerm support to 2.9+ by [Andrew Minion](https://github.com/macbookandrew)
