@@ -91,6 +91,8 @@ define(function (require) {
             if (brackets.platform === "win") {
                 paths.push("C:\\Program Files (x86)\\Git\\Git Bash.vbs");
                 paths.push("C:\\Program Files\\Git\\Git Bash.vbs");
+                paths.push("C:\\Program Files (x86)\\Git\\git-bash.exe");
+                paths.push("C:\\Program Files\\Git\\git-bash.exe");
             } else if (brackets.platform === "mac") {
                 paths.push(Utils.getExtensionDirectory() + "shell/terminal.osa");
             } else {
@@ -113,7 +115,11 @@ define(function (require) {
                         return;
                     }
                     Preferences.set("terminalCommand", validPaths[0]);
-                    Preferences.set("terminalCommandArgs", "$1");
+                    if (/git\-bash\.exe$/.test(validPaths[0])) {
+                        Preferences.set("terminalCommandArgs", "--cd=$1");
+                    } else {
+                        Preferences.set("terminalCommandArgs", "$1");
+                    }
                 } else {
                     Preferences.set("terminalCommand", results[0]);
                 }
