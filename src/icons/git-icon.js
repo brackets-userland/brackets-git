@@ -18,6 +18,7 @@ EventEmitter.on(Events.GIT_WORKING, function () {
 
 EventEmitter.on(Events.GIT_NOT_WORKING, function (err) {
   $icon
+    .removeClass('loading')
     .addClass('error')
     .attr('title', Strings.CHECK_GIT_SETTINGS + ' - ' + err.toString());
 });

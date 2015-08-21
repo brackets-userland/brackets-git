@@ -64,8 +64,11 @@ async function init() {
     Strings.GIT_VERSION = await findGit();
   } catch (err) {
     await handleError(Strings.CHECK_GIT_SETTINGS, err);
+    EventEmitter.emit(Events.GIT_NOT_WORKING, err);
+    return;
   }
 
+  EventEmitter.emit(Events.GIT_WORKING);
   _displayExtensionInfoIfNeeded();
   initUi();
 
