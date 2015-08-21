@@ -21,8 +21,9 @@
     "url": "https://github.com/zaggino/brackets-git.git"
   },
   "scripts": {
-    "test": "gulp test",
-    "install": "gulp build"
+    "install": "gulp build",
+    "dev": "gulp dev",
+    "test": "gulp test"
   },
   "dependencies": {
     "babel-core": "^5.7.2",
