@@ -138,7 +138,7 @@ rules:
   func-style: 0 #enforces use of function declarations or expressions
   indent: [1, 2] #this option sets a specific tab width for your code
   key-spacing: [1, { "beforeColon": false, "afterColon": true }] #enforces spacing between keys and values in object literal properties  
-  lines-around-comment: [1, { "beforeBlockComment": true, "beforeLineComment": true }] #enforces empty lines around comments
+  lines-around-comment: [1, { "beforeBlockComment": true, "beforeLineComment": false }] #enforces empty lines around comments
   linebreak-style: 1 #disallow mixed 'LF' and 'CRLF' as linebreaks
   max-nested-callbacks: [1, 5] #specify the maximum depth callbacks can be nested
   new-cap: 1 #require a capital letter for constructors

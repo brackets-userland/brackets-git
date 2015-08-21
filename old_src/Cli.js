@@ -1,8 +1,5 @@
 define(function (require, exports, module) {
 
-    var ExtensionUtils = brackets.getModule("utils/ExtensionUtils"),
-        NodeConnection = brackets.getModule("utils/NodeConnection");
-
     var Promise       = require("bluebird"),
         Strings       = require("strings"),
         ErrorHandler  = require("src/ErrorHandler"),
@@ -10,12 +7,9 @@ define(function (require, exports, module) {
         Preferences   = require("src/Preferences"),
         Utils         = require("src/Utils");
 
-    var moduleDirectory   = ExtensionUtils.getModulePath(module),
-        domainModulePath  = moduleDirectory + "domains/cli",
-        debugOn           = Preferences.get("debugMode"),
+    var debugOn           = Preferences.get("debugMode"),
         gitTimeout        = Preferences.get("gitTimeout") * 1000,
         domainName        = "brackets-git",
-        nodeConnection    = new NodeConnection(),
         nextCliId         = 0,
         deferredMap       = {};
 
@@ -30,50 +24,7 @@ define(function (require, exports, module) {
         return ++nextCliId;
     }
 
-    function attachEventHandlers() {
-        nodeConnection
-            .off(EVENT_NAMESPACE)
-            .on(domainName + ":progress" + EVENT_NAMESPACE, function (err, cliId, time, message) {
-                var deferred = deferredMap[cliId];
-                if (deferred && !deferred.isResolved()) {
-                    deferred.progress(message);
-                } else {
-                    ErrorHandler.logError("Progress sent for a non-existing process(" + cliId + "): " + message);
-                }
-            });
-    }
-
     var connectPromise = null;
-
-    // return true/false to state if wasConnected before
-    function connectToNode() {
-        if (connectPromise) {
-            return connectPromise;
-        }
-
-        connectPromise = new Promise(function (resolve, reject) {
-            if (nodeConnection.connected()) {
-                return resolve(true);
-            }
-            // we don't want automatic reconnections as we handle the reconnect manually
-            nodeConnection.connect(false).then(function () {
-                nodeConnection.loadDomains([domainModulePath], false).then(function () {
-                    attachEventHandlers();
-                    resolve(false);
-                }).fail(function (err) { // jQuery promise - .fail is fine
-                    reject(ErrorHandler.toError(err));
-                });
-            }).fail(function (err) { // jQuery promise - .fail is fine
-                reject(ErrorHandler.toError(err));
-            });
-        });
-
-        connectPromise.finally(function () {
-            connectPromise = null;
-        });
-
-        return connectPromise;
-    }
 
     function normalizePathForOs(path) {
         if (brackets.platform === "win") {
@@ -303,14 +254,6 @@ define(function (require, exports, module) {
         return cliHandler("pathExists", path).then(function (response) {
             return typeof response === "string" ? response === "true" : response;
         });
-    }
-
-    function spawnCommand(cmd, args, opts) {
-        return cliHandler("spawn", cmd, args, opts);
-    }
-
-    function executeCommand(cmd, args, opts) {
-        return cliHandler("execute", cmd, args, opts);
     }
 
     // this is to be used together with executeCommand

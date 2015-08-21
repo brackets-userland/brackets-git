@@ -5,5 +5,6 @@ export const Commands = brackets.getModule('command/Commands');
 export const ExtensionUtils = brackets.getModule('utils/ExtensionUtils');
 export const FileSystem = brackets.getModule('filesystem/FileSystem');
 export const Menus = brackets.getModule('command/Menus');
+export const NodeConnection = brackets.getModule('utils/NodeConnection');
 export const PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 export const ProjectManager = brackets.getModule('project/ProjectManager');

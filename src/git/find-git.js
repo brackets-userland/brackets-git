@@ -1,8 +1,9 @@
-import { _, Preferences } from '../brackets';
+import { _ } from '../brackets';
 import { getMinimumGitVersion, getExtensionDirectory } from '../extension-info';
 import { warn } from '../log';
 import { setPath } from './index';
 import { spawn } from '../cli';
+import * as Preferences from '../preferences';
 
 const standardGitPathsWin = [
   'C:\\Program Files (x86)\\Git\\cmd\\git.exe',
@@ -32,9 +33,13 @@ export async function findGit() {
 
     let stdout;
     try {
-      stdout = await spawn(path, ['--version'], { cwd: getExtensionDirectory() });
+      stdout = await spawn({
+        cwd: getExtensionDirectory(),
+        cmd: path,
+        args: ['--version']
+      });
     } catch (err) {
-      warn(`failed to find git at ${path}: ${err}`);
+      warn(`failed to find git at "${path}": ${err}`);
       continue;
     }
 

@@ -1,3 +1,8 @@
+import Promise from 'bluebird';
+
+// too buggy
+Promise.onPossiblyUnhandledRejection(() => {});
+
 import { AppInit, CommandManager, Commands, ExtensionUtils, Menus } from './brackets';
 import EventEmitter from './event-emitter';
 import Events from './events';
