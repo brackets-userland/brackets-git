@@ -64,6 +64,15 @@ define(function (require, exports, module) {
                     reject(ErrorHandler.toError(err));
                 });
             }).fail(function (err) { // jQuery promise - .fail is fine
+                if (ErrorHandler.contains(err, "Max connection attempts reached")) {
+                    Utils.consoleLog("Max connection attempts reached, trying again.", "warn");
+                    // try again
+                    connectPromise = null;
+                    connectToNode()
+                        .then(function (result) { resolve(result); })
+                        .catch(function (err) { reject(err); });
+                    return;
+                }
                 reject(ErrorHandler.toError(err));
             });
         });
