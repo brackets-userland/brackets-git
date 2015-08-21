@@ -17,7 +17,7 @@ on run argv
             set myPath to container of (path to me) as text
             set app_version to (get version of application "iTerm")
         end tell
-        if app_version > 2.1 then
+        if app_version >= 2.9 then
             run script (alias (myPath & "iterm.2.9.osa")) with parameters (argv)
         else
             run script (alias (myPath & "iterm.osa")) with parameters (argv)
