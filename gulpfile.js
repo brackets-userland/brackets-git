@@ -22,7 +22,8 @@ var babelOptions = {
 
 // we need to check OS here because Linux doesn't have CEF with generators
 // generators are available in Brackets' shell and also break sourcemaps
-var hasNativeGenerators = process.platform === 'darwin' || process.platform === 'win32';
+// node.js process bundled with brackets doesn't have generators so always false, for now
+var hasNativeGenerators = false; // process.platform === 'darwin' || process.platform === 'win32';
 if (hasNativeGenerators) {
   babelOptions.optional = ['bluebirdCoroutines'];
   babelOptions.blacklist = ['regenerator'];
