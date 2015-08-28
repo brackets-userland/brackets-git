@@ -1,12 +1,32 @@
+import Promise from 'bluebird';
 import { ExtensionUtils, NodeConnection } from './brackets';
 import { toError } from './error-handler';
-import Promise from 'bluebird';
+import { debug } from './log';
 
 const moduleDirectory = ExtensionUtils.getModulePath(module);
 const domainsFolder = moduleDirectory + 'node/';
-
-const connectionsPool = {};
+const nodeConnection = new NodeConnection();
+let connectNodePromise;
 const connectDomainCache = {};
+
+function connectNode() {
+
+  // cache to connectNodePromise
+
+  return new Promise(function (resolve, reject) {
+    if (nodeConnection.connected()) {
+      return resolve();
+    }
+    debug(`estabilishing node connection...`);
+    // false means we don't want automatic reconnections to node
+    nodeConnection.connect(false)
+      .done(() => {
+        debug(`node connection ready`);
+        resolve();
+      })
+      .fail(err => reject(toError(err)));
+  });
+}
 
 function connectDomain(domainName) {
 
@@ -16,31 +36,14 @@ function connectDomain(domainName) {
   }
 
   connectDomainCache[domainName] = new Promise(function (resolve, reject) {
-
-    let nodeConnection = connectionsPool[domainName];
-
-    if (!nodeConnection) {
-      nodeConnection = connectionsPool[domainName] = new NodeConnection();
-    }
-
-    if (nodeConnection.connected()) {
-      // already connected
-      return resolve(true);
-    }
-
-    // false means we don't want automatic reconnections to node
-    nodeConnection.connect(false)
+    // TODO: check if domain is not already loaded!
+    debug(`loading node domain '${domainName}'...`);
+    nodeConnection.loadDomains([domainsFolder + domainName], false)
       .done(() => {
-        nodeConnection.loadDomains([domainsFolder + domainName], false)
-          .done(() => resolve(false))
-          .fail(err => {
-            // failed to load the domain, disconnect from node
-            nodeConnection.disconnect();
-            reject(toError(err));
-          });
+        debug(`domain '${domainName}' has been loaded successfully`);
+        resolve();
       })
       .fail(err => reject(toError(err)));
-
   });
 
   // after the connection is resolved, stop keeping the promise in cache, in case of disconnects
@@ -50,13 +53,16 @@ function connectDomain(domainName) {
   return connectDomainCache[domainName];
 }
 
+const babelPromise = connectDomain('babel-domain');
+
 export async function call(domainName, methodName, opts) {
 
+  await babelPromise;
   await connectDomain(domainName);
 
   let defer = Promise.defer();
 
-  connectionsPool[domainName].domains[domainName][methodName](opts)
+  nodeConnection.domains[domainName][methodName](opts)
     .progress(msg => defer.progress(msg))
     .done(res => defer.resolve(res))
     .fail(err => defer.reject(err));

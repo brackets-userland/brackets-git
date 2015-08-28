@@ -28,7 +28,9 @@
   "dependencies": {
     "babel-core": "^5.7.2",
     "bluebird": "^2.9.34",
-    "eventemitter2": "^0.4.14"
+    "cross-spawn-async": "^2.0.0",
+    "eventemitter2": "^0.4.14",
+    "which": "^1.1.1"
   },
   "devDependencies": {
     "babel-eslint": "^3.1.23",
