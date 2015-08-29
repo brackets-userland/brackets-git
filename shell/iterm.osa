@@ -5,7 +5,7 @@ on run argv
 
     -- set list of shells and other misc variables
     set shells to {"bash", "zsh", "ksh", "tcsh", "sh"}
-    set run_cmd to "cd " & dir & " && git status"
+    set run_cmd to "cd " & dir & " ; git status"
     set repo_name to basename(dir)
 
     -- set tab/session title
