@@ -84,9 +84,6 @@ export async function call(domainName, methodName, opts) {
   if (!isNodeConnected()) {
     await connectNode();
   }
-  if (!hasNodeDomain('babel-domain')) {
-    await connectDomain('babel-domain');
-  }
   if (!hasNodeDomain(domainName)) {
     await connectDomain(domainName);
   }

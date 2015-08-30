@@ -1,3 +1,5 @@
+if (!global._babelPolyfill) { require('babel-core/polyfill'); }
+
 import spawn from 'cross-spawn-async';
 
 const DOMAIN_NAME = 'cli-domain';
