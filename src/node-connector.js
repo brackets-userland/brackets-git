@@ -7,58 +7,89 @@ const moduleDirectory = ExtensionUtils.getModulePath(module);
 const domainsFolder = moduleDirectory + 'node/';
 const nodeConnection = new NodeConnection();
 let connectNodePromise;
-const connectDomainCache = {};
+let connectDomainPromises = {};
+
+function isNodeConnected() {
+  return nodeConnection.connected();
+}
 
 function connectNode() {
 
-  // cache to connectNodePromise
+  if (isNodeConnected()) {
+    return Promise.resolve();
+  }
 
-  return new Promise(function (resolve, reject) {
+  if (connectNodePromise) {
+    return connectNodePromise;
+  }
+
+  connectNodePromise = new Promise(function (resolve, reject) {
+
     if (nodeConnection.connected()) {
       return resolve();
     }
-    debug(`estabilishing node connection...`);
-    // false means we don't want automatic reconnections to node
+
+    debug(`[node-connector] estabilishing node connection...`);
+
+    // false - we don't want automatic reconnections to node
     nodeConnection.connect(false)
       .done(() => {
-        debug(`node connection ready`);
+        debug(`[node-connector] node connection ready`);
         resolve();
       })
       .fail(err => reject(toError(err)));
+
+  }).finally(function () {
+    connectNodePromise = null;
   });
+
+  return connectNodePromise;
+}
+
+function hasNodeDomain(domainName) {
+  return nodeConnection.domains[domainName] != null;
 }
 
 function connectDomain(domainName) {
 
-  // if we're already trying to connect this domain, do not open another connection
-  if (connectDomainCache[domainName]) {
-    return connectDomainCache[domainName];
+  if (hasNodeDomain(domainName)) {
+    return Promise.resolve();
   }
 
-  connectDomainCache[domainName] = new Promise(function (resolve, reject) {
-    // TODO: check if domain is not already loaded!
-    debug(`loading node domain '${domainName}'...`);
+  // if we're already trying to connect this domain, do not open another connection
+  if (connectDomainPromises[domainName]) {
+    return connectDomainPromises[domainName];
+  }
+
+  connectDomainPromises[domainName] = new Promise(function (resolve, reject) {
+
+    debug(`[node-connector] loading node domain '${domainName}'...`);
     nodeConnection.loadDomains([domainsFolder + domainName], false)
       .done(() => {
-        debug(`domain '${domainName}' has been loaded successfully`);
+        debug(`[node-connector] domain '${domainName}' has been loaded successfully`);
         resolve();
       })
       .fail(err => reject(toError(err)));
+
+  }).finally(function () {
+    // after the connection is resolved, stop keeping the promise in cache, in case of disconnects
+    connectDomainPromises[domainName] = null;
   });
 
-  // after the connection is resolved, stop keeping the promise in cache, in case of disconnects
-  connectDomainCache[domainName]
-    .finally(() => connectDomainCache[domainName] = null);
-
-  return connectDomainCache[domainName];
+  return connectDomainPromises[domainName];
 }
-
-const babelPromise = connectDomain('babel-domain');
 
 export async function call(domainName, methodName, opts) {
 
-  await babelPromise;
-  await connectDomain(domainName);
+  if (!isNodeConnected()) {
+    await connectNode();
+  }
+  if (!hasNodeDomain('babel-domain')) {
+    await connectDomain('babel-domain');
+  }
+  if (!hasNodeDomain(domainName)) {
+    await connectDomain(domainName);
+  }
 
   let defer = Promise.defer();
 
