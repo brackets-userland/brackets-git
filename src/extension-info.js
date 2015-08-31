@@ -12,7 +12,7 @@ export function getExtensionVersion() {
 
 // should return something like C:/Users/Zaggi/AppData/Roaming/Brackets/extensions/user/zaggino.brackets-git/
 export function getExtensionDirectory() {
-  return ExtensionUtils.getModulePath(module).slice(0, -1 * 'src/'.length);
+  return ExtensionUtils.getModulePath(module).slice(0, -1 * 'dist/'.length);
 }
 
 export function getMinimumGitVersion() {

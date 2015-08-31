@@ -3,6 +3,9 @@ if (!global._babelPolyfill) { require('babel-core/polyfill'); }
 import spawn from 'cross-spawn-async';
 
 const DOMAIN_NAME = 'cli-domain';
+const processMap = {};
+const fixEOL = str => str[str.length - 1] === '\n' ? str.slice(0, -1) : str;
+const joinBuffers = arr => fixEOL(arr.map(buf => buf.toString('utf8')).join(''));
 
 let domainManager;
 
@@ -14,12 +17,35 @@ let domainManager;
   - args: array of arguments to supply to cmd
 */
 
-async function executeAsync({ pid, cwd, cmd, args = [] }, progressCallback) {
+function spawnAsync({ pid, cwd, cmd, args = [] }, progressCallback) {
+  return new Promise(function (resolve, reject) {
 
-}
+    let child = spawn(cmd, args, { cwd });
+    child.on('error', err => reject(err.stack));
 
-async function spawnAsync({ pid, cwd, cmd, args = [] }, progressCallback) {
+    // map gui pid to real pid
+    if (pid) { processMap[pid] = child.pid; }
 
+    let exitCode;
+    let stdout = [];
+    let stderr = [];
+
+    child.stdout.addListener('data', data => stdout[stdout.length] = data);
+
+    child.stderr.addListener('data', data => {
+      progressCallback(fixEOL(data.toString('utf8')));
+      stderr[stderr.length] = data;
+    });
+
+    child.addListener('exit', code => exitCode = code);
+
+    child.addListener('close', () => {
+      if (pid) { delete processMap[pid]; }
+      return exitCode > 0 ? reject(joinBuffers(stderr)) : resolve(joinBuffers(stdout));
+    });
+
+    child.stdin.end();
+  });
 }
 
 async function killAsync({ pid }, progressCallback) {
@@ -40,20 +66,6 @@ export function init(_domainManager) {
   }
 
   domainManager.registerDomain(DOMAIN_NAME, { major: 0, minor: 1 });
-
-  domainManager.registerCommand(
-    DOMAIN_NAME,
-    'execute',
-    function executeHandler(options, callback, progressCallback) {
-      executeAsync(options, progressCallback)
-        .then(stdout => callback(null, stdout))
-        .catch(stderr => callback(stderr, null));
-    },
-    true,
-    'Executes a command and returns its stdout.',
-    [ { name: 'options', type: 'object' } ],
-    [ { name: 'stdout', type: 'string' } ]
-  );
 
   domainManager.registerCommand(
     DOMAIN_NAME,
