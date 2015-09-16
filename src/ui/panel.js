@@ -1,20 +1,20 @@
 import Events from '../events';
 import EventEmitter from '../event-emitter';
 import Preferences from '../preferences';
-import { WorkspaceManager } from '../brackets';
+import { React, WorkspaceManager } from '../brackets';
 
 const PANEL_ID = 'brackets-git-bottom-panel';
 const PANEL_MIN_HEIGHT = 100;
 const $panelContainer = $(`<div id="${PANEL_ID}"/>`);
 const panelInstance = WorkspaceManager.createBottomPanel(PANEL_ID, $panelContainer, PANEL_MIN_HEIGHT);
 
-/*
-React.render(<RegistryDialog/>, $dialog[0]);
-dialog.done(() => {
-  React.unmountComponentAtNode($dialog[0]);
-  afterClose();
-});
-*/
+class Panel extends React.Component {
+
+  render() {
+    return <div> hello world! </div>;
+  }
+
+}
 
 export function toggle(bool) {
   let isVisible = panelInstance.isVisible();
@@ -22,6 +22,12 @@ export function toggle(bool) {
     bool = !isVisible;
   } else if (bool === isVisible) {
     return;
+  }
+
+  if (bool) {
+    React.render(<Panel/>, $panelContainer[0]);
+  } else {
+    React.unmountComponentAtNode($panelContainer[0]);
   }
 
   panelInstance.setVisible(bool);

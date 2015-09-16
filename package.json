@@ -26,17 +26,18 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "babel-core": "5.8.23",
-    "bluebird": "2.9.34",
-    "core-js": "1.1.3",
+    "babel-core": "5.8.24",
+    "bluebird": "2.10.0",
+    "core-js": "1.1.4",
     "cross-spawn-async": "2.0.0",
     "eventemitter2": "0.4.14",
-    "regenerator": "0.8.36",
-    "which": "1.1.1"
+    "regenerator": "0.8.38",
+    "which": "1.1.2"
   },
   "devDependencies": {
-    "babel-eslint": "4.1.0",
+    "babel-eslint": "4.1.2",
     "brackets-babel-module-formatter": "1.4.0",
+    "eslint-plugin-react": "3.3.2",
     "fs-extra": "0.24.0",
     "gulp": "3.9.0",
     "gulp-babel": "5.2.1",

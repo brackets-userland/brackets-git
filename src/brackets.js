@@ -8,4 +8,5 @@ export const Menus = brackets.getModule('command/Menus');
 export const NodeConnection = brackets.getModule('utils/NodeConnection');
 export const PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 export const ProjectManager = brackets.getModule('project/ProjectManager');
+export const React = brackets.getModule('thirdparty/react');
 export const WorkspaceManager = brackets.getModule('view/WorkspaceManager');
