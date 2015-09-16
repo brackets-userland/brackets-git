@@ -123,5 +123,5 @@ function toggleMenuEntries(bool) {
   _toggleMenuEntriesState = bool;
 }
 
-EventEmitter.on(Events.GIT_ENABLED, () => toggleMenuEntries(true));
-EventEmitter.on(Events.GIT_DISABLED, () => toggleMenuEntries(false));
+EventEmitter.on(Events.GIT_REPO_AVAILABLE, () => toggleMenuEntries(true));
+EventEmitter.on(Events.GIT_REPO_NOT_AVAILABLE, () => toggleMenuEntries(false));

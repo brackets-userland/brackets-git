@@ -23,13 +23,13 @@ EventEmitter.on(Events.GIT_NOT_WORKING, function (err) {
     .attr('title', Strings.CHECK_GIT_SETTINGS + ' - ' + err.toString());
 });
 
-EventEmitter.on(Events.GIT_ENABLED, function () {
+EventEmitter.on(Events.GIT_REPO_AVAILABLE, function () {
   $icon
     .removeAttr('title')
     .removeClass('warning');
 });
 
-EventEmitter.on(Events.GIT_DISABLED, function (reason) {
+EventEmitter.on(Events.GIT_REPO_NOT_AVAILABLE, function (reason) {
   $icon
     .removeClass('dirty')
     .addClass('warning')

@@ -1,6 +1,7 @@
 import Events from '../events';
 import EventEmitter from '../event-emitter';
 import Preferences from '../preferences';
+import Strings from 'strings';
 import { _ } from '../brackets';
 import { getRoot } from '../git/get-root';
 import { getBranchName } from '../git/get-branch-name';
@@ -28,7 +29,7 @@ async function refresh() {
   if (!isRepositoryRootOrChild) {
     Preferences.set('currentGitRoot', projectRoot);
     Preferences.set('currentGitSubfolder', '');
-    EventEmitter.emit(Events.GIT_REPO_NOT_AVAILABLE);
+    EventEmitter.emit(Events.GIT_REPO_NOT_AVAILABLE, Strings.PROJECT_NOT_A_REPO);
     return;
   }
 

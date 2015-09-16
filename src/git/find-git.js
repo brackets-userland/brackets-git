@@ -1,7 +1,7 @@
 import { _ } from '../brackets';
 import { getMinimumGitVersion, getExtensionDirectory } from '../extension-info';
 import { warn } from '../log';
-import { setPath } from './index';
+import { gitPath as setGitPath } from './index';
 import { spawn } from '../cli';
 import * as Preferences from '../preferences';
 
@@ -66,7 +66,7 @@ export async function findGit() {
   }
 
   // this will also save the settings
-  setPath(gitPath);
+  setGitPath(gitPath);
 
   return gitVersion;
 }

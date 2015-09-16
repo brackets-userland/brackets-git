@@ -1,8 +1,9 @@
 import EventEmitter from 'eventemitter';
 import Preferences from './preferences';
-import { log } from './log';
+import { debug, logError } from './log';
 
-const debugOn = Preferences.get('debugMode');
+//const debugOn = Preferences.get('debugMode');
+const debugOn = true;
 const emInstance = new EventEmitter({ wildcard: false });
 
 if (debugOn) {
@@ -36,7 +37,11 @@ if (debugOn) {
 
     argsString = argsString + ' (' + listenersCount + ' listeners)';
 
-    log('Event invoked: ' + eventName + argsString);
+    if (eventName === 'newListener' && args[0] == null) {
+      logError('Event invoked: ' + eventName + argsString);
+    } else if (eventName !== 'newListener') {
+      debug('Event invoked: ' + eventName + argsString);
+    }
 
     return this._emit.apply(this, arguments);
   };

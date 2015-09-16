@@ -159,6 +159,7 @@ define({
     PATH_TO_GIT_EXECUTABLE:             "Path to Git executable",
     PATH_TO_GIT_MSYSGIT:                "Path to msysgit folder",
     PICTURE:                            "Gravatar (www.gravatar.com)",
+    PROJECT_NOT_A_REPO:                 "Opened project is not within Git repository",
     PULL_AVOID_MERGING:                 "Avoid manual merging",
     PULL_DEFAULT:                       "Default merge",
     PULL_FROM:                          "Pull from",
