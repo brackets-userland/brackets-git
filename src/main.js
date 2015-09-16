@@ -16,6 +16,7 @@ import { handleError } from './error-handler';
 
 // load without importing
 import { } from './ui/icons/git-icon';
+import { } from './ui/branch';
 import { } from './ui/panel';
 import { } from './menu-entries';
 
@@ -39,7 +40,7 @@ if (typeof window === 'object') {
 }
 
 // display settings panel on first start / changelog dialog on version change
-async function _displayExtensionInfoIfNeeded() {
+async function displayExtensionInfoIfNeeded() {
 
   // do not display dialogs when running tests
   if (window.isBracketsTestWindow) { return; }
@@ -54,14 +55,7 @@ async function _displayExtensionInfoIfNeeded() {
     Preferences.set('lastVersion', currentVersion);
     await ChangelogDialog.show();
   }
-}
 
-function initUi() {
-  // TODO: implement
-  // FUTURE: do we really need to launch init from here?
-  // Panel.init();
-  // Branch.init();
-  // CloseNotModified.init();
 }
 
 async function init() {
@@ -74,9 +68,8 @@ async function init() {
     return;
   }
 
+  await displayExtensionInfoIfNeeded();
   EventEmitter.emit(Events.GIT_WORKING);
-  _displayExtensionInfoIfNeeded();
-  initUi();
 
 }
 

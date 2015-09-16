@@ -4,7 +4,7 @@ import { warn } from './log';
 import { handleError } from './error-handler';
 import Events from './events';
 import EventEmitter from './event-emitter';
-import Panel from './ui/panel';
+import * as Panel from './ui/panel';
 import * as Preferences from './preferences';
 import Promise from 'bluebird';
 import Strings from 'strings';

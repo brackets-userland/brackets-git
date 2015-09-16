@@ -482,21 +482,6 @@ define(function (require, exports) {
         });
     }
 
-    function init() {
-        // Add branch name to project tree
-        $gitBranchName = $("<span id='git-branch'></span>");
-        $("<div id='git-branch-dropdown-toggle' class='btn-alt-quiet'></div>")
-            .append("[ ")
-            .append($gitBranchName)
-            .append(" ]")
-            .on("click", function () {
-                $gitBranchName.click();
-                return false;
-            })
-            .appendTo("#project-files-header");
-        refresh();
-    }
-
     EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function (evt, file) {
         if (file.fullPath === _getHeadFilePath()) {
             checkBranch();
@@ -517,7 +502,6 @@ define(function (require, exports) {
         refresh();
     });
 
-    exports.init    = init;
     exports.refresh = refresh;
 
 });
