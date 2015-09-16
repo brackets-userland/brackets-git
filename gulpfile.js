@@ -17,7 +17,8 @@ var DIST_DIR = './dist/';
 
 // options for transpiling es6 to es5
 var babelOptions = {
-  modules: 'brackets-babel-module-formatter'
+  modules: 'brackets-babel-module-formatter',
+  optional: ['es7.classProperties']
 };
 
 // we need to check OS here because Linux doesn't have CEF with generators
@@ -25,10 +26,10 @@ var babelOptions = {
 // node.js process bundled with brackets doesn't have generators so always false, for now
 var hasNativeGenerators = false; // process.platform === 'darwin' || process.platform === 'win32';
 if (hasNativeGenerators) {
-  babelOptions.optional = ['bluebirdCoroutines'];
+  babelOptions.optional.push('bluebirdCoroutines');
   babelOptions.blacklist = ['regenerator'];
 } else {
-  babelOptions.optional = ['es7.asyncFunctions'];
+  babelOptions.optional.push('es7.asyncFunctions');
 }
 
 // provides pipe to log stuff to console when certain task finishes

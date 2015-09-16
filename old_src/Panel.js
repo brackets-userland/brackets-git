@@ -810,24 +810,6 @@ define(function (require, exports) {
         return Promise.all([p1, p2]);
     }
 
-    function toggle(bool) {
-        if (gitPanelDisabled === true) {
-            return;
-        }
-        if (typeof bool !== "boolean") {
-            bool = !gitPanel.isVisible();
-        }
-        Preferences.persist("panelEnabled", bool);
-        gitPanel.setVisible(bool);
-
-        // Mark menu item as enabled/disabled.
-        CommandManager.get(PANEL_COMMAND_ID).setChecked(bool);
-
-        if (bool) {
-            refresh();
-        }
-    }
-
     function handleToggleUntracked() {
         showingUntracked = !showingUntracked;
 

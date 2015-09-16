@@ -10,8 +10,24 @@ const panelInstance = WorkspaceManager.createBottomPanel(PANEL_ID, $panelContain
 
 class Panel extends React.Component {
 
-  render() {
-    return <div> hello world! </div>;
+  constructor(props) {
+    super(props);
+  }
+
+  state = {
+    count: 1
+  }
+
+  handleClick = () => {
+    this.setState({
+      count: this.state.count + 1
+    });
+  }
+
+  render = () => {
+    return <div onClick={this.handleClick}>
+      hello world: {this.state.count}
+    </div>;
   }
 
 }
