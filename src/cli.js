@@ -20,6 +20,7 @@ export function spawn(opts) {
       return stdout;
     })
     .catch(stderr => {
+      if (stderr instanceof Error) { stderr = stderr.stack; }
       debug(`[cli] pid ${opts.pid} ERR: ${stderr}`);
       throw stderr;
     });
