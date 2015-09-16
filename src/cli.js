@@ -1,6 +1,6 @@
 import * as NodeConnector from './node-connector';
 import { debug } from './log';
-import { ProjectManager } from './brackets';
+import { getProjectRoot } from './utils';
 
 let pidCounter = 1;
 
@@ -10,7 +10,7 @@ export function spawn(opts) {
 
   if (!opts.cwd) {
     // default to current project directory
-    opts.cwd = ProjectManager.getProjectRoot().fullPath;
+    opts.cwd = getProjectRoot();
   }
 
   debug(`[cli] spawn pid ${opts.pid}: ${opts.cmd} ${opts.args}`);

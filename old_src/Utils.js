@@ -30,12 +30,6 @@ define(function (require, exports, module) {
         debugOn                 = Preferences.get("debugMode"),
         EXT_NAME                = "[brackets-git] ";
 
-    // Implementation
-    function getProjectRoot() {
-        var projectRoot = ProjectManager.getProjectRoot();
-        return projectRoot ? projectRoot.fullPath : null;
-    }
-
     function formatDiff(diff) {
         var DIFF_MAX_LENGTH = 2000;
 

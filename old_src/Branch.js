@@ -359,19 +359,6 @@ define(function (require, exports) {
         });
     }
 
-    function _getHeadFilePath() {
-        return Preferences.get("currentGitRoot") + ".git/HEAD";
-    }
-
-    function addHeadToTheFileIndex() {
-        FileSystem.resolve(_getHeadFilePath(), function (err) {
-            if (err) {
-                ErrorHandler.logError(err, "Resolving .git/HEAD file failed");
-                return;
-            }
-        });
-    }
-
     function checkBranch() {
         FileSystem.getFileForPath(_getHeadFilePath()).read(function (err, contents) {
             if (err) {
@@ -397,88 +384,6 @@ define(function (require, exports) {
             if (branchInHead !== branchInUi) {
                 refresh();
             }
-        });
-    }
-
-    function refresh() {
-        if ($gitBranchName.length === 0) { return; }
-
-        // show info that branch is refreshing currently
-        $gitBranchName
-            .text("\u2026")
-            .parent()
-                .show();
-
-        return Git.getGitRoot().then(function (gitRoot) {
-            var projectRoot             = Utils.getProjectRoot(),
-                isRepositoryRootOrChild = gitRoot && projectRoot.indexOf(gitRoot) === 0;
-
-            $gitBranchName.parent().toggle(isRepositoryRootOrChild);
-
-            if (!isRepositoryRootOrChild) {
-                Preferences.set("currentGitRoot", projectRoot);
-                Preferences.set("currentGitSubfolder", "");
-
-                $gitBranchName
-                    .off("click")
-                    .text("not a git repo");
-                Panel.disable("not-repo");
-
-                return;
-            }
-
-            Preferences.set("currentGitRoot", gitRoot);
-            Preferences.set("currentGitSubfolder", projectRoot.substring(gitRoot.length));
-
-            // we are in a .git repo so read the head
-            addHeadToTheFileIndex();
-
-            return Git.getCurrentBranchName().then(function (branchName) {
-
-                Git.getMergeInfo().then(function (mergeInfo) {
-
-                    if (mergeInfo.mergeMode) {
-                        branchName += "|MERGING";
-                    }
-
-                    if (mergeInfo.rebaseMode) {
-                        if (mergeInfo.rebaseHead) {
-                            branchName = mergeInfo.rebaseHead;
-                        }
-                        branchName += "|REBASE";
-                        if (mergeInfo.rebaseNext && mergeInfo.rebaseLast) {
-                            branchName += "(" + mergeInfo.rebaseNext + "/" + mergeInfo.rebaseLast + ")";
-                        }
-                    }
-
-                    EventEmitter.emit(Events.REBASE_MERGE_MODE, mergeInfo.rebaseMode, mergeInfo.mergeMode);
-
-                    var MAX_LEN = 20;
-
-                    $gitBranchName
-                        .text(branchName.length > MAX_LEN ? branchName.substring(0, MAX_LEN) + "\u2026" : branchName)
-                        .attr("title", branchName.length > MAX_LEN ? branchName : null)
-                        .off("click")
-                        .on("click", toggleDropdown)
-                        .append($("<span class='dropdown-arrow' />"));
-                    Panel.enable();
-
-                }).catch(function (err) {
-                    ErrorHandler.showError(err, "Reading .git state failed");
-                });
-
-            }).catch(function (ex) {
-                if (ErrorHandler.contains(ex, "unknown revision")) {
-                    $gitBranchName
-                        .off("click")
-                        .text("no branch");
-                    Panel.enable();
-                } else {
-                    throw ex;
-                }
-            });
-        }).catch(function (err) {
-            throw ErrorHandler.showError(err);
         });
     }
 
