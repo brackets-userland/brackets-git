@@ -1,6 +1,6 @@
-import Events from '../events';
-import EventEmitter from '../event-emitter';
-import * as Panel from '../panel';
+import Events from '../../events';
+import EventEmitter from '../../event-emitter';
+import * as Panel from '../../ui/panel';
 import Strings from 'strings';
 
 const $icon = $('<a id="git-toolbar-icon" href="#"></a>')

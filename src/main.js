@@ -15,7 +15,8 @@ import { findGit } from './git/find-git';
 import { handleError } from './error-handler';
 
 // load without importing
-import { } from './icons/git-icon';
+import { } from './ui/icons/git-icon';
+import { } from './ui/panel';
 import { } from './menu-entries';
 
 // load stylesheets
