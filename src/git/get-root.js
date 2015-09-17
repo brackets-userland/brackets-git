@@ -1,16 +1,7 @@
 import { git } from './index';
 import { debug } from '../log';
 import { errContains } from '../error-handler';
-import { getProjectRoot } from '../utils';
-import { FileSystem } from '../brackets';
-
-function pathExists(path) {
-  return new Promise(function (resolve, reject) {
-    FileSystem.resolve(path, function (err, item, stat) {
-      resolve(err ? false : stat.isFile || stat.isDirectory);
-    });
-  });
-}
+import { getProjectRoot, pathExists } from '../utils';
 
 export default async function getRoot() {
 

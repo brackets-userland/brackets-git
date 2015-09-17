@@ -361,45 +361,6 @@ define(function (require, exports) {
             });
     }
 
-    function getCurrentBranchName() {
-        return git(["branch", "--no-color"]).then(function (stdout) {
-            var branchName = _.find(stdout.split("\n"), function (l) { return l[0] === "*"; });
-            if (branchName) {
-                branchName = branchName.substring(1).trim();
-
-                var m = branchName.match(/^\(.*\s(\S+)\)$/); // like (detached from f74acd4)
-                if (m) { return m[1]; }
-
-                return branchName;
-            }
-
-            // no branch situation so we need to create one by doing a commit
-            if (stdout.match(/^\s*$/)) {
-                return EventEmitter.emit(Events.GIT_NO_BRANCH_EXISTS);
-            }
-
-            // alternative
-            return git(["log", "--pretty=format:%H %d", "-1"]).then(function (stdout) {
-                var m = stdout.trim().match(/^(\S+)\s+\((.*)\)$/);
-                var hash = m[1].substring(0, 20);
-                m[2].split(",").forEach(function (info) {
-                    info = info.trim();
-
-                    if (info === "HEAD") { return; }
-
-                    var m = info.match(/^tag:(.+)$/);
-                    if (m) {
-                        hash = m[1].trim();
-                        return;
-                    }
-
-                    hash = info;
-                });
-                return hash;
-            });
-        });
-    }
-
     function getCurrentUpstreamBranch() {
         return git(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
             .catch(function () {
