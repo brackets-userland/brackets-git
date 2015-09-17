@@ -21,3 +21,7 @@ export async function handleError(...errs) {
 
   logError(...toLog);
 }
+
+export function errContains(err, what) {
+  return err.toString().toLowerCase().indexOf(what.toLowerCase()) !== -1;
+}

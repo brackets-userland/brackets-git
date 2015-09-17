@@ -11,7 +11,7 @@ import ChangelogDialog from './dialogs/changelog-dialog';
 import SettingsDialog from './dialogs/settings-dialog';
 import Strings from 'strings';
 import { getExtensionName, getExtensionVersion } from './extension-info';
-import { findGit } from './git/find-git';
+import findGit from './git/find-git';
 import { handleError } from './error-handler';
 
 // load without importing

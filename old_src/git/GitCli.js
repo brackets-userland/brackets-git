@@ -44,19 +44,6 @@ define(function (require, exports) {
     // This SHA1 represents the empty tree. You get it using `git mktree < /dev/null`
     var EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
-    // Implementation
-    function getGitPath() {
-        if (_gitPath) { return _gitPath; }
-        _gitPath = Preferences.get("gitPath");
-        return _gitPath;
-    }
-
-    function setGitPath(path) {
-        if (path === true) { path = "git"; }
-        Preferences.set("gitPath", path);
-        _gitPath = path;
-    }
-
     function strEndsWith(subjectString, searchString, position) {
         if (position === undefined || position > subjectString.length) {
             position = subjectString.length;
@@ -77,48 +64,6 @@ define(function (require, exports) {
         return path;
     }
     */
-
-    function _processQueue() {
-        // do nothing if the queue is busy
-        if (_gitQueueBusy) {
-            return;
-        }
-        // do nothing if the queue is empty
-        if (_gitQueue.length === 0) {
-            _gitQueueBusy = false;
-            return;
-        }
-        // get item from queue
-        var item  = _gitQueue.shift(),
-            defer = item[0],
-            args  = item[1],
-            opts  = item[2];
-        // execute git command in a queue so no two commands are running at the same time
-        if (opts.nonblocking !== true) { _gitQueueBusy = true; }
-        Cli.spawnCommand(getGitPath(), args, opts)
-            .progressed(function () {
-                defer.progress.apply(defer, arguments);
-            })
-            .then(function (r) {
-                defer.resolve(r);
-            })
-            .catch(function (e) {
-                var call = "call: git " + args.join(" ");
-                e.stack = [call, e.stack].join("\n");
-                defer.reject(e);
-            })
-            .finally(function () {
-                if (opts.nonblocking !== true) { _gitQueueBusy = false; }
-                _processQueue();
-            });
-    }
-
-    function git(args, opts) {
-        var rv = Promise.defer();
-        _gitQueue.push([rv, args || [], opts || {}]);
-        _processQueue();
-        return rv.promise;
-    }
 
     /*
         git branch
@@ -925,83 +870,6 @@ define(function (require, exports) {
         });
     }
 
-    function getGitRoot() {
-        var projectRoot = Utils.getProjectRoot();
-        return git(["rev-parse", "--show-toplevel"], {
-                cwd: projectRoot
-            })
-            .catch(function (e) {
-                if (ErrorHandler.contains(e, "Not a git repository")) {
-                    return null;
-                }
-                throw e;
-            })
-            .then(function (root) {
-                if (root === null) {
-                    return root;
-                }
-
-                // paths on cygwin look a bit different
-                // root = fixCygwinPath(root);
-
-                // we know projectRoot is in a Git repo now
-                // because --show-toplevel didn't return Not a git repository
-                // we need to find closest .git
-
-                function checkPathRecursive(path) {
-
-                    if (strEndsWith(path, "/")) {
-                        path = path.slice(0, -1);
-                    }
-
-                    Utils.consoleDebug("Checking path for .git: " + path);
-
-                    return new Promise(function (resolve) {
-
-                        // keep .git away from file tree for now
-                        // this branch of code will not run for intel xdk
-                        if (typeof brackets !== "undefined" && brackets.fs && brackets.fs.stat) {
-                            brackets.fs.stat(path + "/.git", function (err, result) {
-                                var exists = err ? false : (result.isFile() || result.isDirectory());
-                                if (exists) {
-                                    Utils.consoleDebug("Found .git in path: " + path);
-                                    resolve(path);
-                                } else {
-                                    Utils.consoleDebug("Failed to find .git in path: " + path);
-                                    path = path.split("/");
-                                    path.pop();
-                                    path = path.join("/");
-                                    resolve(checkPathRecursive(path));
-                                }
-                            });
-                            return;
-                        }
-
-                        FileSystem.resolve(path + "/.git", function (err, item, stat) {
-                            var exists = err ? false : (stat.isFile || stat.isDirectory);
-                            if (exists) {
-                                Utils.consoleDebug("Found .git in path: " + path);
-                                resolve(path);
-                            } else {
-                                Utils.consoleDebug("Failed to find .git in path: " + path);
-                                path = path.split("/");
-                                path.pop();
-                                path = path.join("/");
-                                resolve(checkPathRecursive(path));
-                            }
-                        });
-
-                    });
-
-                }
-
-                return checkPathRecursive(projectRoot).then(function (path) {
-                    return path + "/";
-                });
-
-            });
-    }
-
     // Public API
     exports._git                      = git;
     exports.setGitPath                = setGitPath;
@@ -1053,5 +921,4 @@ define(function (require, exports) {
     exports.getDiffOfStagedFiles      = getDiffOfStagedFiles;
     exports.getListOfStagedFiles      = getListOfStagedFiles;
     exports.getBlame                  = getBlame;
-    exports.getGitRoot                = getGitRoot;
 });

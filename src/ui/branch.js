@@ -2,10 +2,10 @@ import Events from '../events';
 import EventEmitter from '../event-emitter';
 import Preferences from '../preferences';
 import Strings from 'strings';
+import getRoot from '../git/get-root';
+import getBranchName from '../git/get-branch-name';
+import getMergeInfo from '../git/get-merge-info';
 import { _ } from '../brackets';
-import { getRoot } from '../git/get-root';
-import { getBranchName } from '../git/get-branch-name';
-import { getMergeInfo } from '../git/get-merge-info';
 import { getProjectRoot } from '../utils';
 import { handleError } from '../error-handler';
 
@@ -13,7 +13,7 @@ const $branchContainer = $(`<div id="brackets-git-branch" class="btn-alt-quiet"/
 const $branchName = $(`<span class="branch-name">\u2026</span>`);
 const MAX_LEN = 20;
 
-function toggle() {
+function toggleDropdown() {
 
 }
 
@@ -60,7 +60,7 @@ async function refresh() {
     .text(displayBranchName)
     .attr('title', branchNameTooLong ? branchName : null)
     .off('click')
-    .on('click', toggle)
+    .on('click', toggleDropdown)
     .append($('<span class="dropdown-arrow" />'));
 
   EventEmitter.emit(Events.GIT_REPO_AVAILABLE);

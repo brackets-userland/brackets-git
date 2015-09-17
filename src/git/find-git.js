@@ -1,7 +1,7 @@
 import { _ } from '../brackets';
 import { getMinimumGitVersion, getExtensionDirectory } from '../extension-info';
 import { warn } from '../log';
-import { gitPath as setGitPath } from './index';
+import { setGitPath } from './index';
 import { spawn } from '../cli';
 import * as Preferences from '../preferences';
 
@@ -16,7 +16,7 @@ const standardGitPathsNonWin = [
   '/usr/bin/git'
 ];
 
-export async function findGit() {
+export default async function findGit() {
 
   let paths = [
     Preferences.get('gitPath'),

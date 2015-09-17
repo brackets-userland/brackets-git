@@ -90,10 +90,12 @@ export async function call(domainName, methodName, opts) {
 
   let defer = Promise.defer();
 
-  nodeConnection.domains[domainName][methodName](opts)
-    .progress(msg => defer.progress(msg))
-    .done(res => defer.resolve(res))
-    .fail(err => defer.reject(err));
+  let $promise = nodeConnection.domains[domainName][methodName](opts);
+  if (opts.progress) {
+    $promise = $promise.progress(...msg => opts.progress(...msg));
+  }
+  $promise = $promise.done(res => defer.resolve(res));
+  $promise = $promise.fail(err => defer.reject(err));
 
   return defer.promise;
 }

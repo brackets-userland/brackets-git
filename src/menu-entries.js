@@ -88,12 +88,14 @@ function init() {
 
   // create context menu for git panel
   let panelCmenu = Menus.registerContextMenu('git-panel-context-menu');
-  CommandManager.register(Strings.ADD_TO_GITIGNORE, CMD_ADD_TO_IGNORE + '2', addItemToGitingoreFromPanel);
-  CommandManager.register(
-    Strings.REMOVE_FROM_GITIGNORE, CMD_REMOVE_FROM_IGNORE + '2', removeItemFromGitingoreFromPanel
-  );
-  panelCmenu.addMenuItem(CMD_ADD_TO_IGNORE + '2');
-  panelCmenu.addMenuItem(CMD_REMOVE_FROM_IGNORE + '2');
+  if (panelCmenu) {
+    CommandManager.register(Strings.ADD_TO_GITIGNORE, CMD_ADD_TO_IGNORE + '2', addItemToGitingoreFromPanel);
+    CommandManager.register(
+      Strings.REMOVE_FROM_GITIGNORE, CMD_REMOVE_FROM_IGNORE + '2', removeItemFromGitingoreFromPanel
+    );
+    panelCmenu.addMenuItem(CMD_ADD_TO_IGNORE + '2');
+    panelCmenu.addMenuItem(CMD_REMOVE_FROM_IGNORE + '2');
+  }
 }
 
 function toggleMenuEntries(bool) {

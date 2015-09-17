@@ -13,7 +13,7 @@ export function spawn(opts) {
     opts.cwd = getProjectRoot();
   }
 
-  debug(`[cli] spawn pid ${opts.pid}: ${opts.cmd} ${opts.args}`);
+  debug(`[cli] spawn pid ${opts.pid}: ${opts.cmd} ${opts.args.join(' ')}`);
   return NodeConnector.call('cli-domain', 'spawn', opts)
     .then(stdout => {
       debug(`[cli] pid ${opts.pid} OUT: ${stdout}`);
