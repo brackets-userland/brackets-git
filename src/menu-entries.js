@@ -87,7 +87,7 @@ function init() {
   CommandManager.register(Strings.REMOVE_FROM_GITIGNORE, CMD_REMOVE_FROM_IGNORE, removeItemFromGitingore);
 
   // create context menu for git panel
-  let panelCmenu = Menus.registerContextMenu('git-panel-context-menu');
+  let panelCmenu = Menus.registerContextMenu('brackets-git-panel-context-menu');
   if (panelCmenu) {
     CommandManager.register(Strings.ADD_TO_GITIGNORE, CMD_ADD_TO_IGNORE + '2', addItemToGitingoreFromPanel);
     CommandManager.register(
