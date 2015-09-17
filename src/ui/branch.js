@@ -54,10 +54,8 @@ async function refresh() {
   }
 
   let branchNameTooLong = branchName.length > MAX_LEN;
-  let displayBranchName = branchNameTooLong ? branchName.substring(0, MAX_LEN) + '\u2026' : branchName;
-
   $branchName
-    .text(displayBranchName)
+    .text(branchNameTooLong ? branchName.substring(0, MAX_LEN) + '\u2026' : branchName)
     .attr('title', branchNameTooLong ? branchName : null)
     .off('click')
     .on('click', toggleDropdown)
