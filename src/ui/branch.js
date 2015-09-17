@@ -36,7 +36,10 @@ async function refresh() {
   Preferences.set('currentGitRoot', gitRoot);
   Preferences.set('currentGitSubfolder', projectRoot.substring(gitRoot.length));
 
-  let branchName = await getBranchName();
+  let fullBranchName = await getBranchName();
+  let branchNameTooLong = fullBranchName.length > MAX_LEN;
+  let branchName = branchNameTooLong ? fullBranchName.substring(0, MAX_LEN) + '\u2026' : fullBranchName;
+
   let mergeInfo = await getMergeInfo();
 
   if (mergeInfo.mergeMode) {
@@ -53,10 +56,9 @@ async function refresh() {
     }
   }
 
-  let branchNameTooLong = branchName.length > MAX_LEN;
   $branchName
-    .text(branchNameTooLong ? branchName.substring(0, MAX_LEN) + '\u2026' : branchName)
-    .attr('title', branchNameTooLong ? branchName : null)
+    .text(branchName)
+    .attr('title', branchNameTooLong ? fullBranchName : null)
     .off('click')
     .on('click', toggleDropdown)
     .append($('<span class="dropdown-arrow" />'));
