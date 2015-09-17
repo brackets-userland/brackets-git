@@ -280,34 +280,6 @@ define(function (require, exports, module) {
         });
     }
 
-    function loadPathContent(path) {
-        return new Promise(function (resolve) {
-            FileSystem.resolve(path, function (err, entry) {
-                if (err) {
-                    return resolve(null);
-                }
-                if (entry._clearCachedData) {
-                    entry._clearCachedData();
-                }
-                if (entry.isFile) {
-                    entry.read(function (err, content) {
-                        if (err) {
-                            return resolve(null);
-                        }
-                        resolve(content);
-                    });
-                } else {
-                    entry.getContents(function (err, contents) {
-                        if (err) {
-                            return resolve(null);
-                        }
-                        resolve(contents);
-                    });
-                }
-            });
-        });
-    }
-
     function setLoading($btn) {
         $btn.prop("disabled", true).addClass("btn-loading");
     }

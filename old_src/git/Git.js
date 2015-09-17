@@ -87,58 +87,6 @@ define(function (require, exports) {
         });
     }
 
-    function getMergeInfo() {
-        var baseCheck  = ["MERGE_MODE", "rebase-apply"],
-            mergeCheck = ["MERGE_HEAD", "MERGE_MSG"],
-            rebaseCheck = ["rebase-apply/next", "rebase-apply/last", "rebase-apply/head-name"],
-            gitFolder  = Preferences.get("currentGitRoot") + ".git/";
-
-        return Promise.all(baseCheck.map(function (fileName) {
-            return Utils.loadPathContent(gitFolder + fileName);
-        })).spread(function (mergeMode, rebaseMode) {
-            var obj = {
-                mergeMode: mergeMode !== null,
-                rebaseMode: rebaseMode !== null
-            };
-            if (obj.mergeMode) {
-
-                return Promise.all(mergeCheck.map(function (fileName) {
-                    return Utils.loadPathContent(gitFolder + fileName);
-                })).spread(function (head, msg) {
-
-                    if (head) {
-                        obj.mergeHead = head.trim();
-                    }
-                    var msgSplit = msg ? msg.trim().split(/conflicts:/i) : [];
-                    if (msgSplit[0]) {
-                        obj.mergeMessage = msgSplit[0].trim();
-                    }
-                    if (msgSplit[1]) {
-                        obj.mergeConflicts = msgSplit[1].trim().split("\n").map(function (line) { return line.trim(); });
-                    }
-                    return obj;
-
-                });
-
-            }
-            if (obj.rebaseMode) {
-
-                return Promise.all(rebaseCheck.map(function (fileName) {
-                    return Utils.loadPathContent(gitFolder + fileName);
-                })).spread(function (next, last, head) {
-
-                    if (next) { obj.rebaseNext = next.trim(); }
-                    if (last) { obj.rebaseLast = last.trim(); }
-                    if (head) { obj.rebaseHead = head.trim().substring("refs/heads/".length); }
-                    return obj;
-
-                });
-
-            }
-            return obj;
-        });
-    }
-
     function discardFileChanges(file) {
         return GitCli.unstage(file).then(function () {
             return GitCli.checkout(file);

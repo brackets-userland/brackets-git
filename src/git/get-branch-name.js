@@ -29,10 +29,10 @@ export default async function getBranchName() {
 
   infos = infos.map(info => {
 
-    let headMatch = info.match(/^HEAD\s+->\s(\S+)$/i);
+    let headMatch = info.match(/^HEAD\s+->\s+(\S+)$/i);
     if (headMatch) { return headMatch[1]; }
 
-    let tagMatch = info.match(/^tag:(.+)$/i);
+    let tagMatch = info.match(/^tag:\s+(\S+)$/i);
     if (tagMatch) { return tagMatch[1]; }
 
     return null;
