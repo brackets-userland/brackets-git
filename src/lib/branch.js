@@ -10,8 +10,6 @@ import { getProjectRoot } from '../utils';
 import { handleError } from '../error-handler';
 import * as branchUi from '../ui/branch';
 
-const MAX_LEN = 20;
-
 async function refresh() {
   branchUi.setText('\u2026');
 
@@ -31,10 +29,7 @@ async function refresh() {
   Preferences.set('currentGitRoot', gitRoot);
   Preferences.set('currentGitSubfolder', projectRoot.substring(gitRoot.length));
 
-  let fullBranchName = await getBranchName();
-  let branchNameTooLong = fullBranchName.length > MAX_LEN;
-  let branchName = branchNameTooLong ? fullBranchName.substring(0, MAX_LEN) + '\u2026' : fullBranchName;
-
+  let branchName = await getBranchName();
   let mergeInfo = await getMergeInfo();
 
   if (mergeInfo.mergeMode) {
@@ -51,7 +46,7 @@ async function refresh() {
     }
   }
 
-  branchUi.setBranchName(branchName, branchNameTooLong ? fullBranchName : null);
+  branchUi.setBranchName(branchName);
 
   EventEmitter.emit(Events.GIT_REPO_AVAILABLE);
   EventEmitter.emit(Events.REBASE_MERGE_MODE, mergeInfo.rebaseMode, mergeInfo.mergeMode);

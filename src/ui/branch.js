@@ -1,5 +1,6 @@
 const $branchContainer = $(`<div id="brackets-git-branch" class="btn-alt-quiet"/>`);
 const $branchName = $(`<span class="branch-name">\u2026</span>`);
+const MAX_LEN = 20;
 
 function toggleDropdown() {
 
@@ -16,8 +17,18 @@ export function setText(text) {
   toggle(true);
 }
 
-export function setBranchName(text, title) {
-  setText(text);
+export function setBranchName(text) {
+  let [ name, rest ] = text.split('|');
+  let nameTooLong = name.length > MAX_LEN;
+  let shortName = nameTooLong ? name.substring(0, MAX_LEN) + '\u2026' : name;
+  let title = nameTooLong ? name : null;
+
+  if (rest) {
+    shortName += '|' + rest;
+    title += '|' + rest;
+  }
+
+  setText(shortName);
   $branchName
     .attr('title', title)
     .off('click')
