@@ -30,27 +30,7 @@ define(function (require, exports) {
         currentEditor,
         $dropdown;
 
-    function renderList(branches) {
-        branches = branches.map(function (name) {
-            return {
-                name: name,
-                currentBranch: name.indexOf("* ") === 0,
-                canDelete: name !== "master"
-            };
-        });
-        var templateVars  = {
-            branchList: _.filter(branches, function (o) { return !o.currentBranch; }),
-            Strings:    Strings
-        };
-        return Mustache.render(branchesMenuTemplate, templateVars);
-    }
 
-    function closeDropdown() {
-        if ($dropdown) {
-            PopUpManager.removePopUp($dropdown);
-        }
-        detachCloseEvents();
-    }
 
     function doMerge(fromBranch) {
         Git.getBranches().then(function (branches) {
@@ -286,78 +266,9 @@ define(function (require, exports) {
         });
     }
 
-    function attachCloseEvents() {
-        $("html").on("click", closeDropdown);
-        $("#project-files-container").on("scroll", closeDropdown);
-        $("#titlebar .nav").on("click", closeDropdown);
 
-        currentEditor = EditorManager.getCurrentFullEditor();
-        if (currentEditor) {
-            currentEditor._codeMirror.on("focus", closeDropdown);
-        }
 
-        // $(window).on("keydown", keydownHook);
-    }
 
-    function detachCloseEvents() {
-        $("html").off("click", closeDropdown);
-        $("#project-files-container").off("scroll", closeDropdown);
-        $("#titlebar .nav").off("click", closeDropdown);
-
-        if (currentEditor) {
-            currentEditor._codeMirror.off("focus", closeDropdown);
-        }
-
-        // $(window).off("keydown", keydownHook);
-
-        $dropdown = null;
-        MainViewManager.focusActivePane();
-    }
-
-    function toggleDropdown(e) {
-        e.stopPropagation();
-
-        // If the dropdown is already visible, close it
-        if ($dropdown) {
-            closeDropdown();
-            return;
-        }
-
-        Menus.closeAll();
-
-        Git.getBranches().catch(function (err) {
-            ErrorHandler.showError(err, "Getting branch list failed");
-        }).then(function (branches) {
-            branches = branches.reduce(function (arr, branch) {
-                if (!branch.currentBranch && !branch.remote) {
-                    arr.push(branch.name);
-                }
-                return arr;
-            }, []);
-
-            $dropdown = $(renderList(branches));
-
-            var toggleOffset = $gitBranchName.offset();
-            $dropdown
-                .css({
-                    left: toggleOffset.left,
-                    top: toggleOffset.top + $gitBranchName.outerHeight()
-                })
-                .appendTo($("body"));
-
-            // fix so it doesn't overflow the screen
-            var maxHeight = $dropdown.parent().height(),
-                height = $dropdown.height(),
-                topOffset = $dropdown.position().top;
-            if (height + topOffset >= maxHeight - 10) {
-                $dropdown.css("bottom", "10px");
-            }
-
-            PopUpManager.addPopUp($dropdown, detachCloseEvents, true);
-            attachCloseEvents();
-            handleEvents();
-        });
-    }
 
     function checkBranch() {
         FileSystem.getFileForPath(_getHeadFilePath()).read(function (err, contents) {

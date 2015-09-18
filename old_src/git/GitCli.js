@@ -90,56 +90,6 @@ define(function (require, exports) {
         return git(["branch", "--no-color", "-D", branchName]);
     }
 
-    function getBranches(moreArgs) {
-        var args = ["branch", "--no-color"];
-        if (moreArgs) { args = args.concat(moreArgs); }
-
-        return git(args).then(function (stdout) {
-            if (!stdout) { return []; }
-            return stdout.split("\n").reduce(function (arr, l) {
-                var name = l.trim(),
-                    currentBranch = false,
-                    remote = null,
-                    sortPrefix = "";
-
-                if (name.indexOf("->") !== -1) {
-                    return arr;
-                }
-
-                if (name.indexOf("* ") === 0) {
-                    name = name.substring(2);
-                    currentBranch = true;
-                }
-
-                if (name.indexOf("remotes/") === 0) {
-                    name = name.substring("remotes/".length);
-                    remote = name.substring(0, name.indexOf("/"));
-                }
-
-                var sortName = name.toLowerCase();
-                if (remote) {
-                    sortName = sortName.substring(remote.length + 1);
-                }
-                if (sortName.indexOf("#") !== -1) {
-                    sortPrefix = sortName.slice(0, sortName.indexOf("#"));
-                }
-
-                arr.push({
-                    name: name,
-                    sortPrefix: sortPrefix,
-                    sortName: sortName,
-                    currentBranch: currentBranch,
-                    remote: remote
-                });
-                return arr;
-            }, []);
-        });
-    }
-
-    function getAllBranches() {
-        return getBranches(["-a"]);
-    }
-
     /*
         git fetch
         --all Fetch all remotes.
