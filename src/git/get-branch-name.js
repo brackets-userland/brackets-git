@@ -22,7 +22,7 @@ export default async function getBranchName() {
   stdout = stdout.trim();
 
   let hashMatch = stdout.match(/^[0-9a-f]+/i);
-  let hash = hashMatch ? hashMatch[0] : null;
+  let hash = hashMatch ? hashMatch[0].substring(0, 7) : null;
 
   let infoMatch = stdout.match(/\((.*)\)$/i);
   let infos = infoMatch ? infoMatch[1].split(',').map(i => i.trim()) : [];
