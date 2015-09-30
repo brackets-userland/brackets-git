@@ -100,10 +100,6 @@ define(function (require, exports) {
             errorBody,
             errorStack;
 
-        var showReportButton = true;
-        if (err instanceof ExpectedError) {
-            showReportButton = false;
-        }
         var showDetailsButton = false;
         if (err.detailsUrl) {
             showDetailsButton = true;
@@ -127,7 +123,6 @@ define(function (require, exports) {
         var compiledTemplate = Mustache.render(errorDialogTemplate, {
             title: title,
             body: errorBody,
-            showReportButton: showReportButton,
             showDetailsButton: showDetailsButton,
             Strings: Strings
         });

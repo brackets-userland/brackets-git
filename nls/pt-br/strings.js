@@ -355,8 +355,6 @@ define({
     SHOWN_DATE_FORMAT:                     "Formato de data dos commits no histórico",
     // SHOW_BASH_TERMINAL_BUTTON:          "Show Bash/Terminal button in the panel",
     // TODO: localize SHOW_BASH_TERMINAL_BUTTON to pt-br
-    // SHOW_REPORT_BUG_BUTTON:             "Show Report Bug button in the panel",
-    SHOW_REPORT_BUG_BUTTON:                "Mostrar botão Relatar Erro no painel",
     // SHOW_UNTRACKED:                     "Show untracked",
     // TODO: localize SHOW_UNTRACKED to pt-br
     // STRIP_WHITESPACE_FROM_COMMITS:      "Strip trailing whitespace from commits",
@@ -367,8 +365,6 @@ define({
     // TODO: localize TITLE_CHECKOUT to pt-br
     // TITLE_RESET:                        "Do you really wish to reset?",
     // TODO: localize TITLE_RESET to pt-br
-    // TOOLTIP_BUG:                        "Report bug",
-    TOOLTIP_BUG:                           "Relatar erro",
     // TOOLTIP_CHECKOUT_COMMIT:            "Checkout a specific commit",
     // TODO: localize TOOLTIP_CHECKOUT_COMMIT to pt-br
     // TOOLTIP_CLONE:                      "Clone existing repository",

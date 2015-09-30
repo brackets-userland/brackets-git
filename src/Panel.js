@@ -1076,7 +1076,6 @@ define(function (require, exports) {
         var panelHtml = Mustache.render(gitPanelTemplate, {
             enableAdvancedFeatures: Preferences.get("enableAdvancedFeatures"),
             showBashButton: Preferences.get("showBashButton"),
-            showReportBugButton: Preferences.get("showReportBugButton"),
             S: Strings
         });
         var $panelHtml = $(panelHtml);

@@ -20,7 +20,6 @@ define(function (require, exports, module) {
         "showBashButton": {                 "type": "boolean",           "value": true              },
         "dateMode": {                       "type": "number",            "value": 1                 },
         "dateFormat": {                     "type": "string",            "value": null              },
-        "showReportBugButton": {            "type": "boolean",           "value": true              },
         "enableAdvancedFeatures": {         "type": "boolean",           "value": false             },
         "useVerboseDiff": {                 "type": "boolean",           "value": false             },
         "useDifftool": {                    "type": "boolean",           "value": false             },
