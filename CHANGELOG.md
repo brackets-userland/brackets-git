@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.15.0 (02/12/2015)
+* Added authentication to Clone dialog by [Matt Bell](https://github.com/mattbell87)
+
 ## 0.14.32 (22/08/2015)
 * Updated terminal launch shortcut to support Git for Windows 2.5, credits to [Jan Pilzer](https://github.com/Hirse)
 
