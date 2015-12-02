@@ -7,12 +7,12 @@ define(function (require) {
 
     // Local modules
     var Promise         = require("bluebird"),
-        Strings         = require("strings"),
         ErrorHandler    = require("src/ErrorHandler"),
         Events          = require("src/Events"),
         EventEmitter    = require("src/EventEmitter"),
         ExpectedError   = require("src/ExpectedError"),
         ProgressDialog  = require("src/dialogs/Progress"),
+        CloneDialog     = require("src/dialogs/Clone"),
         Git             = require("src/git/Git"),
         Preferences     = require("src/Preferences"),
         Utils           = require("src/Utils");
@@ -92,12 +92,36 @@ define(function (require) {
         $cloneButton.prop("disabled", true);
         isProjectRootEmpty().then(function (isEmpty) {
             if (isEmpty) {
-                return Utils.askQuestion(Strings.CLONE_REPOSITORY, Strings.ENTER_REMOTE_GIT_URL).then(function (remoteGitUrl) {
-                    return ProgressDialog.show(Git.clone(remoteGitUrl, "."))
-                        .then(function () {
-                            EventEmitter.emit(Events.REFRESH_ALL);
+                CloneDialog.show().then(function (cloneConfig) {
+                    var q = Promise.resolve();
+                    // put username and password into remote url
+                    var remoteUrl = cloneConfig.remoteUrl;
+                    if (cloneConfig.remoteUrlNew) {
+                        remoteUrl = cloneConfig.remoteUrlNew;
+                    }
+
+                    // do the clone
+                    q = q.then(function () {
+                        return ProgressDialog.show(Git.clone(remoteUrl, "."));
+                    }).catch(function (err) {
+                        ErrorHandler.showError(err, "Cloning remote repository failed!");
+                    });
+
+                    // restore original url if desired
+                    if (cloneConfig.remoteUrlRestore) {
+                        q = q.then(function () {
+                            return Git.setRemoteUrl(cloneConfig.remote, cloneConfig.remoteUrlRestore);
                         });
+                    }
+
+                    return q.finally(function () {
+                        EventEmitter.emit(Events.REFRESH_ALL);
+                    });
+                }).catch(function (err) {
+                    // when dialog is cancelled, there's no error
+                    if (err) { ErrorHandler.showError(err, "Cloning remote repository failed!"); }
                 });
+
             } else {
                 var err = new ExpectedError("Project root is not empty, be sure you have deleted hidden files");
                 ErrorHandler.showError(err, "Cloning remote repository failed!");
