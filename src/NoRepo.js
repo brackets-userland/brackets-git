@@ -101,9 +101,9 @@ define(function (require) {
                     }
 
                     // do the clone
-                    q = q.then(function() {
+                    q = q.then(function () {
                         return ProgressDialog.show(Git.clone(remoteUrl, "."));
-                    }).catch(function(err) {
+                    }).catch(function (err) {
                         ErrorHandler.showError(err, "Cloning remote repository failed!");
                     });
 

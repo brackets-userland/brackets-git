@@ -19,8 +19,8 @@ define(function (require, exports) {
 
     // Implementation
     function _attachEvents($dialog) {
-        //Detect changes to URL, disable auth if not http
-        $cloneInput.on("keyup change", function() {
+        // Detect changes to URL, disable auth if not http
+        $cloneInput.on("keyup change", function () {
             var $authInputs = $dialog.find("input[name='username'],input[name='password'],input[name='saveToUrl']");
             if ($(this).val().length > 0) {
                 if (/^https?:/.test($(this).val())) {
