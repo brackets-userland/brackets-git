@@ -848,6 +848,7 @@ define(function (require, exports) {
     function getFilesFromCommit(hash, isInitial) {
         var args = ["diff", "--no-ext-diff", "--name-only"];
         args = args.concat((isInitial ? EMPTY_TREE : hash + "^") + ".." + hash);
+        args = args.concat("--");
         return git(args).then(function (stdout) {
             return !stdout ? [] : stdout.split("\n");
         });
