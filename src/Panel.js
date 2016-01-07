@@ -805,7 +805,7 @@ define(function (require, exports) {
         if (remotes) {
             defaultRemote = remotes[Preferences.get("currentGitRoot")] || defaultRemote;
         }
-        var proc = Git.fetchRemote(defaultRemote).then(function(){
+        var proc = Git.fetchRemote(defaultRemote).then(function () {
             Git.getCommitCounts().then(function (commits) {
                 clearCounts();
                 if (commits.behind > 0) {
@@ -820,7 +820,7 @@ define(function (require, exports) {
             });
         }).catch(function (err) {
             clearCounts();
-            //This can error when trying to access a private repo without a login
+            // This can error when trying to access a private repo without a login
             console.error(err);
         });
         return proc;
