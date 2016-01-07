@@ -882,9 +882,17 @@ define(function (require, exports) {
         });
     }
 
-    function getCommitsAhead() {
-        return git(["rev-list", "HEAD", "--not", "--remotes"]).then(function (stdout) {
-            return !stdout ? [] : stdout.split("\n");
+    function getCommitCounts() {
+        return git(["rev-list", "--left-right", "--count", "@{u}...@{0}"]).then(function (stdout) {
+            var reRevs = /(\d+)\s+(\d+)/;
+            var matches = reRevs.exec(stdout);
+            if (!matches) {
+                return false;
+            }
+            return {
+                behind: matches[1],
+                ahead: matches[2]
+            };
         });
     }
 
@@ -1067,7 +1075,7 @@ define(function (require, exports) {
     exports.rebaseRemote              = rebaseRemote;
     exports.resetRemote               = resetRemote;
     exports.getVersion                = getVersion;
-    exports.getCommitsAhead           = getCommitsAhead;
+    exports.getCommitCounts           = getCommitCounts;
     exports.getLastCommitMessage      = getLastCommitMessage;
     exports.mergeBranch               = mergeBranch;
     exports.getDiffOfAllIndexFiles    = getDiffOfAllIndexFiles;

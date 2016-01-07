@@ -146,8 +146,8 @@ define(function (require, exports) {
                 .attr("title", !bool ? Strings.AMEND_COMMIT_FORBIDDEN : null);
         };
         toggleAmendCheckbox(false);
-        Git.getCommitsAhead().then(function (commits) {
-            toggleAmendCheckbox(commits.length > 0);
+        Git.getCommitCounts().then(function (commits) {
+            toggleAmendCheckbox(commits.ahead > 0);
         });
 
         function getCommitMessageElement() {
@@ -791,6 +791,38 @@ define(function (require, exports) {
         $tableContainer.find(".git-edited-list").toggle(visibleBefore);
     }
 
+    function refreshCommitCounts() {
+        // Push and Pull buttons
+        var $pullBtn = $gitPanel.find(".git-pull");
+        var $pushBtn = $gitPanel.find(".git-push");
+        var clearCounts = function () {
+            $pullBtn.children("span").remove();
+            $pushBtn.children("span").remove();
+        };
+        clearCounts();
+        var remotes = Preferences.get("defaultRemotes");
+        var defaultRemote = remotes[Preferences.get("currentGitRoot")];
+        var proc = Git.fetchRemote(defaultRemote).then(function(){
+            Git.getCommitCounts().then(function (commits) {
+                clearCounts();
+                if (commits.behind > 0) {
+                    $pullBtn.append($("<span/>").text(" (" + commits.behind + ")"));
+                }
+                if (commits.ahead > 0) {
+                    $pushBtn.append($("<span/>").text(" (" + commits.ahead + ")"));
+                }
+            }).catch(function (err) {
+                clearCounts();
+                ErrorHandler.showError(err, "Error getting commit count");
+            });
+        }).catch(function (err) {
+            clearCounts();
+            //This can error when trying to access a private repo without a login
+            console.error(err);
+        });
+        return proc;
+    }
+
     function refresh() {
         // set the history panel to false and remove the class that show the button history active when refresh
         $gitPanel.find(".git-history-toggle").removeClass("active").attr("title", Strings.TOOLTIP_SHOW_HISTORY);
@@ -811,16 +843,7 @@ define(function (require, exports) {
             }
         });
 
-        //  Push button
-        var $pushBtn = $gitPanel.find(".git-push");
-        var p2 = Git.getCommitsAhead().then(function (commits) {
-            $pushBtn.children("span").remove();
-            if (commits.length > 0) {
-                $pushBtn.append($("<span/>").text(" (" + commits.length + ")"));
-            }
-        }).catch(function () {
-            $pushBtn.children("span").remove();
-        });
+        var p2 = refreshCommitCounts();
 
         // Clone button
         $gitPanel.find(".git-clone").prop("disabled", false);
