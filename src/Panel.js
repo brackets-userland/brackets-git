@@ -801,7 +801,10 @@ define(function (require, exports) {
         };
         clearCounts();
         var remotes = Preferences.get("defaultRemotes");
-        var defaultRemote = remotes[Preferences.get("currentGitRoot")];
+        var defaultRemote = "origin";
+        if (remotes) {
+            defaultRemote = remotes[Preferences.get("currentGitRoot")] || defaultRemote;
+        }
         var proc = Git.fetchRemote(defaultRemote).then(function(){
             Git.getCommitCounts().then(function (commits) {
                 clearCounts();
