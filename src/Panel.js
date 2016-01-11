@@ -792,7 +792,7 @@ define(function (require, exports) {
     }
 
     function refreshCommitCounts() {
-        // Push and Pull buttons
+        // Find Push and Pull buttons
         var $pullBtn = $gitPanel.find(".git-pull");
         var $pushBtn = $gitPanel.find(".git-push");
         var clearCounts = function () {
@@ -800,13 +800,12 @@ define(function (require, exports) {
             $pushBtn.children("span").remove();
         };
         clearCounts();
-        var remotes = Preferences.get("defaultRemotes");
-        var defaultRemote = "origin";
-        if (remotes) {
-            defaultRemote = remotes[Preferences.get("currentGitRoot")] || defaultRemote;
-        }
+        // Get the commit counts and append them to the buttons
         var proc = Git.getCommitCounts().then(function (commits) {
             clearCounts();
+            if (!commits) {
+                return;
+            }
             if (commits.behind > 0) {
                 $pullBtn.append($("<span/>").text(" (" + commits.behind + ")"));
             }
