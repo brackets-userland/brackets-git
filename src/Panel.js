@@ -805,23 +805,16 @@ define(function (require, exports) {
         if (remotes) {
             defaultRemote = remotes[Preferences.get("currentGitRoot")] || defaultRemote;
         }
-        var proc = Git.fetchRemote(defaultRemote).then(function () {
-            Git.getCommitCounts().then(function (commits) {
-                clearCounts();
-                if (commits.behind > 0) {
-                    $pullBtn.append($("<span/>").text(" (" + commits.behind + ")"));
-                }
-                if (commits.ahead > 0) {
-                    $pushBtn.append($("<span/>").text(" (" + commits.ahead + ")"));
-                }
-            }).catch(function (err) {
-                clearCounts();
-                ErrorHandler.showError(err, "Error getting commit count");
-            });
-        }).catch(function (err) {
+        var proc = Git.getCommitCounts().then(function (commits) {
             clearCounts();
-            // This can error when trying to access a private repo without a login
-            console.error(err);
+            if (commits.behind > 0) {
+                $pullBtn.append($("<span/>").text(" (" + commits.behind + ")"));
+            }
+            if (commits.ahead > 0) {
+                $pushBtn.append($("<span/>").text(" (" + commits.ahead + ")"));
+            }
+        }).catch(function () {
+            clearCounts();
         });
         return proc;
     }
