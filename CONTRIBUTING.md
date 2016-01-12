@@ -7,7 +7,7 @@ Always try to get as much relevant information from Brackets console (F12) as po
 
 When creating a new functionality which isn't noted on GitHub, please open an issue for it before working on the code as others may have hints and suggestions to consider before writing the code. Also when fixing an issue, add a comment to the issue on GitHub before working on it so it doesn't happen that two people are working on the same thing at the same time.
 
-Always check for syntax errors with `grunt jshint` or use some JSHint extension while editing the code.
+Always check for syntax errors with `grunt test` or use some JSHint extension while editing the code.
 Recommended are both [JSHint](https://github.com/cfjedimaster/brackets-jshint) and [InteractiveLinter](https://github.com/MiguelCastillo/Brackets-InteractiveLinter).
 
 ## Developing

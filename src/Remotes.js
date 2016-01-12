@@ -18,7 +18,8 @@ define(function (require) {
         PullDialog      = require("src/dialogs/Pull"),
         PushDialog      = require("src/dialogs/Push"),
         Strings         = require("strings"),
-        Utils           = require("src/Utils");
+        Utils           = require("src/Utils"),
+        Panel           = require("src/Panel");
 
     // Templates
     var gitRemotesPickerTemplate = require("text!templates/git-remotes-picker.html");
@@ -330,6 +331,7 @@ define(function (require) {
             remoteName  = $remote.data("remote-name"),
             type        = $remote.data("type");
         selectRemote(remoteName, type);
+        Panel.refresh();
     });
     EventEmitter.on(Events.HANDLE_REMOTE_CREATE, function () {
         handleRemoteCreation();
