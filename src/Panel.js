@@ -799,23 +799,28 @@ define(function (require, exports) {
             $pullBtn.children("span").remove();
             $pushBtn.children("span").remove();
         };
-        clearCounts();
-        // Get the commit counts and append them to the buttons
-        var proc = Git.getCommitCounts().then(function (commits) {
+
+        // Check if there's a remote, resolve if there's not
+        var remotes = Preferences.get("defaultRemotes") || {};
+        var defaultRemote = remotes[Preferences.get("currentGitRoot")];
+        if (!defaultRemote) {
             clearCounts();
-            if (!commits) {
-                return;
-            }
+            return Promise.resolve();
+        }
+
+        // Get the commit counts and append them to the buttons
+        return Git.getCommitCounts().then(function (commits) {
+            clearCounts();
             if (commits.behind > 0) {
                 $pullBtn.append($("<span/>").text(" (" + commits.behind + ")"));
             }
             if (commits.ahead > 0) {
                 $pushBtn.append($("<span/>").text(" (" + commits.ahead + ")"));
             }
-        }).catch(function () {
+        }).catch(function (err) {
             clearCounts();
+            console.log(err);
         });
-        return proc;
     }
 
     function refresh() {
