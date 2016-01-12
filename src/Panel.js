@@ -819,7 +819,7 @@ define(function (require, exports) {
             }
         }).catch(function (err) {
             clearCounts();
-            console.log(err);
+            ErrorHandler.logError(err);
         });
     }
 
