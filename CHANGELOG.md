@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.16.0 (12/01/2015)
+* Add counter for commits behind by [Matt Bell](https://github.com/mattbell87)
+
 ## 0.15.0 (02/12/2015)
 * Added authentication to Clone dialog by [Matt Bell](https://github.com/mattbell87)
 

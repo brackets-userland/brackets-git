@@ -146,9 +146,14 @@ define(function (require, exports) {
                 .attr("title", !bool ? Strings.AMEND_COMMIT_FORBIDDEN : null);
         };
         toggleAmendCheckbox(false);
-        Git.getCommitCounts().then(function (commits) {
-            toggleAmendCheckbox(commits.ahead > 0);
-        });
+
+        Git.getCommitCounts()
+            .then(function (commits) {
+                toggleAmendCheckbox(commits.ahead > 0);
+            })
+            .catch(function (err) {
+                ErrorHandler.logError(err);
+            });
 
         function getCommitMessageElement() {
             var r = $dialog.find("[name='commit-message']:visible");

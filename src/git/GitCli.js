@@ -887,7 +887,7 @@ define(function (require, exports) {
             var reRevs = /(\d+)\s+(\d+)/;
             var matches = reRevs.exec(stdout);
             if (!matches) {
-                throw ErrorHandler.logError(new Error("Couldn't process getCommitCounts; rev-list could not be parsed."));
+                throw new Error("Couldn't process getCommitCounts; rev-list could not be parsed.");
             }
             return {
                 behind: matches[1],
