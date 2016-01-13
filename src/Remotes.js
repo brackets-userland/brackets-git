@@ -323,24 +323,19 @@ define(function (require) {
     function handleFetch(silent) {
         var q = Promise.resolve();
 
-        // Define the fetch action promise to use
-        var action = Git.fetchAllRemotes;
-
         // Tell the rest of the plugin that the fetch has started
         EventEmitter.emit(Events.FETCH_STARTED);
 
         if (!silent) {
             // If it's not a silent fetch show a progress window
-            q = q.then(function () {
-                return ProgressDialog.show(action());
-            })
+            q = q.then(ProgressDialog.show(Git.fetchAllRemotes()))
             .catch(function (err) {
                 ErrorHandler.showError(err);
             })
             .then(ProgressDialog.waitForClose);
         } else {
             // Else fetch in the background
-            q = action()
+            q = Git.fetchAllRemotes()
             .catch(function (err) {
                 ErrorHandler.logError(err);
             });
