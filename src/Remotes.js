@@ -321,24 +321,29 @@ define(function (require) {
     }
 
     function handleFetch(silent) {
-        var q = Promise.resolve();
 
         // Tell the rest of the plugin that the fetch has started
         EventEmitter.emit(Events.FETCH_STARTED);
 
+        var q;
+
         if (!silent) {
+
             // If it's not a silent fetch show a progress window
-            q = q.then(ProgressDialog.show(Git.fetchAllRemotes()))
+            q = ProgressDialog.show(Git.fetchAllRemotes())
             .catch(function (err) {
                 ErrorHandler.showError(err);
             })
             .then(ProgressDialog.waitForClose);
+
         } else {
+
             // Else fetch in the background
             q = Git.fetchAllRemotes()
             .catch(function (err) {
                 ErrorHandler.logError(err);
             });
+
         }
 
         // Tell the rest of the plugin that the fetch has completed
