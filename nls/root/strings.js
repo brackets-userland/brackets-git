@@ -203,6 +203,7 @@ define({
     TOOLTIP_CLONE:                      "Clone existing repository",
     TOOLTIP_CLOSE_NOT_MODIFIED:         "Close files not modified in Git [Shift-click to reopen modified files]",
     TOOLTIP_COMMIT:                     "Commit the selected files",
+    TOOLTIP_FETCH:                      "Fetch and sync all",
     TOOLTIP_FIND_CONFLICTS:             "Starts a search for Git merge/rebase conflicts in the project",
     TOOLTIP_GITPUSH:                    "Git-FTP Push",
     TOOLTIP_HIDE_FILE_HISTORY:          "Hide file history",
