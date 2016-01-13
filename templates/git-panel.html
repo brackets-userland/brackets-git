@@ -81,11 +81,12 @@
         <!-- on right -->
         <div class="git-right-icons">
             <div class="btn-group git-available dropup">
+                <ul class="dropdown-menu git-remotes-dropdown"></ul>
                 <button type="button" class="git-remotes btn small dropdown-toggle" data-toggle="dropdown" title="{{S.TOOLTIP_PICK_REMOTE}}">
                     <span class="caret"></span>
                     <span class="git-selected-remote">&mdash;</span>
                 </button>
-                <ul class="dropdown-menu git-remotes-dropdown"></ul>
+                <button title="{{S.TOOLTIP_FETCH}}" class="btn small git-fetch"><i class="octicon octicon-cloud-download"></i></button>
                 <button title="{{S.TOOLTIP_PULL}}" class="btn small git-pull"><i class="octicon octicon-repo-pull"></i></button>
                 <button title="{{S.TOOLTIP_PUSH}}" class="btn small git-push"><i class="octicon octicon-repo-push"></i></button>
             </div>

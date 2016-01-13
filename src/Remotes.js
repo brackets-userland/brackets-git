@@ -18,8 +18,7 @@ define(function (require) {
         PullDialog      = require("src/dialogs/Pull"),
         PushDialog      = require("src/dialogs/Push"),
         Strings         = require("strings"),
-        Utils           = require("src/Utils"),
-        Panel           = require("src/Panel");
+        Utils           = require("src/Utils");
 
     // Templates
     var gitRemotesPickerTemplate = require("text!templates/git-remotes-picker.html");
@@ -98,7 +97,7 @@ define(function (require) {
 
             // Disable Git-push and Git-pull if there are not remotes defined
             $gitPanel
-                .find(".git-pull, .git-push")
+                .find(".git-pull, .git-push, .git-fetch")
                 .prop("disabled", remotes.length === 0);
 
             // Add options to change remote
@@ -321,6 +320,38 @@ define(function (require) {
             });
     }
 
+    function handleFetch(silent) {
+        var q = Promise.resolve();
+
+        // Define the fetch action promise to use
+        var action = Git.fetchAllRemotes;
+
+        // Tell the rest of the plugin that the fetch has started
+        EventEmitter.emit(Events.FETCH_STARTED);
+
+        if (!silent) {
+            // If it's not a silent fetch show a progress window
+            q = q.then(function () {
+                return ProgressDialog.show(action());
+            })
+            .catch(function (err) {
+                ErrorHandler.showError(err);
+            })
+            .then(ProgressDialog.waitForClose);
+        } else {
+            // Else fetch in the background
+            q = action()
+            .catch(function (err) {
+                ErrorHandler.logError(err);
+            });
+        }
+
+        // Tell the rest of the plugin that the fetch has completed
+        return q.finally(function () {
+            EventEmitter.emit(Events.FETCH_COMPLETE);
+        });
+    }
+
     // Event subscriptions
     EventEmitter.on(Events.GIT_ENABLED, function () {
         initVariables();
@@ -331,7 +362,7 @@ define(function (require) {
             remoteName  = $remote.data("remote-name"),
             type        = $remote.data("type");
         selectRemote(remoteName, type);
-        Panel.refresh();
+        EventEmitter.emit(Events.REFRESH_ALL);
     });
     EventEmitter.on(Events.HANDLE_REMOTE_CREATE, function () {
         handleRemoteCreation();
@@ -347,6 +378,9 @@ define(function (require) {
     EventEmitter.on(Events.HANDLE_PUSH, function () {
         var remoteName = $selectedRemote.data("remote");
         pushToRemote(remoteName);
+    });
+    EventEmitter.on(Events.HANDLE_FETCH, function () {
+        handleFetch();
     });
 
 });

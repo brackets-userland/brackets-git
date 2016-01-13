@@ -35,6 +35,7 @@ define(function (require, exports) {
     exports.HANDLE_GIT_INIT = "handle.git.init";
     exports.HANDLE_GIT_CLONE = "handle.git.clone";
     exports.HANDLE_GIT_COMMIT = "handle.git.commit";
+    exports.HANDLE_FETCH = "handle.fetch";
     exports.HANDLE_PUSH = "handle.push";
     exports.HANDLE_PULL = "handle.pull";
     exports.HANDLE_REMOTE_PICK = "handle.remote.pick";
@@ -50,6 +51,8 @@ define(function (require, exports) {
     exports.GIT_REMOTE_AVAILABLE = "git.remote.available";
     exports.GIT_REMOTE_NOT_AVAILABLE = "git.remote.not.available";
     exports.REMOTES_REFRESH_PICKER = "remotes.refresh.picker";
+    exports.FETCH_STARTED = "remotes.fetch.started";
+    exports.FETCH_COMPLETE = "remotes.fetch.complete";
 
     // utils/Terminal.js
     exports.TERMINAL_OPEN = "terminal.open";

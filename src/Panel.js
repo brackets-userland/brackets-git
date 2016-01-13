@@ -1135,6 +1135,7 @@ define(function (require, exports) {
             .on("click", ".authors-file", handleAuthorsFile)
             .on("click", ".git-file-history", EventEmitter.emitFactory(Events.HISTORY_SHOW, "FILE"))
             .on("click", ".git-history-toggle", EventEmitter.emitFactory(Events.HISTORY_SHOW, "GLOBAL"))
+            .on("click", ".git-fetch", EventEmitter.emitFactory(Events.HANDLE_FETCH))
             .on("click", ".git-push", function () {
                 var typeOfRemote = $(this).attr("x-selected-remote-type");
                 if (typeOfRemote === "git") {
@@ -1268,13 +1269,11 @@ define(function (require, exports) {
     });
 
     EventEmitter.on(Events.GIT_REMOTE_AVAILABLE, function () {
-        $gitPanel.find(".git-pull").prop("disabled", false);
-        $gitPanel.find(".git-push").prop("disabled", false);
+        $gitPanel.find(".git-pull, .git-push, .git-fetch").prop("disabled", false);
     });
 
     EventEmitter.on(Events.GIT_REMOTE_NOT_AVAILABLE, function () {
-        $gitPanel.find(".git-pull").prop("disabled", true);
-        $gitPanel.find(".git-push").prop("disabled", true);
+        $gitPanel.find(".git-pull, .git-push, .git-fetch").prop("disabled", true);
     });
 
     EventEmitter.on(Events.GIT_ENABLED, function () {
@@ -1316,6 +1315,19 @@ define(function (require, exports) {
         $gitPanel.find(".git-rebase").toggle(rebaseEnabled);
         $gitPanel.find(".git-merge").toggle(mergeEnabled);
         $gitPanel.find("button.git-commit").toggle(!rebaseEnabled && !mergeEnabled);
+    });
+
+    EventEmitter.on(Events.FETCH_STARTED, function () {
+        $gitPanel.find(".git-fetch")
+            .addClass("btn-loading")
+            .prop("disabled", true);
+    });
+
+    EventEmitter.on(Events.FETCH_COMPLETE, function () {
+        $gitPanel.find(".git-fetch")
+            .removeClass("btn-loading")
+            .prop("disabled", false);
+        refreshCommitCounts();
     });
 
     EventEmitter.on(Events.HANDLE_GIT_COMMIT, function () {
