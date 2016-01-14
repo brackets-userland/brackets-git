@@ -883,16 +883,20 @@ define(function (require, exports) {
     }
 
     function getCommitCounts() {
-        return git(["rev-list", "--left-right", "--count", "@{u}...@{0}"]).then(function (stdout) {
-            var reRevs = /(\d+)\s+(\d+)/;
-            var matches = reRevs.exec(stdout);
-            if (!matches) {
-                throw new Error("Couldn't process getCommitCounts; rev-list could not be parsed.");
+        return git(["rev-list", "--left-right", "--count", "@{u}...@{0}"])
+        .catch(function (err) {
+            ErrorHandler.logError(err);
+            return null;
+        })
+        .then(function (stdout) {
+            var matches = /(\d+)\s+(\d+)/.exec(stdout);
+            return matches ? {
+                behind: parseInt(matches[1], 10),
+                ahead: parseInt(matches[2], 10)
+            } : {
+                behind: -1,
+                ahead: -1
             }
-            return {
-                behind: matches[1],
-                ahead: matches[2]
-            };
         });
     }
 

@@ -149,7 +149,9 @@ define(function (require, exports) {
 
         Git.getCommitCounts()
             .then(function (commits) {
-                toggleAmendCheckbox(commits.ahead > 0);
+                var hasRemote = $gitPanel.find(".git-selected-remote").data("remote") != null;
+                var hasCommitsAhead = commits.ahead > 0;
+                toggleAmendCheckbox(!hasRemote || hasRemote && hasCommitsAhead);
             })
             .catch(function (err) {
                 ErrorHandler.logError(err);
