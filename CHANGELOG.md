@@ -1,11 +1,11 @@
-# Changelog
+﻿# Changelog
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.16.1 (14/01/2015)
+## 0.16.1 (14/01/2016)
 * Fixed a bug, where amend commit was not available without remote repository being set.
 
-## 0.16.0 (13/01/2015)
+## 0.16.0 (13/01/2016)
 * Add counter for commits behind by [Matt Bell](https://github.com/mattbell87)
 * Add sync button to fetch remotes by [Matt Bell](https://github.com/mattbell87)
 
