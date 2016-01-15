@@ -362,7 +362,7 @@ define(function (require) {
             remoteName  = $remote.data("remote-name"),
             type        = $remote.data("type");
         selectRemote(remoteName, type);
-        EventEmitter.emit(Events.REFRESH_ALL);
+        EventEmitter.emit(Events.REFRESH_COUNTERS);
     });
     EventEmitter.on(Events.HANDLE_REMOTE_CREATE, function () {
         handleRemoteCreation();

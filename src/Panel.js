@@ -1337,6 +1337,10 @@ define(function (require, exports) {
         refreshCommitCounts();
     });
 
+    EventEmitter.on(Events.REFRESH_COUNTERS, function () {
+        refreshCommitCounts();
+    });
+
     EventEmitter.on(Events.HANDLE_GIT_COMMIT, function () {
         handleGitCommit(lastCommitMessage, false, COMMIT_MODE.DEFAULT);
     });
