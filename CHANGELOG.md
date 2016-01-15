@@ -1,8 +1,8 @@
-﻿# Changelog
+# Changelog
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.16.1 (14/01/2016)
+## 0.16.1 (15/01/2016)
 * Fixed a bug, where amend commit was not available without remote repository being set.
 
 ## 0.16.0 (13/01/2016)
