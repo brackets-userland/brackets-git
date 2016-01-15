@@ -2,7 +2,7 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
-## 0.16.2 (?)
+## 0.16.2 (16/01/2016)
 * Fixed a bug when using Git-FTP by [Matt Bell](https://github.com/mattbell87)
 
 ## 0.16.1 (15/01/2016)
