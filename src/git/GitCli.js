@@ -888,8 +888,8 @@ define(function (require, exports) {
             ErrorHandler.logError(err);
             return git(["rev-list", "HEAD", "--not", "--remotes"])
             .then(function (stdout) {
-               var ahead = stdout ? stdout.split("\n").length : 0;
-               return "-1 " + ahead;
+                var ahead = stdout ? stdout.split("\n").length : 0;
+                return "-1 " + ahead;
             })
             .catch(function (err) {
                 ErrorHandler.logError(err);
