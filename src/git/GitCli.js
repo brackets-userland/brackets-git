@@ -883,20 +883,25 @@ define(function (require, exports) {
     }
 
     function getCommitCounts() {
-        return git(["rev-list", "--left-right", "--count", "@{u}...@{0}"])
-        .catch(function (err) {
-            ErrorHandler.logError(err);
-            return null;
-        })
-        .then(function (stdout) {
-            var matches = /(\d+)\s+(\d+)/.exec(stdout);
-            return matches ? {
-                behind: parseInt(matches[1], 10),
-                ahead: parseInt(matches[2], 10)
-            } : {
-                behind: -1,
-                ahead: -1
-            }
+        var remotes = Preferences.get("defaultRemotes") || {};
+        var remote = remotes[Preferences.get("currentGitRoot")];
+        return getCurrentBranchName()
+        .then(function (branch) {
+            return git(["rev-list", "--left-right", "--count", remote + "/" + branch + "...@{0}"])
+            .catch(function (err) {
+                ErrorHandler.logError(err);
+                return null;
+            })
+            .then(function (stdout) {
+                var matches = /(\d+)\s+(\d+)/.exec(stdout);
+                return matches ? {
+                    behind: parseInt(matches[1], 10),
+                    ahead: parseInt(matches[2], 10)
+                } : {
+                    behind: -1,
+                    ahead: -1
+                };
+            });
         });
     }
 
