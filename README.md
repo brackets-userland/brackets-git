@@ -49,7 +49,7 @@ If you can't find the feature you were looking for, feel free to [open an issue]
 **Pull/Push to password protected repositories:**
 Push/Pull from and to password protected repositories is partially supported, currently it works only with `http` / `https` repositories.
 
-[Windows Credential Store for Git](http://gitcredentialstore.codeplex.com/) is recommended to better manage password protected repositories, **Brackets-Git** will eventually provide better support for them.
+The [Git Credential Manager for Windows (GCM)](https://github.com/Microsoft/Git-Credential-Manager-for-Windows) is recommended to manage password protected repositories, **Brackets-Git** will eventually provide better support for them.
 You'll need to push manually the first time to setup your username/password into the credentials helper.
 
 **Working with SSH repositories:**
