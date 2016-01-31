@@ -887,6 +887,12 @@ define(function (require, exports) {
         var remote = remotes[Preferences.get("currentGitRoot")];
         return getCurrentBranchName()
         .then(function (branch) {
+            if (!branch || !remote) {
+                return {
+                    behind: -1,
+                    ahead: -1
+                }
+            }
             return git(["rev-list", "--left-right", "--count", remote + "/" + branch + "...@{0}"])
             .catch(function (err) {
                 ErrorHandler.logError(err);
