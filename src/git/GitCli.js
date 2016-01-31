@@ -891,7 +891,7 @@ define(function (require, exports) {
                 return {
                     behind: -1,
                     ahead: -1
-                }
+                };
             }
             return git(["rev-list", "--left-right", "--count", remote + "/" + branch + "...@{0}"])
             .catch(function (err) {
