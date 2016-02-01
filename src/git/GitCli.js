@@ -882,23 +882,30 @@ define(function (require, exports) {
         });
     }
 
+    function getCommitCountsFallback() {
+        return git(["rev-list", "HEAD", "--not", "--remotes"])
+        .then(function (stdout) {
+            var ahead = stdout ? stdout.split("\n").length : 0;
+            return "-1 " + ahead;
+        })
+        .catch(function (err) {
+            ErrorHandler.logError(err);
+            return "-1 -1";
+        });
+    }
+
     function getCommitCounts() {
         var remotes = Preferences.get("defaultRemotes") || {};
         var remote = remotes[Preferences.get("currentGitRoot")];
         return getCurrentBranchName()
         .then(function (branch) {
+            if (!branch || !remote) {
+                return getCommitCountsFallback();
+            }
             return git(["rev-list", "--left-right", "--count", remote + "/" + branch + "...@{0}"])
             .catch(function (err) {
                 ErrorHandler.logError(err);
-                return git(["rev-list", "HEAD", "--not", "--remotes"])
-                .then(function (stdout) {
-                    var ahead = stdout ? stdout.split("\n").length : 0;
-                    return "-1 " + ahead;
-                })
-                .catch(function (err) {
-                    ErrorHandler.logError(err);
-                    return "-1 -1";
-                });
+                return getCommitCountsFallback();
             })
             .then(function (stdout) {
                 var matches = /(-?\d+)\s+(-?\d+)/.exec(stdout);
