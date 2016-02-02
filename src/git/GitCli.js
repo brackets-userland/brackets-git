@@ -902,7 +902,7 @@ define(function (require, exports) {
             if (!branch || !remote) {
                 return getCommitCountsFallback();
             }
-            return git(["rev-list", "--left-right", "--count", remote + "/" + branch + "...@{0}"])
+            return git(["rev-list", "--left-right", "--count", remote + "/" + branch + "...@{0}", "--"])
             .catch(function (err) {
                 ErrorHandler.logError(err);
                 return getCommitCountsFallback();
