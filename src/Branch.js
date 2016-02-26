@@ -461,7 +461,6 @@ define(function (require, exports) {
                         .attr("title", branchName.length > MAX_LEN ? branchName : null)
                         .off("click")
                         .on("click", toggleDropdown)
-                        .append($("<span class='dropdown-arrow' />"));
                     Panel.enable();
 
                 }).catch(function (err) {
