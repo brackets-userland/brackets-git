@@ -341,7 +341,8 @@ define(function (require, exports) {
             $dropdown
                 .css({
                     left: toggleOffset.left,
-                    top: toggleOffset.top + $gitBranchName.outerHeight()
+                    top: toggleOffset.top - $gitBranchName.outerHeight() - (branches.length * 32) - 36,
+                    height: (branches.length * 32) + 36
                 })
                 .appendTo($("body"));
 
@@ -459,8 +460,7 @@ define(function (require, exports) {
                         .text(branchName.length > MAX_LEN ? branchName.substring(0, MAX_LEN) + "\u2026" : branchName)
                         .attr("title", branchName.length > MAX_LEN ? branchName : null)
                         .off("click")
-                        .on("click", toggleDropdown)
-                        .append($("<span class='dropdown-arrow' />"));
+                        .on("click", toggleDropdown);
                     Panel.enable();
 
                 }).catch(function (err) {
@@ -485,15 +485,15 @@ define(function (require, exports) {
     function init() {
         // Add branch name to project tree
         $gitBranchName = $("<span id='git-branch'></span>");
-        $("<div id='git-branch-dropdown-toggle' class='btn-alt-quiet'></div>")
-            .append("[ ")
+        $("#status-indicators div.spinner").before($("<div id='git-branch-dropdown-toggle' class='btn btn-dropdown btn-status-bar'></div>")
+            .append("<i class='octicon octicon-git-branch'></i> [ ")
             .append($gitBranchName)
             .append(" ]")
             .on("click", function () {
                 $gitBranchName.click();
                 return false;
-            })
-            .appendTo("#project-files-header");
+            }));
+
         refresh();
     }
 
