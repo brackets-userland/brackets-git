@@ -460,7 +460,7 @@ define(function (require, exports) {
                         .text(branchName.length > MAX_LEN ? branchName.substring(0, MAX_LEN) + "\u2026" : branchName)
                         .attr("title", branchName.length > MAX_LEN ? branchName : null)
                         .off("click")
-                        .on("click", toggleDropdown)
+                        .on("click", toggleDropdown);
                     Panel.enable();
 
                 }).catch(function (err) {
