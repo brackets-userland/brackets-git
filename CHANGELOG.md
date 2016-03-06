@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.16.3 (07/03/2016)
+* Moved the branch indicator to its own line to prevent overflowing out of the side panel by [José Porto](https://github.com/joseporto)
+
 ## 0.16.2 (16/01/2016)
 * Fixed a bug when using Git-FTP by [Matt Bell](https://github.com/mattbell87)
 
