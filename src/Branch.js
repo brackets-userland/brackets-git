@@ -486,14 +486,13 @@ define(function (require, exports) {
         // Add branch name to project tree
         $gitBranchName = $("<span id='git-branch'></span>");
         $("<div id='git-branch-dropdown-toggle' class='btn-alt-quiet'></div>")
-            .append("[ ")
+            .append("<i class='octicon octicon-git-branch'></i> ")
             .append($gitBranchName)
-            .append(" ]")
             .on("click", function () {
                 $gitBranchName.click();
                 return false;
             })
-            .appendTo("#project-files-header");
+            .appendTo($("<div></div>").appendTo("#project-files-header"));
         refresh();
     }
 
