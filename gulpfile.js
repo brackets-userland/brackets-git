@@ -16,21 +16,7 @@ var SRC_FILES = './src/**/*.js';
 var DIST_DIR = './dist/';
 
 // options for transpiling es6 to es5
-var babelOptions = {
-  modules: 'brackets-babel-module-formatter',
-  optional: ['es7.classProperties']
-};
-
-// we need to check OS here because Linux doesn't have CEF with generators
-// generators are available in Brackets' shell and also break sourcemaps
-// node.js process bundled with brackets doesn't have generators so always false, for now
-var hasNativeGenerators = false; // process.platform === 'darwin' || process.platform === 'win32';
-if (hasNativeGenerators) {
-  babelOptions.optional.push('bluebirdCoroutines');
-  babelOptions.blacklist = ['regenerator'];
-} else {
-  babelOptions.optional.push('es7.asyncFunctions');
-}
+var babelOptions = JSON.parse(fs.readFileSync(path.resolve(__dirname, '.babelrc')));
 
 // provides pipe to log stuff to console when certain task finishes
 function logPipe(str) {
@@ -63,8 +49,10 @@ function doBabel(globs, singleFile) {
         var retVal = 'file:///' + file.cwd.replace(/\\/g, '/') + '/dist';
         var pathRelative = path.relative(file.base, file.path).replace(/\\/g, '/');
 
-        if (pathRelative.indexOf('/') === -1) {
-          retVal += '/';
+        if (pathRelative.indexOf('/') !== -1) {
+          var parts = pathRelative.split('/');
+          parts.pop();
+          retVal += '/' + parts.join('/');
         }
 
         return retVal;
