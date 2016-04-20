@@ -1,6 +1,6 @@
 import Events from '../events';
 import EventEmitter from '../event-emitter';
-import Preferences from '../preferences';
+import * as Preferences from '../preferences';
 import Strings from 'strings';
 import getRoot from '../git/get-root';
 import getBranchName from '../git/get-branch-name';

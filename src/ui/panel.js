@@ -1,7 +1,7 @@
 import { React, WorkspaceManager } from '../brackets';
 import Events from '../events';
 import EventEmitter from '../event-emitter';
-import Preferences from '../preferences';
+import * as Preferences from '../preferences';
 
 const PANEL_ID = 'brackets-git-bottom-panel';
 const PANEL_MIN_HEIGHT = 100;

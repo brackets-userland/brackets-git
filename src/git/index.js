@@ -1,6 +1,6 @@
 import Events from '../events';
 import EventEmitter from '../event-emitter';
-import Preferences from '../preferences';
+import * as Preferences from '../preferences';
 import Promise from 'bluebird';
 import { _ } from '../brackets';
 import { spawn } from '../cli';

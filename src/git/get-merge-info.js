@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import Preferences from '../preferences';
+import * as Preferences from '../preferences';
 import { loadPathContent } from '../utils';
 
 const baseCheck = ['MERGE_MODE', 'rebase-apply'];
