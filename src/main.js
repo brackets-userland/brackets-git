@@ -7,8 +7,8 @@ import { AppInit, CommandManager, Commands, ExtensionUtils, Menus } from './brac
 import EventEmitter from './event-emitter';
 import Events from './events';
 import * as Preferences from './preferences';
-import ChangelogDialog from './dialogs/changelog-dialog';
-import SettingsDialog from './dialogs/settings-dialog';
+import * as ChangelogDialog from './dialogs/changelog-dialog';
+import * as SettingsDialog from './dialogs/settings-dialog';
 import Strings from 'strings';
 import { getExtensionName, getExtensionVersion } from './extension-info';
 import findGit from './git/find-git';
