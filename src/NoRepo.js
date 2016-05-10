@@ -33,11 +33,9 @@ define(function (require) {
         });
     }
 
-    function commitGitIgnore(msg) {
+    function stageGitIgnore(msg) {
         return createGitIgnore().then(function () {
             return Git.stage(".gitignore");
-        }).then(function () {
-            return Git.commit(msg || ".gitignore created by brackets-git extension");
         });
     }
 
@@ -66,7 +64,7 @@ define(function (require) {
 
             });
         }).then(function () {
-            return commitGitIgnore("Initial commit");
+            return stageGitIgnore("Initial staging");
         }).catch(function (err) {
             ErrorHandler.showError(err, "Initializing new repository failed");
         }).then(function () {
@@ -141,7 +139,7 @@ define(function (require) {
         handleGitClone();
     });
     EventEmitter.on(Events.GIT_NO_BRANCH_EXISTS, function () {
-        commitGitIgnore()
+        stageGitIgnore()
             .then(function () {
                 EventEmitter.emit(Events.REFRESH_ALL);
             });
