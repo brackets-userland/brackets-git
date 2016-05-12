@@ -99,9 +99,13 @@ gulp.task('eslint', function () {
 gulp.task('watch', function () {
   watch(SRC_FILES, function (file) {
     var filePath = path.relative(__dirname, file.path);
-    if (fs.statSync(filePath).isFile()) {
-      doEslint([filePath], true);
-      doBabel([filePath], true);
+    try {
+      if (fs.statSync(filePath).isFile()) {
+        doEslint([filePath], true);
+        doBabel([filePath], true);
+      }
+    } catch (err) {
+      console.log('gulp-watch', err);
     }
   });
 });

@@ -1,3 +1,17 @@
+import { React } from '../brackets';
+const { Component } = React;
+
+class ToolbarGitIcon extends Component {
+  render() {
+    return (
+      <a href="#"></a>
+    )
+  }
+}
+
+export default ToolbarGitIcon;
+
+/*
 import Events from '../../events';
 import EventEmitter from '../../event-emitter';
 import * as Panel from '../../ui/panel';
@@ -45,3 +59,4 @@ EventEmitter.on(Events.PANEL_TOGGLED, function (bool) {
   $icon
     .toggleClass('on', bool);
 });
+*/

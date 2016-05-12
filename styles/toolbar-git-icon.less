@@ -1,0 +1,51 @@
+.brackets-git-toolbar-git-icon-container {
+  @size: 24px;
+
+  width: @size;
+  height: @size;
+  margin: 7px 0px 0px 3px;
+
+  > a {
+
+    display: block;
+    width: @size;
+    height: @size;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.24) !important;
+      cursor: pointer;
+    }
+    &:active {
+      background-color: rgba(0, 0, 0, 0.5) !important;
+    }
+
+    background: url('icons/git-icon.svg') no-repeat 0 0;
+    &.dirty {
+      background-position: (-1 * @size) 0;
+    }
+    &.on {
+      background-position: 0 (-1 * @size);
+    }
+    &.on.dirty {
+      background-position: (-1 * @size) (-1 * @size);
+    }
+    &.ok {
+      background-position: 0 (-2 * @size);
+    }
+    &.ok.dirty {
+      background-position: (-1 * @size) (-2 * @size);
+    }
+    &.warning, &.loading {
+      background-position: 0 (-3 * @size);
+    }
+    &.warning.dirty, &.loading.dirty {
+      background-position: (-1 * @size) (-3 * @size);
+    }
+    &.error {
+      background-position: 0 (-4 * @size);
+    }
+    &.error.dirty {
+      background-position: (-1 * @size) (-4 * @size);
+    }
+  }
+}

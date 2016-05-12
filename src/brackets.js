@@ -1,3 +1,4 @@
+/* global brackets */
 export const _ = brackets.getModule('thirdparty/lodash');
 export const AppInit = brackets.getModule('utils/AppInit');
 export const CommandManager = brackets.getModule('command/CommandManager');
@@ -12,4 +13,5 @@ export const PopUpManager = brackets.getModule('widgets/PopUpManager');
 export const PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 export const ProjectManager = brackets.getModule('project/ProjectManager');
 export const React = brackets.getModule('thirdparty/react');
+export const ReactDOM = brackets.getModule('thirdparty/react-dom');
 export const WorkspaceManager = brackets.getModule('view/WorkspaceManager');

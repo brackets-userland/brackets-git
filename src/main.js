@@ -1,24 +1,18 @@
-import Promise from 'bluebird';
-
-// too buggy
-Promise.onPossiblyUnhandledRejection(() => {});
-
-import { AppInit, CommandManager, Commands, ExtensionUtils, Menus } from './brackets';
+import './lib/branch';
+import './menu-entries';
+import './ui/panel';
 import EventEmitter from './event-emitter';
 import Events from './events';
-import * as Preferences from './preferences';
-import * as ChangelogDialog from './dialogs/changelog-dialog';
-import * as SettingsDialog from './dialogs/settings-dialog';
-import Strings from 'strings';
-import { getExtensionName, getExtensionVersion } from './extension-info';
 import findGit from './git/find-git';
 import { handleError } from './error-handler';
-
-// load without importing
-import { } from './ui/icons/git-icon';
-import { } from './lib/branch';
-import { } from './ui/panel';
-import { } from './menu-entries';
+import store from './store';
+import Strings from 'strings';
+import ToolbarGitIcon from './react-components/toolbar-git-icon';
+import * as ChangelogDialog from './dialogs/changelog-dialog';
+import * as Preferences from './preferences';
+import * as SettingsDialog from './dialogs/settings-dialog';
+import { AppInit, CommandManager, Commands, ExtensionUtils, Menus, React, ReactDOM } from './brackets';
+import { getExtensionName, getExtensionVersion } from './extension-info';
 
 // load stylesheets
 ExtensionUtils.loadStyleSheet(module, '../styles/main.less');
@@ -45,8 +39,8 @@ async function displayExtensionInfoIfNeeded() {
   // do not display dialogs when running tests
   if (window.isBracketsTestWindow) { return; }
 
-  let lastVersion = Preferences.get('lastVersion');
-  let currentVersion = getExtensionVersion();
+  const lastVersion = Preferences.get('lastVersion');
+  const currentVersion = getExtensionVersion();
 
   if (!lastVersion) {
     Preferences.set('lastVersion', 'firstStart');
@@ -59,6 +53,33 @@ async function displayExtensionInfoIfNeeded() {
 }
 
 async function init() {
+
+  const ReactComponents = [
+    {
+      name: 'toolbar-git-icon',
+      component: ToolbarGitIcon,
+      target: '#main-toolbar .buttons'
+    }
+  ];
+
+  const render = () => {
+    ReactComponents.forEach(obj => {
+
+      const container = $('<div/>')
+        .addClass(`brackets-git-${obj.name}-container`)
+        .appendTo(obj.target).get(0);
+
+      const Component = obj.component;
+      ReactDOM.render(
+        <Component {...store.getState()} />,
+        container
+      );
+
+    });
+  };
+
+  store.subscribe(render);
+  render();
 
   try {
     Strings.GIT_VERSION = await findGit();

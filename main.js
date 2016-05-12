@@ -1,4 +1,5 @@
-/* eslint no-var:0 */
+/* eslint no-var:0, prefer-arrow-callback:0 */
+/* global define */
 
 define(function (require, exports, module) {
 

@@ -5,6 +5,6 @@ module.exports = {
     $: false
   },
   rules: {
-
+    'prefer-reflect': 0
   }
 };
