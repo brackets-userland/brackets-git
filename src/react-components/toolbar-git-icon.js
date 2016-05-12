@@ -1,15 +1,13 @@
 import { React } from '../brackets';
 const { Component } = React;
 
-class ToolbarGitIcon extends Component {
+export default class ToolbarGitIcon extends Component {
   render() {
     return (
       <a href="#"></a>
-    )
+    );
   }
 }
-
-export default ToolbarGitIcon;
 
 /*
 import Events from '../../events';

@@ -67,7 +67,8 @@ async function init() {
 
       const container = $('<div/>')
         .addClass(`brackets-git-${obj.name}-container`)
-        .appendTo(obj.target).get(0);
+        .appendTo(obj.target)
+        .get(0);
 
       const Component = obj.component;
       ReactDOM.render(
