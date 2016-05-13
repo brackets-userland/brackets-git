@@ -430,7 +430,9 @@ define(function (require, exports) {
 
             // no branch situation so we need to create one by doing a commit
             if (stdout.match(/^\s*$/)) {
-                return EventEmitter.emit(Events.GIT_NO_BRANCH_EXISTS);
+                EventEmitter.emit(Events.GIT_NO_BRANCH_EXISTS);
+                // master is the default name of the branch after git init
+                return "master";
             }
 
             // alternative
