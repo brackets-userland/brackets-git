@@ -7,7 +7,7 @@ import findGit from './git/find-git';
 import { handleError } from './error-handler';
 import store from './store';
 import Strings from 'strings';
-import ToolbarGitIcon from './react-components/toolbar-git-icon';
+import ToolbarGitIcon from './toolbar-git-icon/toolbar-git-icon-component';
 import * as ChangelogDialog from './dialogs/changelog-dialog';
 import * as Preferences from './preferences';
 import * as SettingsDialog from './dialogs/settings-dialog';
@@ -83,6 +83,7 @@ async function init() {
   render();
 
   try {
+    store.dispatch({ type: 'GIT_LOADING' });
     Strings.GIT_VERSION = await findGit();
   } catch (err) {
     await handleError(Strings.CHECK_GIT_SETTINGS, err);

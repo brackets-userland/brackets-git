@@ -1,4 +1,4 @@
-/* eslint no-sync: 0, no-var: 0, object-shorthand: 0 */
+/* eslint no-sync:0, no-var:0, object-shorthand:0, prefer-arrow-callback:0, prefer-template:0 */
 
 var babel = require('gulp-babel');
 var eslint = require('gulp-eslint');
@@ -40,7 +40,7 @@ function doBabel(globs, singleFile) {
     gutil.log(gutil.colors.cyan('Start Babel ' + globs[0]));
   }
 
-  var task = gulp.src(globs, {base: 'src'})
+  var task = gulp.src(globs, { base: 'src' })
     .pipe(sourcemaps.init())
     .pipe(babel(babelOptions))
     .on('error', swallowError)
@@ -97,6 +97,11 @@ gulp.task('eslint', function () {
 });
 
 gulp.task('watch', function () {
+
+  process.on('uncaughtException', (err) => {
+    gutil.log(gutil.colors.red('uncaughtException: ' + err.toString()));
+  });
+
   watch(SRC_FILES, function (file) {
     var filePath = path.relative(__dirname, file.path);
     try {
@@ -105,7 +110,7 @@ gulp.task('watch', function () {
         doBabel([filePath], true);
       }
     } catch (err) {
-      console.log('gulp-watch', err);
+      gutil.log(gutil.colors.red('gulp-watch err: ' + err.toString()));
     }
   });
 });

@@ -1,21 +1,8 @@
-import { createStore } from 'redux';
-import { deepFreeze } from './utils';
+import toolbarGitIcon from './toolbar-git-icon/toolbar-git-icon-reducer';
+import { combineReducers, createStore } from 'redux';
 
-const toolbarGitIcon = (
-  state = {},
-  action
-) => {
-  return {};
-};
-
-const bracketsGit = (previousState = {}, action) => {
-  deepFreeze(previousState);
-  return Object.assign({}, previousState, {
-    toolbarGitIcon: toolbarGitIcon(previousState, action)
-  });
-};
-
-const store = createStore(bracketsGit);
+const store = createStore(combineReducers({
+  toolbarGitIcon
+}));
 
 export default store;
-

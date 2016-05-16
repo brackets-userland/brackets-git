@@ -2,11 +2,14 @@ import { React } from '../brackets';
 const { Component } = React;
 
 export default class ToolbarGitIcon extends Component {
+
   render() {
+    const props = this.props.toolbarGitIcon;
     return (
-      <a href="#"></a>
+      <a title={props.title} href="#"></a>
     );
   }
+
 }
 
 /*

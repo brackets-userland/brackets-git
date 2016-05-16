@@ -5,6 +5,7 @@ module.exports = {
     $: false
   },
   rules: {
-    'prefer-reflect': 0
+    'prefer-reflect': 0,
+    'react/prop-types': 0
   }
 };
