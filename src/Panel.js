@@ -16,6 +16,7 @@ define(function (require, exports) {
         KeyBindingManager  = brackets.getModule("command/KeyBindingManager"),
         FileSystem         = brackets.getModule("filesystem/FileSystem"),
         Menus              = brackets.getModule("command/Menus"),
+        Mustache           = brackets.getModule("thirdparty/mustache/mustache"),
         FindInFiles        = brackets.getModule("search/FindInFiles"),
         WorkspaceManager   = brackets.getModule("view/WorkspaceManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),

@@ -17,8 +17,7 @@ module.exports = function (grunt) {
                         "$": true,
                         "document": true,
                         "brackets": true,
-                        "define": true,
-                        "Mustache": true
+                        "define": true
                     }
                 }
             }

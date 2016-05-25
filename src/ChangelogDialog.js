@@ -4,6 +4,7 @@ define(function (require, exports) {
     var Dialogs                    = brackets.getModule("widgets/Dialogs"),
         FileSystem                 = brackets.getModule("filesystem/FileSystem"),
         FileUtils                  = brackets.getModule("file/FileUtils"),
+        Mustache                   = brackets.getModule("thirdparty/mustache/mustache"),
         StringUtils                = brackets.getModule("utils/StringUtils"),
         Utils                      = require("src/Utils"),
         Preferences                = require("./Preferences"),

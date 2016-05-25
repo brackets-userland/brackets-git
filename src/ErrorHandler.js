@@ -3,6 +3,7 @@ define(function (require, exports) {
 
     var _                          = brackets.getModule("thirdparty/lodash"),
         Dialogs                    = brackets.getModule("widgets/Dialogs"),
+        Mustache                   = brackets.getModule("thirdparty/mustache/mustache"),
         NativeApp                  = brackets.getModule("utils/NativeApp"),
         ExpectedError              = require("./ExpectedError"),
         ExtensionInfo              = require("./ExtensionInfo"),

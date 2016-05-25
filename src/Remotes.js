@@ -5,6 +5,7 @@ define(function (require) {
     var _               = brackets.getModule("thirdparty/lodash"),
         DefaultDialogs  = brackets.getModule("widgets/DefaultDialogs"),
         Dialogs         = brackets.getModule("widgets/Dialogs"),
+        Mustache        = brackets.getModule("thirdparty/mustache/mustache"),
         StringUtils     = brackets.getModule("utils/StringUtils");
 
     // Local modules

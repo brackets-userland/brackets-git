@@ -8,6 +8,7 @@ define(function (require, exports) {
         FileSyncManager         = brackets.getModule("project/FileSyncManager"),
         FileSystem              = brackets.getModule("filesystem/FileSystem"),
         Menus                   = brackets.getModule("command/Menus"),
+        Mustache                = brackets.getModule("thirdparty/mustache/mustache"),
         PopUpManager            = brackets.getModule("widgets/PopUpManager"),
         StringUtils             = brackets.getModule("utils/StringUtils"),
         DocumentManager         = brackets.getModule("document/DocumentManager"),
