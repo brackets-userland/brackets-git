@@ -3,7 +3,8 @@ define(function (require) {
     // Brackets modules
     var _ = brackets.getModule("thirdparty/lodash"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
-        FileUtils = brackets.getModule("file/FileUtils");
+        FileUtils = brackets.getModule("file/FileUtils"),
+        Mustache = brackets.getModule("thirdparty/mustache/mustache");
 
     // Local modules
     var moment = require("moment"),

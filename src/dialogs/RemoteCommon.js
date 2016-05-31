@@ -2,7 +2,8 @@ define(function (require, exports) {
     "use strict";
 
     // Brackets modules
-    var _ = brackets.getModule("thirdparty/lodash");
+    var _ = brackets.getModule("thirdparty/lodash"),
+        Mustache = brackets.getModule("thirdparty/mustache/mustache");
 
     // Local modules
     var ErrorHandler    = require("src/ErrorHandler"),

@@ -11,6 +11,7 @@ define(function (require, exports, module) {
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
         LanguageManager = brackets.getModule("language/LanguageManager"),
+        Mustache        = brackets.getModule("thirdparty/mustache/mustache"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
     // Local modules

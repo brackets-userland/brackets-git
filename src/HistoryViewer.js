@@ -2,7 +2,8 @@ define(function (require, exports) {
     "use strict";
 
     var _               = brackets.getModule("thirdparty/lodash"),
-        FileUtils       = brackets.getModule("file/FileUtils");
+        FileUtils       = brackets.getModule("file/FileUtils"),
+        Mustache        = brackets.getModule("thirdparty/mustache/mustache");
 
     var marked        = require("marked"),
         ErrorHandler  = require("src/ErrorHandler"),

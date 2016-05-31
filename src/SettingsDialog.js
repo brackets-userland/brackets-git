@@ -5,6 +5,7 @@ define(function (require, exports) {
     var _                       = brackets.getModule("thirdparty/lodash"),
         CommandManager          = brackets.getModule("command/CommandManager"),
         Dialogs                 = brackets.getModule("widgets/Dialogs"),
+        Mustache                = brackets.getModule("thirdparty/mustache/mustache"),
         Preferences             = require("./Preferences"),
         ChangelogDialog         = require("../src/ChangelogDialog"),
         Strings                 = require("../strings"),

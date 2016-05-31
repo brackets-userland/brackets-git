@@ -2,7 +2,8 @@ define(function (require, exports) {
     "use strict";
 
     // Brackets modules
-    var Dialogs = brackets.getModule("widgets/Dialogs");
+    var Dialogs = brackets.getModule("widgets/Dialogs"),
+        Mustache = brackets.getModule("thirdparty/mustache/mustache");
 
     // Local modules
     var Preferences     = require("src/Preferences"),

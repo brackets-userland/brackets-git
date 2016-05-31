@@ -3,7 +3,8 @@ define(function (require, exports) {
 
     // Brackets modules
     var _ = brackets.getModule("thirdparty/lodash"),
-        Dialogs = brackets.getModule("widgets/Dialogs");
+        Dialogs = brackets.getModule("widgets/Dialogs"),
+        Mustache = brackets.getModule("thirdparty/mustache/mustache");
 
     // Local modules
     var Promise = require("bluebird"),
