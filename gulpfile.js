@@ -18,6 +18,11 @@ var DIST_DIR = './dist/';
 
 // options for transpiling es6 to es5
 var babelOptions = JSON.parse(fs.readFileSync(path.resolve(__dirname, '.babelrc')));
+var tsProject = ts.createProject('tsconfig.json', {
+  typescript: require('typescript'),
+  noExternalResolve: true,
+  sortOutput: false
+});
 
 // provides pipe to log stuff to console when certain task finishes
 function logPipe(str) {
@@ -43,9 +48,7 @@ function doCompile(globs, singleFile) {
 
   var task = gulp.src(globs, { base: 'src' })
     .pipe(sourcemaps.init())
-    .pipe(ts({
-
-    }))
+    .pipe(ts(tsProject))
 //    .pipe(babel(babelOptions))
 //    .on('error', swallowError)
     .pipe(sourcemaps.write('.', {

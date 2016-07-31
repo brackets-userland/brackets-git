@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "jsx": true,
+    "target": "es5"
+  },
+  "exclude": []
+}
