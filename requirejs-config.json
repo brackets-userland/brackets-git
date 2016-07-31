@@ -2,7 +2,7 @@
   "paths": {
     "bluebird": "./node_modules/bluebird/js/browser/bluebird.min",
     "core-js-shim": "./node_modules/core-js/client/shim.min",
-    "eventemitter": "./node_modules/eventemitter2/lib/eventemitter2",
+    "eventemitter2": "./node_modules/eventemitter2/lib/eventemitter2",
     "redux": "./node_modules/redux/dist/redux.min",
     "regenerator-runtime": "./node_modules/regenerator/runtime"
   }

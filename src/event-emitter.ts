@@ -1,4 +1,4 @@
-import EventEmitter from 'eventemitter';
+import EventEmitter from 'eventemitter2';
 import { debug, logError } from './log';
 
 // const debugOn = Preferences.get('debugMode');
