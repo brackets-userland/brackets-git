@@ -1,6 +1,7 @@
 /* eslint no-sync:0, no-var:0, object-shorthand:0, prefer-arrow-callback:0, prefer-template:0 */
 
 var babel = require('gulp-babel');
+var ts = require('gulp-typescript');
 var eslint = require('gulp-eslint');
 var fs = require('fs-extra');
 var gulp = require('gulp');
@@ -12,7 +13,7 @@ var through = require('through2');
 var watch = require('gulp-watch');
 
 var MAIN_FILES = './*.js';
-var SRC_FILES = './src/**/*.js';
+var SRC_FILES = './src/**/*.ts';
 var DIST_DIR = './dist/';
 
 // options for transpiling es6 to es5
@@ -35,15 +36,18 @@ function swallowError(error) {
 }
 
 // helper for transpiling es6 files to es5
-function doBabel(globs, singleFile) {
+function doCompile(globs, singleFile) {
   if (singleFile) {
     gutil.log(gutil.colors.cyan('Start Babel ' + globs[0]));
   }
 
   var task = gulp.src(globs, { base: 'src' })
     .pipe(sourcemaps.init())
-    .pipe(babel(babelOptions))
-    .on('error', swallowError)
+    .pipe(ts({
+
+    }))
+//    .pipe(babel(babelOptions))
+//    .on('error', swallowError)
     .pipe(sourcemaps.write('.', {
       sourceMappingURLPrefix: function (file) {
         var retVal = 'file:///' + file.cwd.replace(/\\/g, '/') + '/dist';
@@ -88,8 +92,8 @@ gulp.task('clean', function (cb) {
   });
 });
 
-gulp.task('babel', ['clean'], function () {
-  return doBabel([SRC_FILES], false);
+gulp.task('compile', ['clean'], function () {
+  return doCompile([SRC_FILES], false);
 });
 
 gulp.task('eslint', function () {
@@ -107,7 +111,7 @@ gulp.task('watch', function () {
     try {
       if (fs.statSync(filePath).isFile()) {
         doEslint([filePath], true);
-        doBabel([filePath], true);
+        doCompile([filePath], true);
       }
     } catch (err) {
       gutil.log(gutil.colors.red('gulp-watch err: ' + err.toString()));
@@ -115,7 +119,7 @@ gulp.task('watch', function () {
   });
 });
 
-gulp.task('build', ['babel']);
+gulp.task('build', ['compile']);
 gulp.task('test', ['eslint']);
 gulp.task('dev', ['build', 'watch']);
 gulp.task('default', ['build', 'test']);
