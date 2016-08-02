@@ -21,7 +21,7 @@
     "url": "https://github.com/zaggino/brackets-git.git"
   },
   "scripts": {
-    "install": "gulp build",
+    "install": "tsd install && gulp build",
     "dev": "gulp dev",
     "test": "gulp test"
   },
@@ -51,6 +51,7 @@
     "regenerator": "0.8.42",
     "rimraf": "2.5.2",
     "through2": "2.0.1",
+    "tsd": "0.6.5",
     "typescript": "2.0.0",
     "which": "1.2.4"
   },

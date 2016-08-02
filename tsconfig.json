@@ -3,7 +3,7 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "jsx": true,
+    "jsx": "react",
     "strictNullChecks": true
   },
   "exclude": []
