@@ -1,7 +1,7 @@
 {
   "name": "zaggino.brackets-git",
   "title": "Brackets Git",
-  "version": "0.16.5",
+  "version": "0.16.6",
   "engines": {
     "brackets": ">=1.7.0"
   },
