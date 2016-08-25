@@ -49,6 +49,7 @@ module.exports = function (grunt) {
                 dest: "brackets-git.zip",
                 src: [
                     "nls/**",
+                    "node_modules/**",
                     "shell/**",
                     "src/**",
                     "styles/**",

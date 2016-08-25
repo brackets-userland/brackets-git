@@ -1,42 +1,63 @@
 {
-    "name": "zaggino.brackets-git",
-    "title": "Brackets Git",
-    "version": "0.16.5",
-    "engines": { "brackets": ">=1.7.0" },
-    "description": "Integration of Git into Brackets",
-    "keywords": ["brackets-extension", "git", "version-control", "source-control"],
-    "homepage": "https://github.com/zaggino/brackets-git",
-    "bugs": "https://github.com/zaggino/brackets-git/issues",
-    "license": "MIT",
-    "author": {
-        "name": "Martin Zagora",
-        "email": "zaggino@gmail.com",
-        "url": "https://github.com/zaggino"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/zaggino/brackets-git.git"
-    },
-    "scripts": {
-        "test": "grunt test"
-    },
-    "dependencies": {
-
-    },
-    "devDependencies": {
-        "grunt": "latest",
-        "grunt-contrib-jshint": "latest",
-        "grunt-jslint": "latest",
-        "grunt-lesslint": "latest",
-        "grunt-jscs": "latest",
-        "grunt-zip": "latest",
-        "grunt-lineending": "latest"
-    },
-    "i18n": ["en", "en-gb", "de", "fr", "it", "pt-br", "zh-cn"],
-    "package-i18n": {
-        "de": {
-            "description": "Git-Integration für Brackets",
-            "keywords": ["git", "version-control", "source-control", "Versionsverwaltung", "Versionskontrollsystem"]
-        }
+  "name": "zaggino.brackets-git",
+  "title": "Brackets Git",
+  "version": "0.16.5",
+  "engines": {
+    "brackets": ">=1.7.0"
+  },
+  "description": "Integration of Git into Brackets",
+  "keywords": [
+    "brackets-extension",
+    "git",
+    "version-control",
+    "source-control"
+  ],
+  "homepage": "https://github.com/zaggino/brackets-git",
+  "bugs": "https://github.com/zaggino/brackets-git/issues",
+  "license": "MIT",
+  "author": {
+    "name": "Martin Zagora",
+    "email": "zaggino@gmail.com",
+    "url": "https://github.com/zaggino"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zaggino/brackets-git.git"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "cross-spawn": "4.0.0"
+  },
+  "devDependencies": {
+    "grunt": "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-jslint": "latest",
+    "grunt-lesslint": "latest",
+    "grunt-jscs": "latest",
+    "grunt-zip": "latest",
+    "grunt-lineending": "latest"
+  },
+  "i18n": [
+    "en",
+    "en-gb",
+    "de",
+    "fr",
+    "it",
+    "pt-br",
+    "zh-cn"
+  ],
+  "package-i18n": {
+    "de": {
+      "description": "Git-Integration für Brackets",
+      "keywords": [
+        "git",
+        "version-control",
+        "source-control",
+        "Versionsverwaltung",
+        "Versionskontrollsystem"
+      ]
     }
+  }
 }

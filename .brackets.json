@@ -4,7 +4,7 @@
     "useTabChar": false,
     "language": {
         "javascript": {
-            "linting.prefer": ["JSHint", "JSCS"],
+            "linting.prefer": ["ESLint"],
             "linting.usePreferredOnly": true
         }
     }

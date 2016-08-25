@@ -5,6 +5,7 @@
 
     var fs            = require("fs"),
         ChildProcess  = require("child_process"),
+        crossSpawn    = require('cross-spawn'),
         ProcessUtils  = require("./processUtils"),
         domainName    = "brackets-git",
         domainManager = null,
@@ -37,7 +38,7 @@
         processMap[opts.cliId] = child;
     }
 
-    // handler with ChildProcess.spawn
+    // handler with cross-spawn
     function join(arr) {
         var result, index = 0, length;
         length = arr.reduce(function (l, b) {
@@ -53,7 +54,7 @@
 
     function spawn(directory, command, args, opts, callback) {
         // https://github.com/creationix/node-git
-        var child = ChildProcess.spawn(command, args, {
+        var child = crossSpawn(command, args, {
             cwd: directory
         });
         child.on("error", function (err) {
