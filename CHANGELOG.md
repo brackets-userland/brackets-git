@@ -2,6 +2,9 @@
 
 **If you get an error right after updating just close all Brackets instances and start again. We are aware of this problem.**
 
+## 0.16.6 (25/08/2016)
+* Fix an issue when viewing initial commit details by [Mateo Guzman](https://github.com/mateoguzman)
+
 ## 0.16.5 (13/05/2016)
 * Fixed an issue with branch name shown as true in an empty repository.
 
