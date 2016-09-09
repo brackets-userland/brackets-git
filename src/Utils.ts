@@ -146,8 +146,8 @@ define(function (require, exports, module) {
             }
 
             if (pushLine) {
-                var _numLineOld = "",
-                    _numLineNew = "";
+                var _numLineOld = null,
+                    _numLineNew = null;
 
                 switch (lastStatus) {
                     case LINE_STATUS.HEADER:
@@ -377,7 +377,7 @@ define(function (require, exports, module) {
     /**
      *  strips trailing whitespace from all the diffs and adds \n to the end
      */
-    function stripWhitespaceFromFile(filename, clearWholeFile) {
+    function stripWhitespaceFromFile(filename:string, clearWholeFile: boolean = false) {
         return new Promise(function (resolve, reject) {
 
             var fullPath                  = Preferences.get("currentGitRoot") + filename,

@@ -34,6 +34,9 @@
     "cross-spawn": "4.0.0"
   },
   "devDependencies": {
+    "@types/jquery": "1.10.31",
+    "eslint": "3.4.0",
+    "eslint-config-pureprofile": "1.5.0",
     "grunt": "latest",
     "grunt-contrib-jshint": "latest",
     "grunt-jscs": "latest",
@@ -42,7 +45,9 @@
     "grunt-lineending": "latest",
     "grunt-zip": "latest",
     "rimraf": "2.5.4",
-    "typescript": "2.0.2"
+    "tslint": "3.15.1",
+    "typescript": "2.0.2",
+    "typescript-eslint-parser": "0.2.0"
   },
   "i18n": [
     "en",
