@@ -5,10 +5,10 @@ define(function (require) {
         FileSystem        = brackets.getModule("filesystem/FileSystem"),
         ProjectManager    = brackets.getModule("project/ProjectManager");
 
-    var EventEmitter      = require("src/EventEmitter"),
-        Events            = require("src/Events"),
-        Git               = require("src/git/Git"),
-        Preferences       = require("src/Preferences"),
+    var EventEmitter      = require("./EventEmitter"),
+        Events            = require("./Events"),
+        Git               = require("./git/Git"),
+        Preferences       = require("./Preferences"),
         Promise           = require("bluebird");
 
     var ignoreEntries = [],

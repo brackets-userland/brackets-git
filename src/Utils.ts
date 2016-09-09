@@ -15,11 +15,11 @@ define(function (require, exports, module) {
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
     // Local modules
-    var ErrorHandler    = require("src/ErrorHandler"),
-        Events          = require("src/Events"),
-        EventEmitter    = require("src/EventEmitter"),
-        Git             = require("src/git/Git"),
-        Preferences     = require("src/Preferences"),
+    var ErrorHandler    = require("./ErrorHandler"),
+        Events          = require("./Events"),
+        EventEmitter    = require("./EventEmitter"),
+        Git             = require("./git/Git"),
+        Preferences     = require("./Preferences"),
         Promise         = require("bluebird"),
         Strings         = require("strings");
 
@@ -40,7 +40,7 @@ define(function (require, exports, module) {
     // returns "C:/Users/Zaggi/AppData/Roaming/Brackets/extensions/user/zaggino.brackets-git/"
     function getExtensionDirectory() {
         var modulePath = ExtensionUtils.getModulePath(module);
-        return modulePath.slice(0, -1 * "src/".length);
+        return modulePath.slice(0, -1 * "dist/".length);
     }
 
     function formatDiff(diff) {

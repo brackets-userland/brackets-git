@@ -5,10 +5,10 @@ define(function (require, exports, module) {
 
     var Promise       = require("bluebird"),
         Strings       = require("strings"),
-        ErrorHandler  = require("src/ErrorHandler"),
-        ExpectedError = require("src/ExpectedError"),
-        Preferences   = require("src/Preferences"),
-        Utils         = require("src/Utils");
+        ErrorHandler  = require("./ErrorHandler"),
+        ExpectedError = require("./ExpectedError"),
+        Preferences   = require("./Preferences"),
+        Utils         = require("./Utils");
 
     var moduleDirectory   = ExtensionUtils.getModulePath(module),
         domainModulePath  = moduleDirectory + "domains/cli",

@@ -6,10 +6,10 @@
 define(function (require, exports) {
 
     // Local modules
-    var Preferences = require("src/Preferences"),
+    var Preferences = require("../Preferences"),
         Promise     = require("bluebird"),
-        GitCli      = require("src/git/GitCli"),
-        Utils       = require("src/Utils");
+        GitCli      = require("../git/GitCli"),
+        Utils       = require("../Utils");
 
     // Implementation
     function pushToNewUpstream(remoteName, remoteBranch) {

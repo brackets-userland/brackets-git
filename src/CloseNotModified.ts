@@ -8,10 +8,10 @@ define(function (require, exports) {
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         MainViewManager = brackets.getModule("view/MainViewManager");
 
-    var Events        = require("src/Events"),
-        EventEmitter  = require("src/EventEmitter"),
-        Git           = require("src/git/Git"),
-        Preferences   = require("src/Preferences"),
+    var Events        = require("./Events"),
+        EventEmitter  = require("./EventEmitter"),
+        Git           = require("./git/Git"),
+        Preferences   = require("./Preferences"),
         Strings       = require("strings");
 
     var $icon = $(null);

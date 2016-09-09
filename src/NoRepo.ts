@@ -7,15 +7,15 @@ define(function (require) {
 
     // Local modules
     var Promise         = require("bluebird"),
-        ErrorHandler    = require("src/ErrorHandler"),
-        Events          = require("src/Events"),
-        EventEmitter    = require("src/EventEmitter"),
-        ExpectedError   = require("src/ExpectedError"),
-        ProgressDialog  = require("src/dialogs/Progress"),
-        CloneDialog     = require("src/dialogs/Clone"),
-        Git             = require("src/git/Git"),
-        Preferences     = require("src/Preferences"),
-        Utils           = require("src/Utils");
+        ErrorHandler    = require("./ErrorHandler"),
+        Events          = require("./Events"),
+        EventEmitter    = require("./EventEmitter"),
+        ExpectedError   = require("./ExpectedError"),
+        ProgressDialog  = require("./dialogs/Progress"),
+        CloneDialog     = require("./dialogs/Clone"),
+        Git             = require("./git/Git"),
+        Preferences     = require("./Preferences"),
+        Utils           = require("./Utils");
 
     // Templates
     var gitignoreTemplate = require("text!templates/default-gitignore");

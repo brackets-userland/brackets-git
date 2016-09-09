@@ -6,13 +6,13 @@ define(function (require, exports) {
         Mustache        = brackets.getModule("thirdparty/mustache/mustache");
 
     var marked        = require("marked"),
-        ErrorHandler  = require("src/ErrorHandler"),
-        Events        = require("src/Events"),
-        EventEmitter  = require("src/EventEmitter"),
-        Git           = require("src/git/Git"),
-        Preferences   = require("src/Preferences"),
+        ErrorHandler  = require("./ErrorHandler"),
+        Events        = require("./Events"),
+        EventEmitter  = require("./EventEmitter"),
+        Git           = require("./git/Git"),
+        Preferences   = require("./Preferences"),
         Strings       = require("strings"),
-        Utils         = require("src/Utils");
+        Utils         = require("./Utils");
 
     var historyViewerTemplate       = require("text!templates/history-viewer.html"),
         historyViewerFilesTemplate  = require("text!templates/history-viewer-files.html");

@@ -6,9 +6,9 @@ define(function (require, exports) {
         Mustache = brackets.getModule("thirdparty/mustache/mustache");
 
     // Local modules
-    var ErrorHandler    = require("src/ErrorHandler"),
-        Git             = require("src/git/Git"),
-        ProgressDialog  = require("src/dialogs/Progress"),
+    var ErrorHandler    = require("../ErrorHandler"),
+        Git             = require("../git/Git"),
+        ProgressDialog  = require("./Progress"),
         URI             = require("URI");
 
     // Implementation

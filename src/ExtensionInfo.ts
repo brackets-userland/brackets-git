@@ -10,7 +10,7 @@ define(function (require, exports, module) {
     var Promise           = require("bluebird");
 
     var moduleDirectory   = ExtensionUtils.getModulePath(module),
-        packageJsonPath   = moduleDirectory.slice(0, -1 * "src/".length) + "package.json",
+        packageJsonPath   = moduleDirectory.slice(0, -1 * "dist/".length) + "package.json",
         packageJson;
 
     // immediately read the package json info

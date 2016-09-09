@@ -6,9 +6,9 @@ define(function (require, exports) {
         Mustache = brackets.getModule("thirdparty/mustache/mustache");
 
     // Local modules
-    var Preferences     = require("src/Preferences"),
+    var Preferences     = require("../Preferences"),
         Promise         = require("bluebird"),
-        RemoteCommon    = require("src/dialogs/RemoteCommon"),
+        RemoteCommon    = require("./RemoteCommon"),
         Strings         = require("strings");
 
     // Templates

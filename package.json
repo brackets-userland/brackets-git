@@ -25,6 +25,7 @@
     "url": "https://github.com/zaggino/brackets-git.git"
   },
   "scripts": {
+    "build": "rimraf ./dist && tsc",
     "test": "grunt test"
   },
   "dependencies": {
@@ -33,11 +34,13 @@
   "devDependencies": {
     "grunt": "latest",
     "grunt-contrib-jshint": "latest",
+    "grunt-jscs": "latest",
     "grunt-jslint": "latest",
     "grunt-lesslint": "latest",
-    "grunt-jscs": "latest",
+    "grunt-lineending": "latest",
     "grunt-zip": "latest",
-    "grunt-lineending": "latest"
+    "rimraf": "2.5.4",
+    "typescript": "2.0.2"
   },
   "i18n": [
     "en",

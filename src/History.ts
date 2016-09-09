@@ -9,12 +9,12 @@ define(function (require) {
     // Local modules
     var moment = require("moment"),
         Strings = require("strings"),
-        ErrorHandler = require("src/ErrorHandler"),
-        Events = require("src/Events"),
-        EventEmitter = require("src/EventEmitter"),
-        Git = require("src/git/Git"),
-        HistoryViewer = require("src/HistoryViewer"),
-        Preferences = require("src/Preferences");
+        ErrorHandler = require("./ErrorHandler"),
+        Events = require("./Events"),
+        EventEmitter = require("./EventEmitter"),
+        Git = require("./git/Git"),
+        HistoryViewer = require("./HistoryViewer"),
+        Preferences = require("./Preferences");
 
     // Templates
     var gitPanelHistoryTemplate = require("text!templates/git-panel-history.html"),

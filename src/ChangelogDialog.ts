@@ -6,9 +6,9 @@ define(function (require, exports) {
         FileUtils                  = brackets.getModule("file/FileUtils"),
         Mustache                   = brackets.getModule("thirdparty/mustache/mustache"),
         StringUtils                = brackets.getModule("utils/StringUtils"),
-        Utils                      = require("src/Utils"),
+        Utils                      = require("./Utils"),
         Preferences                = require("./Preferences"),
-        Strings                    = require("../strings"),
+        Strings                    = require("strings"),
         changelogDialogTemplate    = require("text!templates/git-changelog-dialog.html"),
         marked                     = require("marked");
 

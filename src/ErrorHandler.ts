@@ -7,8 +7,8 @@ define(function (require, exports) {
         NativeApp                  = brackets.getModule("utils/NativeApp"),
         ExpectedError              = require("./ExpectedError"),
         ExtensionInfo              = require("./ExtensionInfo"),
-        Strings                    = require("../strings"),
-        Utils                      = require("src/Utils"),
+        Strings                    = require("strings"),
+        Utils                      = require("./Utils"),
         markdownReportTemplate     = require("text!templates/error-report.md"),
         errorDialogTemplate        = require("text!templates/git-error-dialog.html");
 

@@ -7,7 +7,7 @@ define(function (require, exports) {
 
     // Local modules
     var Promise         = require("bluebird"),
-        RemoteCommon    = require("src/dialogs/RemoteCommon"),
+        RemoteCommon    = require("./RemoteCommon"),
         Strings         = require("strings");
 
     // Templates

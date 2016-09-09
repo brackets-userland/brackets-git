@@ -14,15 +14,15 @@ define(function (require, exports) {
         DocumentManager         = brackets.getModule("document/DocumentManager"),
         MainViewManager         = brackets.getModule("view/MainViewManager");
 
-    var Git                     = require("src/git/Git"),
-        Events                  = require("src/Events"),
-        EventEmitter            = require("src/EventEmitter"),
-        ErrorHandler            = require("src/ErrorHandler"),
-        Panel                   = require("src/Panel"),
-        Preferences             = require("src/Preferences"),
-        ProgressDialog          = require("src/dialogs/Progress"),
+    var Git                     = require("./git/Git"),
+        Events                  = require("./Events"),
+        EventEmitter            = require("./EventEmitter"),
+        ErrorHandler            = require("./ErrorHandler"),
+        Panel                   = require("./Panel"),
+        Preferences             = require("./Preferences"),
+        ProgressDialog          = require("./dialogs/Progress"),
         Strings                 = require("strings"),
-        Utils                   = require("src/Utils"),
+        Utils                   = require("./Utils"),
         branchesMenuTemplate    = require("text!templates/git-branches-menu.html"),
         newBranchTemplate       = require("text!templates/branch-new-dialog.html"),
         mergeBranchTemplate     = require("text!templates/branch-merge-dialog.html");

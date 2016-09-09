@@ -9,17 +9,17 @@ define(function (require) {
         StringUtils     = brackets.getModule("utils/StringUtils");
 
     // Local modules
-    var ErrorHandler    = require("src/ErrorHandler"),
-        Events          = require("src/Events"),
-        EventEmitter    = require("src/EventEmitter"),
-        Git             = require("src/git/Git"),
-        Preferences     = require("src/Preferences"),
-        ProgressDialog  = require("src/dialogs/Progress"),
+    var ErrorHandler    = require("./ErrorHandler"),
+        Events          = require("./Events"),
+        EventEmitter    = require("./EventEmitter"),
+        Git             = require("./git/Git"),
+        Preferences     = require("./Preferences"),
+        ProgressDialog  = require("./dialogs/Progress"),
         Promise         = require("bluebird"),
-        PullDialog      = require("src/dialogs/Pull"),
-        PushDialog      = require("src/dialogs/Push"),
+        PullDialog      = require("./dialogs/Pull"),
+        PushDialog      = require("./dialogs/Push"),
         Strings         = require("strings"),
-        Utils           = require("src/Utils");
+        Utils           = require("./Utils");
 
     // Templates
     var gitRemotesPickerTemplate = require("text!templates/git-remotes-picker.html");

@@ -6,8 +6,8 @@ define(function (require, exports, module) {
 
     // Local modules
     var EventEmitter2 = require("eventemitter2"),
-        Preferences   = require("src/Preferences"),
-        Utils         = require("src/Utils");
+        Preferences   = require("./Preferences"),
+        Utils         = require("./Utils");
 
     // Module variables
     var debugOn = Preferences.get("debugMode");

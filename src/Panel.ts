@@ -21,7 +21,7 @@ define(function (require, exports) {
         WorkspaceManager   = brackets.getModule("view/WorkspaceManager"),
         ProjectManager     = brackets.getModule("project/ProjectManager"),
         StringUtils        = brackets.getModule("utils/StringUtils"),
-        Git                = require("src/git/Git"),
+        Git                = require("./git/Git"),
         Events             = require("./Events"),
         EventEmitter       = require("./EventEmitter"),
         Preferences        = require("./Preferences"),
@@ -30,9 +30,9 @@ define(function (require, exports) {
         Main               = require("./Main"),
         GutterManager      = require("./GutterManager"),
         Strings            = require("../strings"),
-        Utils              = require("src/Utils"),
+        Utils              = require("./Utils"),
         SettingsDialog     = require("./SettingsDialog"),
-        ProgressDialog     = require("src/dialogs/Progress"),
+        ProgressDialog     = require("./dialogs/Progress"),
         PANEL_COMMAND_ID   = "brackets-git.panel";
 
     var gitPanelTemplate            = require("text!templates/git-panel.html"),

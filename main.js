@@ -1,10 +1,3 @@
-/*!
- * Brackets Git Extension
- *
- * @author Martin Zagora
- * @license http://opensource.org/licenses/MIT
- */
-
 define(function (require, exports, module) {
 
     // Brackets modules
@@ -17,31 +10,31 @@ define(function (require, exports, module) {
         NodeConnection  = brackets.getModule("utils/NodeConnection");
 
     // Local modules
-    var SettingsDialog  = require("src/SettingsDialog"),
-        EventEmitter    = require("src/EventEmitter"),
-        Events          = require("src/Events"),
-        Main            = require("src/Main"),
-        Preferences     = require("src/Preferences"),
+    var SettingsDialog  = require("dist/SettingsDialog"),
+        EventEmitter    = require("dist/EventEmitter"),
+        Events          = require("dist/Events"),
+        Main            = require("dist/Main"),
+        Preferences     = require("dist/Preferences"),
         Strings         = require("strings");
 
     // Load extension modules that are not included by core
     var modules = [
-        "src/BracketsEvents",
-        "src/GutterManager",
-        "src/History",
-        "src/NoRepo",
-        "src/ProjectTreeMarks",
-        "src/Remotes",
-        "src/utils/Terminal"
+        "dist/BracketsEvents",
+        "dist/GutterManager",
+        "dist/History",
+        "dist/NoRepo",
+        "dist/ProjectTreeMarks",
+        "dist/Remotes",
+        "dist/utils/Terminal"
     ];
-    if (Preferences.get("useGitFtp")) { modules.push("src/ftp/Ftp"); }
-    if (Preferences.get("showTerminalIcon")) { modules.push("src/TerminalIcon"); }
+    if (Preferences.get("useGitFtp")) { modules.push("dist/ftp/Ftp"); }
+    if (Preferences.get("showTerminalIcon")) { modules.push("dist/TerminalIcon"); }
     require(modules);
 
     // Load CSS
     ExtensionUtils.loadStyleSheet(module, "styles/brackets-git.less");
     ExtensionUtils.loadStyleSheet(module, "styles/fonts/octicon.less");
-    if (Preferences.get("useGitFtp")) { ExtensionUtils.loadStyleSheet(module, "src/ftp/styles/ftp.less"); }
+    if (Preferences.get("useGitFtp")) { ExtensionUtils.loadStyleSheet(module, "dist/ftp/styles/ftp.less"); }
 
     // Register command and add it to the menu.
     var SETTINGS_COMMAND_ID = "brackets-git.settings";
@@ -84,37 +77,5 @@ define(function (require, exports, module) {
         // call the original method
         return loadDomains.apply(this, _.toArray(arguments).slice(1));
     });
-
-    // keeps checking errors coming into console and logs all installed extensions when node problem is encountered
-    /* remove, see https://github.com/zaggino/brackets-git/issues/906
-    window.console.error = _.wrap(window.console.error, function (consoleError) {
-        // inspect the error
-        var msg = arguments[1];
-        if (typeof msg !== "string") {
-            msg = msg.toString();
-        }
-        var hasCommonError = _.any([
-            "[Launcher] uncaught exception at top level, exiting.",
-            "Max connection attempts reached",
-            "[brackets-git] getInstalledExtensions"
-        ], function (str) {
-            return msg.indexOf(str) !== -1;
-        });
-        if (hasCommonError) {
-            var installedExtensions = ExtensionInfo.getInstalledExtensions();
-            _.each(nodeDomains, function (domains, key) {
-                if (installedExtensions[key]) {
-                    installedExtensions[key]["node-domains"] = "YES";
-                }
-            });
-            console.table(installedExtensions);
-            console.log("These files were using Brackets' NodeConnection:\n" + _.map(nodeDomains, function (arr) {
-                return arr.join("\n");
-            }).join("\n"));
-        }
-        // call the normal console error
-        return consoleError.apply(this, _.toArray(arguments).slice(1));
-    });
-    */
 
 });

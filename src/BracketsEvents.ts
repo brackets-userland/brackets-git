@@ -9,11 +9,11 @@ define(function (require) {
         MainViewManager = brackets.getModule("view/MainViewManager");
 
     // Local modules
-    var Events        = require("src/Events"),
-        EventEmitter  = require("src/EventEmitter"),
-        HistoryViewer = require("src/HistoryViewer"),
-        Preferences   = require("src/Preferences"),
-        Utils         = require("src/Utils");
+    var Events        = require("./Events"),
+        EventEmitter  = require("./EventEmitter"),
+        HistoryViewer = require("./HistoryViewer"),
+        Preferences   = require("./Preferences"),
+        Utils         = require("./Utils");
 
     // White-list for .git file watching
     var watchedInsideGit = ["HEAD"];

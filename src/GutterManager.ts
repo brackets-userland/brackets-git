@@ -9,10 +9,10 @@ define(function (require, exports) {
         DocumentManager = brackets.getModule("document/DocumentManager"),
         EditorManager   = brackets.getModule("editor/EditorManager"),
         MainViewManager = brackets.getModule("view/MainViewManager"),
-        ErrorHandler    = require("src/ErrorHandler"),
-        Events          = require("src/Events"),
-        EventEmitter    = require("src/EventEmitter"),
-        Git             = require("src/git/Git"),
+        ErrorHandler    = require("./ErrorHandler"),
+        Events          = require("./Events"),
+        EventEmitter    = require("./EventEmitter"),
+        Git             = require("./git/Git"),
         Preferences     = require("./Preferences");
 
     var gitAvailable = false,

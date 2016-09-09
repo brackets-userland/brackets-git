@@ -8,12 +8,12 @@ define(function (require) {
         StringUtils     = brackets.getModule("utils/StringUtils");
 
     // Local modules
-    var ErrorHandler  = require("src/ErrorHandler"),
-        Events        = require("src/Events"),
-        EventEmitter  = require("src/EventEmitter"),
+    var ErrorHandler  = require("../ErrorHandler"),
+        Events        = require("../Events"),
+        EventEmitter  = require("../EventEmitter"),
         Strings       = require("strings"),
-        Utils         = require("src/Utils"),
-        GitFtp        = require("src/ftp/GitFtp");
+        Utils         = require("../Utils"),
+        GitFtp        = require("./GitFtp");
 
     // Module variables
     var ftpScopesTemplate = require("text!src/ftp/templates/remotes-picker.html"),

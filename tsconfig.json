@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true,
+    "target": "es6",
+    "module": "amd",
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "newLine": "lf",
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "removeComments": false,
+    "strictNullChecks": false
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

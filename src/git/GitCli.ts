@@ -15,13 +15,13 @@ define(function (require, exports) {
 
     // Local modules
     var Promise       = require("bluebird"),
-        Cli           = require("src/Cli"),
-        ErrorHandler  = require("src/ErrorHandler"),
-        Events        = require("src/Events"),
-        EventEmitter  = require("src/EventEmitter"),
-        ExpectedError = require("src/ExpectedError"),
-        Preferences   = require("src/Preferences"),
-        Utils         = require("src/Utils");
+        Cli           = require("../Cli"),
+        ErrorHandler  = require("../ErrorHandler"),
+        Events        = require("../Events"),
+        EventEmitter  = require("../EventEmitter"),
+        ExpectedError = require("../ExpectedError"),
+        Preferences   = require("../Preferences"),
+        Utils         = require("../Utils");
 
     // Module variables
     var _gitPath = null,

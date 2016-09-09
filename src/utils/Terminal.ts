@@ -5,14 +5,14 @@ define(function (require) {
     var _ = brackets.getModule("thirdparty/lodash");
 
     // Local modules
-    var Cli           = require("src/Cli"),
-        ErrorHandler  = require("src/ErrorHandler"),
-        Events        = require("src/Events"),
-        EventEmitter  = require("src/EventEmitter"),
-        ExpectedError = require("src/ExpectedError"),
-        Preferences   = require("src/Preferences"),
+    var Cli           = require("../Cli"),
+        ErrorHandler  = require("../ErrorHandler"),
+        Events        = require("../Events"),
+        EventEmitter  = require("../EventEmitter"),
+        ExpectedError = require("../ExpectedError"),
+        Preferences   = require("../Preferences"),
         Promise       = require("bluebird"),
-        Utils         = require("src/Utils");
+        Utils         = require("../Utils");
 
     // Templates
 

@@ -5,11 +5,11 @@ define(function (require, exports) {
     var _ = brackets.getModule("thirdparty/lodash");
 
     // Local modules
-    var Cli         = require("src/Cli"),
-        Git         = require("src/git/Git"),
-        Preferences = require("src/Preferences"),
+    var Cli         = require("../Cli"),
+        Git         = require("../git/Git"),
+        Preferences = require("../Preferences"),
         Promise     = require("bluebird"),
-        Utils       = require("src/Utils");
+        Utils       = require("../Utils");
 
     // Module variables
     var standardGitPathsWin = [
