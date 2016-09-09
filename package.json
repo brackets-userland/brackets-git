@@ -25,7 +25,9 @@
     "url": "https://github.com/zaggino/brackets-git.git"
   },
   "scripts": {
+    "postinstall": "npm run build",
     "build": "rimraf ./dist && tsc",
+    "dev": "tsc --watch",
     "test": "grunt test"
   },
   "dependencies": {
