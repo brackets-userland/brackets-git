@@ -3,5 +3,9 @@ module.exports = {
     "parserOptions": {
         "sourceType": "module"
     },
-    "extends": "pureprofile"
+    "extends": "pureprofile",
+    "rules": {
+        "indent": ["error", 4],
+        "quotes": ["error", "double"]
+    }
 };

@@ -34,9 +34,10 @@
     "cross-spawn": "4.0.0"
   },
   "devDependencies": {
+    "@types/bluebird": "3.0.32",
     "@types/jquery": "1.10.31",
     "eslint": "3.4.0",
-    "eslint-config-pureprofile": "1.5.0",
+    "eslint-config-pureprofile": "2.0.0",
     "grunt": "latest",
     "grunt-contrib-jshint": "latest",
     "grunt-jscs": "latest",
