@@ -1,3 +1,10 @@
+/* eslint-env node */
+
+const _ = require("lodash");
+const exec = require("child_process").exec;
+const glob = require("glob");
+const path = require("path");
+
 module.exports = function (grunt) {
 
     grunt.initConfig({
@@ -82,6 +89,41 @@ module.exports = function (grunt) {
         }
     });
 
+    function runNpmInstall(where, callback) {
+        grunt.log.writeln("running npm install in " + where);
+        exec("npm install", { cwd: "./" + where }, (err, stdout, stderr) => {
+            if (err) {
+                grunt.log.error(stderr);
+            } else {
+                if (stdout) { grunt.log.writeln(stdout); }
+                grunt.log.writeln("finished npm install in " + where);
+            }
+            return err ? callback(stderr) : callback(null, stdout);
+        });
+    }
+
+    grunt.registerTask("npm-install-subfolders", "install node_modules in src subfolders", function () {
+        const doneWithTask = this.async();
+        const globs = ["src/**/package.json"];
+        const doneWithGlob = _.after(globs.length, doneWithTask);
+        globs.forEach(g => {
+            glob(g, (globErr, _files) => {
+                if (globErr) {
+                    grunt.log.error(globErr);
+                    return doneWithTask(false);
+                }
+                const files = _files.filter((p) => p.indexOf("node_modules") === -1);
+                const doneWithFile = _.after(files.length, doneWithGlob);
+                files.forEach((file) => {
+                    runNpmInstall(path.dirname(file), (err) => {
+                        return err ? doneWithTask(false) : doneWithFile();
+                    });
+                });
+            });
+        });
+
+    });
+
     grunt.loadNpmTasks("grunt-jslint");
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-lesslint");
@@ -89,6 +131,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-zip");
     grunt.loadNpmTasks("grunt-lineending");
 
+    grunt.registerTask("postinstall", ["npm-install-subfolders"]);
     grunt.registerTask("package", ["lineending", "zip"]);
     grunt.registerTask("jslint-test", ["jslint"]);
     grunt.registerTask("jshint-test", ["jshint"]);

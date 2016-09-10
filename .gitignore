@@ -1,5 +1,6 @@
 /dist/
 /node_modules/
+/src/node/node_modules/
 /.DS_Store
 /brackets-git.zip
 /git.log

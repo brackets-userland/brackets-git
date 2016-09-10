@@ -1,6 +1,10 @@
 {
-  "extends": "tslint:latest",
-  "rules": {
-    "interface-name": false
-  }
+    "extends": "tslint:latest",
+    "rules": {
+        "interface-name": false,
+        "no-var-requires": false,
+        "ordered-imports": false,
+        "trailing-comma": false,
+        "variable-name": false
+    }
 }

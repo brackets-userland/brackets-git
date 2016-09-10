@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@types/node": "^6.0.0"
+  }
+}

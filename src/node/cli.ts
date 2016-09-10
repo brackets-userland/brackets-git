@@ -1,72 +1,90 @@
 /* eslint-env node */
+/* eslint no-console:0 */
 
 import * as fs from "fs";
-import * as ChildProcess from "child_process";
-import * as crossSpawn from 'cross-spawn';
-import * as ProcessUtils from "./processUtils";
+import { exec, ChildProcess } from "child_process";
+import * as ProcessUtils from "./process-utils";
 
-let domainName = "brackets-git";
-let domainManager = null;
-let processMap = {};
-let resolvedPaths = {};
+const crossSpawn = require("cross-spawn");
+const domainName = "brackets-git";
+const processMap: { [id: number]: ChildProcess } = {};
+const resolvedPaths: { [path: string]: string } = {};
+const fixEOL = (str: string) => str[str.length - 1] === "\n" ? str.slice(0, -1) : str;
+const fixCommandForExec = (command: string) => {
+    // execute commands have to be escaped, spawn does this automatically and will fail if cmd is escaped
+    return command[0] !== "\"" || command[command.length - 1] !== "\"" ? "\"" + command + "\"" : command;
+};
 
-function fixEOL(str) {
-    if (str[str.length - 1] === "\n") {
-        str = str.slice(0, -1);
-    }
-    return str;
+/* eslint-disable */
+export interface DomainManager {
+    emitEvent: Function;
+    hasDomain: Function;
+    registerDomain: Function;
+    registerCommand: Function;
+    registerEvent: Function;
 }
+/* eslint-enable */
+
+let domainManager: DomainManager | null;
 
 // handler with ChildProcess.exec
 // this won't handle cases where process outputs a large string
-function execute(directory, command, args, opts, callback) {
-    // execute commands have to be escaped, spawn does this automatically and will fail if cmd is escaped
-    if (command[0] !== "\"" || command[command.length - 1] !== "\"") {
-        command = "\"" + command + "\"";
-    }
+function execute(
+    directory: string,
+    command: string,
+    args: string[],
+    opts: { cliId: number },
+    callback: (stderr: string | null, stdout: string | null) => void
+) {
     // http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
-    var toExec = command + " " + args.join(" ");
-    var child = ChildProcess.exec(toExec, {
+    const toExec = fixCommandForExec(command) + " " + args.join(" ");
+    const child = exec(toExec, {
         cwd: directory,
         maxBuffer: 20 * 1024 * 1024
-    }, function (err, stdout, stderr) {
+    }, (err, stdout, stderr) => {
         delete processMap[opts.cliId];
-        callback(err ? fixEOL(stderr) : undefined, err ? undefined : fixEOL(stdout));
+        callback(err ? fixEOL(stderr) : null, err ? null : fixEOL(stdout));
     });
     processMap[opts.cliId] = child;
 }
 
 // handler with cross-spawn
-function join(arr) {
-    var result, index = 0, length;
-    length = arr.reduce(function (l, b) {
-        return l + b.length;
-    }, 0);
-    result = new Buffer(length);
-    arr.forEach(function (b) {
+function join(arr: Buffer[]) {
+    let index = 0;
+    const length = arr.reduce((l, b) => l + b.length, 0);
+    const result = new Buffer(length);
+    arr.forEach((b) => {
         b.copy(result, index);
         index += b.length;
     });
     return fixEOL(result.toString("utf8"));
 }
 
-function spawn(directory, command, args, opts, callback) {
+function spawn(
+    directory: string,
+    command: string,
+    args: string[],
+    opts: { cliId: number, watchProgress: boolean },
+    callback: (stderr: string | null, stdout: string | null) => void
+) {
     // https://github.com/creationix/node-git
-    var child = crossSpawn(command, args, {
+    const child = crossSpawn(command, args, {
         cwd: directory
     });
-    child.on("error", function (err) {
-        callback(err.stack, undefined);
+    child.on("error", (err: NodeJS.ErrnoException) => {
+        callback(err.stack || err.toString(), null);
     });
 
     processMap[opts.cliId] = child;
 
-    var exitCode, stdout = [], stderr = [];
-    child.stdout.addListener("data", function (text) {
+    let exitCode: number;
+    const stdout: Buffer[] = [];
+    const stderr: Buffer[] = [];
+    child.stdout.addListener("data", (text: Buffer) => {
         stdout[stdout.length] = text;
     });
-    child.stderr.addListener("data", function (text) {
-        if (opts.watchProgress) {
+    child.stderr.addListener("data", (text: Buffer) => {
+        if (opts.watchProgress && domainManager) {
             domainManager.emitEvent(domainName, "progress", [
                 opts.cliId,
                 (new Date()).getTime(),
@@ -75,68 +93,108 @@ function spawn(directory, command, args, opts, callback) {
         }
         stderr[stderr.length] = text;
     });
-    child.addListener("exit", function (code) {
+    child.addListener("exit", (code: number) => {
         exitCode = code;
     });
-    child.addListener("close", function () {
+    child.addListener("close", () => {
         delete processMap[opts.cliId];
-        callback(exitCode > 0 ? join(stderr) : undefined,
-                 exitCode > 0 ? undefined : join(stdout));
+        callback(exitCode > 0 ? join(stderr) : null,
+                 exitCode > 0 ? null : join(stdout));
     });
     child.stdin.end();
 }
 
-function doIfExists(method, directory, command, args, opts, callback) {
+function doIfExists(
+    method: Function,
+    directory: string,
+    command: string,
+    args: string[],
+    opts: {},
+    callback: (stderr: string | null, stdout: string | null) => void
+) {
     // do not call executableExists if we already know it exists
     if (resolvedPaths[command]) {
         return method(directory, resolvedPaths[command], args, opts, callback);
     }
 
-    ProcessUtils.executableExists(command, function (err, exists, resolvedPath) {
-        if (exists) {
-            resolvedPaths[command] = resolvedPath;
-            return method(directory, resolvedPath, args, opts, callback);
-        } else {
-            callback("ProcessUtils can't resolve the path requested: " + command);
+    ProcessUtils.executableExists(command, (err, exists, resolvedPath) => {
+        if (err || !exists || !resolvedPath) {
+            return callback("ProcessUtils can't resolve the path requested: " + command, null);
         }
+        resolvedPaths[command] = resolvedPath;
+        return method(directory, resolvedPath, args, opts, callback);
     });
 }
 
-function executeIfExists(directory, command, args, opts, callback) {
+function executeIfExists(
+    directory: string,
+    command: string,
+    args: string[],
+    opts: {},
+    callback: (stderr: string | null, stdout: string | null) => void
+) {
     return doIfExists(execute, directory, command, args, opts, callback);
 }
 
-function spawnIfExists(directory, command, args, opts, callback) {
+function spawnIfExists(
+    directory: string,
+    command: string,
+    args: string[],
+    opts: {},
+    callback: (stderr: string | null, stdout: string | null) => void
+) {
     return doIfExists(spawn, directory, command, args, opts, callback);
 }
 
-function kill(cliId, callback) {
-    var process = processMap[cliId];
+function kill(
+    cliId: number,
+    callback: (stderr: string | null, success: boolean) => void
+) {
+    const process = processMap[cliId];
     if (!process) {
-        return callback("Couldn't find process to kill with ID:" + cliId);
+        return callback("Couldn't find process to kill with ID:" + cliId, false);
     }
     delete processMap[cliId];
-    ProcessUtils.getChildrenOfPid(process.pid, function (err, children) {
+    ProcessUtils.getChildrenOfPid(process.pid, (err, children) => {
+        if (err) {
+            return callback(err, false);
+        }
         // kill also parent process
         children.push(process.pid);
-        children.forEach(function (pid) {
-            ProcessUtils.killSingleProcess(pid);
+        children.forEach((pid) => {
+            ProcessUtils.killSingleProcess(pid, (stderr, stdout) => {
+                if (stderr) {
+                    console.warn(`killSingleProcess -> ${stderr}`);
+                }
+            });
         });
+        callback(null, true);
     });
 }
 
-function which(directory, filePath, args, opts, callback) {
-    ProcessUtils.executableExists(filePath, function (err, exists, resolvedPath) {
-        if (exists) {
-            callback(null, resolvedPath);
-        } else {
-            callback("ProcessUtils can't resolve the path requested: " + filePath);
+function which(
+    directory: string,
+    filePath: string,
+    args: string[],
+    opts: {},
+    callback: (stderr: string | null, stdout: string | null) => void
+) {
+    ProcessUtils.executableExists(filePath, (err, exists, resolvedPath) => {
+        if (err || !exists) {
+            return callback("ProcessUtils can't resolve the path requested: " + filePath, null);
         }
+        callback(null, resolvedPath);
     });
 }
 
-function pathExists(directory, path, args, opts, callback) {
-    fs.exists(path, function (exists) {
+function pathExists(
+    directory: string,
+    path: string,
+    args: string[],
+    opts: {},
+    callback: (stderr: string | null, exists: boolean) => void
+) {
+    fs.exists(path, (exists) => {
         callback(null, exists);
     });
 }
@@ -145,7 +203,7 @@ function pathExists(directory, path, args, opts, callback) {
  * Initializes the domain.
  * @param {DomainManager} DomainManager for the server
  */
-export function init(_domainManager) {
+export function init(_domainManager: DomainManager) {
     domainManager = _domainManager;
 
     if (!domainManager.hasDomain(domainName)) {
@@ -250,4 +308,4 @@ export function init(_domainManager) {
             { name: "message", type: "string" }
         ]
     );
-};
+}

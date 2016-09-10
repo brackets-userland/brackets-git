@@ -8,12 +8,12 @@
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "newLine": "lf",
-    "noFallthroughCasesInSwitch": false,
-    "noImplicitAny": false,
-    "noImplicitReturns": false,
-    "noUnusedLocals": false,
-    "removeComments": false,
-    "strictNullChecks": false
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "removeComments": true,
+    "strictNullChecks": true
   },
   "include": [
     "./**/*"

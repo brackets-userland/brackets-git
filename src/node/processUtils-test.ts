@@ -1,6 +1,6 @@
 /* eslint-env node */
 
-import * as ProcessUtils from "./ProcessUtils";
+import * as ProcessUtils from "./process-utils";
 
 /*
 var pid = 5064;

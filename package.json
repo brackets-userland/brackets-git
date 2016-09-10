@@ -25,21 +25,25 @@
     "url": "https://github.com/zaggino/brackets-git.git"
   },
   "scripts": {
-    "postinstall": "npm run build",
-    "build": "rimraf ./dist && tsc && tsc -p src/node",
+    "postinstall": "grunt postinstall && npm run build",
+    "build": "rimraf ./dist && npm run tsc-projects",
+    "tsc-projects": "concurrently \"tsc\" \"tsc -p src/node\"",
     "dev": "concurrently \"tsc --watch\" \"tsc -p src/node --watch\"",
     "test": "grunt test"
   },
   "dependencies": {
     "cross-spawn": "4.0.0",
+    "lodash": "4.15.0",
     "which": "1.0.5"
   },
   "devDependencies": {
     "@types/bluebird": "3.0.32",
     "@types/jquery": "1.10.31",
+    "@types/which": "1.0.27",
     "concurrently": "2.2.0",
     "eslint": "3.4.0",
     "eslint-config-pureprofile": "2.0.0",
+    "glob": "7.0.6",
     "grunt": "latest",
     "grunt-contrib-jshint": "latest",
     "grunt-jscs": "latest",
