@@ -7,7 +7,6 @@ import * as Preferences from "../Preferences";
 import * as Promise from "bluebird";
 import * as Utils from "../Utils";
 
-// Brackets modules
 var _ = brackets.getModule("thirdparty/lodash");
 
 // Converts UNC (Samba) urls from `//server/` to `\\server\`

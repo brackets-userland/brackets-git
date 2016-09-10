@@ -11,7 +11,7 @@ define(function (require, exports, module) {
         Utils         = require("./Utils");
 
     var moduleDirectory   = ExtensionUtils.getModulePath(module),
-        domainModulePath  = moduleDirectory + "domains/cli",
+        domainModulePath  = moduleDirectory + "node/cli",
         debugOn           = Preferences.get("debugMode"),
         gitTimeout        = Preferences.get("gitTimeout") * 1000,
         domainName        = "brackets-git",

@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
+    "outDir": "../../dist/node",
+    "rootDir": ".",
     "sourceMap": true,
     "target": "es6",
-    "module": "amd",
+    "module": "commonjs",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "newLine": "lf",
@@ -16,9 +16,6 @@
     "strictNullChecks": false
   },
   "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "src/node/**/*"
+    "./**/*"
   ]
 }

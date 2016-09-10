@@ -1,7 +1,9 @@
-var exec  = require("child_process").exec,
-    fs    = require("fs"),
-    Path  = require("path"),
-    which = require("../../thirdparty/which");
+/* eslint-env node */
+
+import { exec } from "child_process";
+import * as fs from "fs";
+import * as Path from "path";
+import * as which from "which";
 
 var isWin = /^win/.test(process.platform);
 var noop = function () {};
@@ -25,7 +27,7 @@ function findChildren(arr, pid) {
     return result;
 }
 
-function killSingleProcess(pid, callback) {
+export function killSingleProcess(pid, callback) {
     callback = callback || noop;
     pid = pid.toString();
 
@@ -42,7 +44,7 @@ function killSingleProcess(pid, callback) {
     }
 }
 
-function getChildrenOfPid(pid, callback) {
+export function getChildrenOfPid(pid, callback) {
     callback = callback || noop;
     pid = pid.toString();
 
@@ -83,7 +85,7 @@ function getChildrenOfPid(pid, callback) {
     }
 }
 
-function executableExists(filename, dir, callback) {
+export function executableExists(filename, dir, callback) {
     if (typeof dir === "function") {
         callback = dir;
         dir = "";
@@ -108,7 +110,3 @@ function executableExists(filename, dir, callback) {
         });
     });
 }
-
-exports.getChildrenOfPid = getChildrenOfPid;
-exports.killSingleProcess = killSingleProcess;
-exports.executableExists = executableExists;

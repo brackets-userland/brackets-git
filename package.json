@@ -26,16 +26,18 @@
   },
   "scripts": {
     "postinstall": "npm run build",
-    "build": "rimraf ./dist && tsc",
-    "dev": "tsc --watch",
+    "build": "rimraf ./dist && tsc && tsc -p src/node",
+    "dev": "concurrently \"tsc --watch\" \"tsc -p src/node --watch\"",
     "test": "grunt test"
   },
   "dependencies": {
-    "cross-spawn": "4.0.0"
+    "cross-spawn": "4.0.0",
+    "which": "1.0.5"
   },
   "devDependencies": {
     "@types/bluebird": "3.0.32",
     "@types/jquery": "1.10.31",
+    "concurrently": "2.2.0",
     "eslint": "3.4.0",
     "eslint-config-pureprofile": "2.0.0",
     "grunt": "latest",

@@ -14,12 +14,10 @@ import * as ExpectedError from "../ExpectedError";
 import * as Preferences from "../Preferences";
 import * as Utils from "../Utils";
 
-// Brackets modules
 var _           = brackets.getModule("thirdparty/lodash"),
     FileSystem  = brackets.getModule("filesystem/FileSystem"),
     FileUtils   = brackets.getModule("file/FileUtils");
 
-// Module variables
 var _gitPath = null,
     _gitQueue = [],
     _gitQueueBusy = false;
@@ -40,7 +38,6 @@ export const FILE_STATUS = {
 // This SHA1 represents the empty tree. You get it using `git mktree < /dev/null`
 var EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
-// Implementation
 function getGitPath() {
     if (_gitPath) { return _gitPath; }
     _gitPath = Preferences.get("gitPath");

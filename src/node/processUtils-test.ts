@@ -1,4 +1,6 @@
-var ProcessUtils = require("./ProcessUtils");
+/* eslint-env node */
+
+import * as ProcessUtils from "./ProcessUtils";
 
 /*
 var pid = 5064;

@@ -4,10 +4,8 @@ import * as Preferences from "../Preferences";
 import * as Promise from "bluebird";
 import * as Utils from "../Utils";
 
-// Brackets modules
 var _ = brackets.getModule("thirdparty/lodash");
 
-// Module variables
 var standardGitPathsWin = [
     "C:\\Program Files (x86)\\Git\\cmd\\git.exe",
     "C:\\Program Files\\Git\\cmd\\git.exe"
@@ -19,7 +17,6 @@ var standardGitPathsNonWin = [
     "/usr/bin/git"
 ];
 
-// Implementation
 export function findGit() {
     return new Promise(function (resolve, reject) {
 
