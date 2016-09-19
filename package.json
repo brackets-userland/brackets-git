@@ -29,7 +29,10 @@
     "build": "rimraf ./dist && npm run tsc-projects",
     "tsc-projects": "concurrently \"tsc\" \"tsc -p src/node\"",
     "dev": "concurrently \"tsc --watch\" \"tsc -p src/node --watch\"",
-    "test": "grunt test"
+    "test": "npm run build && npm run eslint && npm run tslint && npm run tslint-node",
+    "eslint": "eslint .",
+    "tslint": "tslint -c tslint.json --project tsconfig.json",
+    "tslint-node": "tslint -c tslint.json --project src/node/tsconfig.json"
   },
   "dependencies": {
     "cross-spawn": "4.0.0",
