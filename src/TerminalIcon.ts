@@ -1,13 +1,8 @@
-define(function (require) {
+/* global $ */
 
-    // Local modules
-    var Events        = require("./Events"),
-        EventEmitter  = require("./EventEmitter").default;
+import * as Events from "./Events";
+import EventEmitter from "./EventEmitter";
 
-    // Icon element
-    var $terminalIcon = $("<a id='git-toolbar-terminalicon' href='#'></a>").appendTo("#main-toolbar .buttons");
-
-    // Icon event
-    $terminalIcon.on("click", EventEmitter.emitFactory(Events.TERMINAL_OPEN));
-
-});
+$("<a id='git-toolbar-terminalicon' href='#'></a>")
+    .appendTo("#main-toolbar .buttons")
+    .on("click", EventEmitter.emitFactory(Events.TERMINAL_OPEN));

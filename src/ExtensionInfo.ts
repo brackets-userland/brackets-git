@@ -1,82 +1,80 @@
-define(function (require, exports, module) {
-    "use strict";
+import { _, ExtensionManager, ExtensionUtils, FileSystem, FileUtils } from "./brackets-modules";
+import * as Promise from "bluebird";
 
-    var _                = brackets.getModule("thirdparty/lodash"),
-        ExtensionManager = brackets.getModule("extensibility/ExtensionManager"),
-        ExtensionUtils   = brackets.getModule("utils/ExtensionUtils"),
-        FileSystem       = brackets.getModule("filesystem/FileSystem"),
-        FileUtils        = brackets.getModule("file/FileUtils");
+var packageJson;
 
-    var Promise           = require("bluebird");
+function getPackageJsonPath() {
+    const extensionPath = window.bracketsGit.getExtensionPath();
+    return extensionPath + "package.json";
+}
 
-    var moduleDirectory   = ExtensionUtils.getModulePath(module),
-        packageJsonPath   = moduleDirectory.slice(0, -1 * "dist/".length) + "package.json",
-        packageJson;
+// immediately read the package json info
+var jsonPromise;
 
-    // immediately read the package json info
-    var readPromise = FileUtils.readAsText(FileSystem.getFileForPath(packageJsonPath)),
-        jsonPromise = Promise.cast(readPromise)
-            .then(function (content) {
-                packageJson = JSON.parse(content);
-                return packageJson;
-            });
-
-    // gets the promise for extension info which will be resolved once the package.json is read
-    exports.get = function () {
+// gets the promise for extension info which will be resolved once the package.json is read
+export function get() {
+    if (jsonPromise) {
         return jsonPromise;
-    };
-
-    // gets the extension info from package.json, should be safe to call once extension is loaded
-    exports.getSync = function () {
-        if (packageJson) {
+    }
+    var readPromise = FileUtils.readAsText(FileSystem.getFileForPath(getPackageJsonPath()));
+    jsonPromise = Promise.cast(readPromise)
+        .then(function (content) {
+            packageJson = JSON.parse(content);
             return packageJson;
-        } else {
-            throw new Error("[brackets-git] package.json is not loaded yet!");
-        }
-    };
+        });
+    return jsonPromise;
+};
 
-    // triggers the registry download if registry hasn't been downloaded yet
-    function loadRegistryInfo() {
+// gets the extension info from package.json, should be safe to call once extension is loaded
+export function getSync() {
+    if (packageJson) {
+        return packageJson;
+    } else {
+        throw new Error("[brackets-git] package.json is not loaded yet!");
+    }
+};
+
+// triggers the registry download if registry hasn't been downloaded yet
+function loadRegistryInfo() {
+    var registryInfo = ExtensionManager.extensions[packageJson.name].registryInfo;
+    if (!registryInfo) {
+        return Promise.cast(ExtensionManager.downloadRegistry());
+    } else {
+        return Promise.resolve();
+    }
+}
+
+// gets the latest version that is available in the extension registry or null if something fails
+function getLatestRegistryVersion() {
+    return loadRegistryInfo().then(function () {
         var registryInfo = ExtensionManager.extensions[packageJson.name].registryInfo;
-        if (!registryInfo) {
-            return Promise.cast(ExtensionManager.downloadRegistry());
+        return registryInfo.metadata.version;
+    }).catch(function () {
+        return null;
+    });
+}
+
+// responds to callback with: hasLatestVersion, currentVersion, latestVersion
+export function hasLatestVersion(callback) {
+    getLatestRegistryVersion().then(function (registryVersion) {
+        if (registryVersion === null) {
+            callback(true, packageJson.version, "unknown");
         } else {
-            return Promise.resolve();
+            var has = packageJson.version >= registryVersion;
+            callback(has, packageJson.version, registryVersion);
         }
-    }
+    });
+};
 
-    // gets the latest version that is available in the extension registry or null if something fails
-    function getLatestRegistryVersion() {
-        return loadRegistryInfo().then(function () {
-            var registryInfo = ExtensionManager.extensions[packageJson.name].registryInfo;
-            return registryInfo.metadata.version;
-        }).catch(function () {
-            return null;
-        });
-    }
-
-    // responds to callback with: hasLatestVersion, currentVersion, latestVersion
-    exports.hasLatestVersion = function (callback) {
-        getLatestRegistryVersion().then(function (registryVersion) {
-            if (registryVersion === null) {
-                callback(true, packageJson.version, "unknown");
-            } else {
-                var has = packageJson.version >= registryVersion;
-                callback(has, packageJson.version, registryVersion);
-            }
-        });
-    };
-
-    exports.getInstalledExtensions = function () {
-        var rv = {};
-        _.each(ExtensionManager.extensions, function (obj, name) {
-            if (obj.installInfo && obj.installInfo.locationType !== "default") {
-                rv[name] = {
-                    name: obj.installInfo.metadata.title,
-                    version: obj.installInfo.metadata.version
-                };
-            }
-        });
-        return rv;
-    };
-});
+export function getInstalledExtensions() {
+    var rv = {};
+    _.each(ExtensionManager.extensions, function (obj, name) {
+        if (obj.installInfo && obj.installInfo.locationType !== "default") {
+            rv[name] = {
+                name: obj.installInfo.metadata.title,
+                version: obj.installInfo.metadata.version
+            };
+        }
+    });
+    return rv;
+};

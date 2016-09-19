@@ -1,145 +1,131 @@
-define(function (require) {
+import { FileSystem, FileUtils, ProjectManager } from "./brackets-modules";
+import * as Promise from "bluebird";
+import * as ErrorHandler from "./ErrorHandler";
+import * as Events from "./Events";
+import EventEmitter from "./EventEmitter";
+import * as ExpectedError from "./ExpectedError";
+import * as ProgressDialog from "./dialogs/Progress";
+import * as CloneDialog from "./dialogs/Clone";
+import * as Git from "./git/Git";
+import * as Preferences from "./Preferences";
+import * as Utils from "./Utils";
 
-    // Brackets modules
-    var FileSystem      = brackets.getModule("filesystem/FileSystem"),
-        FileUtils       = brackets.getModule("file/FileUtils"),
-        ProjectManager  = brackets.getModule("project/ProjectManager");
+var gitignoreTemplate = require("text!templates/default-gitignore");
 
-    // Local modules
-    var Promise         = require("bluebird"),
-        ErrorHandler    = require("./ErrorHandler"),
-        Events          = require("./Events"),
-        EventEmitter    = require("./EventEmitter").default,
-        ExpectedError   = require("./ExpectedError"),
-        ProgressDialog  = require("./dialogs/Progress"),
-        CloneDialog     = require("./dialogs/Clone"),
-        Git             = require("./git/Git"),
-        Preferences     = require("./Preferences"),
-        Utils           = require("./Utils");
+function createGitIgnore() {
+    var gitIgnorePath = Preferences.get("currentGitRoot") + ".gitignore";
+    return Utils.pathExists(gitIgnorePath).then(function (exists) {
+        if (!exists) {
+            return Promise.cast(FileUtils.writeText(FileSystem.getFileForPath(gitIgnorePath), gitignoreTemplate));
+        }
+    });
+}
 
-    // Templates
-    var gitignoreTemplate = require("text!templates/default-gitignore");
+function stageGitIgnore(msg) {
+    return createGitIgnore().then(function () {
+        return Git.stage(".gitignore");
+    });
+}
 
-    // Module variables
+function handleGitInit() {
+    Utils.isProjectRootWritable().then(function (writable) {
+        if (!writable) {
+            throw new ExpectedError("Folder " + Utils.getProjectRoot() + " is not writable!");
+        }
+        return Git.init().catch(function (err) {
 
-    // Implementation
-
-    function createGitIgnore() {
-        var gitIgnorePath = Preferences.get("currentGitRoot") + ".gitignore";
-        return Utils.pathExists(gitIgnorePath).then(function (exists) {
-            if (!exists) {
-                return Promise.cast(FileUtils.writeText(FileSystem.getFileForPath(gitIgnorePath), gitignoreTemplate));
-            }
-        });
-    }
-
-    function stageGitIgnore(msg) {
-        return createGitIgnore().then(function () {
-            return Git.stage(".gitignore");
-        });
-    }
-
-    function handleGitInit() {
-        Utils.isProjectRootWritable().then(function (writable) {
-            if (!writable) {
-                throw new ExpectedError("Folder " + Utils.getProjectRoot() + " is not writable!");
-            }
-            return Git.init().catch(function (err) {
-
-                if (ErrorHandler.contains(err, "Please tell me who you are")) {
-                    var defer = Promise.defer();
-                    EventEmitter.emit(Events.GIT_CHANGE_USERNAME, null, function () {
-                        EventEmitter.emit(Events.GIT_CHANGE_EMAIL, null, function () {
-                            Git.init().then(function (result) {
-                                defer.resolve(result);
-                            }).catch(function (err) {
-                                defer.reject(err);
-                            });
+            if (ErrorHandler.contains(err, "Please tell me who you are")) {
+                var defer = Promise.defer();
+                EventEmitter.emit(Events.GIT_CHANGE_USERNAME, null, function () {
+                    EventEmitter.emit(Events.GIT_CHANGE_EMAIL, null, function () {
+                        Git.init().then(function (result) {
+                            defer.resolve(result);
+                        }).catch(function (err) {
+                            defer.reject(err);
                         });
                     });
-                    return defer.promise;
+                });
+                return defer.promise;
+            }
+
+            throw err;
+
+        });
+    }).then(function () {
+        return stageGitIgnore("Initial staging");
+    }).catch(function (err) {
+        ErrorHandler.showError(err, "Initializing new repository failed");
+    }).then(function () {
+        EventEmitter.emit(Events.REFRESH_ALL);
+    });
+}
+
+// This checks if the project root is empty (to let Git clone repositories)
+function isProjectRootEmpty() {
+    return new Promise(function (resolve, reject) {
+        ProjectManager.getProjectRoot().getContents(function (err, entries) {
+            if (err) {
+                return reject(err);
+            }
+            resolve(entries.length === 0);
+        });
+    });
+}
+
+function handleGitClone() {
+    var $gitPanel = $("#git-panel");
+    var $cloneButton = $gitPanel.find(".git-clone");
+    $cloneButton.prop("disabled", true);
+    isProjectRootEmpty().then(function (isEmpty) {
+        if (isEmpty) {
+            CloneDialog.show().then(function (cloneConfig) {
+                var q = Promise.resolve();
+                // put username and password into remote url
+                var remoteUrl = cloneConfig.remoteUrl;
+                if (cloneConfig.remoteUrlNew) {
+                    remoteUrl = cloneConfig.remoteUrlNew;
                 }
 
-                throw err;
-
-            });
-        }).then(function () {
-            return stageGitIgnore("Initial staging");
-        }).catch(function (err) {
-            ErrorHandler.showError(err, "Initializing new repository failed");
-        }).then(function () {
-            EventEmitter.emit(Events.REFRESH_ALL);
-        });
-    }
-
-    // This checks if the project root is empty (to let Git clone repositories)
-    function isProjectRootEmpty() {
-        return new Promise(function (resolve, reject) {
-            ProjectManager.getProjectRoot().getContents(function (err, entries) {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(entries.length === 0);
-            });
-        });
-    }
-
-    function handleGitClone() {
-        var $gitPanel = $("#git-panel");
-        var $cloneButton = $gitPanel.find(".git-clone");
-        $cloneButton.prop("disabled", true);
-        isProjectRootEmpty().then(function (isEmpty) {
-            if (isEmpty) {
-                CloneDialog.show().then(function (cloneConfig) {
-                    var q = Promise.resolve();
-                    // put username and password into remote url
-                    var remoteUrl = cloneConfig.remoteUrl;
-                    if (cloneConfig.remoteUrlNew) {
-                        remoteUrl = cloneConfig.remoteUrlNew;
-                    }
-
-                    // do the clone
-                    q = q.then(function () {
-                        return ProgressDialog.show(Git.clone(remoteUrl, "."));
-                    }).catch(function (err) {
-                        ErrorHandler.showError(err, "Cloning remote repository failed!");
-                    });
-
-                    // restore original url if desired
-                    if (cloneConfig.remoteUrlRestore) {
-                        q = q.then(function () {
-                            return Git.setRemoteUrl(cloneConfig.remote, cloneConfig.remoteUrlRestore);
-                        });
-                    }
-
-                    return q.finally(function () {
-                        EventEmitter.emit(Events.REFRESH_ALL);
-                    });
+                // do the clone
+                q = q.then(function () {
+                    return ProgressDialog.show(Git.clone(remoteUrl, "."));
                 }).catch(function (err) {
-                    // when dialog is cancelled, there's no error
-                    if (err) { ErrorHandler.showError(err, "Cloning remote repository failed!"); }
+                    ErrorHandler.showError(err, "Cloning remote repository failed!");
                 });
 
-            } else {
-                var err = new ExpectedError("Project root is not empty, be sure you have deleted hidden files");
-                ErrorHandler.showError(err, "Cloning remote repository failed!");
-            }
-        }).catch(function (err) {
-            ErrorHandler.showError(err);
-        }).finally(function () {
-            $cloneButton.prop("disabled", false);
-        });
-    }
+                // restore original url if desired
+                if (cloneConfig.remoteUrlRestore) {
+                    q = q.then(function () {
+                        return Git.setRemoteUrl(cloneConfig.remote, cloneConfig.remoteUrlRestore);
+                    });
+                }
 
-    // Event subscriptions
-    EventEmitter.on(Events.HANDLE_GIT_INIT, function () {
-        handleGitInit();
-    });
-    EventEmitter.on(Events.HANDLE_GIT_CLONE, function () {
-        handleGitClone();
-    });
-    EventEmitter.on(Events.GIT_NO_BRANCH_EXISTS, function () {
-        stageGitIgnore();
-    });
+                return q.finally(function () {
+                    EventEmitter.emit(Events.REFRESH_ALL);
+                });
+            }).catch(function (err) {
+                // when dialog is cancelled, there's no error
+                if (err) { ErrorHandler.showError(err, "Cloning remote repository failed!"); }
+            });
 
+        } else {
+            var err = new ExpectedError("Project root is not empty, be sure you have deleted hidden files");
+            ErrorHandler.showError(err, "Cloning remote repository failed!");
+        }
+    }).catch(function (err) {
+        ErrorHandler.showError(err);
+    }).finally(function () {
+        $cloneButton.prop("disabled", false);
+    });
+}
+
+// Event subscriptions
+EventEmitter.on(Events.HANDLE_GIT_INIT, function () {
+    handleGitInit();
+});
+EventEmitter.on(Events.HANDLE_GIT_CLONE, function () {
+    handleGitClone();
+});
+EventEmitter.on(Events.GIT_NO_BRANCH_EXISTS, function () {
+    stageGitIgnore();
 });

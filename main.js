@@ -21,6 +21,23 @@ define(function (require, exports, module) {
     require("text!templates/git-changelog-dialog.html");
     require("text!templates/error-report.md");
     require("text!templates/git-error-dialog.html");
+    require("text!templates/git-panel-history.html");
+    require("text!templates/git-panel-history-commits.html");
+    require("text!templates/history-viewer.html");
+    require("text!templates/history-viewer-files.html");
+    require("text!templates/default-gitignore");
+    require("text!templates/git-panel.html");
+    require("text!templates/git-panel-results.html");
+    require("text!templates/authors-dialog.html");
+    require("text!templates/git-commit-dialog.html");
+    require("text!templates/git-tag-dialog.html");
+    require("text!templates/git-diff-dialog.html");
+    require("text!templates/git-question-dialog.html");
+    require("text!templates/git-remotes-picker.html");
+    require("text!templates/git-settings-dialog.html");
+    require("text!templates/format-diff.html");
+    require("text!templates/git-question-dialog.html");
+    require("text!templates/git-output.html");
 
     // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),
