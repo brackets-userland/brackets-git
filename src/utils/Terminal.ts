@@ -1,7 +1,7 @@
 import * as Cli from "../Cli";
 import * as ErrorHandler from "../ErrorHandler";
 import * as Events from "../Events";
-import * as EventEmitter from "../EventEmitter";
+import EventEmitter from "../EventEmitter";
 import * as ExpectedError from "../ExpectedError";
 import * as Preferences from "../Preferences";
 import * as Promise from "bluebird";

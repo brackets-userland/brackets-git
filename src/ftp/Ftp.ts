@@ -1,6 +1,6 @@
 import * as ErrorHandler from "../ErrorHandler";
 import * as Events from "../Events";
-import * as EventEmitter from "../EventEmitter";
+import EventEmitter from "../EventEmitter";
 import * as Strings from "strings";
 import * as Utils from "../Utils";
 import * as GitFtp from "./GitFtp";

@@ -23,7 +23,7 @@ define(function (require, exports) {
         StringUtils        = brackets.getModule("utils/StringUtils"),
         Git                = require("./git/Git"),
         Events             = require("./Events"),
-        EventEmitter       = require("./EventEmitter"),
+        EventEmitter       = require("./EventEmitter").default,
         Preferences        = require("./Preferences"),
         ErrorHandler       = require("./ErrorHandler"),
         ExpectedError      = require("./ExpectedError"),

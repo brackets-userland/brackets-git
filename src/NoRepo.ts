@@ -9,7 +9,7 @@ define(function (require) {
     var Promise         = require("bluebird"),
         ErrorHandler    = require("./ErrorHandler"),
         Events          = require("./Events"),
-        EventEmitter    = require("./EventEmitter"),
+        EventEmitter    = require("./EventEmitter").default,
         ExpectedError   = require("./ExpectedError"),
         ProgressDialog  = require("./dialogs/Progress"),
         CloneDialog     = require("./dialogs/Clone"),

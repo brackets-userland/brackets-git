@@ -11,7 +11,7 @@ define(function (require, exports) {
         MainViewManager = brackets.getModule("view/MainViewManager"),
         ErrorHandler    = require("./ErrorHandler"),
         Events          = require("./Events"),
-        EventEmitter    = require("./EventEmitter"),
+        EventEmitter    = require("./EventEmitter").default,
         Git             = require("./git/Git"),
         Preferences     = require("./Preferences");
 

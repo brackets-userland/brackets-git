@@ -10,7 +10,7 @@ define(function (require, exports) {
 
     var ExpectedError     = require("./ExpectedError"),
         Events            = require("./Events"),
-        EventEmitter      = require("./EventEmitter"),
+        EventEmitter      = require("./EventEmitter").default,
         Strings           = require("strings"),
         ErrorHandler      = require("./ErrorHandler"),
         Panel             = require("./Panel"),

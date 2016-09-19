@@ -15,7 +15,7 @@ import {
 
 import * as Git from "./git/Git";
 import * as Events from "./Events";
-import * as EventEmitter from "./EventEmitter";
+import EventEmitter from "./EventEmitter";
 import * as ErrorHandler from "./ErrorHandler";
 import * as Panel from "./Panel";
 import * as Preferences from "./Preferences";

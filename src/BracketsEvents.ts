@@ -1,6 +1,6 @@
 import { _, DocumentManager, FileSystem, ProjectManager, MainViewManager } from "./brackets-modules";
 import * as Events from "./Events";
-import * as EventEmitter from "./EventEmitter";
+import EventEmitter from "./EventEmitter";
 import * as HistoryViewer from "./HistoryViewer";
 import * as Preferences from "./Preferences";
 import * as Utils from "./Utils";

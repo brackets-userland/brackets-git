@@ -5,7 +5,7 @@ define(function (require) {
         FileSystem        = brackets.getModule("filesystem/FileSystem"),
         ProjectManager    = brackets.getModule("project/ProjectManager");
 
-    var EventEmitter      = require("./EventEmitter"),
+    var EventEmitter      = require("./EventEmitter").default,
         Events            = require("./Events"),
         Git               = require("./git/Git"),
         Preferences       = require("./Preferences"),

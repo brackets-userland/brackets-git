@@ -19,6 +19,8 @@ define(function (require, exports, module) {
     require("text!templates/branch-new-dialog.html");
     require("text!templates/branch-merge-dialog.html");
     require("text!templates/git-changelog-dialog.html");
+    require("text!templates/error-report.md");
+    require("text!templates/git-error-dialog.html");
 
     // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),
@@ -31,11 +33,18 @@ define(function (require, exports, module) {
 
     // Local modules
     var SettingsDialog  = require("dist/SettingsDialog"),
-        EventEmitter    = require("dist/EventEmitter"),
+        EventEmitter    = require("dist/EventEmitter").default,
         Events          = require("dist/Events"),
         Main            = require("dist/Main"),
         Preferences     = require("dist/Preferences"),
         Strings         = require("strings");
+
+    window.bracketsGit = window.bracketsGit || {};
+    window.bracketsGit.getExtensionPath = function () {
+        return ExtensionUtils.getModulePath(module);
+    }
+    window.bracketsGit.EventEmitter = EventEmitter;
+    window.bracketsGit.Events = Events;
 
     // Load extension modules that are not included by core
     var modules = [
@@ -64,17 +73,6 @@ define(function (require, exports, module) {
     AppInit.appReady(function () {
         Main.init();
     });
-
-    // export API's for other extensions
-    if (typeof window === "object") {
-        window.bracketsGit = {
-            EventEmitter: EventEmitter,
-            Events: Events,
-            getInstalledExtensions: function () {
-                window.console.error("[brackets-git] getInstalledExtensions");
-            }
-        };
-    }
 
     var nodeDomains = {};
 

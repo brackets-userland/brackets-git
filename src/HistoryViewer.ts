@@ -8,7 +8,7 @@ define(function (require, exports) {
     var marked        = require("marked"),
         ErrorHandler  = require("./ErrorHandler"),
         Events        = require("./Events"),
-        EventEmitter  = require("./EventEmitter"),
+        EventEmitter  = require("./EventEmitter").default,
         Git           = require("./git/Git"),
         Preferences   = require("./Preferences"),
         Strings       = require("strings"),

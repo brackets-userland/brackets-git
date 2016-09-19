@@ -17,7 +17,7 @@ define(function (require, exports, module) {
     // Local modules
     var ErrorHandler    = require("./ErrorHandler"),
         Events          = require("./Events"),
-        EventEmitter    = require("./EventEmitter"),
+        EventEmitter    = require("./EventEmitter").default,
         Git             = require("./git/Git"),
         Preferences     = require("./Preferences"),
         Promise         = require("bluebird"),

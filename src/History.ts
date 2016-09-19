@@ -11,7 +11,7 @@ define(function (require) {
         Strings = require("strings"),
         ErrorHandler = require("./ErrorHandler"),
         Events = require("./Events"),
-        EventEmitter = require("./EventEmitter"),
+        EventEmitter = require("./EventEmitter").default,
         Git = require("./git/Git"),
         HistoryViewer = require("./HistoryViewer"),
         Preferences = require("./Preferences");
