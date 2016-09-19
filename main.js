@@ -1,5 +1,25 @@
 define(function (require, exports, module) {
 
+    // TODO: thirdparty module
+    require("bluebird");
+    require("eventemitter2");
+    require("marked");
+    require("md5");
+    require("moment");
+    require("URI");
+
+    // TODO: do a templates module
+    require("text!src/dialogs/templates/clone-dialog.html");
+    require("text!src/dialogs/templates/credentials-template.html");
+    require("text!src/dialogs/templates/progress-dialog.html");
+    require("text!src/dialogs/templates/pull-dialog.html");
+    require("text!src/dialogs/templates/push-dialog.html");
+    require("text!src/dialogs/templates/remotes-template.html");
+    require("text!templates/git-branches-menu.html");
+    require("text!templates/branch-new-dialog.html");
+    require("text!templates/branch-merge-dialog.html");
+    require("text!templates/git-changelog-dialog.html");
+
     // Brackets modules
     var _               = brackets.getModule("thirdparty/lodash"),
         AppInit         = brackets.getModule("utils/AppInit"),

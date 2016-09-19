@@ -3,8 +3,7 @@ import * as Git from "../git/Git";
 import * as Preferences from "../Preferences";
 import * as Promise from "bluebird";
 import * as Utils from "../Utils";
-
-var _ = brackets.getModule("thirdparty/lodash");
+import { _ } from "../brackets-modules";
 
 var standardGitPathsWin = [
     "C:\\Program Files (x86)\\Git\\cmd\\git.exe",

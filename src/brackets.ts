@@ -1,5 +1,3 @@
-declare const define: (f: Function) => void;
-
 declare const brackets: {
     platform: string;
     getModule: (path: string) => any;

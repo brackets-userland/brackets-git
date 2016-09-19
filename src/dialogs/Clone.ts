@@ -1,80 +1,69 @@
-define(function (require, exports) {
-    "use strict";
+import * as Promise from "bluebird";
+import * as RemoteCommon from "./RemoteCommon";
+import * as Strings from "strings";
 
-    // Brackets modules
-    var Dialogs = brackets.getModule("widgets/Dialogs"),
-        Mustache = brackets.getModule("thirdparty/mustache/mustache");
+var Dialogs = brackets.getModule("widgets/Dialogs"),
+    Mustache = brackets.getModule("thirdparty/mustache/mustache");
 
-    // Local modules
-    var Promise         = require("bluebird"),
-        RemoteCommon    = require("./RemoteCommon"),
-        Strings         = require("strings");
+var template            = require("text!src/dialogs/templates/clone-dialog.html"),
+    credentialsTemplate = require("text!src/dialogs/templates/credentials-template.html");
 
-    // Templates
-    var template            = require("text!src/dialogs/templates/clone-dialog.html"),
-        credentialsTemplate = require("text!src/dialogs/templates/credentials-template.html");
+var defer,
+    $cloneInput;
 
-    // Module variables
-    var defer,
-        $cloneInput;
+function _attachEvents($dialog) {
+    // Detect changes to URL, disable auth if not http
+    $cloneInput.on("keyup change", function () {
+        var $authInputs = $dialog.find("input[name='username'],input[name='password'],input[name='saveToUrl']");
+        if ($(this).val().length > 0) {
+            if (/^https?:/.test($(this).val())) {
+                $authInputs.prop("disabled", false);
 
-    // Implementation
-    function _attachEvents($dialog) {
-        // Detect changes to URL, disable auth if not http
-        $cloneInput.on("keyup change", function () {
-            var $authInputs = $dialog.find("input[name='username'],input[name='password'],input[name='saveToUrl']");
-            if ($(this).val().length > 0) {
-                if (/^https?:/.test($(this).val())) {
-                    $authInputs.prop("disabled", false);
-
-                    // Update the auth fields if the URL contains auth
-                    var auth = /:\/\/([^:]+):?([^@]*)@/.exec($(this).val());
-                    if (auth) {
-                        $("input[name=username]", $dialog).val(auth[1]);
-                        $("input[name=password]", $dialog).val(auth[2]);
-                    }
-                } else {
-                    $authInputs.prop("disabled", true);
+                // Update the auth fields if the URL contains auth
+                var auth = /:\/\/([^:]+):?([^@]*)@/.exec($(this).val());
+                if (auth) {
+                    $("input[name=username]", $dialog).val(auth[1]);
+                    $("input[name=password]", $dialog).val(auth[2]);
                 }
             } else {
-                $authInputs.prop("disabled", false);
+                $authInputs.prop("disabled", true);
             }
-        });
-        $cloneInput.focus();
-    }
+        } else {
+            $authInputs.prop("disabled", false);
+        }
+    });
+    $cloneInput.focus();
+}
 
-    function show() {
-        defer = Promise.defer();
+export function show() {
+    defer = Promise.defer();
 
-        var templateArgs = {
-            modeLabel: Strings.CLONE_REPOSITORY,
-            Strings: Strings
-        };
+    var templateArgs = {
+        modeLabel: Strings.CLONE_REPOSITORY,
+        Strings: Strings
+    };
 
-        var compiledTemplate = Mustache.render(template, templateArgs, {
-            credentials: credentialsTemplate
-        }),
-        dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-        $dialog = dialog.getElement();
+    var compiledTemplate = Mustache.render(template, templateArgs, {
+        credentials: credentialsTemplate
+    }),
+    dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
+    $dialog = dialog.getElement();
 
-        $cloneInput = $dialog.find("#git-clone-url");
+    $cloneInput = $dialog.find("#git-clone-url");
 
-        _attachEvents($dialog);
+    _attachEvents($dialog);
 
-        dialog.done(function (buttonId) {
-            if (buttonId === "ok") {
-                var cloneConfig = {};
-                cloneConfig.remote = "origin";
-                cloneConfig.remoteUrl = $cloneInput.val();
-                RemoteCommon.collectValues(cloneConfig, $dialog);
-                defer.resolve(cloneConfig);
-            } else {
-                defer.reject();
-            }
-        });
+    dialog.done(function (buttonId) {
+        if (buttonId === "ok") {
+            var cloneConfig = {};
+            cloneConfig.remote = "origin";
+            cloneConfig.remoteUrl = $cloneInput.val();
+            RemoteCommon.collectValues(cloneConfig, $dialog);
+            defer.resolve(cloneConfig);
+        } else {
+            defer.reject();
+        }
+    });
 
-        return defer.promise;
-    }
-
-    exports.show = show;
-});
+    return defer.promise;
+}
