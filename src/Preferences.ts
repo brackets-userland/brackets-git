@@ -51,16 +51,14 @@ _.each(defaultPreferences, function (definition, key) {
 });
 prefs.save();
 
-export function get(key) {
-    var location = defaultPreferences[key] ? PreferencesManager : StateManager;
-    arguments[0] = prefix + "." + key;
-    return location.get.apply(location, arguments);
+export function get(key, ...rest) {
+    const location = defaultPreferences[key] ? PreferencesManager : StateManager;
+    return location.get(prefix + "." + key, ...rest);
 }
 
-export function set(key) {
-    var location = defaultPreferences[key] ? PreferencesManager : StateManager;
-    arguments[0] = prefix + "." + key;
-    return location.set.apply(location, arguments);
+export function set(key, ...rest) {
+    const location = defaultPreferences[key] ? PreferencesManager : StateManager;
+    return location.set(prefix + "." + key, ...rest);
 }
 
 export function getAll() {

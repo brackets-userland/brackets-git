@@ -118,13 +118,11 @@ function logDebug(opts, debugInfo, method, type, out) {
     Utils.consoleDebug(msg);
 }
 
-export function cliHandler(method, cmd, args, opts, retry) {
+export function cliHandler(method, cmd, args = [], opts = {}, retry) {
     var cliId     = getNextCliId(),
         deferred  = Promise.defer();
 
     deferredMap[cliId] = deferred;
-    args = args || [];
-    opts = opts || {};
 
     var watchProgress = args.indexOf("--progress") !== -1;
 
@@ -310,11 +308,11 @@ export function pathExists(path) {
     });
 }
 
-export function spawnCommand(cmd, args, opts) {
+export function spawnCommand(cmd, args = [], opts = {}) {
     return cliHandler("spawn", cmd, args, opts);
 }
 
-export function executeCommand(cmd, args, opts) {
+export function executeCommand(cmd, args = [], opts = {}) {
     return cliHandler("execute", cmd, args, opts);
 }
 

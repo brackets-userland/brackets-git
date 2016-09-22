@@ -1,5 +1,6 @@
 /* global brackets */
 
+export const platform = brackets.platform;
 export const _ = brackets.getModule("thirdparty/lodash");
 export const AppInit = brackets.getModule("utils/AppInit");
 export const CodeInspection = brackets.getModule("language/CodeInspection");
