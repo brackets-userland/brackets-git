@@ -11,6 +11,7 @@
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
     "noImplicitReturns": false,
+    "noImplicitThis": false,
     "noUnusedLocals": false,
     "removeComments": false,
     "strictNullChecks": false
