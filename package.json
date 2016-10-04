@@ -35,18 +35,18 @@
     "tslint-node": "tslint -c tslint.json --project src/node/tsconfig.json"
   },
   "dependencies": {
-    "cross-spawn": "4.0.0",
-    "lodash": "4.15.0",
-    "which": "1.0.5"
+    "cross-spawn": "4.0.2",
+    "lodash": "4.16.3",
+    "which": "1.2.11"
   },
   "devDependencies": {
     "@types/bluebird": "3.0.33",
-    "@types/jquery": "1.10.31",
-    "@types/which": "1.0.27",
-    "concurrently": "2.2.0",
-    "eslint": "3.5.0",
+    "@types/jquery": "2.0.32",
+    "@types/which": "1.0.28",
+    "concurrently": "3.1.0",
+    "eslint": "3.7.1",
     "eslint-config-pureprofile": "2.0.0",
-    "glob": "7.0.6",
+    "glob": "7.1.0",
     "grunt": "latest",
     "grunt-contrib-jshint": "latest",
     "grunt-jscs": "latest",
