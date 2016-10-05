@@ -2,11 +2,9 @@
     To make these features work you need Git-FTP (https://github.com/git-ftp/git-ftp)
 */
 
-import * as GitCli from "../git/GitCli";
+import { git } from "../git/GitCli";
 import * as Promise from "bluebird";
 import * as URI from "URI";
-
-var git = GitCli._git;
 
 export function isAvailable() {
     return git(["ftp"]).then(function () {

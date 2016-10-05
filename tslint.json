@@ -3,6 +3,7 @@
     "rules": {
         "interface-name": false,
         "no-var-requires": false,
+        "object-literal-sort-keys": false,
         "ordered-imports": false,
         "trailing-comma": false,
         "variable-name": false

@@ -7,8 +7,10 @@ module.exports = {
     "rules": {
         "indent": ["error", 4],
         "max-params": ["error", 6],
+        "no-undef": "off",
         "no-unused-expressions": "off",
         "no-unused-vars": "off",
+        "no-use-before-define": "off",
         "quotes": ["error", "double"],
         "space-infix-ops": "off",
         "sort-imports": "off"

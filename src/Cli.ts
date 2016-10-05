@@ -118,7 +118,11 @@ function logDebug(opts, debugInfo, method, type, out) {
     Utils.consoleDebug(msg);
 }
 
-export function cliHandler(method, cmd, args = [], opts = {}, retry) {
+export interface CliOptions {
+
+}
+
+export function cliHandler(method, cmd, args = [], opts: CliOptions = {}, retry) {
     var cliId     = getNextCliId(),
         deferred  = Promise.defer();
 

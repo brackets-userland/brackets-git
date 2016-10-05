@@ -10,17 +10,14 @@ import * as Cli from "../Cli";
 import * as ErrorHandler from "../ErrorHandler";
 import * as Events from "../Events";
 import EventEmitter from "../EventEmitter";
-import * as ExpectedError from "../ExpectedError";
+import ExpectedError from "../ExpectedError";
 import * as Preferences from "../Preferences";
-import * as Utils from "../Utils";
+import { consoleDebug, defer, getProjectRoot, loadPathContent } from "../Utils";
+import { _, FileSystem, FileUtils } from "../brackets-modules";
 
-var _           = brackets.getModule("thirdparty/lodash"),
-    FileSystem  = brackets.getModule("filesystem/FileSystem"),
-    FileUtils   = brackets.getModule("file/FileUtils");
-
-var _gitPath = null,
-    _gitQueue = [],
-    _gitQueueBusy = false;
+let _gitPath = null;
+const _gitQueue = [];
+let _gitQueueBusy = false;
 
 export const FILE_STATUS = {
     STAGED: "STAGED",
@@ -36,7 +33,7 @@ export const FILE_STATUS = {
 };
 
 // This SHA1 represents the empty tree. You get it using `git mktree < /dev/null`
-var EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
+let EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
 function getGitPath() {
     if (_gitPath) { return _gitPath; }
@@ -50,12 +47,12 @@ export function setGitPath(path) {
     _gitPath = path;
 }
 
-function strEndsWith(subjectString, searchString, position) {
+function strEndsWith(subjectString, searchString, position?) {
     if (position === undefined || position > subjectString.length) {
         position = subjectString.length;
     }
     position -= searchString.length;
-    var lastIndex = subjectString.indexOf(searchString, position);
+    let lastIndex = subjectString.indexOf(searchString, position);
     return lastIndex !== -1 && lastIndex === position;
 }
 
@@ -82,7 +79,7 @@ function _processQueue() {
         return;
     }
     // get item from queue
-    var item  = _gitQueue.shift(),
+    let item  = _gitQueue.shift(),
         defer = item[0],
         args  = item[1],
         opts  = item[2];
@@ -96,7 +93,7 @@ function _processQueue() {
             defer.resolve(r);
         })
         .catch(function (e) {
-            var call = "call: git " + args.join(" ");
+            let call = "call: git " + args.join(" ");
             e.stack = [call, e.stack].join("\n");
             defer.reject(e);
         })
@@ -106,14 +103,12 @@ function _processQueue() {
         });
 }
 
-function git(args, opts) {
-    var rv = Promise.defer();
-    _gitQueue.push([rv, args || [], opts || {}]);
+export function git(args: string[] = [], opts: Cli.CliOptions = {}): Promise<string> {
+    const rv = defer();
+    _gitQueue.push([rv, args, opts]);
     _processQueue();
-    return rv.promise;
+    return rv.promise as Promise<string>;
 }
-
-export const _git = git;
 
 /*
     git branch
@@ -141,13 +136,13 @@ export function forceBranchDelete(branchName) {
 }
 
 export function getBranches(moreArgs) {
-    var args = ["branch", "--no-color"];
+    let args = ["branch", "--no-color"];
     if (moreArgs) { args = args.concat(moreArgs); }
 
     return git(args).then(function (stdout) {
         if (!stdout) { return []; }
         return stdout.split("\n").reduce(function (arr, l) {
-            var name = l.trim(),
+            let name = l.trim(),
                 currentBranch = false,
                 remote = null,
                 sortPrefix = "";
@@ -166,7 +161,7 @@ export function getBranches(moreArgs) {
                 remote = name.substring(0, name.indexOf("/"));
             }
 
-            var sortName = name.toLowerCase();
+            let sortName = name.toLowerCase();
             if (remote) {
                 sortName = sortName.substring(remote.length + 1);
             }
@@ -200,7 +195,7 @@ export function getAllBranches() {
 */
 
 function repositoryNotFoundHandler(err) {
-    var m = ErrorHandler.matches(err, /Repository (.*) not found$/gim);
+    let m = ErrorHandler.matches(err, /Repository (.*) not found$/gim);
     if (m) {
         throw new ExpectedError(m[0]);
     }
@@ -233,7 +228,7 @@ export function getRemotes() {
     return git(["remote", "-v"])
         .then(function (stdout) {
             return !stdout ? [] : _.uniq(stdout.replace(/\((push|fetch)\)/g, "").split("\n")).map(function (l) {
-                var s = l.trim().split("\t");
+                let s = l.trim().split("\t");
                 return {
                     name: s[0],
                     url: s[1]
@@ -267,15 +262,15 @@ export function deleteRemote(name) {
 */
 
 export function mergeRemote(remote, branch, ffOnly, noCommit) {
-    var args = ["merge"];
+    let args = ["merge"];
 
     if (ffOnly) { args.push("--ff-only"); }
     if (noCommit) { args.push("--no-commit", "--no-ff"); }
 
     args.push(remote + "/" + branch);
 
-    var readMergeMessage = function () {
-        return Utils.loadPathContent(Preferences.get("currentGitRoot") + "/.git/MERGE_MSG").then(function (msg) {
+    let readMergeMessage = function () {
+        return loadPathContent(Preferences.get("currentGitRoot") + "/.git/MERGE_MSG").then(function (msg) {
             return msg;
         });
     };
@@ -309,7 +304,7 @@ export function resetRemote(remote, branch) {
 }
 
 export function mergeBranch(branchName, mergeMessage, useNoff) {
-    var args = ["merge"];
+    let args = ["merge"];
     if (useNoff) { args.push("--no-ff"); }
     if (mergeMessage && mergeMessage.trim()) { args.push("-m", mergeMessage); }
     args.push(branchName);
@@ -340,7 +335,7 @@ export function mergeBranch(branchName, mergeMessage, useNoff) {
 export function push(remoteName, remoteBranch, additionalArgs) {
     if (!remoteName) { throw new TypeError("remoteName argument is missing!"); }
 
-    var args = ["push", "--porcelain", "--progress"];
+    let args = ["push", "--porcelain", "--progress"];
     if (Array.isArray(additionalArgs)) {
         args = args.concat(additionalArgs);
     }
@@ -364,25 +359,36 @@ export function push(remoteName, remoteBranch, additionalArgs) {
     return doPushWithArgs(args);
 }
 
-function doPushWithArgs(args) {
+export interface PushResult {
+    flag: string;
+    flagDescription?: string;
+    from: string;
+    to: string;
+    summary: string;
+    status: string;
+    remoteUrl: string;
+}
+
+function doPushWithArgs(args): Promise<PushResult> {
     return git(args)
         .catch(repositoryNotFoundHandler)
         .then(function (stdout) {
             // this should clear lines from push hooks
-            var lines = stdout.split("\n");
+            let lines = stdout.split("\n");
             while (lines.length > 0 && lines[0].match(/^To/) === null) {
                 lines.shift();
             }
 
-            var retObj = {},
-                lineTwo = lines[1].split("\t");
+            const lineTwo = lines[1].split("\t");
 
-            retObj.remoteUrl = lines[0].trim().split(" ")[1];
-            retObj.flag = lineTwo[0];
-            retObj.from = lineTwo[1].split(":")[0];
-            retObj.to = lineTwo[1].split(":")[1];
-            retObj.summary = lineTwo[2];
-            retObj.status = lines[2];
+            const retObj: PushResult = {
+                remoteUrl: lines[0].trim().split(" ")[1],
+                flag: lineTwo[0],
+                from: lineTwo[1].split(":")[0],
+                to: lineTwo[1].split(":")[1],
+                summary: lineTwo[2],
+                status: lines[2]
+            };
 
             switch (retObj.flag) {
                 case " ":
@@ -413,11 +419,11 @@ function doPushWithArgs(args) {
 
 export function getCurrentBranchName() {
     return git(["branch", "--no-color"]).then(function (stdout) {
-        var branchName = _.find(stdout.split("\n"), function (l) { return l[0] === "*"; });
+        let branchName = _.find(stdout.split("\n"), function (l) { return l[0] === "*"; });
         if (branchName) {
             branchName = branchName.substring(1).trim();
 
-            var m = branchName.match(/^\(.*\s(\S+)\)$/); // like (detached from f74acd4)
+            let m = branchName.match(/^\(.*\s(\S+)\)$/); // like (detached from f74acd4)
             if (m) { return m[1]; }
 
             return branchName;
@@ -432,14 +438,14 @@ export function getCurrentBranchName() {
 
         // alternative
         return git(["log", "--pretty=format:%H %d", "-1"]).then(function (stdout) {
-            var m = stdout.trim().match(/^(\S+)\s+\((.*)\)$/);
-            var hash = m[1].substring(0, 20);
+            let m = stdout.trim().match(/^(\S+)\s+\((.*)\)$/);
+            let hash = m[1].substring(0, 20);
             m[2].split(",").forEach(function (info) {
                 info = info.trim();
 
                 if (info === "HEAD") { return; }
 
-                var m = info.match(/^tag:(.+)$/);
+                let m = info.match(/^tag:(.+)$/);
                 if (m) {
                     hash = m[1].trim();
                     return;
@@ -463,7 +469,7 @@ export function getCurrentUpstreamBranch() {
 export function getDeletedFiles(oldBranch, newBranch) {
     return git(["diff", "--no-ext-diff", "--name-status", oldBranch + ".." + newBranch])
         .then(function (stdout) {
-            var regex = /^D/;
+            let regex = /^D/;
             return stdout.split("\n").reduce(function (arr, row) {
                 if (regex.test(row)) {
                     arr.push(row.substring(1).trim());
@@ -477,7 +483,7 @@ export function getConfig(key) {
     return git(["config", key.replace(/\s/g, "")]);
 }
 
-export function setConfig(key, value, allowGlobal) {
+export function setConfig(key, value, allowGlobal = false) {
     key = key.replace(/\s/g, "");
     return git(["config", key, value]).catch(function (err) {
 
@@ -490,8 +496,19 @@ export function setConfig(key, value, allowGlobal) {
     });
 }
 
-export function getHistory(branch, skipCommits, file) {
-    var separator = "_._",
+export interface CommitInfo {
+    hashShort: string;
+    hash: string;
+    author: string;
+    date: string;
+    email: string;
+    subject: string;
+    body: string;
+    tags?: string[];
+}
+
+export function getHistory(branch, skipCommits, file): Promise<CommitInfo[]> {
+    let separator = "_._",
         newline   = "_.nw._",
         format = [
             "%h",  // abbreviated commit hash
@@ -504,7 +521,7 @@ export function getHistory(branch, skipCommits, file) {
             "%d"   // tags
         ].join(separator) + newline;
 
-    var args = ["log", "-100"];
+    let args = ["log", "-100"];
     if (skipCommits) { args.push("--skip=" + skipCommits); }
     args.push("--format=" + format, branch, "--");
 
@@ -516,31 +533,29 @@ export function getHistory(branch, skipCommits, file) {
         stdout = stdout.substring(0, stdout.length - newline.length);
         return !stdout ? [] : stdout.split(newline).map(function (line) {
 
-            var data = line.trim().split(separator),
-                commit = {};
+            let data = line.trim().split(separator);
 
-            commit.hashShort  = data[0];
-            commit.hash       = data[1];
-            commit.author     = data[2];
-            commit.date       = data[3];
-            commit.email      = data[4];
-            commit.subject    = data[5];
-            commit.body       = data[6];
+            const commitInfo: CommitInfo = {
+                hashShort: data[0],
+                hash: data[1],
+                author: data[2],
+                date: data[3],
+                email: data[4],
+                subject: data[5],
+                body: data[6]
+            };
 
             if (data[7]) {
-                var tags = data[7];
-                var regex = new RegExp("tag: ([^,|\)]+)", "g");
-                tags = tags.match(regex);
-
-                for (var key in tags) {
+                let tags = data[7].match(/tag: ([^,|\)]+)/g);
+                for (let key in tags) {
                     if (tags[key] && tags[key].replace) {
                         tags[key] = tags[key].replace("tag:", "");
                     }
                 }
-                commit.tags = tags;
+                commitInfo.tags = tags;
             }
 
-            return commit;
+            return commitInfo;
 
         });
     });
@@ -557,7 +572,7 @@ export function clone(remoteGitUrl, destinationFolder) {
 }
 
 export function stage(fileOrFiles, updateIndex) {
-    var args = ["add"];
+    let args = ["add"];
     if (updateIndex) { args.push("-u"); }
     return git(args.concat("--", fileOrFiles));
 }
@@ -567,7 +582,7 @@ export function stageAll() {
 }
 
 export function commit(message, amend) {
-    var lines = message.split("\n"),
+    let lines = message.split("\n"),
         args = ["commit"];
 
     if (amend) {
@@ -580,7 +595,7 @@ export function commit(message, amend) {
     } else {
         return new Promise(function (resolve, reject) {
             // FUTURE: maybe use git commit --file=-
-            var fileEntry = FileSystem.getFileForPath(Preferences.get("currentGitRoot") + ".bracketsGitTemp");
+            let fileEntry = FileSystem.getFileForPath(Preferences.get("currentGitRoot") + ".bracketsGitTemp");
             Promise.cast(FileUtils.writeText(fileEntry, message))
                 .then(function () {
                     args.push("-F", ".bracketsGitTemp");
@@ -601,7 +616,7 @@ export function commit(message, amend) {
 }
 
 export function reset(type, hash) {
-    var args = ["reset", type || "--mixed"]; // mixed is the default action
+    let args = ["reset", type || "--mixed"]; // mixed is the default action
     if (hash) { args.push(hash, "--"); }
     return git(args);
 }
@@ -617,7 +632,7 @@ export function checkout(hash) {
 }
 
 export function createBranch(branchName, originBranch, trackOrigin) {
-    var args = ["checkout", "-b", branchName];
+    let args = ["checkout", "-b", branchName];
 
     if (originBranch) {
         if (trackOrigin) {
@@ -645,16 +660,16 @@ export function status(type) {
     return git(["status", "-u", "--porcelain"]).then(function (stdout) {
         if (!stdout) { return []; }
 
-        var currentSubFolder = Preferences.get("currentGitSubfolder");
+        let currentSubFolder = Preferences.get("currentGitSubfolder");
 
         // files that are modified both in index and working tree should be resetted
-        var isEscaped = false,
+        let isEscaped = false,
             needReset = [],
             results = [],
             lines = stdout.split("\n");
 
         lines.forEach(function (line) {
-            var statusStaged = line.substring(0, 1),
+            let statusStaged = line.substring(0, 1),
                 statusUnstaged = line.substring(1, 2),
                 status = [],
                 file = line.substring(3);
@@ -673,7 +688,7 @@ export function status(type) {
                 return;
             }
 
-            var statusChar;
+            let statusChar;
             if (statusStaged !== " " && statusStaged !== "?") {
                 status.push(FILE_STATUS.STAGED);
                 statusChar = statusStaged;
@@ -713,7 +728,7 @@ export function status(type) {
                     throw new Error("Unexpected status: " + statusChar);
             }
 
-            var display = file,
+            let display = file,
                 io = file.indexOf("->");
             if (io !== -1) {
                 file = file.substring(io + 2).trim();
@@ -787,7 +802,7 @@ export function getDiffOfStagedFiles() {
 }
 
 export function getDiffOfAllIndexFiles(files) {
-    var args = ["diff", "--no-ext-diff", "--no-color", "--full-index"];
+    let args = ["diff", "--no-ext-diff", "--no-color", "--full-index"];
     if (files) {
         args = args.concat("--", files);
     }
@@ -804,7 +819,7 @@ export function getListOfStagedFiles() {
 
 export function diffFile(file) {
     return _isFileStaged(file).then(function (staged) {
-        var args = ["diff", "--no-ext-diff", "--no-color"];
+        let args = ["diff", "--no-ext-diff", "--no-color"];
         if (staged) { args.push("--staged"); }
         args.push("-U0", "--", file);
         return git(args, {
@@ -815,7 +830,7 @@ export function diffFile(file) {
 
 export function diffFileNice(file) {
     return _isFileStaged(file).then(function (staged) {
-        var args = ["diff", "--no-ext-diff", "--no-color"];
+        let args = ["diff", "--no-ext-diff", "--no-color"];
         if (staged) { args.push("--staged"); }
         args.push("--", file);
         return git(args, {
@@ -826,7 +841,7 @@ export function diffFileNice(file) {
 
 export function difftool(file) {
     return _isFileStaged(file).then(function (staged) {
-        var args = ["difftool"];
+        let args = ["difftool"];
         if (staged) {
             args.push("--staged");
         }
@@ -843,7 +858,7 @@ export function clean() {
 }
 
 export function getFilesFromCommit(hash, isInitial) {
-    var args = ["diff", "--no-ext-diff", "--name-only"];
+    let args = ["diff", "--no-ext-diff", "--name-only"];
     args = args.concat((isInitial ? EMPTY_TREE : hash + "^") + ".." + hash);
     args = args.concat("--");
     return git(args).then(function (stdout) {
@@ -852,7 +867,7 @@ export function getFilesFromCommit(hash, isInitial) {
 }
 
 export function getDiffOfFileFromCommit(hash, file, isInitial) {
-    var args = ["diff", "--no-ext-diff", "--no-color"];
+    let args = ["diff", "--no-ext-diff", "--no-color"];
     args = args.concat((isInitial ? EMPTY_TREE : hash + "^") + ".." + hash);
     args = args.concat("--", file);
     return git(args);
@@ -874,7 +889,7 @@ export function rebase(whatToDo) {
 
 export function getVersion() {
     return git(["--version"]).then(function (stdout) {
-        var m = stdout.match(/[0-9].*/);
+        let m = stdout.match(/[0-9].*/);
         return m ? m[0] : stdout.trim();
     });
 }
@@ -882,7 +897,7 @@ export function getVersion() {
 function getCommitCountsFallback() {
     return git(["rev-list", "HEAD", "--not", "--remotes"])
     .then(function (stdout) {
-        var ahead = stdout ? stdout.split("\n").length : 0;
+        let ahead = stdout ? stdout.split("\n").length : 0;
         return "-1 " + ahead;
     })
     .catch(function (err) {
@@ -892,20 +907,21 @@ function getCommitCountsFallback() {
 }
 
 export function getCommitCounts() {
-    var remotes = Preferences.get("defaultRemotes") || {};
-    var remote = remotes[Preferences.get("currentGitRoot")];
-    return getCurrentBranchName()
-    .then(function (branch) {
+    const remotes = Preferences.get("defaultRemotes") || {};
+    const remote = remotes[Preferences.get("currentGitRoot")];
+    return getCurrentBranchName().then((branch) => {
+        let p;
         if (!branch || !remote) {
-            return getCommitCountsFallback();
+            p = getCommitCountsFallback();
+        } else {
+            p = git(["rev-list", "--left-right", "--count", remote + "/" + branch + "...@{0}", "--"])
+                .catch(function (err) {
+                    ErrorHandler.logError(err);
+                    return getCommitCountsFallback();
+                });
         }
-        return git(["rev-list", "--left-right", "--count", remote + "/" + branch + "...@{0}", "--"])
-        .catch(function (err) {
-            ErrorHandler.logError(err);
-            return getCommitCountsFallback();
-        })
-        .then(function (stdout) {
-            var matches = /(-?\d+)\s+(-?\d+)/.exec(stdout);
+        return p.then(function (stdout) {
+            let matches = /(-?\d+)\s+(-?\d+)/.exec(stdout);
             return matches ? {
                 behind: parseInt(matches[1], 10),
                 ahead: parseInt(matches[2], 10)
@@ -923,34 +939,40 @@ export function getLastCommitMessage() {
     });
 }
 
-export function getBlame(file, from, to) {
-    var args = ["blame", "-w", "--line-porcelain"];
+export interface BlameInfo {
+    hash: string;
+    num: string;
+    content: string;
+}
+
+export function getBlame(file, from, to): Promise<BlameInfo[]> {
+    let args = ["blame", "-w", "--line-porcelain"];
     if (from || to) { args.push("-L" + from + "," + to); }
     args.push(file);
 
     return git(args).then(function (stdout) {
         if (!stdout) { return []; }
 
-        var sep  = "-@-BREAK-HERE-@-",
+        let sep  = "-@-BREAK-HERE-@-",
             sep2 = "$$#-#$BREAK$$-$#";
         stdout = stdout.replace(sep, sep2)
                        .replace(/^\t(.*)$/gm, function (a, b) { return b + sep; });
 
         return stdout.split(sep).reduce(function (arr, lineInfo) {
-            lineInfo = lineInfo.replace(sep2, sep).trimLeft();
+            lineInfo = lineInfo.replace(sep2, sep).replace(/^\s+/, '');
             if (!lineInfo) { return arr; }
 
-            var obj = {},
-                lines = lineInfo.split("\n"),
-                firstLine = _.first(lines).split(" ");
-
-            obj.hash = firstLine[0];
-            obj.num = firstLine[2];
-            obj.content = _.last(lines);
+            let lines = lineInfo.split("\n");
+            let firstLine = _.first(lines).split(" ");
+            let obj: BlameInfo = {
+                hash: firstLine[0],
+                num: firstLine[2],
+                content: _.last(lines)
+            };
 
             // process all but first and last lines
-            for (var i = 1, l = lines.length - 1; i < l; i++) {
-                var line = lines[i],
+            for (let i = 1, l = lines.length - 1; i < l; i++) {
+                let line = lines[i],
                     io = line.indexOf(" "),
                     key = line.substring(0, io),
                     val = line.substring(io + 1);
@@ -961,7 +983,7 @@ export function getBlame(file, from, to) {
             return arr;
         }, []);
     }).catch(function (stderr) {
-        var m = stderr.match(/no such path (\S+)/);
+        let m = stderr.match(/no such path (\S+)/);
         if (m) {
             throw new Error("File is not tracked by Git: " + m[1]);
         }
@@ -970,7 +992,7 @@ export function getBlame(file, from, to) {
 }
 
 export function getGitRoot() {
-    var projectRoot = Utils.getProjectRoot();
+    let projectRoot = getProjectRoot();
     return git(["rev-parse", "--show-toplevel"], {
             cwd: projectRoot
         })
@@ -998,7 +1020,7 @@ export function getGitRoot() {
                     path = path.slice(0, -1);
                 }
 
-                Utils.consoleDebug("Checking path for .git: " + path);
+                consoleDebug("Checking path for .git: " + path);
 
                 return new Promise(function (resolve) {
 
@@ -1006,12 +1028,12 @@ export function getGitRoot() {
                     // this branch of code will not run for intel xdk
                     if (typeof brackets !== "undefined" && brackets.fs && brackets.fs.stat) {
                         brackets.fs.stat(path + "/.git", function (err, result) {
-                            var exists = err ? false : (result.isFile() || result.isDirectory());
+                            let exists = err ? false : (result.isFile() || result.isDirectory());
                             if (exists) {
-                                Utils.consoleDebug("Found .git in path: " + path);
+                                consoleDebug("Found .git in path: " + path);
                                 resolve(path);
                             } else {
-                                Utils.consoleDebug("Failed to find .git in path: " + path);
+                                consoleDebug("Failed to find .git in path: " + path);
                                 path = path.split("/");
                                 path.pop();
                                 path = path.join("/");
@@ -1022,12 +1044,12 @@ export function getGitRoot() {
                     }
 
                     FileSystem.resolve(path + "/.git", function (err, item, stat) {
-                        var exists = err ? false : (stat.isFile || stat.isDirectory);
+                        let exists = err ? false : (stat.isFile || stat.isDirectory);
                         if (exists) {
-                            Utils.consoleDebug("Found .git in path: " + path);
+                            consoleDebug("Found .git in path: " + path);
                             resolve(path);
                         } else {
-                            Utils.consoleDebug("Failed to find .git in path: " + path);
+                            consoleDebug("Failed to find .git in path: " + path);
                             path = path.split("/");
                             path.pop();
                             path = path.join("/");
