@@ -541,12 +541,28 @@ if (Preferences.get("clearWhitespaceOnSave")) {
     });
 }
 
-export function defer() {
+export interface PromiseWithProgressed extends Promise {
+    progressed: Function;
+}
+
+export interface DeferObj {
+    promise: PromiseWithProgressed<any>;
+    progress: Function;
+    resolve: Function;
+    reject: Function;
+}
+
+export function defer(): DeferObj {
+    const progressHandlers = [];
+    const progress = (...args) => progressHandlers.forEach(h => h(...args));
     let resolve;
     let reject;
+
     const promise = new Promise((_resolve, _reject) => {
         resolve = _resolve;
         reject = _reject;
     });
-    return { resolve, reject, promise };
+    (promise as any).progressed = (handler) => progressHandlers.push(handler);
+
+    return { promise, progress, resolve, reject };
 }

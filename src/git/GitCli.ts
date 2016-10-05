@@ -12,7 +12,7 @@ import * as Events from "../Events";
 import EventEmitter from "../EventEmitter";
 import ExpectedError from "../ExpectedError";
 import * as Preferences from "../Preferences";
-import { consoleDebug, defer, getProjectRoot, loadPathContent } from "../Utils";
+import { consoleDebug, defer, DeferObj, getProjectRoot, loadPathContent } from "../Utils";
 import { _, FileSystem, FileUtils } from "../brackets-modules";
 
 let _gitPath = null;
@@ -33,7 +33,7 @@ export const FILE_STATUS = {
 };
 
 // This SHA1 represents the empty tree. You get it using `git mktree < /dev/null`
-let EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
+const EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
 function getGitPath() {
     if (_gitPath) { return _gitPath; }
@@ -42,18 +42,19 @@ function getGitPath() {
 }
 
 export function setGitPath(path) {
-    if (path === true) { path = "git"; }
-    Preferences.set("gitPath", path);
-    _gitPath = path;
+    const _path = path === true ? "git" : path;
+    Preferences.set("gitPath", _path);
+    _gitPath = _path;
 }
 
 function strEndsWith(subjectString, searchString, position?) {
-    if (position === undefined || position > subjectString.length) {
-        position = subjectString.length;
+    let _position = position;
+    if (_position == null || _position > subjectString.length) {
+        _position = subjectString.length;
     }
-    position -= searchString.length;
-    let lastIndex = subjectString.indexOf(searchString, position);
-    return lastIndex !== -1 && lastIndex === position;
+    _position -= searchString.length;
+    const lastIndex = subjectString.indexOf(searchString, _position);
+    return lastIndex !== -1 && lastIndex === _position;
 }
 
 /*
@@ -79,25 +80,21 @@ function _processQueue() {
         return;
     }
     // get item from queue
-    let item  = _gitQueue.shift(),
-        defer = item[0],
-        args  = item[1],
-        opts  = item[2];
+    const item = _gitQueue.shift();
+    const deferObj: DeferObj = item[0];
+    const args = item[1];
+    const opts = item[2];
     // execute git command in a queue so no two commands are running at the same time
     if (opts.nonblocking !== true) { _gitQueueBusy = true; }
     Cli.spawnCommand(getGitPath(), args, opts)
-        .progressed(function () {
-            defer.progress.apply(defer, arguments);
-        })
-        .then(function (r) {
-            defer.resolve(r);
-        })
-        .catch(function (e) {
-            let call = "call: git " + args.join(" ");
+        .progressed((...progressedArgs) => deferObj.progress(...progressedArgs))
+        .then((r) => deferObj.resolve(r))
+        .catch((e) => {
+            const call = "call: git " + args.join(" ");
             e.stack = [call, e.stack].join("\n");
-            defer.reject(e);
+            deferObj.reject(e);
         })
-        .finally(function () {
+        .finally(() => {
             if (opts.nonblocking !== true) { _gitQueueBusy = false; }
             _processQueue();
         });
@@ -139,13 +136,13 @@ export function getBranches(moreArgs) {
     let args = ["branch", "--no-color"];
     if (moreArgs) { args = args.concat(moreArgs); }
 
-    return git(args).then(function (stdout) {
+    return git(args).then((stdout) => {
         if (!stdout) { return []; }
-        return stdout.split("\n").reduce(function (arr, l) {
-            let name = l.trim(),
-                currentBranch = false,
-                remote = null,
-                sortPrefix = "";
+        return stdout.split("\n").reduce((arr, l) => {
+            let name = l.trim();
+            let currentBranch = false;
+            let remote = null;
+            let sortPrefix = "";
 
             if (name.indexOf("->") !== -1) {
                 return arr;
@@ -170,11 +167,11 @@ export function getBranches(moreArgs) {
             }
 
             arr.push({
-                name: name,
-                sortPrefix: sortPrefix,
-                sortName: sortName,
-                currentBranch: currentBranch,
-                remote: remote
+                name,
+                sortPrefix,
+                sortName,
+                currentBranch,
+                remote
             });
             return arr;
         }, []);
@@ -195,7 +192,7 @@ export function getAllBranches() {
 */
 
 function repositoryNotFoundHandler(err) {
-    let m = ErrorHandler.matches(err, /Repository (.*) not found$/gim);
+    const m = ErrorHandler.matches(err, /Repository (.*) not found$/gim);
     if (m) {
         throw new ExpectedError(m[0]);
     }
@@ -226,9 +223,9 @@ export function fetchAllRemotes() {
 
 export function getRemotes() {
     return git(["remote", "-v"])
-        .then(function (stdout) {
-            return !stdout ? [] : _.uniq(stdout.replace(/\((push|fetch)\)/g, "").split("\n")).map(function (l) {
-                let s = l.trim().split("\t");
+        .then((stdout) => {
+            return !stdout ? [] : _.uniq(stdout.replace(/\((push|fetch)\)/g, "").split("\n")).map((l) => {
+                const s = l.trim().split("\t");
                 return {
                     name: s[0],
                     url: s[1]
@@ -239,7 +236,7 @@ export function getRemotes() {
 
 export function createRemote(name, url) {
     return git(["remote", "add", name, url])
-        .then(function () {
+        .then(() => {
             // stdout is empty so just return success
             return true;
         });
@@ -247,7 +244,7 @@ export function createRemote(name, url) {
 
 export function deleteRemote(name) {
     return git(["remote", "rm", name])
-        .then(function () {
+        .then(() => {
             // stdout is empty so just return success
             return true;
         });
@@ -262,31 +259,27 @@ export function deleteRemote(name) {
 */
 
 export function mergeRemote(remote, branch, ffOnly, noCommit) {
-    let args = ["merge"];
+    const args = ["merge"];
 
     if (ffOnly) { args.push("--ff-only"); }
     if (noCommit) { args.push("--no-commit", "--no-ff"); }
 
     args.push(remote + "/" + branch);
 
-    let readMergeMessage = function () {
-        return loadPathContent(Preferences.get("currentGitRoot") + "/.git/MERGE_MSG").then(function (msg) {
-            return msg;
-        });
-    };
+    const readMergeMessage = () => loadPathContent(Preferences.get("currentGitRoot") + "/.git/MERGE_MSG");
 
     return git(args)
-        .then(function (stdout) {
+        .then((stdout) => {
             // return stdout if available - usually not
             if (stdout) { return stdout; }
 
-            return readMergeMessage().then(function (msg) {
+            return readMergeMessage().then((msg) => {
                 if (msg) { return msg; }
                 return "Remote branch " + branch + " from " + remote + " was merged to current branch";
             });
         })
-        .catch(function (error) {
-            return readMergeMessage().then(function (msg) {
+        .catch((error) => {
+            return readMergeMessage().then((msg) => {
                 if (msg) { return msg; }
                 throw error;
             });
@@ -298,13 +291,13 @@ export function rebaseRemote(remote, branch) {
 }
 
 export function resetRemote(remote, branch) {
-    return git(["reset", "--soft", remote + "/" + branch]).then(function (stdout) {
+    return git(["reset", "--soft", remote + "/" + branch]).then((stdout) => {
         return stdout || "Current branch was resetted to branch " + branch + " from " + remote;
     });
 }
 
 export function mergeBranch(branchName, mergeMessage, useNoff) {
-    let args = ["merge"];
+    const args = ["merge"];
     if (useNoff) { args.push("--no-ff"); }
     if (mergeMessage && mergeMessage.trim()) { args.push("-m", mergeMessage); }
     args.push(branchName);
@@ -314,8 +307,10 @@ export function mergeBranch(branchName, mergeMessage, useNoff) {
 /*
     git push
     --porcelain Produce machine-readable output.
-    --delete All listed refs are deleted from the remote repository. This is the same as prefixing all refs with a colon.
-    --force Usually, the command refuses to update a remote ref that is not an ancestor of the local ref used to overwrite it.
+    --delete All listed refs are deleted from the remote repository.
+             This is the same as prefixing all refs with a colon.
+    --force Usually, the command refuses to update a remote ref that
+            is not an ancestor of the local ref used to overwrite it.
     --set-upstream For every branch that is up to date or successfully pushed, add upstream (tracking) reference
     --progress This flag forces progress status even if the standard error stream is not directed to a terminal.
 */
@@ -342,7 +337,7 @@ export function push(remoteName, remoteBranch, additionalArgs) {
     args.push(remoteName);
 
     if (remoteBranch && Preferences.get("gerritPushref")) {
-        return getConfig("gerrit.pushref").then(function (strGerritEnabled) {
+        return getConfig("gerrit.pushref").then((strGerritEnabled) => {
             if (strGerritEnabled === "true") {
                 args.push("HEAD:refs/for/" + remoteBranch);
             } else {
@@ -372,9 +367,9 @@ export interface PushResult {
 function doPushWithArgs(args): Promise<PushResult> {
     return git(args)
         .catch(repositoryNotFoundHandler)
-        .then(function (stdout) {
+        .then((stdout) => {
             // this should clear lines from push hooks
-            let lines = stdout.split("\n");
+            const lines = stdout.split("\n");
             while (lines.length > 0 && lines[0].match(/^To/) === null) {
                 lines.shift();
             }
@@ -418,36 +413,36 @@ function doPushWithArgs(args): Promise<PushResult> {
 }
 
 export function getCurrentBranchName() {
-    return git(["branch", "--no-color"]).then(function (stdout) {
-        let branchName = _.find(stdout.split("\n"), function (l) { return l[0] === "*"; });
+    return git(["branch", "--no-color"]).then((branchOut) => {
+        let branchName = _.find(branchOut.split("\n"), (l) => l[0] === "*");
         if (branchName) {
             branchName = branchName.substring(1).trim();
 
-            let m = branchName.match(/^\(.*\s(\S+)\)$/); // like (detached from f74acd4)
+            const m = branchName.match(/^\(.*\s(\S+)\)$/); // like (detached from f74acd4)
             if (m) { return m[1]; }
 
             return branchName;
         }
 
         // no branch situation so we need to create one by doing a commit
-        if (stdout.match(/^\s*$/)) {
+        if (branchOut.match(/^\s*$/)) {
             EventEmitter.emit(Events.GIT_NO_BRANCH_EXISTS);
             // master is the default name of the branch after git init
             return "master";
         }
 
         // alternative
-        return git(["log", "--pretty=format:%H %d", "-1"]).then(function (stdout) {
-            let m = stdout.trim().match(/^(\S+)\s+\((.*)\)$/);
-            let hash = m[1].substring(0, 20);
-            m[2].split(",").forEach(function (info) {
-                info = info.trim();
+        return git(["log", "--pretty=format:%H %d", "-1"]).then((logOut) => {
+            const logMatch = logOut.trim().match(/^(\S+)\s+\((.*)\)$/);
+            let hash = logMatch[1].substring(0, 20);
+            logMatch[2].split(",").forEach((_info) => {
+                const info = _info.trim();
 
                 if (info === "HEAD") { return; }
 
-                let m = info.match(/^tag:(.+)$/);
-                if (m) {
-                    hash = m[1].trim();
+                const tagMatch = info.match(/^tag:(.+)$/);
+                if (tagMatch) {
+                    hash = tagMatch[1].trim();
                     return;
                 }
 
@@ -458,20 +453,16 @@ export function getCurrentBranchName() {
     });
 }
 
-export function getCurrentUpstreamBranch() {
-    return git(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
-        .catch(function () {
-            return null;
-        });
+export function getCurrentUpstreamBranch(): Promise<string | null> {
+    return git(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"]).catch(() => null);
 }
 
 // Get list of deleted files between two branches
 export function getDeletedFiles(oldBranch, newBranch) {
     return git(["diff", "--no-ext-diff", "--name-status", oldBranch + ".." + newBranch])
-        .then(function (stdout) {
-            let regex = /^D/;
-            return stdout.split("\n").reduce(function (arr, row) {
-                if (regex.test(row)) {
+        .then((stdout) => {
+            return stdout.split("\n").reduce((arr, row) => {
+                if (/^D/.test(row)) {
                     arr.push(row.substring(1).trim());
                 }
                 return arr;
@@ -484,15 +475,12 @@ export function getConfig(key) {
 }
 
 export function setConfig(key, value, allowGlobal = false) {
-    key = key.replace(/\s/g, "");
-    return git(["config", key, value]).catch(function (err) {
-
+    const _key = key.replace(/\s/g, "");
+    return git(["config", _key, value]).catch((err) => {
         if (allowGlobal && ErrorHandler.contains(err, "No such file or directory")) {
-            return git(["config", "--global", key, value]);
+            return git(["config", "--global", _key, value]);
         }
-
         throw err;
-
     });
 }
 
@@ -508,20 +496,20 @@ export interface CommitInfo {
 }
 
 export function getHistory(branch, skipCommits, file): Promise<CommitInfo[]> {
-    let separator = "_._",
-        newline   = "_.nw._",
-        format = [
-            "%h",  // abbreviated commit hash
-            "%H",  // commit hash
-            "%an", // author name
-            "%ai", // author date, ISO 8601 format
-            "%ae", // author email
-            "%s",  // subject
-            "%b",  // body
-            "%d"   // tags
-        ].join(separator) + newline;
+    const separator = "_._";
+    const newline = "_.nw._";
+    const format = [
+        "%h",  // abbreviated commit hash
+        "%H",  // commit hash
+        "%an", // author name
+        "%ai", // author date, ISO 8601 format
+        "%ae", // author email
+        "%s",  // subject
+        "%b",  // body
+        "%d"   // tags
+    ].join(separator) + newline;
 
-    let args = ["log", "-100"];
+    const args = ["log", "-100"];
     if (skipCommits) { args.push("--skip=" + skipCommits); }
     args.push("--format=" + format, branch, "--");
 
@@ -529,11 +517,11 @@ export function getHistory(branch, skipCommits, file): Promise<CommitInfo[]> {
     // if (file) { args.push("--follow"); }
     if (file) { args.push(file); }
 
-    return git(args).then(function (stdout) {
-        stdout = stdout.substring(0, stdout.length - newline.length);
-        return !stdout ? [] : stdout.split(newline).map(function (line) {
+    return git(args).then((_stdout) => {
+        const stdout = _stdout.substring(0, _stdout.length - newline.length);
+        return !stdout ? [] : stdout.split(newline).map((line) => {
 
-            let data = line.trim().split(separator);
+            const data = line.trim().split(separator);
 
             const commitInfo: CommitInfo = {
                 hashShort: data[0],
@@ -546,8 +534,8 @@ export function getHistory(branch, skipCommits, file): Promise<CommitInfo[]> {
             };
 
             if (data[7]) {
-                let tags = data[7].match(/tag: ([^,|\)]+)/g);
-                for (let key in tags) {
+                const tags = data[7].match(/tag: ([^,|\)]+)/g);
+                for (const key in tags) {
                     if (tags[key] && tags[key].replace) {
                         tags[key] = tags[key].replace("tag:", "");
                     }
@@ -572,7 +560,7 @@ export function clone(remoteGitUrl, destinationFolder) {
 }
 
 export function stage(fileOrFiles, updateIndex) {
-    let args = ["add"];
+    const args = ["add"];
     if (updateIndex) { args.push("-u"); }
     return git(args.concat("--", fileOrFiles));
 }
@@ -582,8 +570,8 @@ export function stageAll() {
 }
 
 export function commit(message, amend) {
-    let lines = message.split("\n"),
-        args = ["commit"];
+    const lines = message.split("\n");
+    const args = ["commit"];
 
     if (amend) {
         args.push("--amend", "--reset-author");
@@ -592,31 +580,23 @@ export function commit(message, amend) {
     if (lines.length === 1) {
         args.push("-m", message);
         return git(args);
-    } else {
-        return new Promise(function (resolve, reject) {
-            // FUTURE: maybe use git commit --file=-
-            let fileEntry = FileSystem.getFileForPath(Preferences.get("currentGitRoot") + ".bracketsGitTemp");
-            Promise.cast(FileUtils.writeText(fileEntry, message))
-                .then(function () {
-                    args.push("-F", ".bracketsGitTemp");
-                    return git(args);
-                })
-                .then(function (res) {
-                    fileEntry.unlink(function () {
-                        resolve(res);
-                    });
-                })
-                .catch(function (err) {
-                    fileEntry.unlink(function () {
-                        reject(err);
-                    });
-                });
-        });
     }
+
+    return new Promise((resolve, reject) => {
+        // FUTURE: maybe use git commit --file=-
+        const fileEntry = FileSystem.getFileForPath(Preferences.get("currentGitRoot") + ".bracketsGitTemp");
+        Promise.cast(FileUtils.writeText(fileEntry, message))
+            .then(() => {
+                args.push("-F", ".bracketsGitTemp");
+                return git(args);
+            })
+            .then((res) => fileEntry.unlink(() => resolve(res)))
+            .catch((err) => fileEntry.unlink(() => reject(err)));
+    });
 }
 
 export function reset(type, hash) {
-    let args = ["reset", type || "--mixed"]; // mixed is the default action
+    const args = ["reset", type || "--mixed"]; // mixed is the default action
     if (hash) { args.push(hash, "--"); }
     return git(args);
 }
@@ -632,7 +612,7 @@ export function checkout(hash) {
 }
 
 export function createBranch(branchName, originBranch, trackOrigin) {
-    let args = ["checkout", "-b", branchName];
+    const args = ["checkout", "-b", branchName];
 
     if (originBranch) {
         if (trackOrigin) {
@@ -657,22 +637,22 @@ function _isescaped(str) {
 }
 
 export function status(type) {
-    return git(["status", "-u", "--porcelain"]).then(function (stdout) {
+    return git(["status", "-u", "--porcelain"]).then((stdout) => {
         if (!stdout) { return []; }
 
-        let currentSubFolder = Preferences.get("currentGitSubfolder");
+        const currentSubFolder = Preferences.get("currentGitSubfolder");
 
         // files that are modified both in index and working tree should be resetted
-        let isEscaped = false,
-            needReset = [],
-            results = [],
-            lines = stdout.split("\n");
+        let isEscaped = false;
+        const needReset = [];
+        const results = [];
+        const lines = stdout.split("\n");
 
-        lines.forEach(function (line) {
-            let statusStaged = line.substring(0, 1),
-                statusUnstaged = line.substring(1, 2),
-                status = [],
-                file = line.substring(3);
+        lines.forEach((line) => {
+            const statusStaged = line.substring(0, 1);
+            const statusUnstaged = line.substring(1, 2);
+            const statusArr = [];
+            let file = line.substring(3);
 
             // check if the file is quoted
             if (_isquoted(file)) {
@@ -690,7 +670,7 @@ export function status(type) {
 
             let statusChar;
             if (statusStaged !== " " && statusStaged !== "?") {
-                status.push(FILE_STATUS.STAGED);
+                statusArr.push(FILE_STATUS.STAGED);
                 statusChar = statusStaged;
             } else {
                 statusChar = statusUnstaged;
@@ -698,38 +678,38 @@ export function status(type) {
 
             switch (statusChar) {
                 case " ":
-                    status.push(FILE_STATUS.UNMODIFIED);
+                    statusArr.push(FILE_STATUS.UNMODIFIED);
                     break;
                 case "!":
-                    status.push(FILE_STATUS.IGNORED);
+                    statusArr.push(FILE_STATUS.IGNORED);
                     break;
                 case "?":
-                    status.push(FILE_STATUS.UNTRACKED);
+                    statusArr.push(FILE_STATUS.UNTRACKED);
                     break;
                 case "M":
-                    status.push(FILE_STATUS.MODIFIED);
+                    statusArr.push(FILE_STATUS.MODIFIED);
                     break;
                 case "A":
-                    status.push(FILE_STATUS.ADDED);
+                    statusArr.push(FILE_STATUS.ADDED);
                     break;
                 case "D":
-                    status.push(FILE_STATUS.DELETED);
+                    statusArr.push(FILE_STATUS.DELETED);
                     break;
                 case "R":
-                    status.push(FILE_STATUS.RENAMED);
+                    statusArr.push(FILE_STATUS.RENAMED);
                     break;
                 case "C":
-                    status.push(FILE_STATUS.COPIED);
+                    statusArr.push(FILE_STATUS.COPIED);
                     break;
                 case "U":
-                    status.push(FILE_STATUS.UNMERGED);
+                    statusArr.push(FILE_STATUS.UNMERGED);
                     break;
                 default:
                     throw new Error("Unexpected status: " + statusChar);
             }
 
-            let display = file,
-                io = file.indexOf("->");
+            let display = file;
+            const io = file.indexOf("->");
             if (io !== -1) {
                 file = file.substring(io + 2).trim();
             }
@@ -740,15 +720,15 @@ export function status(type) {
             }
 
             results.push({
-                status: status,
-                display: display,
-                file: file,
+                status: statusArr,
+                display,
+                file,
                 name: file.substring(file.lastIndexOf("/") + 1)
             });
         });
 
         if (isEscaped) {
-            return setConfig("core.quotepath", "false").then(function () {
+            return setConfig("core.quotepath", "false").then(() => {
                 if (type === "SET_QUOTEPATH") {
                     throw new Error("git status is calling itself in a recursive loop!");
                 }
@@ -757,12 +737,13 @@ export function status(type) {
         }
 
         if (needReset.length > 0) {
-            return Promise.all(needReset.map(function (fileName) {
+            return Promise.all(needReset.map((_fileName) => {
+                let fileName = _fileName;
                 if (fileName.indexOf("->") !== -1) {
                     fileName = fileName.split("->")[1].trim();
                 }
                 return unstage(fileName);
-            })).then(function () {
+            })).then(() => {
                 if (type === "RECURSIVE_CALL") {
                     throw new Error("git status is calling itself in a recursive loop!");
                 }
@@ -770,7 +751,7 @@ export function status(type) {
             });
         }
 
-        return results.sort(function (a, b) {
+        return results.sort((a, b) => {
             if (a.file < b.file) {
                 return -1;
             }
@@ -779,18 +760,20 @@ export function status(type) {
             }
             return 0;
         });
-    }).then(function (results) {
+    }).then((results) => {
         EventEmitter.emit(Events.GIT_STATUS_RESULTS, results);
         return results;
     });
 }
 
 function _isFileStaged(file) {
-    return git(["status", "-u", "--porcelain", "--", file]).then(function (stdout) {
+    return git(["status", "-u", "--porcelain", "--", file]).then((stdout) => {
         if (!stdout) { return false; }
-        return _.any(stdout.split("\n"), function (line) {
-            return line[0] !== " " && line[0] !== "?" && // first character marks staged status
-                   line.lastIndexOf(" " + file) === line.length - file.length - 1; // in case another file appeared here?
+        return _.any(stdout.split("\n"), (line) => {
+            // first character marks staged status
+            return line[0] !== " " && line[0] !== "?" &&
+                   // in case another file appeared here?
+                   line.lastIndexOf(" " + file) === line.length - file.length - 1;
         });
     });
 }
@@ -818,8 +801,8 @@ export function getListOfStagedFiles() {
 }
 
 export function diffFile(file) {
-    return _isFileStaged(file).then(function (staged) {
-        let args = ["diff", "--no-ext-diff", "--no-color"];
+    return _isFileStaged(file).then((staged) => {
+        const args = ["diff", "--no-ext-diff", "--no-color"];
         if (staged) { args.push("--staged"); }
         args.push("-U0", "--", file);
         return git(args, {
@@ -829,8 +812,8 @@ export function diffFile(file) {
 }
 
 export function diffFileNice(file) {
-    return _isFileStaged(file).then(function (staged) {
-        let args = ["diff", "--no-ext-diff", "--no-color"];
+    return _isFileStaged(file).then((staged) => {
+        const args = ["diff", "--no-ext-diff", "--no-color"];
         if (staged) { args.push("--staged"); }
         args.push("--", file);
         return git(args, {
@@ -840,8 +823,8 @@ export function diffFileNice(file) {
 }
 
 export function difftool(file) {
-    return _isFileStaged(file).then(function (staged) {
-        let args = ["difftool"];
+    return _isFileStaged(file).then((staged) => {
+        const args = ["difftool"];
         if (staged) {
             args.push("--staged");
         }
@@ -861,9 +844,7 @@ export function getFilesFromCommit(hash, isInitial) {
     let args = ["diff", "--no-ext-diff", "--name-only"];
     args = args.concat((isInitial ? EMPTY_TREE : hash + "^") + ".." + hash);
     args = args.concat("--");
-    return git(args).then(function (stdout) {
-        return !stdout ? [] : stdout.split("\n");
-    });
+    return git(args).then((stdout) => !stdout ? [] : stdout.split("\n"));
 }
 
 export function getDiffOfFileFromCommit(hash, file, isInitial) {
@@ -888,19 +869,19 @@ export function rebase(whatToDo) {
 }
 
 export function getVersion() {
-    return git(["--version"]).then(function (stdout) {
-        let m = stdout.match(/[0-9].*/);
+    return git(["--version"]).then((stdout) => {
+        const m = stdout.match(/[0-9].*/);
         return m ? m[0] : stdout.trim();
     });
 }
 
 function getCommitCountsFallback() {
     return git(["rev-list", "HEAD", "--not", "--remotes"])
-    .then(function (stdout) {
-        let ahead = stdout ? stdout.split("\n").length : 0;
+    .then((stdout) => {
+        const ahead = stdout ? stdout.split("\n").length : 0;
         return "-1 " + ahead;
     })
-    .catch(function (err) {
+    .catch((err) => {
         ErrorHandler.logError(err);
         return "-1 -1";
     });
@@ -915,13 +896,13 @@ export function getCommitCounts() {
             p = getCommitCountsFallback();
         } else {
             p = git(["rev-list", "--left-right", "--count", remote + "/" + branch + "...@{0}", "--"])
-                .catch(function (err) {
+                .catch((err) => {
                     ErrorHandler.logError(err);
                     return getCommitCountsFallback();
                 });
         }
-        return p.then(function (stdout) {
-            let matches = /(-?\d+)\s+(-?\d+)/.exec(stdout);
+        return p.then((stdout) => {
+            const matches = /(-?\d+)\s+(-?\d+)/.exec(stdout);
             return matches ? {
                 behind: parseInt(matches[1], 10),
                 ahead: parseInt(matches[2], 10)
@@ -934,9 +915,7 @@ export function getCommitCounts() {
 }
 
 export function getLastCommitMessage() {
-    return git(["log", "-1", "--pretty=%B"]).then(function (stdout) {
-        return stdout.trim();
-    });
+    return git(["log", "-1", "--pretty=%B"]).then((stdout) => stdout.trim());
 }
 
 export interface BlameInfo {
@@ -946,25 +925,24 @@ export interface BlameInfo {
 }
 
 export function getBlame(file, from, to): Promise<BlameInfo[]> {
-    let args = ["blame", "-w", "--line-porcelain"];
+    const args = ["blame", "-w", "--line-porcelain"];
     if (from || to) { args.push("-L" + from + "," + to); }
     args.push(file);
 
-    return git(args).then(function (stdout) {
-        if (!stdout) { return []; }
+    return git(args).then((_stdout) => {
+        if (!_stdout) { return []; }
 
-        let sep  = "-@-BREAK-HERE-@-",
-            sep2 = "$$#-#$BREAK$$-$#";
-        stdout = stdout.replace(sep, sep2)
-                       .replace(/^\t(.*)$/gm, function (a, b) { return b + sep; });
+        const sep = "-@-BREAK-HERE-@-";
+        const sep2 = "$$#-#$BREAK$$-$#";
+        const stdout = _stdout.replace(sep, sep2).replace(/^\t(.*)$/gm, (a, b) => b + sep);
 
-        return stdout.split(sep).reduce(function (arr, lineInfo) {
-            lineInfo = lineInfo.replace(sep2, sep).replace(/^\s+/, '');
+        return stdout.split(sep).reduce((arr, _lineInfo) => {
+            const lineInfo = _lineInfo.replace(sep2, sep).replace(/^\s+/, "");
             if (!lineInfo) { return arr; }
 
-            let lines = lineInfo.split("\n");
-            let firstLine = _.first(lines).split(" ");
-            let obj: BlameInfo = {
+            const lines = lineInfo.split("\n");
+            const firstLine = _.first(lines).split(" ");
+            const obj: BlameInfo = {
                 hash: firstLine[0],
                 num: firstLine[2],
                 content: _.last(lines)
@@ -972,18 +950,18 @@ export function getBlame(file, from, to): Promise<BlameInfo[]> {
 
             // process all but first and last lines
             for (let i = 1, l = lines.length - 1; i < l; i++) {
-                let line = lines[i],
-                    io = line.indexOf(" "),
-                    key = line.substring(0, io),
-                    val = line.substring(io + 1);
+                const line = lines[i];
+                const io = line.indexOf(" ");
+                const key = line.substring(0, io);
+                const val = line.substring(io + 1);
                 obj[key] = val;
             }
 
             arr.push(obj);
             return arr;
         }, []);
-    }).catch(function (stderr) {
-        let m = stderr.match(/no such path (\S+)/);
+    }).catch((stderr) => {
+        const m = stderr.match(/no such path (\S+)/);
         if (m) {
             throw new Error("File is not tracked by Git: " + m[1]);
         }
@@ -992,17 +970,17 @@ export function getBlame(file, from, to): Promise<BlameInfo[]> {
 }
 
 export function getGitRoot() {
-    let projectRoot = getProjectRoot();
+    const projectRoot = getProjectRoot();
     return git(["rev-parse", "--show-toplevel"], {
-            cwd: projectRoot
-        })
-        .catch(function (e) {
+        cwd: projectRoot
+    })
+        .catch((e) => {
             if (ErrorHandler.contains(e, "Not a git repository")) {
                 return null;
             }
             throw e;
         })
-        .then(function (root) {
+        .then((root) => {
             if (root === null) {
                 return root;
             }
@@ -1014,7 +992,8 @@ export function getGitRoot() {
             // because --show-toplevel didn't return Not a git repository
             // we need to find closest .git
 
-            function checkPathRecursive(path) {
+            function checkPathRecursive(_path) {
+                let path = _path;
 
                 if (strEndsWith(path, "/")) {
                     path = path.slice(0, -1);
@@ -1022,13 +1001,13 @@ export function getGitRoot() {
 
                 consoleDebug("Checking path for .git: " + path);
 
-                return new Promise(function (resolve) {
+                return new Promise((resolve) => {
 
                     // keep .git away from file tree for now
                     // this branch of code will not run for intel xdk
                     if (typeof brackets !== "undefined" && brackets.fs && brackets.fs.stat) {
-                        brackets.fs.stat(path + "/.git", function (err, result) {
-                            let exists = err ? false : (result.isFile() || result.isDirectory());
+                        brackets.fs.stat(path + "/.git", (err, result) => {
+                            const exists = err ? false : (result.isFile() || result.isDirectory());
                             if (exists) {
                                 consoleDebug("Found .git in path: " + path);
                                 resolve(path);
@@ -1043,8 +1022,8 @@ export function getGitRoot() {
                         return;
                     }
 
-                    FileSystem.resolve(path + "/.git", function (err, item, stat) {
-                        let exists = err ? false : (stat.isFile || stat.isDirectory);
+                    FileSystem.resolve(path + "/.git", (err, item, stat) => {
+                        const exists = err ? false : (stat.isFile || stat.isDirectory);
                         if (exists) {
                             consoleDebug("Found .git in path: " + path);
                             resolve(path);
@@ -1061,15 +1040,10 @@ export function getGitRoot() {
 
             }
 
-            return checkPathRecursive(projectRoot).then(function (path) {
-                return path + "/";
-            });
-
+            return checkPathRecursive(projectRoot).then((path) => path + "/");
         });
 }
 
 export function setTagName(tagname) {
-    return git(["tag", tagname]).then(function (stdout) {
-        return stdout.trim();
-    });
+    return git(["tag", tagname]).then((stdout) => stdout.trim());
 }

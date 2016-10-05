@@ -5,8 +5,9 @@ module.exports = {
     },
     "extends": "pureprofile",
     "rules": {
-        "indent": ["error", 4],
+        "indent": ["error", 4, { "SwitchCase": 1 }],
         "max-params": ["error", 6],
+        "no-extra-parens": "off",
         "no-undef": "off",
         "no-unused-expressions": "off",
         "no-unused-vars": "off",
