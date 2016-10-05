@@ -541,28 +541,21 @@ if (Preferences.get("clearWhitespaceOnSave")) {
     });
 }
 
-export interface PromiseWithProgressed extends Promise {
-    progressed: Function;
-}
-
-export interface DeferObj {
-    promise: PromiseWithProgressed<any>;
-    progress: Function;
-    resolve: Function;
-    reject: Function;
-}
-
-export function defer(): DeferObj {
+export function defer() {
+    return Promise.defer();
+    /* TODO: this won't work
     const progressHandlers = [];
-    const progress = (...args) => progressHandlers.forEach(h => h(...args));
+    const progress = (...args) => {
+        console.log('progress -> ', progressHandlers.length, ...args);
+        progressHandlers.forEach(h => h(...args));
+    };
     let resolve;
     let reject;
-
     const promise = new Promise((_resolve, _reject) => {
         resolve = _resolve;
         reject = _reject;
     });
     (promise as any).progressed = (handler) => progressHandlers.push(handler);
-
     return { promise, progress, resolve, reject };
+    */
 }

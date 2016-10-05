@@ -12,7 +12,7 @@ import * as Events from "../Events";
 import EventEmitter from "../EventEmitter";
 import ExpectedError from "../ExpectedError";
 import * as Preferences from "../Preferences";
-import { consoleDebug, defer, DeferObj, getProjectRoot, loadPathContent } from "../Utils";
+import { consoleDebug, defer, getProjectRoot, loadPathContent } from "../Utils";
 import { _, FileSystem, FileUtils } from "../brackets-modules";
 
 let _gitPath = null;
@@ -81,7 +81,7 @@ function _processQueue() {
     }
     // get item from queue
     const item = _gitQueue.shift();
-    const deferObj: DeferObj = item[0];
+    const deferObj = item[0];
     const args = item[1];
     const opts = item[2];
     // execute git command in a queue so no two commands are running at the same time
