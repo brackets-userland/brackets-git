@@ -24,7 +24,7 @@ export function getProjectRoot() {
 
 // returns "C:/Users/Zaggi/AppData/Roaming/Brackets/extensions/user/zaggino.brackets-git/"
 export function getExtensionDirectory() {
-    return window.bracketsGit.getExtensionPath();
+    return window["bracketsGit"].getExtensionPath(); // eslint-disable-line
 }
 
 export function formatDiff(diff) {
@@ -282,7 +282,7 @@ export function pathExists(path) {
     });
 }
 
-export function loadPathContent(path) {
+export function loadPathContent(path): Promise<string | null> {
     return new Promise(function (resolve) {
         FileSystem.resolve(path, function (err, entry) {
             if (err) {
@@ -307,7 +307,7 @@ export function loadPathContent(path) {
                 });
             }
         });
-    });
+    }) as Promise<string | null>;
 }
 
 export function setLoading($btn) {

@@ -132,10 +132,8 @@ export function forceBranchDelete(branchName) {
     return git(["branch", "--no-color", "-D", branchName]);
 }
 
-export function getBranches(moreArgs) {
-    let args = ["branch", "--no-color"];
-    if (moreArgs) { args = args.concat(moreArgs); }
-
+export function getBranches(moreArgs = []) {
+    const args = ["branch", "--no-color"].concat(moreArgs);
     return git(args).then((stdout) => {
         if (!stdout) { return []; }
         return stdout.split("\n").reduce((arr, l) => {
@@ -495,7 +493,7 @@ export interface CommitInfo {
     tags?: string[];
 }
 
-export function getHistory(branch, skipCommits, file): Promise<CommitInfo[]> {
+export function getHistory(branch, skipCommits, file = null): Promise<CommitInfo[]> {
     const separator = "_._";
     const newline = "_.nw._";
     const format = [
@@ -595,8 +593,8 @@ export function commit(message, amend) {
     });
 }
 
-export function reset(type, hash) {
-    const args = ["reset", type || "--mixed"]; // mixed is the default action
+export function reset(type = "--mixed", hash = null) {
+    const args = ["reset", type]; // mixed is the default action
     if (hash) { args.push(hash, "--"); }
     return git(args);
 }

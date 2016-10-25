@@ -22,9 +22,9 @@ export function setRemoteUrl(remote, url) {
 }
 
 function sortBranches(branches) {
-    return branches.sort(function (a, b) {
-        var ar = a.remote || "",
-            br = b.remote || "";
+    return branches.sort((a, b) => {
+        const ar = a.remote || "";
+        const br = b.remote || "";
         // origin remote first
         if (br && ar === "origin" && br !== "origin") {
             return -1;
@@ -50,20 +50,22 @@ function sortBranches(branches) {
             return 1;
         }
         // sort by sortName (lowercased branch name)
-        return a.sortName < b.sortName ? -1 : a.sortName > b.sortName ? 1 : 0;
+        if (a.sortName < b.sortName) {
+            return -1;
+        }
+        if (a.sortName > b.sortName) {
+            return 1;
+        }
+        return 0;
     });
 }
 
 export function getBranches() {
-    return GitCli.getBranches().then(function (branches) {
-        return sortBranches(branches);
-    });
+    return GitCli.getBranches().then((branches) => sortBranches(branches));
 }
 
 export function getAllBranches() {
-    return GitCli.getAllBranches().then(function (branches) {
-        return sortBranches(branches);
-    });
+    return GitCli.getAllBranches().then((branches) => sortBranches(branches));
 }
 
 export function getHistory(branch, skip) {
@@ -79,39 +81,35 @@ export function resetIndex() {
 }
 
 export function discardAllChanges() {
-    return GitCli.reset("--hard").then(function () {
-        return GitCli.clean();
-    });
+    return GitCli.reset("--hard").then(() => GitCli.clean());
 }
 
 export function getMergeInfo() {
-    var baseCheck  = ["MERGE_MODE", "rebase-apply"],
-        mergeCheck = ["MERGE_HEAD", "MERGE_MSG"],
-        rebaseCheck = ["rebase-apply/next", "rebase-apply/last", "rebase-apply/head-name"],
-        gitFolder  = Preferences.get("currentGitRoot") + ".git/";
+    const baseCheck = ["MERGE_MODE", "rebase-apply"];
+    const mergeCheck = ["MERGE_HEAD", "MERGE_MSG"];
+    const rebaseCheck = ["rebase-apply/next", "rebase-apply/last", "rebase-apply/head-name"];
+    const gitFolder = Preferences.get("currentGitRoot") + ".git/";
 
-    return Promise.all(baseCheck.map(function (fileName) {
-        return Utils.loadPathContent(gitFolder + fileName);
-    })).spread(function (mergeMode, rebaseMode) {
-        var obj = {
+    return Promise.all(baseCheck.map((fileName) => Utils.loadPathContent(gitFolder + fileName)))
+    .spread((mergeMode, rebaseMode) => {
+        const obj = {
             mergeMode: mergeMode !== null,
+            mergeHead: null,
             rebaseMode: rebaseMode !== null
         };
         if (obj.mergeMode) {
 
-            return Promise.all(mergeCheck.map(function (fileName) {
-                return Utils.loadPathContent(gitFolder + fileName);
-            })).spread(function (head, msg) {
-
+            return Promise.all(mergeCheck.map((fileName) => Utils.loadPathContent(gitFolder + fileName)))
+            .spread((head, msg) => {
                 if (head) {
                     obj.mergeHead = head.trim();
                 }
-                var msgSplit = msg ? msg.trim().split(/conflicts:/i) : [];
+                const msgSplit = msg ? msg.trim().split(/conflicts:/i) : [];
                 if (msgSplit[0]) {
                     obj.mergeMessage = msgSplit[0].trim();
                 }
                 if (msgSplit[1]) {
-                    obj.mergeConflicts = msgSplit[1].trim().split("\n").map(function (line) { return line.trim(); });
+                    obj.mergeConflicts = msgSplit[1].trim().split("\n").map((line) => line.trim());
                 }
                 return obj;
 
@@ -120,15 +118,12 @@ export function getMergeInfo() {
         }
         if (obj.rebaseMode) {
 
-            return Promise.all(rebaseCheck.map(function (fileName) {
-                return Utils.loadPathContent(gitFolder + fileName);
-            })).spread(function (next, last, head) {
-
+            return Promise.all(rebaseCheck.map((fileName) => Utils.loadPathContent(gitFolder + fileName)))
+            .spread((next, last, head) => {
                 if (next) { obj.rebaseNext = next.trim(); }
                 if (last) { obj.rebaseLast = last.trim(); }
                 if (head) { obj.rebaseHead = head.trim().substring("refs/heads/".length); }
                 return obj;
-
             });
 
         }
@@ -137,9 +132,7 @@ export function getMergeInfo() {
 }
 
 export function discardFileChanges(file) {
-    return GitCli.unstage(file).then(function () {
-        return GitCli.checkout(file);
-    });
+    return GitCli.unstage(file).then(() => GitCli.checkout(file));
 }
 
 export function pushForced(remote, branch) {
@@ -154,7 +147,7 @@ export function undoLastLocalCommit() {
     return GitCli.reset("--soft", "HEAD~1");
 }
 
-Object.keys(GitCli).forEach(function (method) {
+Object.keys(GitCli).forEach((method) => {
     if (!exports[method]) {
         exports[method] = GitCli[method];
     }
