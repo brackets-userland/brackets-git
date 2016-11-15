@@ -1,20 +1,16 @@
 import * as Promise from "bluebird";
 import * as Strings from "strings";
+import { _, Dialogs, Mustache } from "../brackets-modules";
 
-var _ = brackets.getModule("thirdparty/lodash"),
-    Dialogs = brackets.getModule("widgets/Dialogs"),
-    Mustache = brackets.getModule("thirdparty/mustache/mustache");
-
-var template = require("text!src/dialogs/templates/progress-dialog.html");
-
-var lines,
-    $textarea;
+const template = require("text!src/dialogs/templates/progress-dialog.html");
+let lines;
+let $textarea;
 
 function addLine(str) {
     lines.push(str);
 }
 
-function onProgress(str) {
+function onProgress(str?) {
     if (typeof str !== "undefined") {
         addLine(str);
     }
@@ -24,41 +20,41 @@ function onProgress(str) {
     }
 }
 
-export function show(promise, title, options) {
+export interface ShowOptions {
+    preDelay?: number;
+    postDelay?: number;
+}
+
+export function show(promise, title = null, options: ShowOptions = {}) {
     if (!promise || !promise.finally || !promise.progressed) {
         throw new Error("Invalid argument for progress dialog!");
     }
 
     if (typeof title === "object") {
-        options = title;
-        title = false;
+        options = title; // eslint-disable-line
+        title = false; // eslint-disable-line
     }
 
-    options = options || {};
-
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
 
         lines = [];
         $textarea = null;
 
-        var dialog,
-            finished = false;
+        let dialog;
+        let finished = false;
 
         function showDialog() {
             if (finished) {
                 return;
             }
 
-            var templateArgs = {
-                title: title || Strings.OPERATION_IN_PROGRESS_TITLE,
-                Strings: Strings
-            };
+            const templateArgs = { title: title || Strings.OPERATION_IN_PROGRESS_TITLE, Strings };
 
-            var compiledTemplate = Mustache.render(template, templateArgs);
+            const compiledTemplate = Mustache.render(template, templateArgs);
             dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
             $textarea = dialog.getElement().find("textarea");
-            onProgress(undefined);
+            onProgress();
         }
 
         function finish() {
@@ -66,41 +62,35 @@ export function show(promise, title, options) {
             if (dialog) {
                 dialog.close();
             }
-            promise.then(function (val) {
-                resolve(val);
-            }).catch(function (err) {
-                reject(err);
-            });
+            promise
+                .then((val) => resolve(val))
+                .catch((err) => reject(err));
         }
 
         if (!options.preDelay) {
             showDialog();
         } else {
-            setTimeout(function () {
-                showDialog();
-            }, options.preDelay * 1000);
+            setTimeout(() => showDialog(), options.preDelay * 1000);
         }
 
-        promise.progressed(function (string) {
-            onProgress(string);
-        }).finally(function () {
-            onProgress("Finished!");
-            if (!options.postDelay || !dialog) {
-                finish();
-            } else {
-                setTimeout(function () {
+        promise
+            .progressed((string) => onProgress(string))
+            .finally(() => {
+                onProgress("Finished!");
+                if (!options.postDelay || !dialog) {
                     finish();
-                }, options.postDelay * 1000);
-            }
-        });
+                } else {
+                    setTimeout(() => finish(), options.postDelay * 1000);
+                }
+            });
 
     });
 }
 
 export function waitForClose() {
-    return new Promise(function (resolve) {
+    return new Promise((resolve) => {
         function check() {
-            var visible = $("#git-progress-dialog").is(":visible");
+            const visible = $("#git-progress-dialog").is(":visible");
             if (!visible) {
                 resolve();
             } else {

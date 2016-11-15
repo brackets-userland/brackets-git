@@ -95,12 +95,17 @@ export function getMergeInfo() {
         const obj = {
             mergeMode: mergeMode !== null,
             mergeHead: null,
-            rebaseMode: rebaseMode !== null
+            mergeMessage: null,
+            mergeConflicts: null,
+            rebaseMode: rebaseMode !== null,
+            rebaseNext: null,
+            rebaseLast: null,
+            rebaseHead: null
         };
         if (obj.mergeMode) {
 
             return Promise.all(mergeCheck.map((fileName) => Utils.loadPathContent(gitFolder + fileName)))
-            .spread((head, msg) => {
+            .spread((head: string | null, msg: string | null) => {
                 if (head) {
                     obj.mergeHead = head.trim();
                 }
@@ -119,7 +124,7 @@ export function getMergeInfo() {
         if (obj.rebaseMode) {
 
             return Promise.all(rebaseCheck.map((fileName) => Utils.loadPathContent(gitFolder + fileName)))
-            .spread((next, last, head) => {
+            .spread((next: string | null, last: string | null, head: string | null) => {
                 if (next) { obj.rebaseNext = next.trim(); }
                 if (last) { obj.rebaseLast = last.trim(); }
                 if (head) { obj.rebaseHead = head.trim().substring("refs/heads/".length); }
@@ -147,6 +152,7 @@ export function undoLastLocalCommit() {
     return GitCli.reset("--soft", "HEAD~1");
 }
 
+// TODO: this hack should be removed
 Object.keys(GitCli).forEach((method) => {
     if (!exports[method]) {
         exports[method] = GitCli[method];

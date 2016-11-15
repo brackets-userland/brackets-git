@@ -2,16 +2,14 @@ import * as Preferences from "../Preferences";
 import * as Promise from "bluebird";
 import * as RemoteCommon from "./RemoteCommon";
 import * as Strings from "strings";
+import { Dialogs, Mustache } from "../brackets-modules";
 
-var Dialogs = brackets.getModule("widgets/Dialogs"),
-    Mustache = brackets.getModule("thirdparty/mustache/mustache");
+const template = require("text!src/dialogs/templates/pull-dialog.html");
+const remotesTemplate = require("text!src/dialogs/templates/remotes-template.html");
+const credentialsTemplate = require("text!src/dialogs/templates/credentials-template.html");
 
-var template            = require("text!src/dialogs/templates/pull-dialog.html"),
-    remotesTemplate     = require("text!src/dialogs/templates/remotes-template.html"),
-    credentialsTemplate = require("text!src/dialogs/templates/credentials-template.html");
-
-var defer,
-    pullConfig;
+let defer;
+let pullConfig;
 
 function _attachEvents($dialog) {
     RemoteCommon.attachCommonEvents(pullConfig, $dialog);
@@ -24,23 +22,22 @@ function _attachEvents($dialog) {
 }
 
 function _show() {
-    var templateArgs = {
+    const templateArgs = {
         config: pullConfig,
         mode: "PULL_FROM",
         modeLabel: Strings.PULL_FROM,
-        Strings: Strings
+        Strings
     };
-
-    var compiledTemplate = Mustache.render(template, templateArgs, {
-            credentials: credentialsTemplate,
-            remotes: remotesTemplate
-        }),
-        dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-        $dialog = dialog.getElement();
+    const compiledTemplate = Mustache.render(template, templateArgs, {
+        credentials: credentialsTemplate,
+        remotes: remotesTemplate
+    });
+    const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+    const $dialog = dialog.getElement();
 
     _attachEvents($dialog);
 
-    dialog.done(function (buttonId) {
+    dialog.done((buttonId) => {
         if (buttonId === "ok") {
             RemoteCommon.collectValues(pullConfig, $dialog);
             Preferences.set("pull.strategy", pullConfig.strategy);

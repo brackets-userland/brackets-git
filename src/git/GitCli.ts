@@ -557,7 +557,7 @@ export function clone(remoteGitUrl, destinationFolder) {
     });
 }
 
-export function stage(fileOrFiles, updateIndex) {
+export function stage(fileOrFiles, updateIndex = false) {
     const args = ["add"];
     if (updateIndex) { args.push("-u"); }
     return git(args.concat("--", fileOrFiles));
