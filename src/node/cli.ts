@@ -2,12 +2,11 @@
 /* eslint no-console:0 */
 
 import * as fs from "fs";
-import { exec, ChildProcess } from "child_process";
+import * as ChildProcess from "child_process";
 import * as ProcessUtils from "./process-utils";
 
-const crossSpawn = require("cross-spawn");
 const domainName = "brackets-git";
-const processMap: { [id: number]: ChildProcess } = {};
+const processMap: { [id: number]: ChildProcess.ChildProcess } = {};
 const resolvedPaths: { [path: string]: string } = {};
 const fixEOL = (str: string) => str[str.length - 1] === "\n" ? str.slice(0, -1) : str;
 const fixCommandForExec = (command: string) => {
@@ -38,7 +37,7 @@ function execute(
 ) {
     // http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
     const toExec = fixCommandForExec(command) + " " + args.join(" ");
-    const child = exec(toExec, {
+    const child = ChildProcess.exec(toExec, {
         cwd: directory,
         maxBuffer: 20 * 1024 * 1024
     }, (err, stdout, stderr) => {
@@ -48,7 +47,7 @@ function execute(
     processMap[opts.cliId] = child;
 }
 
-// handler with cross-spawn
+// handler with ChildProcess.spawn
 function join(arr: Buffer[]) {
     let index = 0;
     const length = arr.reduce((l, b) => l + b.length, 0);
@@ -68,7 +67,7 @@ function spawn(
     callback: (stderr: string | null, stdout: string | null) => void
 ) {
     // https://github.com/creationix/node-git
-    const child = crossSpawn(command, args, {
+    const child = ChildProcess.spawn(command, args, {
         cwd: directory
     });
     child.on("error", (err: NodeJS.ErrnoException) => {
