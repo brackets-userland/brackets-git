@@ -34,6 +34,7 @@ export function show(promise, title = null, options: ShowOptions = {}) {
         options = title; // eslint-disable-line
         title = false; // eslint-disable-line
     }
+    options = options || {}; // eslint-disable-line
 
     return new Promise((resolve, reject) => {
 
