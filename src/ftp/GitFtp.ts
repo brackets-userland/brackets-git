@@ -7,11 +7,9 @@ import * as Promise from "bluebird";
 import * as URI from "URI";
 
 export function isAvailable() {
-    return git(["ftp"]).then(function () {
-        return true;
-    }).catch(function (err) {
-        return err;
-    });
+    return git(["ftp"])
+        .then(() => true)
+        .catch((err) => err);
 }
 
 export function init(scope) {
@@ -23,9 +21,9 @@ export function push(scope) {
 }
 
 export function getScopes() {
-    return git(["config", "--list"]).then(function (stdout) {
-        return stdout.split("\n").reduce(function (result, row) {
-            var io = row.indexOf(".url");
+    return git(["config", "--list"]).then((stdout) => {
+        return stdout.split("\n").reduce((result, row) => {
+            const io = row.indexOf(".url");
             if (row.substring(0, 8) === "git-ftp." && row.substring(io, io + 4) === ".url") {
                 result.push({
                     name: row.split(".")[1],
@@ -38,17 +36,17 @@ export function getScopes() {
 }
 
 export function addScope(scope, url) {
-    var uri = new URI(url),
-        username = uri.username(),
-        password = uri.password();
+    const uri = new URI(url);
+    const username = uri.username();
+    const password = uri.password();
 
     uri.username("");
     uri.password("");
-    url = uri.toString();
+    url = uri.toString(); // eslint-disable-line
 
-    var scopeArgs    = ["config", "--add", "git-ftp." + scope + ".url", url],
-        usernameArgs = ["config", "--add", "git-ftp." + scope + ".user", username],
-        passwordArgs = ["config", "--add", "git-ftp." + scope + ".password", password];
+    const scopeArgs = ["config", "--add", "git-ftp." + scope + ".url", url];
+    const usernameArgs = ["config", "--add", "git-ftp." + scope + ".user", username];
+    const passwordArgs = ["config", "--add", "git-ftp." + scope + ".password", password];
 
     return Promise.all([
         git(scopeArgs),

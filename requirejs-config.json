@@ -5,7 +5,7 @@
         "marked": "./thirdparty/marked",
         "md5": "./thirdparty/md5",
         "moment": "./thirdparty/moment",
-        "URI": "./thirdparty/URI"
+        "URI": "./thirdparty/urijs.browser"
     },
     "config": {
         "moment": {
