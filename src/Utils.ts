@@ -183,7 +183,14 @@ export function formatDiff(diff) {
     return Mustache.render(formatDiffTemplate, { files: diffData });
 }
 
-export function askQuestion(title, question, options) {
+export interface AskQuestionOptions {
+    booleanResponse?: boolean;
+    defaultValue?: string;
+    noescape?: boolean;
+    password?: boolean;
+}
+
+export function askQuestion(title, question, options: AskQuestionOptions = {}) {
     return new Promise(function (resolve, reject) {
         options = options || {};
 
@@ -225,7 +232,7 @@ export function askQuestion(title, question, options) {
     });
 }
 
-export function showOutput(output, title, options) {
+export function showOutput(output, title, options = {}) {
     return new Promise(function (resolve) {
         options = options || {};
         var compiledTemplate = Mustache.render(outputDialogTemplate, {
@@ -369,7 +376,7 @@ function stripWhitespaceFromFile(filename:string, clearWholeFile: boolean = fals
             removeBom                 = Preferences.get("removeByteOrderMark"),
             normalizeLineEndings      = Preferences.get("normalizeLineEndings");
 
-        var _cleanLines = function (lineNumbers) {
+        var _cleanLines = function (lineNumbers: number[]) {
             // do not clean if there's nothing to clean
             if (lineNumbers && lineNumbers.length === 0) {
                 return resolve();

@@ -256,7 +256,7 @@ export function deleteRemote(name) {
               or the merge can be resolved as a fast-forward.
 */
 
-export function mergeRemote(remote, branch, ffOnly, noCommit) {
+export function mergeRemote(remote, branch, ffOnly = false, noCommit = false) {
     const args = ["merge"];
 
     if (ffOnly) { args.push("--ff-only"); }

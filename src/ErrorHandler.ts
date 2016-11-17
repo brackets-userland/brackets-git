@@ -87,7 +87,7 @@ export function logError(err) {
     return err;
 };
 
-export function showError(err, title) {
+export function showError(err: Error, title?: string) {
     if (err.__shown) { return err; }
 
     logError(err);
