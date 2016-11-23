@@ -5,20 +5,20 @@ import {
 import * as ErrorHandler from "./ErrorHandler";
 import * as Events from "./Events";
 import EventEmitter from "./EventEmitter";
-import * as Git from "./git/Git";
+import * as Git from "./git/GitCli";
 import * as Preferences from "./Preferences";
 import * as Promise from "bluebird";
 import * as Strings from "strings";
 
-var formatDiffTemplate      = require("text!templates/format-diff.html"),
-    questionDialogTemplate  = require("text!templates/git-question-dialog.html"),
-    outputDialogTemplate    = require("text!templates/git-output.html"),
-    writeTestResults        = {},
-    debugOn                 = Preferences.get("debugMode"),
-    EXT_NAME                = "[brackets-git] ";
+const formatDiffTemplate = require("text!templates/format-diff.html");
+const questionDialogTemplate = require("text!templates/git-question-dialog.html");
+const outputDialogTemplate = require("text!templates/git-output.html");
+const writeTestResults = {};
+const debugOn = Preferences.get("debugMode");
+const EXT_NAME = "[brackets-git] ";
 
 export function getProjectRoot() {
-    var projectRoot = ProjectManager.getProjectRoot();
+    const projectRoot = ProjectManager.getProjectRoot();
     return projectRoot ? projectRoot.fullPath : null;
 }
 
@@ -28,21 +28,21 @@ export function getExtensionDirectory() {
 }
 
 export function formatDiff(diff) {
-    var DIFF_MAX_LENGTH = 2000;
+    const DIFF_MAX_LENGTH = 2000;
 
-    var tabReplace   = "",
-        verbose      = Preferences.get("useVerboseDiff"),
-        numLineOld   = 0,
-        numLineNew   = 0,
-        lastStatus   = 0,
-        diffData     = [];
+    let tabReplace = "";
+    const verbose = Preferences.get("useVerboseDiff");
+    let numLineOld = 0;
+    let numLineNew = 0;
+    let lastStatus = 0;
+    const diffData = [];
 
-    var i = Preferences.getGlobal("tabSize");
+    let i = Preferences.getGlobal("tabSize");
     while (i--) {
         tabReplace += "&nbsp;";
     }
 
-    var LINE_STATUS = {
+    const LINE_STATUS = {
         HEADER: 0,
         UNCHANGED: 1,
         REMOVED: 2,
@@ -50,17 +50,18 @@ export function formatDiff(diff) {
         EOF: 4
     };
 
-    var diffSplit = diff.split("\n");
+    const diffSplit = diff.split("\n");
 
     if (diffSplit.length > DIFF_MAX_LENGTH) {
         return "<div>" + Strings.DIFF_TOO_LONG + "</div>";
     }
 
-    diffSplit.forEach(function (line) {
+    diffSplit.forEach((_line) => {
+        let line = _line;
         if (line === " ") { line = ""; }
 
-        var lineClass   = "",
-            pushLine    = true;
+        let lineClass = "";
+        let pushLine = true;
 
         if (line.indexOf("diff --git") === 0) {
             lineClass = "diffCmd";
@@ -88,9 +89,9 @@ export function formatDiff(diff) {
             lastStatus = LINE_STATUS.HEADER;
 
             // This read the start line for the diff and substract 1 for this line
-            var m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
-            var s1 = m[1].split(",");
-            var s2 = m[2].split(",");
+            const m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
+            const s1 = m[1].split(",");
+            const s2 = m[2].split(",");
 
             numLineOld = s1[0] - 1;
             numLineNew = s2[0] - 1;
@@ -126,12 +127,12 @@ export function formatDiff(diff) {
             lastStatus = LINE_STATUS.EOF;
             lineClass = "end-of-file";
         } else {
-            console.log("Unexpected line in diff: " + line);
+            console.log("Unexpected line in diff: " + line); // eslint-disable-line
         }
 
         if (pushLine) {
-            var _numLineOld = null,
-                _numLineNew = null;
+            let _numLineOld = null;
+            let _numLineNew = null;
 
             switch (lastStatus) {
                 case LINE_STATUS.HEADER:
@@ -157,7 +158,7 @@ export function formatDiff(diff) {
             line = line.replace(/\uFEFF/g, "");
 
             // exposes other potentially harmful characters
-            line = line.replace(/[\u2000-\uFFFF]/g, function (x) {
+            line = line.replace(/[\u2000-\uFFFF]/g, (x) => {
                 return "<U+" + x.charCodeAt(0).toString(16).toUpperCase() + ">";
             });
 
@@ -165,7 +166,7 @@ export function formatDiff(diff) {
                 .replace(/\t/g, tabReplace)
                 .replace(/\s/g, "&nbsp;");
 
-            line = line.replace(/(&nbsp;)+$/g, function (trailingWhitespace) {
+            line = line.replace(/(&nbsp;)+$/g, (trailingWhitespace) => {
                 return "<span class='trailingWhitespace'>" + trailingWhitespace + "</span>";
             });
 
@@ -191,27 +192,23 @@ export interface AskQuestionOptions {
 }
 
 export function askQuestion(title, question, options: AskQuestionOptions = {}) {
-    return new Promise(function (resolve, reject) {
-        options = options || {};
+    return new Promise((resolve, reject) => {
+        options = options || {}; // eslint-disable-line
 
-        if (!options.noescape) {
-            question = _.escape(question);
-        }
-
-        var compiledTemplate = Mustache.render(questionDialogTemplate, {
+        const compiledTemplate = Mustache.render(questionDialogTemplate, {
             title: title,
-            question: question,
+            question: options.noescape ? question : _.escape(question),
             stringInput: !options.booleanResponse && !options.password,
             passwordInput: options.password,
             defaultValue: options.defaultValue,
             Strings: Strings
         });
 
-        var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-            $dialog = dialog.getElement();
+        const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+        const $dialog = dialog.getElement();
 
-        _.defer(function () {
-            var $input = $dialog.find("input:visible");
+        _.defer(() => {
+            const $input = $dialog.find("input:visible");
             if ($input.length > 0) {
                 $input.focus();
             } else {
@@ -219,7 +216,7 @@ export function askQuestion(title, question, options: AskQuestionOptions = {}) {
             }
         });
 
-        dialog.done(function (buttonId) {
+        dialog.done((buttonId) => {
             if (options.booleanResponse) {
                 return resolve(buttonId === "ok");
             }
@@ -232,27 +229,31 @@ export function askQuestion(title, question, options: AskQuestionOptions = {}) {
     });
 }
 
-export function showOutput(output, title, options = {}) {
-    return new Promise(function (resolve) {
-        options = options || {};
-        var compiledTemplate = Mustache.render(outputDialogTemplate, {
+export interface ShowOutputOptions {
+    question?: string;
+}
+
+export function showOutput(output, title, options: ShowOutputOptions = {}) {
+    return new Promise((resolve) => {
+        options = options || {}; // eslint-disable-line
+        const compiledTemplate = Mustache.render(outputDialogTemplate, {
             title: title,
             output: output,
             Strings: Strings,
             question: options.question
         });
-        var dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+        const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
         dialog.getElement().find("button").focus();
-        dialog.done(function (buttonId) {
+        dialog.done((buttonId) => {
             resolve(buttonId === "ok");
         });
     });
 }
 
 export function isProjectRootWritable() {
-    return new Promise(function (resolve) {
+    return new Promise((resolve) => {
 
-        var folder = getProjectRoot();
+        const folder = getProjectRoot();
 
         // if we previously tried, assume nothing has changed
         if (writeTestResults[folder]) {
@@ -260,11 +261,11 @@ export function isProjectRootWritable() {
         }
 
         // create entry for temporary file
-        var fileEntry = FileSystem.getFileForPath(folder + ".bracketsGitTemp");
+        const fileEntry = FileSystem.getFileForPath(folder + ".bracketsGitTemp");
 
         function finish(bool) {
             // delete the temp file and resolve
-            fileEntry.unlink(function () {
+            fileEntry.unlink(() => {
                 writeTestResults[folder] = bool;
                 resolve(bool);
             });
@@ -272,26 +273,22 @@ export function isProjectRootWritable() {
 
         // try writing some text into the temp file
         Promise.cast(FileUtils.writeText(fileEntry, ""))
-            .then(function () {
-                finish(true);
-            })
-            .catch(function () {
-                finish(false);
-            });
+            .then(() => finish(true))
+            .catch(() => finish(false));
     });
 }
 
 export function pathExists(path) {
-    return new Promise(function (resolve) {
-        FileSystem.resolve(path, function (err, entry) {
+    return new Promise((resolve) => {
+        FileSystem.resolve(path, (err, entry) => {
             resolve(!err && entry ? true : false);
         });
     });
 }
 
 export function loadPathContent(path): Promise<string | null> {
-    return new Promise(function (resolve) {
-        FileSystem.resolve(path, function (err, entry) {
+    return new Promise((resolve) => {
+        FileSystem.resolve(path, (err, entry) => {
             if (err) {
                 return resolve(null);
             }
@@ -299,15 +296,15 @@ export function loadPathContent(path): Promise<string | null> {
                 entry._clearCachedData();
             }
             if (entry.isFile) {
-                entry.read(function (err, content) {
-                    if (err) {
+                entry.read((readErr, content) => {
+                    if (readErr) {
                         return resolve(null);
                     }
                     resolve(content);
                 });
             } else {
-                entry.getContents(function (err, contents) {
-                    if (err) {
+                entry.getContents((getContentsErr, contents) => {
+                    if (getContentsErr) {
                         return resolve(null);
                     }
                     resolve(contents);
@@ -325,25 +322,26 @@ export function unsetLoading($btn) {
     $btn.prop("disabled", false).removeClass("btn-loading");
 }
 
-export function encodeSensitiveInformation(str) {
+export function encodeSensitiveInformation(_str: string) {
+    let str = _str;
     // should match passwords in http/https urls
-    str = str.replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, function (a, protocol, user/*, pass*/) {
+    str = str.replace(/(https?:\/\/)([^:@\s]*):([^:@]*)?@/g, (a, protocol, user/*, pass*/) => {
         return protocol + user + ":***@";
     });
     // should match user name in windows user folders
-    str = str.replace(/(users)(\\|\/)([^\\\/]+)(\\|\/)/i, function (a, users, slash1, username, slash2) {
+    str = str.replace(/(users)(\\|\/)([^\\\/]+)(\\|\/)/i, (a, users, slash1, username, slash2) => {
         return users + slash1 + "***" + slash2;
     });
     return str;
 }
 
 export function consoleLog(msg, type) {
-    console[type || "log"](encodeSensitiveInformation(msg));
+    console[type || "log"](encodeSensitiveInformation(msg)); // eslint-disable-line
 }
 
 export function consoleDebug(msg) {
     if (debugOn) {
-        console.log(EXT_NAME + encodeSensitiveInformation(msg));
+        console.log(EXT_NAME + encodeSensitiveInformation(msg)); // eslint-disable-line
     }
 }
 
@@ -356,10 +354,10 @@ export function consoleDebug(msg) {
  */
 export function reloadDoc(doc) {
     return Promise.cast(FileUtils.readAsText(doc.file))
-        .then(function (text) {
+        .then((text) => {
             doc.refreshText(text, new Date());
         })
-        .catch(function (err) {
+        .catch((err) => {
             ErrorHandler.logError("Error reloading contents of " + doc.file.fullPath);
             ErrorHandler.logError(err);
         });
@@ -369,26 +367,27 @@ export function reloadDoc(doc) {
  *  strips trailing whitespace from all the diffs and adds \n to the end
  */
 function stripWhitespaceFromFile(filename:string, clearWholeFile: boolean = false) {
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
 
-        var fullPath                  = Preferences.get("currentGitRoot") + filename,
-            addEndlineToTheEndOfFile  = Preferences.get("addEndlineToTheEndOfFile"),
-            removeBom                 = Preferences.get("removeByteOrderMark"),
-            normalizeLineEndings      = Preferences.get("normalizeLineEndings");
+        const fullPath = Preferences.get("currentGitRoot") + filename;
+        const addEndlineToTheEndOfFile = Preferences.get("addEndlineToTheEndOfFile");
+        const removeBom = Preferences.get("removeByteOrderMark");
+        const normalizeLineEndings = Preferences.get("normalizeLineEndings");
 
-        var _cleanLines = function (lineNumbers: number[]) {
+        const _cleanLines = function (lineNumbers: number[]): any {
             // do not clean if there's nothing to clean
             if (lineNumbers && lineNumbers.length === 0) {
                 return resolve();
             }
             // clean the file
-            var fileEntry = FileSystem.getFileForPath(fullPath);
+            const fileEntry = FileSystem.getFileForPath(fullPath);
             return Promise.cast(FileUtils.readAsText(fileEntry))
-                .catch(function (err) {
+                .catch((err) => {
                     ErrorHandler.logError(err + " on FileUtils.readAsText for " + fileEntry.fullPath);
                     return null;
                 })
-                .then(function (text) {
+                .then((_text) => {
+                    let text = _text;
                     if (text === null) {
                         return resolve();
                     }
@@ -402,16 +401,16 @@ function stripWhitespaceFromFile(filename:string, clearWholeFile: boolean = fals
                         text = text.replace(/\r\n/g, "\n");
                     }
                     // process lines
-                    var lines = text.split("\n");
+                    const lines = text.split("\n");
 
                     if (lineNumbers) {
-                        lineNumbers.forEach(function (lineNumber) {
+                        lineNumbers.forEach((lineNumber) => {
                             if (typeof lines[lineNumber] === "string") {
                                 lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
                             }
                         });
                     } else {
-                        lines.forEach(function (ln, lineNumber) {
+                        lines.forEach((ln, lineNumber) => {
                             if (typeof lines[lineNumber] === "string") {
                                 lines[lineNumber] = lines[lineNumber].replace(/\s+$/, "");
                             }
@@ -420,7 +419,7 @@ function stripWhitespaceFromFile(filename:string, clearWholeFile: boolean = fals
 
                     // add empty line to the end, i've heard that git likes that for some reason
                     if (addEndlineToTheEndOfFile) {
-                        var lastLineNumber = lines.length - 1;
+                        const lastLineNumber = lines.length - 1;
                         if (lines[lastLineNumber].length > 0) {
                             lines[lastLineNumber] = lines[lastLineNumber].replace(/\s+$/, "");
                         }
@@ -431,14 +430,14 @@ function stripWhitespaceFromFile(filename:string, clearWholeFile: boolean = fals
 
                     text = lines.join("\n");
                     return Promise.cast(FileUtils.writeText(fileEntry, text))
-                        .catch(function (err) {
+                        .catch((err) => {
                             ErrorHandler.logError("Wasn't able to clean whitespace from file: " + fullPath);
                             resolve();
                             throw err;
                         })
-                        .then(function () {
+                        .then(() => {
                             // refresh the file if it's open in the background
-                            DocumentManager.getAllOpenDocuments().forEach(function (doc) {
+                            DocumentManager.getAllOpenDocuments().forEach((doc) => {
                                 if (doc.file.fullPath === fullPath) {
                                     reloadDoc(doc);
                                 }
@@ -452,26 +451,25 @@ function stripWhitespaceFromFile(filename:string, clearWholeFile: boolean = fals
         if (clearWholeFile) {
             _cleanLines(null);
         } else {
-            Git.diffFile(filename).then(function (diff) {
+            Git.diffFile(filename).then((diff) => {
                 // if git returned an empty diff
                 if (!diff) { return resolve(); }
 
                 // if git detected that the file is binary
                 if (diff.match(/^binary files.*differ$/img)) { return resolve(); }
 
-                var modified = [],
-                    changesets = diff.split("\n").filter(function (l) { return l.match(/^@@/) !== null; });
+                const modified = [];
+                const changesets = diff.split("\n").filter((l) => l.match(/^@@/) !== null);
                 // collect line numbers to clean
-                changesets.forEach(function (line) {
-                    var i,
-                        m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/),
-                        s = m[2].split(","),
-                        from = parseInt(s[0], 10),
-                        to = from - 1 + (parseInt(s[1], 10) || 1);
-                    for (i = from; i <= to; i++) { modified.push(i > 0 ? i - 1 : 0); }
+                changesets.forEach((line) => {
+                    const m = line.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
+                    const s = m[2].split(",");
+                    const from = parseInt(s[0], 10);
+                    const to = from - 1 + (parseInt(s[1], 10) || 1);
+                    for (let i = from; i <= to; i++) { modified.push(i > 0 ? i - 1 : 0); }
                 });
                 _cleanLines(modified);
-            }).catch(function (ex) {
+            }).catch((ex) => {
                 // This error will bubble up to preparing commit dialog so just log here
                 ErrorHandler.logError(ex);
                 reject(ex);
@@ -481,37 +479,38 @@ function stripWhitespaceFromFile(filename:string, clearWholeFile: boolean = fals
 }
 
 export function stripWhitespaceFromFiles(gitStatusResults, stageChanges) {
-    var notificationDefer = Promise.defer(),
-        startTime = (new Date()).getTime(),
-        queue = Promise.resolve();
+    const notificationDefer = Promise.defer();
+    const startTime = (new Date()).getTime();
+    let queue = Promise.resolve();
 
-    gitStatusResults.forEach(function (fileObj) {
-        var isDeleted = fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1;
+    gitStatusResults.forEach((fileObj) => {
+        const isDeleted = fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1;
 
         // strip whitespace if the file was not deleted
         if (!isDeleted) {
             // strip whitespace only for recognized languages so binary files won't get corrupted
-            var langId = LanguageManager.getLanguageForPath(fileObj.file).getId();
+            const langId = LanguageManager.getLanguageForPath(fileObj.file).getId();
             if (["unknown", "binary", "image", "markdown", "audio"].indexOf(langId) === -1) {
 
-                queue = queue.then(function () {
-                    var clearWholeFile = fileObj.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
+                queue = queue.then(() => {
+                    const clearWholeFile = fileObj.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
                                          fileObj.status.indexOf(Git.FILE_STATUS.RENAMED) !== -1;
 
-                    var t = (new Date()).getTime() - startTime;
+                    const t = (new Date()).getTime() - startTime;
                     notificationDefer.progress(t + "ms - " + Strings.CLEAN_FILE_START + ": " + fileObj.file);
 
-                    return stripWhitespaceFromFile(fileObj.file, clearWholeFile).then(function () {
+                    return stripWhitespaceFromFile(fileObj.file, clearWholeFile).then(() => {
                         // stage the files again to include stripWhitespace changes
-                        var notifyProgress = function () {
-                            var t = (new Date()).getTime() - startTime;
-                            notificationDefer.progress(t + "ms - " + Strings.CLEAN_FILE_END + ": " + fileObj.file);
+                        const notifyProgress = function () {
+                            const elapsed = (new Date()).getTime() - startTime;
+                            notificationDefer.progress(
+                                elapsed + "ms - " + Strings.CLEAN_FILE_END + ": " + fileObj.file
+                            );
                         };
                         if (stageChanges) {
                             return Git.stage(fileObj.file).then(notifyProgress);
-                        } else {
-                            notifyProgress();
                         }
+                        notifyProgress();
                     });
                 });
 
@@ -520,30 +519,23 @@ export function stripWhitespaceFromFiles(gitStatusResults, stageChanges) {
     });
 
     queue
-        .then(function () {
-            notificationDefer.resolve();
-        })
-        .catch(function () {
-            notificationDefer.reject();
-        });
+        .then(() => notificationDefer.resolve())
+        .catch((err) => notificationDefer.reject(err));
 
     return notificationDefer.promise;
 }
 
 export function openEditorForFile(file, relative) {
-    if (relative) {
-        file = getProjectRoot() + file;
-    }
     CommandManager.execute(Commands.FILE_OPEN, {
-        fullPath: file
+        fullPath: relative ? getProjectRoot() + file : file
     });
 }
 
 if (Preferences.get("clearWhitespaceOnSave")) {
-    EventEmitter.on(Events.BRACKETS_DOCUMENT_SAVED, function (evt, doc) {
-        var fullPath       = doc.file.fullPath,
-            currentGitRoot = Preferences.get("currentGitRoot"),
-            path           = fullPath.substring(currentGitRoot.length);
+    EventEmitter.on(Events.BRACKETS_DOCUMENT_SAVED, (evt, doc) => {
+        const fullPath = doc.file.fullPath;
+        const currentGitRoot = Preferences.get("currentGitRoot");
+        const path = fullPath.substring(currentGitRoot.length);
         stripWhitespaceFromFile(path);
     });
 }
