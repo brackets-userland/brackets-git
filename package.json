@@ -37,18 +37,18 @@
     "webpack-urijs": "webpack ./node_modules/urijs/src/URI.js ./thirdparty/urijs.browser.js -p --output-library-target=amd"
   },
   "dependencies": {
-    "lodash": "4.17.0",
-    "urijs": "1.18.2",
+    "lodash": "4.17.2",
+    "urijs": "1.18.3",
     "webpack": "1.13.3",
     "which": "1.2.12"
   },
   "devDependencies": {
-    "@types/bluebird": "3.0.35",
+    "@types/bluebird": "3.0.36",
     "@types/jquery": "2.0.34",
     "@types/urijs": "1.15.31",
     "@types/which": "1.0.28",
     "concurrently": "3.1.0",
-    "eslint": "3.10.1",
+    "eslint": "3.10.2",
     "eslint-config-pureprofile": "2.0.0",
     "glob": "7.1.1",
     "grunt": "latest",
@@ -59,8 +59,8 @@
     "grunt-lineending": "latest",
     "grunt-zip": "latest",
     "rimraf": "2.5.4",
-    "tslint": "3.15.1",
-    "typescript": "2.0.9",
+    "tslint": "4.0.1",
+    "typescript": "2.0.10",
     "typescript-eslint-parser": "1.0.0"
   },
   "i18n": [
