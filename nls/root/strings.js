@@ -1,5 +1,3 @@
-/*jshint maxlen:false */
-
 define({
     ACTION:                             "Action",
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Add endline at the end of file",

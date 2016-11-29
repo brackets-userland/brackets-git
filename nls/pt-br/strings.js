@@ -1,5 +1,3 @@
-/*jshint maxlen:false */
-
 define({
     // ACTION:                             "Action",
     ACTION:                                "Ação",

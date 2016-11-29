@@ -1,5 +1,3 @@
-/*jshint maxlen:false */
-
 define({
     ACTION:                             "Aktion",
     ADD_ENDLINE_TO_THE_END_OF_FILE:     "Zeilenende am Ende der Datei anfügen",
