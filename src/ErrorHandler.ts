@@ -80,7 +80,7 @@ export function matches(err, regExp) {
     return err.toString().match(regExp);
 };
 
-export function logError(err) {
+export function logError(err: Error | string) {
     var msg = err && err.stack ? err.stack : err;
     Utils.consoleLog("[brackets-git] " + msg, "error");
     errorQueue.push(err);

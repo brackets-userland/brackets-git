@@ -13,7 +13,7 @@ import {
     MainViewManager
 } from "./brackets-modules";
 
-import * as Git from "./git/Git";
+import * as Git from "./git/GitCli";
 import * as Events from "./Events";
 import EventEmitter from "./EventEmitter";
 import * as ErrorHandler from "./ErrorHandler";
@@ -22,26 +22,26 @@ import * as Preferences from "./Preferences";
 import * as ProgressDialog from "./dialogs/Progress";
 import * as Strings from "strings";
 import * as Utils from "./Utils";
+import getMergeInfo from "./git/get-merge-info";
 
-const branchesMenuTemplate    = require("text!templates/git-branches-menu.html"),
-const newBranchTemplate       = require("text!templates/branch-new-dialog.html"),
-const mergeBranchTemplate     = require("text!templates/branch-merge-dialog.html");
+const branchesMenuTemplate = require("text!templates/git-branches-menu.html");
+const newBranchTemplate = require("text!templates/branch-new-dialog.html");
+const mergeBranchTemplate = require("text!templates/branch-merge-dialog.html");
 
-var $gitBranchName          = $(null),
-    currentEditor,
-    $dropdown;
+let $gitBranchName = $(null);
+let currentEditor;
+let $dropdown;
 
 function renderList(branches) {
-    branches = branches.map(function (name) {
-        return {
-            name: name,
-            currentBranch: name.indexOf("* ") === 0,
-            canDelete: name !== "master"
-        };
-    });
-    var templateVars  = {
-        branchList: _.filter(branches, function (o) { return !o.currentBranch; }),
-        Strings:    Strings
+    const templateVars = {
+        branchList: _.filter(branches.map((name) => {
+            return {
+                name,
+                currentBranch: name.indexOf("* ") === 0,
+                canDelete: name !== "master"
+            };
+        }), (b) => !b.currentBranch),
+        Strings
     };
     return Mustache.render(branchesMenuTemplate, templateVars);
 }
@@ -54,21 +54,21 @@ function closeDropdown() {
 }
 
 function doMerge(fromBranch) {
-    Git.getBranches().then(function (branches) {
+    Git.getBranches().then((branches) => {
 
-        var compiledTemplate = Mustache.render(mergeBranchTemplate, {
-            fromBranch: fromBranch,
-            branches: branches,
-            Strings: Strings
+        const compiledTemplate = Mustache.render(mergeBranchTemplate, {
+            fromBranch,
+            branches,
+            Strings
         });
 
-        var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
-        var $dialog = dialog.getElement();
+        const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+        const $dialog = dialog.getElement();
         $dialog.find("input").focus();
 
-        var $toBranch = $dialog.find("[name='branch-target']");
-        var $useRebase = $dialog.find("[name='use-rebase']");
-        var $useNoff = $dialog.find("[name='use-noff']");
+        const $toBranch = $dialog.find("[name='branch-target']");
+        const $useRebase = $dialog.find("[name='use-rebase']");
+        const $useNoff = $dialog.find("[name='use-noff']");
 
         if (fromBranch === "master") {
             $useRebase.prop("checked", true);
@@ -78,32 +78,32 @@ function doMerge(fromBranch) {
         }
 
         // fill merge message if possible
-        var $mergeMessage = $dialog.find("[name='merge-message']");
+        const $mergeMessage = $dialog.find("[name='merge-message']");
         $mergeMessage.attr("placeholder", "Merge branch '" + fromBranch + "'");
-        $dialog.find(".fill-pr").on("click", function () {
-            var prMsg = "Merge pull request #??? from " + fromBranch;
+        $dialog.find(".fill-pr").on("click", () => {
+            const prMsg = "Merge pull request #??? from " + fromBranch;
             $mergeMessage.val(prMsg);
             $mergeMessage[0].setSelectionRange(prMsg.indexOf("???"), prMsg.indexOf("???") + 3);
         });
 
         // load default value for --no-ff
-        var useNoffDefaultValue = Preferences.get("useNoffDefaultValue");
+        let useNoffDefaultValue = Preferences.get("useNoffDefaultValue");
         if (typeof useNoffDefaultValue !== "boolean") { useNoffDefaultValue = true; }
         $useNoff.prop("checked", useNoffDefaultValue);
 
         // can't use rebase and no-ff together so have a change handler for this
-        $useRebase.on("change", function () {
-            var useRebase = $useRebase.prop("checked");
+        $useRebase.on("change", () => {
+            const useRebase = $useRebase.prop("checked");
             $useNoff.prop("disabled", useRebase);
             if (useRebase) { $useNoff.prop("checked", false); }
         }).trigger("change");
 
-        dialog.done(function (buttonId) {
+        dialog.done((buttonId) => {
             // right now only merge to current branch without any configuration
             // later delete merge branch and so ...
-            var useRebase = $useRebase.prop("checked");
-            var useNoff = $useNoff.prop("checked");
-            var mergeMsg = $mergeMessage.val();
+            const useRebase = $useRebase.prop("checked");
+            const useNoff = $useNoff.prop("checked");
+            const mergeMsg = $mergeMessage.val();
 
             // save state for next time branch merge is invoked
             Preferences.set("useNoffDefaultValue", useNoff);
@@ -112,21 +112,20 @@ function doMerge(fromBranch) {
 
                 if (useRebase) {
 
-                    Git.rebaseInit(fromBranch).catch(function (err) {
+                    Git.rebaseInit(fromBranch).catch((err) => {
                         throw ErrorHandler.showError(err, "Rebase failed");
-                    }).then(function (stdout) {
-                        Utils.showOutput(stdout, Strings.REBASE_RESULT).finally(function () {
+                    }).then((stdout) => {
+                        Utils.showOutput(stdout, Strings.REBASE_RESULT).finally(() => {
                             EventEmitter.emit(Events.REFRESH_ALL);
                         });
-
                     });
 
                 } else {
 
-                    Git.mergeBranch(fromBranch, mergeMsg, useNoff).catch(function (err) {
+                    Git.mergeBranch(fromBranch, mergeMsg, useNoff).catch((err) => {
                         throw ErrorHandler.showError(err, "Merge failed");
-                    }).then(function (stdout) {
-                        Utils.showOutput(stdout, Strings.MERGE_RESULT).finally(function () {
+                    }).then((stdout) => {
+                        Utils.showOutput(stdout, Strings.MERGE_RESULT).finally(() => {
                             EventEmitter.emit(Events.REFRESH_ALL);
                         });
                     });
@@ -139,23 +138,21 @@ function doMerge(fromBranch) {
 }
 
 function _reloadBranchSelect($el, branches) {
-    var template = "{{#branches}}<option value='{{name}}' remote='{{remote}}' " +
+    const template = "{{#branches}}<option value='{{name}}' remote='{{remote}}' " +
         "{{#currentBranch}}selected{{/currentBranch}}>{{name}}</option>{{/branches}}";
-    var html = Mustache.render(template, { branches: branches });
+    const html = Mustache.render(template, { branches });
     $el.html(html);
 }
 
 function closeNotExistingFiles(oldBranchName, newBranchName) {
-    return Git.getDeletedFiles(oldBranchName, newBranchName).then(function (deletedFiles) {
+    return Git.getDeletedFiles(oldBranchName, newBranchName).then((deletedFiles) => {
 
-        var gitRoot     = Preferences.get("currentGitRoot"),
-            openedFiles = MainViewManager.getWorkingSet(MainViewManager.ALL_PANES);
+        const gitRoot = Preferences.get("currentGitRoot");
+        const openedFiles = MainViewManager.getWorkingSet(MainViewManager.ALL_PANES);
 
         // Close files that does not exists anymore in the new selected branch
-        deletedFiles.forEach(function (dFile) {
-            var oFile = _.find(openedFiles, function (oFile) {
-                return oFile.fullPath == gitRoot + dFile;
-            });
+        deletedFiles.forEach((dFile) => {
+            const oFile = _.find(openedFiles, (f) => f.fullPath === gitRoot + dFile);
             if (oFile) {
                 DocumentManager.closeFullEditor(oFile);
             }
@@ -163,34 +160,34 @@ function closeNotExistingFiles(oldBranchName, newBranchName) {
 
         EventEmitter.emit(Events.REFRESH_ALL);
 
-    }).catch(function (err) {
+    }).catch((err) => {
         ErrorHandler.showError(err, "Getting list of deleted files failed.");
     });
 }
 
 function handleEvents() {
-    $dropdown.on("click", "a.git-branch-new", function (e) {
+    $dropdown.on("click", "a.git-branch-new", (e) => {
         e.stopPropagation();
 
-        Git.getAllBranches().catch(function (err) {
+        Git.getAllBranches().catch((err) => {
             ErrorHandler.showError(err);
-        }).then(function (branches) {
+        }).then((branches) => {
 
-            var compiledTemplate = Mustache.render(newBranchTemplate, {
-                branches: branches,
-                Strings: Strings
+            const compiledTemplate = Mustache.render(newBranchTemplate, {
+                branches,
+                Strings
             });
 
-            var dialog  = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+            const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
-            var $input  = dialog.getElement().find("[name='branch-name']"),
-                $select = dialog.getElement().find(".branchSelect");
+            const $input = dialog.getElement().find("[name='branch-name']");
+            const $select = dialog.getElement().find(".branchSelect");
 
-            $select.on("change", function () {
+            $select.on("change", () => {
                 if (!$input.val()) {
-                    var $opt = $select.find(":selected"),
-                        remote = $opt.attr("remote"),
-                        newVal = $opt.val();
+                    const $opt = $select.find(":selected");
+                    const remote = $opt.attr("remote");
+                    let newVal = $opt.val();
                     if (remote) {
                         newVal = newVal.substring(remote.length + 1);
                         if (remote !== "origin") {
@@ -203,32 +200,32 @@ function handleEvents() {
 
             _reloadBranchSelect($select, branches);
             dialog.getElement().find(".fetchBranches").on("click", function () {
-                var $this = $(this);
+                const $this = $(this);
                 ProgressDialog.show(Git.fetchAllRemotes())
-                    .then(function () {
-                        return Git.getAllBranches().then(function (branches) {
+                    .then(() => {
+                        return Git.getAllBranches().then((allBranches) => {
                             $this.prop("disabled", true).attr("title", "Already fetched");
-                            _reloadBranchSelect($select, branches);
+                            _reloadBranchSelect($select, allBranches);
                         });
-                    }).catch(function (err) {
+                    }).catch((err) => {
                         throw ErrorHandler.showError(err, "Fetching remote information failed");
                     });
             });
 
             dialog.getElement().find("input").focus();
-            dialog.done(function (buttonId) {
+            dialog.done((buttonId) => {
                 if (buttonId === "ok") {
 
-                    var $dialog     = dialog.getElement(),
-                        branchName  = $dialog.find("input[name='branch-name']").val().trim(),
-                        $option     = $dialog.find("select[name='branch-origin']").children("option:selected"),
-                        originName  = $option.val(),
-                        isRemote    = $option.attr("remote"),
-                        track       = !!isRemote;
+                    const $dialog = dialog.getElement();
+                    const branchName = $dialog.find("input[name='branch-name']").val().trim();
+                    const $option = $dialog.find("select[name='branch-origin']").children("option:selected");
+                    const originName = $option.val();
+                    const isRemote = $option.attr("remote");
+                    const track = !!isRemote;
 
-                    Git.createBranch(branchName, originName, track).catch(function (err) {
+                    Git.createBranch(branchName, originName, track).catch((err) => {
                         ErrorHandler.showError(err, "Creating new branch failed");
-                    }).then(function () {
+                    }).then(() => {
                         closeDropdown();
                         EventEmitter.emit(Events.REFRESH_ALL);
                     });
@@ -239,14 +236,14 @@ function handleEvents() {
     }).on("click", "a.git-branch-link .switch-branch", function (e) {
 
         e.stopPropagation();
-        var newBranchName = $(this).parent().data("branch");
+        const newBranchName = $(this).parent().data("branch");
 
-        Git.getCurrentBranchName().then(function (oldBranchName) {
-            Git.checkout(newBranchName).then(function () {
+        Git.getCurrentBranchName().then((oldBranchName) => {
+            Git.checkout(newBranchName).then(() => {
                 closeDropdown();
                 return closeNotExistingFiles(oldBranchName, newBranchName);
-            }).catch(function (err) { ErrorHandler.showError(err, "Switching branches failed."); });
-        }).catch(function (err) { ErrorHandler.showError(err, "Getting current branch name failed."); });
+            }).catch((err) => { ErrorHandler.showError(err, "Switching branches failed."); });
+        }).catch((err) => { ErrorHandler.showError(err, "Getting current branch name failed."); });
 
     }).on("mouseenter", "a", function () {
         $(this).addClass("selected");
@@ -254,22 +251,22 @@ function handleEvents() {
         $(this).removeClass("selected");
     }).on("click", "a.git-branch-link .trash-icon", function () {
 
-        var branchName = $(this).parent().data("branch");
+        const branchName = $(this).parent().data("branch");
         Utils.askQuestion(Strings.DELETE_LOCAL_BRANCH,
                           StringUtils.format(Strings.DELETE_LOCAL_BRANCH_NAME, branchName),
                           { booleanResponse: true })
-            .then(function (response) {
+            .then((response) => {
                 if (response === true) {
-                    return Git.branchDelete(branchName).catch(function (err) {
+                    return Git.branchDelete(branchName).catch((err) => {
 
                         return Utils.showOutput(err, "Branch deletion failed", {
                             question: "Do you wish to force branch deletion?"
-                        }).then(function (response) {
-                            if (response === true) {
-                                return Git.forceBranchDelete(branchName).then(function (output) {
+                        }).then((response2) => {
+                            if (response2 === true) {
+                                return Git.forceBranchDelete(branchName).then((output) => {
                                     return Utils.showOutput(output);
-                                }).catch(function (err) {
-                                    ErrorHandler.showError(err, "Forced branch deletion failed");
+                                }).catch((err2) => {
+                                    ErrorHandler.showError(err2, "Forced branch deletion failed");
                                 });
                             }
                         });
@@ -277,12 +274,10 @@ function handleEvents() {
                     });
                 }
             })
-            .catch(function (err) {
-                ErrorHandler.showError(err);
-            });
+            .catch((err) => ErrorHandler.showError(err));
 
     }).on("click", ".merge-branch", function () {
-        var fromBranch = $(this).parent().data("branch");
+        const fromBranch = $(this).parent().data("branch");
         doMerge(fromBranch);
     });
 }
@@ -326,10 +321,10 @@ function toggleDropdown(e) {
 
     Menus.closeAll();
 
-    Git.getBranches().catch(function (err) {
+    Git.getBranches().catch((err) => {
         ErrorHandler.showError(err, "Getting branch list failed");
-    }).then(function (branches) {
-        branches = branches.reduce(function (arr, branch) {
+    }).then((_branches) => {
+        const branches = _branches.reduce((arr, branch) => {
             if (!branch.currentBranch && !branch.remote) {
                 arr.push(branch.name);
             }
@@ -338,7 +333,7 @@ function toggleDropdown(e) {
 
         $dropdown = $(renderList(branches));
 
-        var toggleOffset = $gitBranchName.offset();
+        const toggleOffset = $gitBranchName.offset();
         $dropdown
             .css({
                 left: toggleOffset.left,
@@ -347,9 +342,9 @@ function toggleDropdown(e) {
             .appendTo($("body"));
 
         // fix so it doesn't overflow the screen
-        var maxHeight = $dropdown.parent().height(),
-            height = $dropdown.height(),
-            topOffset = $dropdown.position().top;
+        const maxHeight = $dropdown.parent().height();
+        const height = $dropdown.height();
+        const topOffset = $dropdown.position().top;
         if (height + topOffset >= maxHeight - 10) {
             $dropdown.css("bottom", "10px");
         }
@@ -365,7 +360,7 @@ function _getHeadFilePath() {
 }
 
 function addHeadToTheFileIndex() {
-    FileSystem.resolve(_getHeadFilePath(), function (err) {
+    FileSystem.resolve(_getHeadFilePath(), (err) => {
         if (err) {
             ErrorHandler.logError(err, "Resolving .git/HEAD file failed");
             return;
@@ -374,15 +369,15 @@ function addHeadToTheFileIndex() {
 }
 
 function checkBranch() {
-    FileSystem.getFileForPath(_getHeadFilePath()).read(function (err, contents) {
+    FileSystem.getFileForPath(_getHeadFilePath()).read((err, _contents) => {
         if (err) {
             ErrorHandler.showError(err, "Reading .git/HEAD file failed");
             return;
         }
 
-        contents = contents.trim();
+        const contents = _contents.trim();
 
-        var m = contents.match(/^ref:\s+refs\/heads\/(\S+)/);
+        let m = contents.match(/^ref:\s+refs\/heads\/(\S+)/);
 
         // alternately try to parse the hash
         if (!m) { m = contents.match(/^([a-f0-9]{40})$/); }
@@ -392,8 +387,8 @@ function checkBranch() {
             return;
         }
 
-        var branchInHead  = m[1],
-            branchInUi    = $gitBranchName.text();
+        const branchInHead = m[1];
+        const branchInUi = $gitBranchName.text();
 
         if (branchInHead !== branchInUi) {
             refresh();
@@ -401,7 +396,7 @@ function checkBranch() {
     });
 }
 
-export function refresh() {
+export function refresh(): PromiseLike<void> {
     if ($gitBranchName.length === 0) { return; }
 
     // show info that branch is refreshing currently
@@ -410,9 +405,9 @@ export function refresh() {
         .parent()
             .show();
 
-    return Git.getGitRoot().then(function (gitRoot) {
-        var projectRoot             = Utils.getProjectRoot(),
-            isRepositoryRootOrChild = gitRoot && projectRoot.indexOf(gitRoot) === 0;
+    return Git.getGitRoot().then((gitRoot) => {
+        const projectRoot = Utils.getProjectRoot();
+        const isRepositoryRootOrChild = gitRoot && projectRoot.indexOf(gitRoot) === 0;
 
         $gitBranchName.parent().toggle(isRepositoryRootOrChild);
 
@@ -434,9 +429,10 @@ export function refresh() {
         // we are in a .git repo so read the head
         addHeadToTheFileIndex();
 
-        return Git.getCurrentBranchName().then(function (branchName) {
+        return Git.getCurrentBranchName().then((_branchName) => {
+            let branchName = _branchName;
 
-            Git.getMergeInfo().then(function (mergeInfo) {
+            getMergeInfo().then((mergeInfo) => {
 
                 if (mergeInfo.mergeMode) {
                     branchName += "|MERGING";
@@ -454,7 +450,7 @@ export function refresh() {
 
                 EventEmitter.emit(Events.REBASE_MERGE_MODE, mergeInfo.rebaseMode, mergeInfo.mergeMode);
 
-                var MAX_LEN = 20;
+                const MAX_LEN = 20;
 
                 $gitBranchName
                     .text(branchName.length > MAX_LEN ? branchName.substring(0, MAX_LEN) + "\u2026" : branchName)
@@ -464,11 +460,9 @@ export function refresh() {
                     .append($("<span class='dropdown-arrow' />"));
                 Panel.enable();
 
-            }).catch(function (err) {
-                ErrorHandler.showError(err, "Reading .git state failed");
-            });
+            }).catch((err) => ErrorHandler.showError(err, "Reading .git state failed"));
 
-        }).catch(function (ex) {
+        }).catch((ex) => {
             if (ErrorHandler.contains(ex, "unknown revision")) {
                 $gitBranchName
                     .off("click")
@@ -478,7 +472,7 @@ export function refresh() {
                 throw ex;
             }
         });
-    }).catch(function (err) {
+    }).catch((err) => {
         throw ErrorHandler.showError(err);
     });
 }
@@ -489,7 +483,7 @@ export function init() {
     $("<div id='git-branch-dropdown-toggle' class='btn-alt-quiet'></div>")
         .append("<i class='octicon octicon-git-branch'></i> ")
         .append($gitBranchName)
-        .on("click", function () {
+        .on("click", () => {
             $gitBranchName.click();
             return false;
         })
@@ -497,22 +491,18 @@ export function init() {
     refresh();
 }
 
-EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function (evt, file) {
+EventEmitter.on(Events.BRACKETS_FILE_CHANGED, (evt, file) => {
     if (file.fullPath === _getHeadFilePath()) {
         checkBranch();
     }
 });
 
-EventEmitter.on(Events.REFRESH_ALL, function () {
+EventEmitter.on(Events.REFRESH_ALL, () => {
     FileSyncManager.syncOpenDocuments();
     CommandManager.execute("file.refresh");
     refresh();
 });
 
-EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, function () {
-    refresh();
-});
+EventEmitter.on(Events.BRACKETS_PROJECT_CHANGE, () => refresh());
 
-EventEmitter.on(Events.BRACKETS_PROJECT_REFRESH, function () {
-    refresh();
-});
+EventEmitter.on(Events.BRACKETS_PROJECT_REFRESH, () => refresh());

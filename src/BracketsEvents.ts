@@ -6,16 +6,16 @@ import * as Preferences from "./Preferences";
 import * as Utils from "./Utils";
 
 // White-list for .git file watching
-var watchedInsideGit = ["HEAD"];
+const watchedInsideGit = ["HEAD"];
 
-FileSystem.on("change", function (evt, file) {
+FileSystem.on("change", (evt, file) => {
     // we care only for files in current project
-    var currentGitRoot = Preferences.get("currentGitRoot");
+    const currentGitRoot = Preferences.get("currentGitRoot");
     if (file && file.fullPath.indexOf(currentGitRoot) === 0) {
 
         if (file.fullPath.indexOf(currentGitRoot + ".git/") === 0) {
 
-            var whitelisted = _.any(watchedInsideGit, function (entry) {
+            const whitelisted = _.any(watchedInsideGit, (entry) => {
                 return file.fullPath === currentGitRoot + ".git/" + entry;
             });
             if (!whitelisted) {
@@ -29,31 +29,25 @@ FileSystem.on("change", function (evt, file) {
     }
 });
 
-DocumentManager.on("documentSaved", function (evt, doc) {
+DocumentManager.on("documentSaved", (evt, doc) => {
     // we care only for files in current project
     if (doc.file.fullPath.indexOf(Preferences.get("currentGitRoot")) === 0) {
         EventEmitter.emit(Events.BRACKETS_DOCUMENT_SAVED, evt, doc);
     }
 });
 
-MainViewManager.on("currentFileChange", function (evt, currentDocument, previousDocument) {
-    currentDocument = currentDocument || DocumentManager.getCurrentDocument();
+MainViewManager.on("currentFileChange", (evt, currentDocument, previousDocument) => {
     if (!HistoryViewer.isVisible()) {
-        EventEmitter.emit(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, evt, currentDocument, previousDocument);
+        const _currentDocument = currentDocument || DocumentManager.getCurrentDocument();
+        EventEmitter.emit(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, evt, _currentDocument, previousDocument);
     } else {
         HistoryViewer.hide();
     }
 });
 
-ProjectManager.on("projectOpen", function () {
-    EventEmitter.emit(Events.BRACKETS_PROJECT_CHANGE);
-});
+ProjectManager.on("projectOpen", () => EventEmitter.emit(Events.BRACKETS_PROJECT_CHANGE));
 
-ProjectManager.on("projectRefresh", function () {
-    EventEmitter.emit(Events.BRACKETS_PROJECT_REFRESH);
-});
+ProjectManager.on("projectRefresh", () => EventEmitter.emit(Events.BRACKETS_PROJECT_REFRESH));
 
-ProjectManager.on("beforeProjectClose", function () {
-    // Disable Git when closing a project so listeners won't fire before new is opened
-    EventEmitter.emit(Events.GIT_DISABLED);
-});
+// Disable Git when closing a project so listeners won't fire before new is opened
+ProjectManager.on("beforeProjectClose", () => EventEmitter.emit(Events.GIT_DISABLED));

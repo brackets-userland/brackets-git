@@ -233,7 +233,7 @@ export interface ShowOutputOptions {
     question?: string;
 }
 
-export function showOutput(output, title, options: ShowOutputOptions = {}) {
+export function showOutput(output, title = null, options: ShowOutputOptions = {}) {
     return new Promise((resolve) => {
         options = options || {}; // eslint-disable-line
         const compiledTemplate = Mustache.render(outputDialogTemplate, {

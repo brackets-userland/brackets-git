@@ -6,19 +6,19 @@ import * as marked from "marked";
 
 const changelogDialogTemplate = require("text!templates/git-changelog-dialog.html");
 
-var dialog;
+let dialog;
 
 export function show() {
     Strings.EXTENSION_VERSION = Preferences.get("lastVersion");
-    var title = StringUtils.format(Strings.EXTENSION_WAS_UPDATED_TITLE, Strings.EXTENSION_VERSION);
-    var compiledTemplate = Mustache.render(changelogDialogTemplate, { Strings: Strings, TITLE: title });
+    const title = StringUtils.format(Strings.EXTENSION_WAS_UPDATED_TITLE, Strings.EXTENSION_VERSION);
+    const compiledTemplate = Mustache.render(changelogDialogTemplate, { Strings: Strings, TITLE: title });
     dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
-    FileUtils.readAsText(FileSystem.getFileForPath(Utils.getExtensionDirectory() + "CHANGELOG.md")).done(function (content) {
-        content = marked(content, {
-            gfm: true,
-            breaks: true
+    FileUtils.readAsText(FileSystem.getFileForPath(Utils.getExtensionDirectory() + "CHANGELOG.md"))
+        .done((content) => {
+            $("#git-changelog", dialog.getElement()).html(marked(content, {
+                gfm: true,
+                breaks: true
+            }));
         });
-        $("#git-changelog", dialog.getElement()).html(content);
-    });
-};
+}
