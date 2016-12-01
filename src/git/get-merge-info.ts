@@ -1,4 +1,3 @@
-import * as Bluebird from "bluebird";
 import * as Preferences from "../Preferences";
 import * as Utils from "../Utils";
 
@@ -7,9 +6,8 @@ export default function getMergeInfo() {
     const mergeCheck = ["MERGE_HEAD", "MERGE_MSG"];
     const rebaseCheck = ["rebase-apply/next", "rebase-apply/last", "rebase-apply/head-name"];
     const gitFolder = Preferences.get("currentGitRoot") + ".git/";
-
-    return Bluebird.all(baseCheck.map((fileName) => Utils.loadPathContent(gitFolder + fileName)))
-    .spread((mergeMode, rebaseMode) => {
+    return Promise.all(baseCheck.map((fileName) => Utils.loadPathContent(gitFolder + fileName)))
+    .then(([ mergeMode, rebaseMode ]) => {
         const obj = {
             mergeMode: mergeMode !== null,
             mergeHead: null,
@@ -22,8 +20,8 @@ export default function getMergeInfo() {
         };
         if (obj.mergeMode) {
 
-            return Bluebird.all(mergeCheck.map((fileName) => Utils.loadPathContent(gitFolder + fileName)))
-            .spread((head: string | null, msg: string | null) => {
+            return Promise.all(mergeCheck.map((fileName) => Utils.loadPathContent(gitFolder + fileName)))
+            .then(([ head, msg ]) => {
                 if (head) {
                     obj.mergeHead = head.trim();
                 }
@@ -35,14 +33,13 @@ export default function getMergeInfo() {
                     obj.mergeConflicts = msgSplit[1].trim().split("\n").map((line) => line.trim());
                 }
                 return obj;
-
             });
 
         }
         if (obj.rebaseMode) {
 
-            return Bluebird.all(rebaseCheck.map((fileName) => Utils.loadPathContent(gitFolder + fileName)))
-            .spread((next: string | null, last: string | null, head: string | null) => {
+            return Promise.all(rebaseCheck.map((fileName) => Utils.loadPathContent(gitFolder + fileName)))
+            .then(([ next, last, head ]) => {
                 if (next) { obj.rebaseNext = next.trim(); }
                 if (last) { obj.rebaseLast = last.trim(); }
                 if (head) { obj.rebaseHead = head.trim().substring("refs/heads/".length); }
