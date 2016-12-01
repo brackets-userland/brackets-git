@@ -4,7 +4,7 @@ define(function (require, exports, module) {
     require("bluebird");
     require("eventemitter2");
     require("marked");
-    require("md5");
+    require("blueimp-md5");
     require("moment");
     require("URI");
 

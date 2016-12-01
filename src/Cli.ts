@@ -155,7 +155,7 @@ export function cliHandler(method, cmd, args = [], opts: CliOptions = {}, retry 
     }).then((wasConnected) => {
 
         let resolved = false;
-        const timeoutLength = opts.timeout ? (opts.timeout * 1000) : gitTimeout;
+        const timeoutLength = typeof opts.timeout === "number" && opts.timeout > 0 ? (opts.timeout * 1000) : gitTimeout;
         const domainOpts = { cliId, watchProgress };
         const debugInfo = { startTime, wasConnected };
 

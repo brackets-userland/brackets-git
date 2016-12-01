@@ -1,10 +1,10 @@
 {
     "paths": {
-        "bluebird": "./thirdparty/bluebird",
-        "eventemitter2": "./thirdparty/eventemitter2",
-        "marked": "./thirdparty/marked",
-        "md5": "./thirdparty/md5",
-        "moment": "./thirdparty/moment",
+        "bluebird": "./thirdparty/bluebird.browser",
+        "eventemitter2": "./thirdparty/eventemitter2.browser",
+        "marked": "./thirdparty/marked.browser",
+        "blueimp-md5": "./thirdparty/blueimp-md5.browser",
+        "moment": "./thirdparty/moment.browser",
         "URI": "./thirdparty/urijs.browser"
     },
     "config": {

@@ -634,7 +634,7 @@ function _isescaped(str) {
     return /\\[0-9]{3}/.test(str);
 }
 
-export function status(type) {
+export function status(type = null) {
     return git(["status", "-u", "--porcelain"]).then((stdout) => {
         if (!stdout) { return []; }
 

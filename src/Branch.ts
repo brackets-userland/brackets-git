@@ -362,7 +362,7 @@ function _getHeadFilePath() {
 function addHeadToTheFileIndex() {
     FileSystem.resolve(_getHeadFilePath(), (err) => {
         if (err) {
-            ErrorHandler.logError(err, "Resolving .git/HEAD file failed");
+            ErrorHandler.logError(`Resolving .git/HEAD file failed: ${err}`);
             return;
         }
     });

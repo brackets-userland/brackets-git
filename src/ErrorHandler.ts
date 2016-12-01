@@ -4,10 +4,9 @@ import * as ExtensionInfo from "./ExtensionInfo";
 import * as Strings from "strings";
 import * as Utils from "./Utils";
 
-const markdownReportTemplate     = require("text!templates/error-report.md");
-const errorDialogTemplate        = require("text!templates/git-error-dialog.html");
-
-var errorQueue = [];
+const markdownReportTemplate = require("text!templates/error-report.md");
+const errorDialogTemplate = require("text!templates/git-error-dialog.html");
+const errorQueue = [];
 
 function getMdReport(params) {
     return Mustache.render(markdownReportTemplate, _.defaults(params || {}, {
@@ -22,8 +21,8 @@ function errorToString(err) {
 }
 
 export function rewrapError(err, errNew) {
-    var oldText = "Original " + err.toString(),
-        oldStack;
+    const oldText = "Original " + err.toString();
+    let oldStack;
     if (err.stack) {
         if (err.stack.indexOf(err.toString()) === 0) {
             oldStack = "Original " + err.stack;
@@ -39,64 +38,63 @@ export function rewrapError(err, errNew) {
     };
     errNew.stack += "\n\n" + oldStack;
     return errNew;
-};
+}
 
 function _reportBug(params) {
-    ExtensionInfo.hasLatestVersion(function (hasLatestVersion, currentVersion, latestVersion) {
+    ExtensionInfo.hasLatestVersion((hasLatestVersion, currentVersion, latestVersion) => {
         if (hasLatestVersion) {
             NativeApp.openURLInDefaultBrowser(params);
         } else {
-            var err = new ExpectedError("Latest version of extension is " + latestVersion + ", yours is " + currentVersion);
+            const err = new ExpectedError(
+                "Latest version of extension is " + latestVersion + ", yours is " + currentVersion
+            );
             showError(err, "Outdated extension version!");
         }
     });
 }
 
 export function reportBug() {
-    var mdReport = getMdReport({
-        errorStack: errorQueue.map(function (err, index) {
-            return "#" + (index + 1) + ". " + errorToString(err);
-        }).join("\n")
+    const mdReport = getMdReport({
+        errorStack: errorQueue.map((err, index) => "#" + (index + 1) + ". " + errorToString(err)).join("\n")
     });
     _reportBug(ExtensionInfo.getSync().homepage + "/issues/new?body=" + encodeURIComponent(mdReport));
-};
+}
 
 export function isTimeout(err) {
     return err instanceof Error && (
         err.message.indexOf("cmd-execute-timeout") === 0 ||
         err.message.indexOf("cmd-spawn-timeout") === 0
     );
-};
+}
 
 export function equals(err, what) {
     return err.toString().toLowerCase() === what.toLowerCase();
-};
+}
 
 export function contains(err, what) {
     return err.toString().toLowerCase().indexOf(what.toLowerCase()) !== -1;
-};
+}
 
 export function matches(err, regExp) {
     return err.toString().match(regExp);
-};
+}
 
 export function logError(err: Error | string) {
-    var msg = err && err.stack ? err.stack : err;
+    const msg = err && err.stack ? err.stack : err;
     Utils.consoleLog("[brackets-git] " + msg, "error");
     errorQueue.push(err);
     return err;
-};
+}
 
 export function showError(err: Error, title?: string) {
     if (err.__shown) { return err; }
 
     logError(err);
 
-    var dialog,
-        errorBody,
-        errorStack;
+    let errorBody;
+    let errorStack;
 
-    var showDetailsButton = false;
+    let showDetailsButton = false;
     if (err.detailsUrl) {
         showDetailsButton = true;
     }
@@ -116,18 +114,18 @@ export function showError(err: Error, title?: string) {
         }
     }
 
-    var compiledTemplate = Mustache.render(errorDialogTemplate, {
+    const compiledTemplate = Mustache.render(errorDialogTemplate, {
         title: title,
         body: errorBody,
         showDetailsButton: showDetailsButton,
         Strings: Strings
     });
 
-    dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+    const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
-    dialog.done(function (buttonId) {
+    dialog.done((buttonId) => {
         if (buttonId === "report") {
-            var mdReport = getMdReport({
+            const mdReport = getMdReport({
                 title: title,
                 errorBody: errorBody,
                 errorStack: errorStack
@@ -145,15 +143,15 @@ export function showError(err: Error, title?: string) {
     if (typeof err === "string") { err = new Error(err); }
     err.__shown = true;
     return err;
-};
+}
 
 export function toError(arg) {
     // FUTURE: use this everywhere and have a custom error class for this extension
     if (arg instanceof Error) { return arg; }
-    var err = new Error(arg);
+    const err = new Error(arg);
     // TODO: new class for this?
-    err.match = function () {
-        return arg.match.apply(arg, arguments);
+    err.match = function (...args) {
+        return arg.match(...args);
     };
     return err;
-};
+}

@@ -11,7 +11,7 @@ let dialog;
 export function show() {
     Strings.EXTENSION_VERSION = Preferences.get("lastVersion");
     const title = StringUtils.format(Strings.EXTENSION_WAS_UPDATED_TITLE, Strings.EXTENSION_VERSION);
-    const compiledTemplate = Mustache.render(changelogDialogTemplate, { Strings: Strings, TITLE: title });
+    const compiledTemplate = Mustache.render(changelogDialogTemplate, { Strings, TITLE: title });
     dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 
     FileUtils.readAsText(FileSystem.getFileForPath(Utils.getExtensionDirectory() + "CHANGELOG.md"))

@@ -12,6 +12,7 @@ module.exports = {
         "no-unused-expressions": "off",
         "no-unused-vars": "off",
         "no-use-before-define": "off",
+        "prefer-reflect": "off",
         "quotes": ["error", "double"],
         "space-infix-ops": "off",
         "sort-imports": "off"

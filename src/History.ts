@@ -20,7 +20,7 @@ var $gitPanel         = $(null),
 
 if (avatarType === "PICTURE" || avatarType === "IDENTICON") {
     var md5;
-    require(["md5"], function (_md5) {
+    require(["blueimp-md5"], function (_md5) {
         md5 = _md5;
     });
 }

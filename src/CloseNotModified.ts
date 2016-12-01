@@ -1,25 +1,25 @@
 import { DocumentManager, FileSystem, MainViewManager } from "./brackets-modules";
 import * as Events from "./Events";
 import EventEmitter from "./EventEmitter";
-import * as Git from "./git/Git";
+import * as Git from "./git/GitCli";
 import * as Preferences from "./Preferences";
 import * as Strings from "strings";
 
-var $icon = $(null);
+let $icon = $(null);
 
 function handleCloseNotModified(event) {
-    var reopenModified = false;
+    let reopenModified = false;
     if (event.shiftKey) {
         reopenModified = true;
     }
 
-    Git.status().then(function (modifiedFiles) {
-        var openFiles      = MainViewManager.getWorkingSet(MainViewManager.ALL_PANES),
-            currentGitRoot = Preferences.get("currentGitRoot");
+    Git.status().then((modifiedFiles) => {
+        const openFiles = MainViewManager.getWorkingSet(MainViewManager.ALL_PANES);
+        const currentGitRoot = Preferences.get("currentGitRoot");
 
-        openFiles.forEach(function (openFile) {
-            var removeOpenFile = true;
-            modifiedFiles.forEach(function (modifiedFile) {
+        openFiles.forEach((openFile) => {
+            let removeOpenFile = true;
+            modifiedFiles.forEach((modifiedFile) => {
                 if (currentGitRoot + modifiedFile.file === openFile.fullPath) {
                     removeOpenFile = false;
                     modifiedFile.isOpen = true;
@@ -28,7 +28,7 @@ function handleCloseNotModified(event) {
 
             if (removeOpenFile) {
                 // check if file doesn't have any unsaved changes
-                var doc = DocumentManager.getOpenDocumentForPath(openFile.fullPath);
+                const doc = DocumentManager.getOpenDocumentForPath(openFile.fullPath);
                 if (doc && doc.isDirty) {
                     removeOpenFile = false;
                 }
@@ -40,11 +40,9 @@ function handleCloseNotModified(event) {
         });
 
         if (reopenModified) {
-            var filesToReopen = modifiedFiles.filter(function (modifiedFile) {
-                return !modifiedFile.isOpen;
-            });
-            filesToReopen.forEach(function (fileObj) {
-                var fileEntry = FileSystem.getFileForPath(currentGitRoot + fileObj.file);
+            const filesToReopen = modifiedFiles.filter((modifiedFile) => !modifiedFile.isOpen);
+            filesToReopen.forEach((fileObj) => {
+                const fileEntry = FileSystem.getFileForPath(currentGitRoot + fileObj.file);
                 MainViewManager.addToWorkingSet(MainViewManager.ACTIVE_PANE, fileEntry);
             });
         }
@@ -75,13 +73,9 @@ export function init() {
     updateIconState();
 }
 
-EventEmitter.on(Events.GIT_ENABLED, function () {
-    $icon.show();
-});
+EventEmitter.on(Events.GIT_ENABLED, () => $icon.show());
 
-EventEmitter.on(Events.GIT_DISABLED, function () {
-    $icon.hide();
-});
+EventEmitter.on(Events.GIT_DISABLED, () => $icon.hide());
 
 MainViewManager.on([
     "workingSetAdd",
@@ -91,6 +85,4 @@ MainViewManager.on([
     "workingSetUpdate",
     "paneCreate",
     "paneDestroy"
-].join(" "), function () {
-    updateIconState();
-});
+].join(" "), () => updateIconState());
