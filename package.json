@@ -47,9 +47,9 @@
     "eventemitter2": "2.2.1",
     "lodash": "4.17.2",
     "marked": "0.3.6",
-    "moment": "2.17.0",
-    "urijs": "1.18.3",
-    "webpack": "1.13.3",
+    "moment": "2.17.1",
+    "urijs": "1.18.4",
+    "webpack": "1.14.0",
     "which": "1.2.12"
   },
   "devDependencies": {
@@ -58,12 +58,11 @@
     "@types/eventemitter2": "2.2.1",
     "@types/jquery": "2.0.34",
     "@types/marked": "0.0.28",
-    "@types/moment": "2.13.0",
     "@types/urijs": "1.15.31",
     "@types/which": "1.0.28",
     "concurrently": "3.1.0",
     "eslint": "3.11.1",
-    "eslint-config-pureprofile": "2.0.0",
+    "eslint-config-pureprofile": "2.1.0",
     "glob": "7.1.1",
     "grunt": "latest",
     "grunt-lesslint": "latest",
@@ -71,7 +70,7 @@
     "grunt-zip": "latest",
     "rimraf": "2.5.4",
     "tslint": "4.0.2",
-    "typescript": "2.0.10",
+    "typescript": "2.1.4",
     "typescript-eslint-parser": "1.0.0"
   },
   "i18n": [
