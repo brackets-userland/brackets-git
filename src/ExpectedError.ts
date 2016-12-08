@@ -1,5 +1,7 @@
 class ExpectedError extends Error {
 
+    public detailsUrl: string | undefined;
+
     constructor(message: string) {
         super(message);
         this.name = "ExpectedError";

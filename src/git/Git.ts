@@ -68,11 +68,11 @@ export function getAllBranches() {
     return GitCli.getAllBranches().then((branches) => sortBranches(branches));
 }
 
-export function getHistory(branch, skip) {
+export function getHistory(branch, skip: number = 0) {
     return GitCli.getHistory(branch, skip);
 }
 
-export function getFileHistory(file, branch, skip) {
+export function getFileHistory(file, branch, skip: number = 0) {
     return GitCli.getHistory(branch, skip, file);
 }
 

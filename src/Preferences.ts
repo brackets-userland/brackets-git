@@ -1,48 +1,48 @@
 import { _, PreferencesManager } from "./brackets-modules";
 
-var StateManager        = PreferencesManager.stateManager,
-    prefix              = "brackets-git";
+const StateManager = PreferencesManager.stateManager;
+const prefix = "brackets-git";
 
-var defaultPreferences = {
+const defaultPreferences = {
     // features
-    "stripWhitespaceFromCommits": {     "type": "boolean",           "value": true              },
-    "addEndlineToTheEndOfFile": {       "type": "boolean",           "value": true              },
-    "removeByteOrderMark": {            "type": "boolean",           "value": false             },
-    "normalizeLineEndings": {           "type": "boolean",           "value": false             },
-    "useGitGutter": {                   "type": "boolean",           "value": true              },
-    "markModifiedInTree": {             "type": "boolean",           "value": true              },
-    "useCodeInspection": {              "type": "boolean",           "value": true              },
-    "useGitFtp": {                      "type": "boolean",           "value": false             },
-    "avatarType": {                     "type": "string",            "value": "AVATAR_COLOR"    },
-    "showBashButton": {                 "type": "boolean",           "value": true              },
-    "dateMode": {                       "type": "number",            "value": 1                 },
-    "dateFormat": {                     "type": "string",            "value": null              },
-    "enableAdvancedFeatures": {         "type": "boolean",           "value": false             },
-    "useVerboseDiff": {                 "type": "boolean",           "value": false             },
-    "useDifftool": {                    "type": "boolean",           "value": false             },
-    "clearWhitespaceOnSave": {          "type": "boolean",           "value": false             },
-    "gerritPushref": {                  "type": "boolean",           "value": false             },
+    stripWhitespaceFromCommits: { type: "boolean", value: true },
+    addEndlineToTheEndOfFile: { type: "boolean", value: true },
+    removeByteOrderMark: { type: "boolean", value: false },
+    normalizeLineEndings: { type: "boolean", value: false },
+    useGitGutter: { type: "boolean", value: true },
+    markModifiedInTree: { type: "boolean", value: true },
+    useCodeInspection: { type: "boolean", value: true },
+    useGitFtp: { type: "boolean", value: false },
+    avatarType: { type: "string", value: "AVATAR_COLOR" },
+    showBashButton: { type: "boolean", value: true },
+    dateMode: { type: "number", value: 1 },
+    dateFormat: { type: "string", value: null },
+    enableAdvancedFeatures: { type: "boolean", value: false },
+    useVerboseDiff: { type: "boolean", value: false },
+    useDifftool: { type: "boolean", value: false },
+    clearWhitespaceOnSave: { type: "boolean", value: false },
+    gerritPushref: { type: "boolean", value: false },
     // shortcuts
-    "panelShortcut": {                  "type": "string",            "value": "Ctrl-Alt-G"      },
-    "commitCurrentShortcut": {          "type": "string",            "value": null              },
-    "commitAllShortcut": {              "type": "string",            "value": null              },
-    "bashShortcut": {                   "type": "string",            "value": null              },
-    "pushShortcut": {                   "type": "string",            "value": null              },
-    "pullShortcut": {                   "type": "string",            "value": null              },
-    "gotoPrevChangeShortcut": {         "type": "string",            "value": null              },
-    "gotoNextChangeShortcut": {         "type": "string",            "value": null              },
-    "refreshShortcut": {                "type": "string",            "value": null              },
-    "showTerminalIcon": {               "type": "boolean",           "value": false             },
+    panelShortcut: { type: "string", value: "Ctrl-Alt-G" },
+    commitCurrentShortcut: { type: "string", value: null },
+    commitAllShortcut: { type: "string", value: null },
+    bashShortcut: { type: "string", value: null },
+    pushShortcut: { type: "string", value: null },
+    pullShortcut: { type: "string", value: null },
+    gotoPrevChangeShortcut: { type: "string", value: null },
+    gotoNextChangeShortcut: { type: "string", value: null },
+    refreshShortcut: { type: "string", value: null },
+    showTerminalIcon: { type: "boolean", value: false },
     // system
-    "debugMode": {                      "type": "boolean",           "value": false             },
-    "gitTimeout": {                     "type": "number",            "value": 30                },
-    "gitPath": {                        "type": "string",            "value": ""                },
-    "terminalCommand": {                "type": "string",            "value": ""                },
-    "terminalCommandArgs": {            "type": "string",            "value": ""                }
+    debugMode: { type: "boolean", value: false },
+    gitTimeout: { type: "number", value: 30 },
+    gitPath: { type: "string", value: "" },
+    terminalCommand: { type: "string", value: "" },
+    terminalCommandArgs: { type: "string", value: "" }
 };
 
-var prefs = PreferencesManager.getExtensionPrefs(prefix);
-_.each(defaultPreferences, function (definition, key) {
+const prefs = PreferencesManager.getExtensionPrefs(prefix);
+_.each(defaultPreferences, (definition, key) => {
     if (definition.os && definition.os[brackets.platform]) {
         prefs.definePreference(key, definition.type, definition.os[brackets.platform].value);
     } else {
@@ -62,17 +62,17 @@ export function set(key, ...rest) {
 }
 
 export function getAll() {
-    var obj = {};
-    _.each(defaultPreferences, function (definition, key) {
+    const obj = {};
+    _.each(defaultPreferences, (definition, key) => {
         obj[key] = get(key);
     });
     return obj;
 }
 
 export function getDefaults() {
-    var obj = {};
-    _.each(defaultPreferences, function (definition, key) {
-        var defaultValue;
+    const obj = {};
+    _.each(defaultPreferences, (definition, key) => {
+        let defaultValue;
         if (definition.os && definition.os[brackets.platform]) {
             defaultValue = definition.os[brackets.platform].value;
         } else {

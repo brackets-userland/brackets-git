@@ -9,11 +9,6 @@ let ignoreEntries = [];
 let newPaths = [];
 let modifiedPaths = [];
 
-if (!Preferences.get("markModifiedInTree")) {
-    // end here, no point in processing the code below
-    return;
-}
-
 function loadIgnoreContents() {
     const defer = Promise.defer();
     const gitRoot = Preferences.get("currentGitRoot");
@@ -38,7 +33,7 @@ function loadIgnoreContents() {
 function refreshIgnoreEntries() {
     function regexEscape(str) {
         // NOTE: We cannot use StringUtils.regexEscape() here because we don't wanna replace *
-        return str.replace(/([.?+\^$\\(){}|])/g, "\\$1");
+        return str.replace(/([.?+^$\\(){}|])/g, "\\$1");
     }
 
     return loadIgnoreContents().then((content: string) => {
@@ -89,10 +84,7 @@ function refreshIgnoreEntries() {
             regex = regex.replace(/\*\*$/g, "(.{0,})").replace(/(\*\*|\*$)/g, "(.+)").replace(/\*/g, "([^/]*)");
             regex = "^" + regex + "$";
 
-            return {
-                regexp: new RegExp(regex),
-                type: type
-            };
+            return { regexp: new RegExp(regex), type };
         }));
     });
 }
@@ -114,17 +106,6 @@ function isNew(fullPath) {
 function isModified(fullPath) {
     return modifiedPaths.indexOf(fullPath) !== -1;
 }
-
-ProjectManager.addClassesProvider((data) => {
-    const fullPath = data.fullPath;
-    if (isIgnored(fullPath)) {
-        return "git-ignored";
-    } else if (isNew(fullPath)) {
-        return "git-new";
-    } else if (isModified(fullPath)) {
-        return "git-modified";
-    }
-});
 
 function _refreshOpenFiles() {
     $("#working-set-list-container").find("li").each(function () {
@@ -149,47 +130,62 @@ function detachEvents() {
     $("#working-set-list-container").off("contentChanged", refreshOpenFiles);
 }
 
-// this will refresh ignore entries when .gitignore is modified
-EventEmitter.on(Events.BRACKETS_FILE_CHANGED, (evt, file) => {
-    if (file.fullPath === Preferences.get("currentGitRoot") + ".gitignore") {
-        refreshIgnoreEntries().finally(() => {
-            refreshOpenFiles();
-        });
-    }
-});
+if (Preferences.get("markModifiedInTree")) {
 
-// this will refresh new/modified paths on every status results
-EventEmitter.on(Events.GIT_STATUS_RESULTS, (files) => {
-    const gitRoot = Preferences.get("currentGitRoot");
-
-    newPaths = [];
-    modifiedPaths = [];
-
-    files.forEach((entry) => {
-        const _isNew = entry.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
-                       entry.status.indexOf(Git.FILE_STATUS.ADDED) !== -1;
-        const fullPath = gitRoot + entry.file;
-        if (_isNew) {
-            newPaths.push(fullPath);
-        } else {
-            modifiedPaths.push(fullPath);
+    // init here
+    ProjectManager.addClassesProvider((data) => {
+        const fullPath = data.fullPath;
+        if (isIgnored(fullPath)) {
+            return "git-ignored";
+        } else if (isNew(fullPath)) {
+            return "git-new";
+        } else if (isModified(fullPath)) {
+            return "git-modified";
         }
     });
 
-    ProjectManager.rerenderTree();
-    refreshOpenFiles();
-});
+    // this will refresh ignore entries when .gitignore is modified
+    EventEmitter.on(Events.BRACKETS_FILE_CHANGED, (evt, file) => {
+        if (file.fullPath === Preferences.get("currentGitRoot") + ".gitignore") {
+            refreshIgnoreEntries().finally(() => {
+                refreshOpenFiles();
+            });
+        }
+    });
 
-// this will refresh ignore entries when git project is opened
-EventEmitter.on(Events.GIT_ENABLED, () => {
-    refreshIgnoreEntries();
-    attachEvents();
-});
+    // this will refresh new/modified paths on every status results
+    EventEmitter.on(Events.GIT_STATUS_RESULTS, (files) => {
+        const gitRoot = Preferences.get("currentGitRoot");
 
-// this will clear entries when non-git project is opened
-EventEmitter.on(Events.GIT_DISABLED, () => {
-    ignoreEntries = [];
-    newPaths = [];
-    modifiedPaths = [];
-    detachEvents();
-});
+        newPaths = [];
+        modifiedPaths = [];
+
+        files.forEach((entry) => {
+            const _isNew = entry.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1 ||
+                           entry.status.indexOf(Git.FILE_STATUS.ADDED) !== -1;
+            const fullPath = gitRoot + entry.file;
+            if (_isNew) {
+                newPaths.push(fullPath);
+            } else {
+                modifiedPaths.push(fullPath);
+            }
+        });
+
+        ProjectManager.rerenderTree();
+        refreshOpenFiles();
+    });
+
+    // this will refresh ignore entries when git project is opened
+    EventEmitter.on(Events.GIT_ENABLED, () => {
+        refreshIgnoreEntries();
+        attachEvents();
+    });
+
+    // this will clear entries when non-git project is opened
+    EventEmitter.on(Events.GIT_DISABLED, () => {
+        ignoreEntries = [];
+        newPaths = [];
+        modifiedPaths = [];
+        detachEvents();
+    });
+}

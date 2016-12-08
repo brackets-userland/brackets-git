@@ -3,33 +3,33 @@ import * as marked from "marked";
 import * as ErrorHandler from "./ErrorHandler";
 import * as Events from "./Events";
 import EventEmitter from "./EventEmitter";
-import * as Git from "./git/Git";
+import * as Git from "./git/GitCli";
 import * as Preferences from "./Preferences";
 import * as Strings from "strings";
 import * as Utils from "./Utils";
 
-var historyViewerTemplate       = require("text!templates/history-viewer.html"),
-    historyViewerFilesTemplate  = require("text!templates/history-viewer-files.html");
+const historyViewerTemplate = require("text!templates/history-viewer.html");
+const historyViewerFilesTemplate = require("text!templates/history-viewer-files.html");
 
-var avatarType             = Preferences.get("avatarType"),
-    enableAdvancedFeatures = Preferences.get("enableAdvancedFeatures"),
-    useDifftool            = false,
-    isShown                = false,
-    commit                 = null,
-    isInitial              = null,
-    $viewer                = null,
-    $editorHolder          = null;
+const avatarType = Preferences.get("avatarType");
+const enableAdvancedFeatures = Preferences.get("enableAdvancedFeatures");
+let useDifftool = false;
+let isShown = false;
+let commit = null;
+let isInitial = null;
+let $viewer = null;
+let $editorHolder = null;
 
-var setExpandState = _.debounce(function () {
-    var allFiles = $viewer.find(".commit-files a"),
-        activeFiles = allFiles.filter(".active"),
-        allExpanded = allFiles.length === activeFiles.length;
+const setExpandState = _.debounce(() => {
+    const allFiles = $viewer.find(".commit-files a");
+    const activeFiles = allFiles.filter(".active");
+    const allExpanded = allFiles.length === activeFiles.length;
     $viewer.find(".toggle-diffs").toggleClass("opened", allExpanded);
 }, 100);
 
-var PAGE_SIZE = 25;
-var currentPage = 0;
-var hasNextPage = false;
+const PAGE_SIZE = 25;
+let currentPage = 0;
+let hasNextPage = false;
 
 function toggleDiff($a) {
     if ($a.hasClass("active")) {
@@ -44,19 +44,17 @@ function toggleDiff($a) {
 
     // If this diff was not previously loaded then load it
     if (!$a.is(".loaded")) {
-        var $li = $a.closest("[x-file]"),
-            relativeFilePath = $li.attr("x-file"),
-            $diffContainer = $li.find(".commit-diff");
+        const $li = $a.closest("[x-file]");
+        const relativeFilePath = $li.attr("x-file");
+        const $diffContainer = $li.find(".commit-diff");
 
-        Git.getDiffOfFileFromCommit(commit.hash, relativeFilePath, isInitial).then(function (diff) {
+        Git.getDiffOfFileFromCommit(commit.hash, relativeFilePath, isInitial).then((diff) => {
             $diffContainer.html(Utils.formatDiff(diff));
             $diffContainer.scrollTop($a.attr("scrollPos") || 0);
 
             $a.addClass("active loaded");
             setExpandState();
-        }).catch(function (err) {
-            ErrorHandler.showError(err, "Failed to get diff");
-        });
+        }).catch((err) => ErrorHandler.showError(err, "Failed to get diff"));
     } else {
         // If this diff was previously loaded just open it
         $a.addClass("active");
@@ -65,7 +63,7 @@ function toggleDiff($a) {
 }
 
 function showDiff($el) {
-    var file = $el.closest("[x-file]").attr("x-file");
+    const file = $el.closest("[x-file]").attr("x-file");
     Git.difftoolFromHash(commit.hash, file, isInitial);
 }
 
@@ -90,18 +88,15 @@ function attachEvents() {
         })
         .on("click", ".openFile", function (e) {
             e.stopPropagation();
-            var file = $(this).closest("[x-file]").attr("x-file");
+            const file = $(this).closest("[x-file]").attr("x-file");
             Utils.openEditorForFile(file, true);
             hide();
         })
-        .on("click", ".close", function () {
-            // Close history viewer
-            remove();
-        })
+        .on("click", ".close", () => remove())
         .on("click", ".git-extend-sha", function () {
             // Show complete commit SHA
-            var $parent = $(this).parent(),
-                sha = $parent.data("hash");
+            const $parent = $(this).parent();
+            const sha = $parent.data("hash");
             $parent.find("span.selectable-text").text(sha);
             $(this).remove();
         })
@@ -110,7 +105,7 @@ function attachEvents() {
 
     // Add/Remove shadow on bottom of header
     $viewer.find(".body")
-        .on("scroll", function () {
+        .on("scroll", () => {
             if ($viewer.find(".body").scrollTop() > 0) {
                 $viewer.find(".header").addClass("shadow");
             } else {
@@ -130,53 +125,53 @@ function attachEvents() {
 }
 
 function attachAdvancedEvents() {
-    var refreshCallback  = function () {
+    const refreshCallback = function () {
         // dialog.close();
         EventEmitter.emit(Events.REFRESH_ALL);
     };
 
-    $viewer.on("click", ".btn-checkout", function () {
-        var cmd = "git checkout " + commit.hash;
+    $viewer.on("click", ".btn-checkout", () => {
+        const cmd = "git checkout " + commit.hash;
         Utils.askQuestion(Strings.TITLE_CHECKOUT,
                           Strings.DIALOG_CHECKOUT + "<br><br>" + cmd,
                           { booleanResponse: true, noescape: true })
-            .then(function (response) {
+            .then((response) => {
                 if (response === true) {
                     return Git.checkout(commit.hash).then(refreshCallback);
                 }
             });
     });
 
-    $viewer.on("click", ".btn-reset-hard", function () {
-        var cmd = "git reset --hard " + commit.hash;
+    $viewer.on("click", ".btn-reset-hard", () => {
+        const cmd = "git reset --hard " + commit.hash;
         Utils.askQuestion(Strings.TITLE_RESET,
                           Strings.DIALOG_RESET_HARD + "<br><br>" + cmd,
                           { booleanResponse: true, noescape: true })
-            .then(function (response) {
+            .then((response) => {
                 if (response === true) {
                     return Git.reset("--hard", commit.hash).then(refreshCallback);
                 }
             });
     });
 
-    $viewer.on("click", ".btn-reset-mixed", function () {
-        var cmd = "git reset --mixed " + commit.hash;
+    $viewer.on("click", ".btn-reset-mixed", () => {
+        const cmd = "git reset --mixed " + commit.hash;
         Utils.askQuestion(Strings.TITLE_RESET,
                           Strings.DIALOG_RESET_MIXED + "<br><br>" + cmd,
                           { booleanResponse: true, noescape: true })
-            .then(function (response) {
+            .then((response) => {
                 if (response === true) {
                     return Git.reset("--mixed", commit.hash).then(refreshCallback);
                 }
             });
     });
 
-    $viewer.on("click", ".btn-reset-soft", function () {
-        var cmd = "git reset --soft " + commit.hash;
+    $viewer.on("click", ".btn-reset-soft", () => {
+        const cmd = "git reset --soft " + commit.hash;
         Utils.askQuestion(Strings.TITLE_RESET,
                           Strings.DIALOG_RESET_SOFT + "<br><br>" + cmd,
                           { booleanResponse: true, noescape: true })
-            .then(function (response) {
+            .then((response) => {
                 if (response === true) {
                     return Git.reset("--soft", commit.hash).then(refreshCallback);
                 }
@@ -185,26 +180,26 @@ function attachAdvancedEvents() {
 }
 
 function renderViewerContent(files, selectedFile) {
-    var bodyMarkdown = marked(commit.body, { gfm: true, breaks: true });
+    const bodyMarkdown = marked(commit.body, { gfm: true, breaks: true });
 
     $viewer.append(Mustache.render(historyViewerTemplate, {
-        commit: commit,
-        bodyMarkdown: bodyMarkdown,
+        commit,
+        bodyMarkdown,
         usePicture: avatarType === "PICTURE",
         useIdenticon: avatarType === "IDENTICON",
         useBwAvatar: avatarType === "AVATAR_BW",
         useColoredAvatar: avatarType === "AVATAR_COLOR",
-        Strings: Strings,
-        enableAdvancedFeatures: enableAdvancedFeatures
+        Strings,
+        enableAdvancedFeatures
     }));
 
     renderFiles(files);
 
     if (selectedFile) {
-        var $fileEntry = $viewer.find(".commit-files li[x-file='" + selectedFile + "'] a").first();
+        const $fileEntry = $viewer.find(".commit-files li[x-file='" + selectedFile + "'] a").first();
         if ($fileEntry.length) {
             toggleDiff($fileEntry);
-            window.setTimeout(function () {
+            window.setTimeout(() => {
                 $viewer.find(".body").animate({ scrollTop: $fileEntry.position().top - 10 });
             }, 80);
         }
@@ -215,49 +210,47 @@ function renderViewerContent(files, selectedFile) {
 
 function renderFiles(files) {
     $viewer.find(".filesContainer").append(Mustache.render(historyViewerFilesTemplate, {
-        files: files,
-        Strings: Strings,
-        useDifftool: useDifftool
+        files,
+        Strings,
+        useDifftool
     }));
 
     // Activate/Deactivate load more button
     $viewer.find(".loadMore")
         .toggle(hasNextPage)
         .off("click")
-        .on("click", function () {
+        .on("click", () => {
             currentPage++;
             loadMoreFiles();
         });
 }
 
 function loadMoreFiles() {
-    Git.getFilesFromCommit(commit.hash, isInitial).then(function (files) {
+    Git.getFilesFromCommit(commit.hash, isInitial).then((_files) => {
+        let files = _files;
 
         hasNextPage = files.slice((currentPage + 1) * PAGE_SIZE).length > 0;
         files = files.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
 
-        var list = files.map(function (file) {
-            var fileExtension = FileUtils.getSmartFileExtension(file),
-                i = file.lastIndexOf("." + fileExtension),
-                fileName = file.substring(0, fileExtension && i >= 0 ? i : file.length);
+        const list = files.map((file) => {
+            const fileExtension = FileUtils.getSmartFileExtension(file);
+            const i = file.lastIndexOf("." + fileExtension);
+            const fileName = file.substring(0, fileExtension && i >= 0 ? i : file.length);
             return {
                 name: fileName,
                 extension: fileExtension ? "." + fileExtension : "",
-                file: file
+                file
             };
         });
 
         if (currentPage === 0) {
-            var file = $("#git-history-list").data("file-relative");
+            const file = $("#git-history-list").data("file-relative");
             return renderViewerContent(list, file);
-        } else {
-            return renderFiles(list);
         }
-    }).catch(function (err) {
-        ErrorHandler.showError(err, "Failed to load list of diff files");
-    }).finally(function () {
-        $viewer.removeClass("spinner large spin");
-    });
+        return renderFiles(list);
+    })
+        .catch((err) => ErrorHandler.showError(err, "Failed to load list of diff files"))
+        .finally(() => $viewer.removeClass("spinner large spin"));
 }
 
 function render() {
@@ -273,17 +266,16 @@ function render() {
     return $viewer.appendTo($editorHolder);
 }
 
-var initialize = _.once(function () {
-    Git.getConfig("diff.tool").done(function (config) {
-        useDifftool = !!config;
-    });
+const initialize = _.once(() => {
+    Git.getConfig("diff.tool")
+        .done((config) => useDifftool = !!config);
 });
 
 export function show(commitInfo, doc, options) {
     initialize();
 
-    isShown   = true;
-    commit    = commitInfo;
+    isShown = true;
+    commit = commitInfo;
     isInitial = options.isInitial;
 
     $editorHolder = $("#editor-holder");

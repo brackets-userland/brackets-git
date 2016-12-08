@@ -3,10 +3,11 @@ import * as Promise from "bluebird";
 import * as ErrorHandler from "./ErrorHandler";
 import * as Events from "./Events";
 import EventEmitter from "./EventEmitter";
-import * as ExpectedError from "./ExpectedError";
+import ExpectedError from "./ExpectedError";
 import * as ProgressDialog from "./dialogs/Progress";
 import * as CloneDialog from "./dialogs/Clone";
 import * as Git from "./git/GitCli";
+import * as Git2 from "./git/Git";
 import * as Preferences from "./Preferences";
 import * as Utils from "./Utils";
 
@@ -21,7 +22,7 @@ function createGitIgnore() {
     });
 }
 
-function stageGitIgnore(msg) {
+function stageGitIgnore() {
     return createGitIgnore().then(() => Git.stage(".gitignore"));
 }
 
@@ -48,7 +49,7 @@ function handleGitInit() {
 
         });
     })
-    .then(() => stageGitIgnore("Initial staging"))
+    .then(() => stageGitIgnore())
     .catch((err) => ErrorHandler.showError(err, "Initializing new repository failed"))
     .then(() => EventEmitter.emit(Events.REFRESH_ALL));
 }
@@ -72,7 +73,7 @@ function handleGitClone() {
     isProjectRootEmpty().then((isEmpty) => {
         if (isEmpty) {
             CloneDialog.show().then((cloneConfig) => {
-                let q = Promise.resolve();
+                let q: Promise<any> = Promise.resolve();
                 // put username and password into remote url
                 let remoteUrl = cloneConfig.remoteUrl;
                 if (cloneConfig.remoteUrlNew) {
@@ -85,7 +86,7 @@ function handleGitClone() {
 
                 // restore original url if desired
                 if (cloneConfig.remoteUrlRestore) {
-                    q = q.then(() => Git.setRemoteUrl(cloneConfig.remote, cloneConfig.remoteUrlRestore));
+                    q = q.then(() => Git2.setRemoteUrl(cloneConfig.remote, cloneConfig.remoteUrlRestore));
                 }
 
                 return q.finally(() => EventEmitter.emit(Events.REFRESH_ALL));

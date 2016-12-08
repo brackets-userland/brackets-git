@@ -2,19 +2,20 @@ import { _, CommandManager, Dialogs, Mustache } from "./brackets-modules";
 import * as Preferences from "./Preferences";
 import * as ChangelogDialog from "./ChangelogDialog";
 import * as Strings from "strings";
-import * as Git from "./git/Git";
+import * as Git from "./git/GitCli";
 
-var settingsDialogTemplate = require("text!templates/git-settings-dialog.html");
+const settingsDialogTemplate = require("text!templates/git-settings-dialog.html");
+const questionDialogTemplate = require("text!templates/git-question-dialog.html");
 
-var dialog,
-    $dialog;
+let dialog;
+let $dialog;
 
 function setValues(values) {
     $("*[settingsProperty]", $dialog).each(function () {
-        var $this = $(this),
-            type = $this.attr("type"),
-            tag = $this.prop("tagName").toLowerCase(),
-            property = $this.attr("settingsProperty");
+        const $this = $(this);
+        const type = $this.attr("type");
+        const tag = $this.prop("tagName").toLowerCase();
+        const property = $this.attr("settingsProperty");
         if (type === "checkbox") {
             $this.prop("checked", values[property]);
         } else if (tag === "select") {
@@ -28,14 +29,14 @@ function setValues(values) {
 
 function collectValues() {
     $("*[settingsProperty]", $dialog).each(function () {
-        var $this = $(this),
-            type = $this.attr("type"),
-            property = $this.attr("settingsProperty"),
-            prefType = Preferences.getType(property);
+        const $this = $(this);
+        const type = $this.attr("type");
+        const property = $this.attr("settingsProperty");
+        const prefType = Preferences.getType(property);
         if (type === "checkbox") {
             Preferences.set(property, $this.prop("checked"));
         } else if (prefType === "number") {
-            var newValue = parseInt($this.val().trim(), 10);
+            let newValue = parseInt($this.val().trim(), 10);
             if (isNaN(newValue)) { newValue = Preferences.getDefaults()[property]; }
             Preferences.set(property, newValue);
         } else {
@@ -46,9 +47,9 @@ function collectValues() {
 }
 
 function assignActions() {
-    var $useDifftoolCheckbox = $("#git-settings-useDifftool", $dialog);
+    const $useDifftoolCheckbox = $("#git-settings-useDifftool", $dialog);
 
-    Git.getConfig("diff.tool").then(function (diffToolConfiguration) {
+    Git.getConfig("diff.tool").then((diffToolConfiguration) => {
 
         if (!diffToolConfiguration) {
             $useDifftoolCheckbox.prop({
@@ -61,7 +62,7 @@ function assignActions() {
             });
         }
 
-    }).catch(function () {
+    }).catch(() => {
 
         // an error with git
         // we were not able to check whether diff tool is configured or not
@@ -74,22 +75,25 @@ function assignActions() {
     });
 
     $("#git-settings-stripWhitespaceFromCommits", $dialog).on("change", function () {
-        var on = $(this).is(":checked");
-        $("#git-settings-addEndlineToTheEndOfFile,#git-settings-removeByteOrderMark,#git-settings-normalizeLineEndings", $dialog)
-            .prop("checked", on)
-            .prop("disabled", !on);
+        const on = $(this).is(":checked");
+        $(
+            "#git-settings-addEndlineToTheEndOfFile," +
+            "#git-settings-removeByteOrderMark," +
+            "#git-settings-normalizeLineEndings",
+            $dialog
+        ).prop("checked", on).prop("disabled", !on);
     });
 
     $("#git-settings-dateMode", $dialog).on("change", function () {
         $("#git-settings-dateFormat-container", $dialog).toggle($("option:selected", this).prop("value") === "3");
     });
 
-    $("button[data-button-id='defaults']", $dialog).on("click", function (e) {
+    $("button[data-button-id='defaults']", $dialog).on("click", (e) => {
         e.stopPropagation();
         setValues(Preferences.getDefaults());
     });
 
-    $("button[data-button-id='changelog']", $dialog).on("click", function (e) {
+    $("button[data-button-id='changelog']", $dialog).on("click", (e) => {
         e.stopPropagation();
         ChangelogDialog.show();
     });
@@ -105,13 +109,12 @@ function init() {
 }
 
 function showRestartDialog() {
-    var questionDialogTemplate = require("text!templates/git-question-dialog.html");
-    var compiledTemplate = Mustache.render(questionDialogTemplate, {
+    const compiledTemplate = Mustache.render(questionDialogTemplate, {
         title: Strings.RESTART,
         question: _.escape(Strings.Q_RESTART_BRACKETS),
-        Strings: Strings
+        Strings
     });
-    Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
+    Dialogs.showModalDialogUsingTemplate(compiledTemplate).done((buttonId) => {
         if (buttonId === "ok") {
             CommandManager.execute("debug.refreshWindow");
         }
@@ -119,14 +122,14 @@ function showRestartDialog() {
 }
 
 export function show() {
-    var compiledTemplate = Mustache.render(settingsDialogTemplate, Strings);
+    const compiledTemplate = Mustache.render(settingsDialogTemplate, Strings);
 
     dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
     $dialog = dialog.getElement();
 
     init();
 
-    dialog.done(function (buttonId) {
+    dialog.done((buttonId) => {
         if (buttonId === "ok") {
             // Save everything to preferences
             collectValues();
@@ -134,4 +137,4 @@ export function show() {
             showRestartDialog();
         }
     });
-};
+}

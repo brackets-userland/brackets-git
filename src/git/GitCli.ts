@@ -493,7 +493,7 @@ export interface CommitInfo {
     tags?: string[];
 }
 
-export function getHistory(branch, skipCommits, file = null): Promise<CommitInfo[]> {
+export function getHistory(branch, skipCommits: number = 0, file = null): Promise<CommitInfo[]> {
     const separator = "_._";
     const newline = "_.nw._";
     const format = [

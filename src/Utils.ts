@@ -172,10 +172,10 @@ export function formatDiff(diff) {
 
             if (diffData.length > 0) {
                 _.last(diffData).lines.push({
-                    "numLineOld": _numLineOld,
-                    "numLineNew": _numLineNew,
-                    "line": line,
-                    "lineClass": lineClass
+                    numLineOld: _numLineOld,
+                    numLineNew: _numLineNew,
+                    line,
+                    lineClass
                 });
             }
         }
@@ -196,12 +196,12 @@ export function askQuestion(title, question, options: AskQuestionOptions = {}) {
         options = options || {}; // eslint-disable-line
 
         const compiledTemplate = Mustache.render(questionDialogTemplate, {
-            title: title,
+            title,
             question: options.noescape ? question : _.escape(question),
             stringInput: !options.booleanResponse && !options.password,
             passwordInput: options.password,
             defaultValue: options.defaultValue,
-            Strings: Strings
+            Strings
         });
 
         const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
@@ -237,9 +237,9 @@ export function showOutput(output, title = null, options: ShowOutputOptions = {}
     return new Promise((resolve) => {
         options = options || {}; // eslint-disable-line
         const compiledTemplate = Mustache.render(outputDialogTemplate, {
-            title: title,
-            output: output,
-            Strings: Strings,
+            title,
+            output,
+            Strings,
             question: options.question
         });
         const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
@@ -329,7 +329,7 @@ export function encodeSensitiveInformation(_str: string) {
         return protocol + user + ":***@";
     });
     // should match user name in windows user folders
-    str = str.replace(/(users)(\\|\/)([^\\\/]+)(\\|\/)/i, (a, users, slash1, username, slash2) => {
+    str = str.replace(/(users)(\\|\/)([^\\/]+)(\\|\/)/i, (a, users, slash1, username, slash2) => {
         return users + slash1 + "***" + slash2;
     });
     return str;
@@ -366,7 +366,7 @@ export function reloadDoc(doc) {
 /**
  *  strips trailing whitespace from all the diffs and adds \n to the end
  */
-function stripWhitespaceFromFile(filename:string, clearWholeFile: boolean = false) {
+function stripWhitespaceFromFile(filename: string, clearWholeFile: boolean = false) {
     return new Promise((resolve, reject) => {
 
         const fullPath = Preferences.get("currentGitRoot") + filename;
