@@ -156,16 +156,16 @@ function loadMoreHistory() {
 }
 
 function addAdditionalCommitInfo(commits) {
-    let mode = Preferences.get("dateMode");
+    const mode = Preferences.get("dateMode");
     let format = Strings.DATE_FORMAT;
-    let ownFormat = Preferences.get("dateFormat") || Strings.DATE_FORMAT;
+    const ownFormat = Preferences.get("dateFormat") || Strings.DATE_FORMAT;
 
     if (mode === 2 && format.indexOf(" ")) {
         // only date part
         format = format.substring(0, format.indexOf(" "));
     }
 
-    _.forEach(commits, function (commit) {
+    _.forEach(commits, (commit) => {
 
         // Get color for AVATAR_BW and AVATAR_COLOR
         if (avatarType === "AVATAR_COLOR" || avatarType === "AVATAR_BW") {
@@ -185,7 +185,7 @@ function addAdditionalCommitInfo(commits) {
             return;
         }
 
-        let date = moment(commit.date);
+        const date = moment(commit.date);
         commit.date = {
             title: ""
         };
@@ -202,8 +202,8 @@ function addAdditionalCommitInfo(commits) {
                 break;
             // mode 2: intelligent relative/formatted
             case 2:
-                let relative = date.fromNow();
-                let formatted = date.format(format);
+                const relative = date.fromNow();
+                const formatted = date.format(format);
                 commit.date.shown = relative + " (" + formatted + ")";
                 commit.date.title = date.format(Strings.DATE_FORMAT);
                 break;
@@ -224,7 +224,7 @@ function getCurrentDocument() {
     if (HistoryViewer.isVisible()) {
         return lastDocumentSeen;
     }
-    let doc = DocumentManager.getCurrentDocument();
+    const doc = DocumentManager.getCurrentDocument();
     if (doc) {
         lastDocumentSeen = doc;
     }
@@ -232,7 +232,7 @@ function getCurrentDocument() {
 }
 
 function handleFileChange() {
-    let currentDocument = getCurrentDocument();
+    const currentDocument = getCurrentDocument();
 
     if ($historyList.is(":visible") && $historyList.data("file")) {
         handleToggleHistory("FILE", currentDocument);
@@ -247,9 +247,16 @@ function handleToggleHistory(newHistoryMode: "FILE" | "GLOBAL", newDocument?) {
     $historyList = $tableContainer.find("#git-history-list");
 
     let historyEnabled = $historyList.is(":visible");
-    let currentFile = $historyList.data("file") || null;
-    let currentHistoryMode = historyEnabled ? (currentFile ? "FILE" : "GLOBAL") : "DISABLED";
-    let doc = newDocument ? newDocument : getCurrentDocument();
+    const currentFile = $historyList.data("file") || null;
+
+    let currentHistoryMode;
+    if (historyEnabled) {
+        currentHistoryMode = currentFile ? "FILE" : "GLOBAL";
+    } else {
+        currentHistoryMode = "DISABLED";
+    }
+
+    const doc = newDocument ? newDocument : getCurrentDocument();
     let file;
 
     if (currentHistoryMode !== newHistoryMode) {
@@ -272,14 +279,14 @@ function handleToggleHistory(newHistoryMode: "FILE" | "GLOBAL", newDocument?) {
     }
 
     // Render #git-history-list if is not already generated or if the viewed file for file history has changed
-    let isEmpty = $historyList.find("tr").length === 0;
-    let fileChanged = currentFile !== (file ? file.absolute : null);
+    const isEmpty = $historyList.find("tr").length === 0;
+    const fileChanged = currentFile !== (file ? file.absolute : null);
     if (historyEnabled && (isEmpty || fileChanged)) {
         if ($historyList.length > 0) {
             $historyList.remove();
         }
-        let $spinner = $("<div class='spinner spin large'></div>").appendTo($gitPanel);
-        renderHistory(file).finally(function () {
+        const $spinner = $("<div class='spinner spin large'></div>").appendTo($gitPanel);
+        renderHistory(file).finally(() => {
             $spinner.remove();
         });
     }
@@ -299,8 +306,8 @@ function handleToggleHistory(newHistoryMode: "FILE" | "GLOBAL", newDocument?) {
     if (!historyEnabled) { HistoryViewer.hide(); }
 
     // Toggle history button
-    let globalButtonActive  = historyEnabled && newHistoryMode === "GLOBAL";
-    let fileButtonActive    = historyEnabled && newHistoryMode === "FILE";
+    const globalButtonActive = historyEnabled && newHistoryMode === "GLOBAL";
+    const fileButtonActive = historyEnabled && newHistoryMode === "FILE";
     $gitPanel.find(".git-history-toggle").toggleClass("active", globalButtonActive)
         .attr("title", globalButtonActive ? Strings.TOOLTIP_HIDE_HISTORY : Strings.TOOLTIP_SHOW_HISTORY);
     $gitPanel.find(".git-file-history").toggleClass("active", fileButtonActive)
@@ -308,17 +315,17 @@ function handleToggleHistory(newHistoryMode: "FILE" | "GLOBAL", newDocument?) {
 }
 
 // Event listeners
-EventEmitter.on(Events.GIT_ENABLED, function () {
+EventEmitter.on(Events.GIT_ENABLED, () => {
     initVariables();
 });
-EventEmitter.on(Events.GIT_DISABLED, function () {
+EventEmitter.on(Events.GIT_DISABLED, () => {
     lastDocumentSeen = null;
     $historyList.remove();
     $historyList = $();
 });
-EventEmitter.on(Events.HISTORY_SHOW, function (mode) {
+EventEmitter.on(Events.HISTORY_SHOW, (mode) => {
     handleToggleHistory(mode === "FILE" ? "FILE" : "GLOBAL");
 });
-EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
+EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, () => {
     handleFileChange();
 });

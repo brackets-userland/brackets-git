@@ -24,7 +24,7 @@ export function getProjectRoot() {
 
 // returns "C:/Users/Zaggi/AppData/Roaming/Brackets/extensions/user/zaggino.brackets-git/"
 export function getExtensionDirectory() {
-    return window["bracketsGit"].getExtensionPath(); // eslint-disable-line
+    return window.bracketsGit.getExtensionPath();
 }
 
 export function formatDiff(diff) {
@@ -481,7 +481,7 @@ function stripWhitespaceFromFile(filename: string, clearWholeFile: boolean = fal
 export function stripWhitespaceFromFiles(gitStatusResults, stageChanges) {
     const notificationDefer = Promise.defer();
     const startTime = (new Date()).getTime();
-    let queue = Promise.resolve();
+    let queue: Promise<any> = Promise.resolve();
 
     gitStatusResults.forEach((fileObj) => {
         const isDeleted = fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1;

@@ -100,7 +100,7 @@ function _displayExtensionInfoIfNeeded() {
         // Display settings panel on first start / changelog dialog on version change
         ExtensionInfo.get().then((packageJson) => {
             // do not display dialogs when running tests
-            if (window["isBracketsTestWindow"]) { // eslint-disable-line dot-notation
+            if (window.isBracketsTestWindow) {
                 return;
             }
 

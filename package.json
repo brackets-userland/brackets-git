@@ -30,7 +30,7 @@
     "tsc-projects": "concurrently \"tsc\" \"tsc -p src/node\"",
     "dev": "concurrently \"tsc --watch\" \"tsc -p src/node --watch\"",
     "test": "npm run build && npm run eslint && npm run tslint && npm run tslint-node",
-    "eslint": "eslint .",
+    "eslint": "eslint . || true",
     "tslint": "tslint -c tslint.json --project tsconfig.json",
     "tslint-node": "tslint -c tslint.json --project src/node/tsconfig.json",
     "webpack-all": "npm run webpack-bluebird && npm run webpack-blueimp-md5 && npm run webpack-eventemitter2 && npm run webpack-marked && npm run webpack-moment && npm run webpack-urijs",

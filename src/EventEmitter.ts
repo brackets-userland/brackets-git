@@ -7,7 +7,7 @@ const debugOn = Preferences.get("debugMode");
 
 export interface MyEventEmitter2 extends EventEmitter2 {
     _emit: Function;
-    emitFactory: (eventName: string) => Function;
+    emitFactory: (eventName: string, ...args: any[]) => () => void;
 }
 
 const emInstance = new EventEmitter2({
@@ -46,7 +46,7 @@ if (debugOn) {
     };
 }
 
-emInstance.emitFactory = function (eventName, ...args) {
+emInstance.emitFactory = function (eventName: string, ...args: any[]): () => void {
     if (!eventName) {
         throw new Error("no event has been passed to the factory!");
     }

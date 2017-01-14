@@ -1,5 +1,5 @@
 import { _, Dialogs, Mustache, NativeApp } from "./brackets-modules";
-import * as ExpectedError from "./ExpectedError";
+import ExpectedError from "./ExpectedError";
 import * as ExtensionInfo from "./ExtensionInfo";
 import * as Strings from "strings";
 import * as Utils from "./Utils";
@@ -7,6 +7,12 @@ import * as Utils from "./Utils";
 const markdownReportTemplate = require("text!templates/error-report.md");
 const errorDialogTemplate = require("text!templates/git-error-dialog.html");
 const errorQueue = [];
+
+export interface ExtendedError extends Error {
+    __shown?: boolean;
+    detailsUrl?: string;
+    match?: () => any;
+}
 
 function getMdReport(params) {
     return Mustache.render(markdownReportTemplate, _.defaults(params || {}, {
@@ -80,13 +86,16 @@ export function matches(err, regExp) {
 }
 
 export function logError(err: Error | string) {
-    const msg = err && err.stack ? err.stack : err;
+    let msg = err;
+    if (typeof err !== "string") {
+        msg = err && err.stack ? err.stack : err;
+    }
     Utils.consoleLog("[brackets-git] " + msg, "error");
     errorQueue.push(err);
     return err;
 }
 
-export function showError(err: Error, title?: string) {
+export function showError(err: ExtendedError, title?: string) {
     if (err.__shown) { return err; }
 
     logError(err);
@@ -148,7 +157,7 @@ export function showError(err: Error, title?: string) {
 export function toError(arg) {
     // FUTURE: use this everywhere and have a custom error class for this extension
     if (arg instanceof Error) { return arg; }
-    const err = new Error(arg);
+    const err: ExtendedError = new Error(arg);
     // TODO: new class for this?
     err.match = function (...args) {
         return arg.match(...args);

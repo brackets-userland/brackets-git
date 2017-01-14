@@ -1,16 +1,14 @@
+import { Dialogs, Mustache } from "../brackets-modules";
 import * as RemoteCommon from "./RemoteCommon";
 import * as Promise from "bluebird";
 import * as Strings from "strings";
 
-var Dialogs = brackets.getModule("widgets/Dialogs"),
-    Mustache = brackets.getModule("thirdparty/mustache/mustache");
+const template = require("text!src/dialogs/templates/push-dialog.html");
+const remotesTemplate = require("text!src/dialogs/templates/remotes-template.html");
+const credentialsTemplate = require("text!src/dialogs/templates/credentials-template.html");
 
-var template            = require("text!src/dialogs/templates/push-dialog.html"),
-    remotesTemplate     = require("text!src/dialogs/templates/remotes-template.html"),
-    credentialsTemplate = require("text!src/dialogs/templates/credentials-template.html");
-
-var defer,
-    pushConfig;
+let defer;
+let pushConfig;
 
 function _attachEvents($dialog) {
     RemoteCommon.attachCommonEvents(pushConfig, $dialog);
@@ -23,23 +21,23 @@ function _attachEvents($dialog) {
 }
 
 function _show() {
-    var templateArgs = {
+    const templateArgs = {
         config: pushConfig,
         mode: "PUSH_TO",
         modeLabel: Strings.PUSH_TO,
-        Strings: Strings
+        Strings
     };
 
-    var compiledTemplate = Mustache.render(template, templateArgs, {
-            credentials: credentialsTemplate,
-            remotes: remotesTemplate
-        }),
-        dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-        $dialog = dialog.getElement();
+    const compiledTemplate = Mustache.render(template, templateArgs, {
+        credentials: credentialsTemplate,
+        remotes: remotesTemplate
+    });
+    const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+    const $dialog = dialog.getElement();
 
     _attachEvents($dialog);
 
-    dialog.done(function (buttonId) {
+    dialog.done((buttonId) => {
         if (buttonId === "ok") {
             RemoteCommon.collectValues(pushConfig, $dialog);
             defer.resolve(pushConfig);

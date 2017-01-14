@@ -366,6 +366,10 @@ function doPushWithArgs(args): Promise<PushResult> {
     return git(args)
         .catch(repositoryNotFoundHandler)
         .then((stdout) => {
+            if (!stdout) {
+                return;
+            }
+
             // this should clear lines from push hooks
             const lines = stdout.split("\n");
             while (lines.length > 0 && lines[0].match(/^To/) === null) {
@@ -532,7 +536,7 @@ export function getHistory(branch, skipCommits: number = 0, file = null): Promis
             };
 
             if (data[7]) {
-                const tags = data[7].match(/tag: ([^,|\)]+)/g);
+                const tags = data[7].match(/tag: ([^,|)]+)/g);
                 for (const key in tags) {
                     if (tags[key] && tags[key].replace) {
                         tags[key] = tags[key].replace("tag:", "");
@@ -947,7 +951,8 @@ export function getBlame(file, from?, to?): Promise<BlameInfo[]> {
             };
 
             // process all but first and last lines
-            for (let i = 1, l = lines.length - 1; i < l; i++) {
+            const l = lines.length - 1;
+            for (let i = 1; i < l; i++) {
                 const line = lines[i];
                 const io = line.indexOf(" ");
                 const key = line.substring(0, io);

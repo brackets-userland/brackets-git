@@ -5,6 +5,7 @@
     "arrow-parens": false,
     "forin": false,
     "interface-name": false,
+    "no-console": false,
     "no-empty-interface": false,
     "no-var-requires": false,
     "object-literal-sort-keys": false,

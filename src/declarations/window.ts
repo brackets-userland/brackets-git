@@ -4,4 +4,6 @@ interface Window {
         getExtensionPath: () => string;
     };
 
+    isBracketsTestWindow: boolean;
+
 }
