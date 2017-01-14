@@ -117,14 +117,15 @@ function logDebug(opts, debugInfo, method, type, out?) {
 
 export interface CliOptions {
     cwd?: string;
+    nonblocking?: boolean;
     timeout?: number | boolean;
     timeoutCheck?: Function;
     timeoutExpected?: boolean;
 }
 
-export function cliHandler(method, cmd, args = [], opts: CliOptions = {}, retry = false) {
+export function cliHandler(method, cmd, args = [], opts: CliOptions = {}, retry = false): Promise<string | null> {
     const cliId = getNextCliId();
-    const deferred = Promise.defer();
+    const deferred = Promise.defer() as Promise.Resolver<string | null>;
 
     deferredMap[cliId] = deferred;
 
@@ -301,11 +302,11 @@ export function pathExists(path) {
     });
 }
 
-export function spawnCommand(cmd, args = [], opts = {}) {
+export function spawnCommand(cmd, args = [], opts = {}): Promise<string | null> {
     return cliHandler("spawn", cmd, args, opts);
 }
 
-export function executeCommand(cmd, args = [], opts = {}) {
+export function executeCommand(cmd, args = [], opts = {}): Promise<string | null> {
     return cliHandler("execute", cmd, args, opts);
 }
 

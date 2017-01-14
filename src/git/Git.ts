@@ -99,10 +99,3 @@ export function deleteRemoteBranch(remote, branch) {
 export function undoLastLocalCommit() {
     return GitCli.reset("--soft", "HEAD~1");
 }
-
-// TODO: this hack should be removed
-Object.keys(GitCli).forEach((method) => {
-    if (!exports[method]) {
-        exports[method] = GitCli[method];
-    }
-});

@@ -2,17 +2,17 @@ import { _, CommandManager, DocumentManager, EditorManager, MainViewManager } fr
 import * as ErrorHandler from "./ErrorHandler";
 import * as Events from "./Events";
 import EventEmitter from "./EventEmitter";
-import * as Git from "./git/Git";
+import * as Git from "./git/GitCli";
 import * as Preferences from "./Preferences";
 
-var gitAvailable = false,
-    gutterName = "brackets-git-gutter",
-    editorsWithGutters = [],
-    openWidgets = [];
+let gitAvailable = false;
+const gutterName = "brackets-git-gutter";
+const editorsWithGutters = [];
+let openWidgets = [];
 
 function clearWidgets() {
-    var lines = openWidgets.map(function (mark) {
-        var w = mark.lineWidget;
+    const lines = openWidgets.map((mark) => {
+        const w = mark.lineWidget;
         if (w.visible) {
             w.visible = false;
             w.widget.clear();
@@ -27,11 +27,11 @@ function clearWidgets() {
 }
 
 function clearOld(editor) {
-    var cm = editor._codeMirror;
+    const cm = editor._codeMirror;
     if (!cm) { return; }
 
-    var gutters = cm.getOption("gutters").slice(0),
-        io = gutters.indexOf(gutterName);
+    const gutters = cm.getOption("gutters").slice(0);
+    const io = gutters.indexOf(gutterName);
 
     if (io !== -1) {
         gutters.splice(io, 1);
@@ -47,9 +47,9 @@ function clearOld(editor) {
 
 function prepareGutter(editor) {
     // add our gutter if its not already available
-    var cm = editor._codeMirror;
+    const cm = editor._codeMirror;
 
-    var gutters = cm.getOption("gutters").slice(0);
+    const gutters = cm.getOption("gutters").slice(0);
     if (gutters.indexOf(gutterName) === -1) {
         gutters.unshift(gutterName);
         cm.setOption("gutters", gutters);
@@ -62,11 +62,11 @@ function prepareGutter(editor) {
 }
 
 function prepareGutters(editors) {
-    editors.forEach(function (editor) {
+    editors.forEach((editor) => {
         prepareGutter(editor);
     });
     // clear the rest
-    var idx = editorsWithGutters.length;
+    let idx = editorsWithGutters.length;
     while (idx--) {
         if (editors.indexOf(editorsWithGutters[idx]) === -1) {
             clearOld(editorsWithGutters[idx]);
@@ -78,22 +78,22 @@ function prepareGutters(editors) {
 function showGutters(editor, _results) {
     prepareGutter(editor);
 
-    var cm = editor._codeMirror;
+    const cm = editor._codeMirror;
     cm.gitGutters = _.sortBy(_results, "line");
 
     // get line numbers of currently opened widgets
-    var openBefore = clearWidgets();
+    const openBefore = clearWidgets();
 
     cm.clearGutter(gutterName);
-    cm.gitGutters.forEach(function (obj) {
-        var $marker = $("<div>")
+    cm.gitGutters.forEach((obj) => {
+        const $marker = $("<div>")
                         .addClass(gutterName + "-" + obj.type + " gitline-" + (obj.line + 1))
                         .html("&nbsp;");
         cm.setGutterMarker(obj.line, gutterName, $marker[0]);
     });
 
     // reopen widgets that were opened before refresh
-    openBefore.forEach(function (obj) {
+    openBefore.forEach((obj) => {
         gutterClick(obj.cm, obj.line, gutterName);
     });
 }
@@ -107,7 +107,7 @@ function gutterClick(cm, lineIndex, gutterId) {
         return;
     }
 
-    var mark = _.find(cm.gitGutters, function (o) { return o.line === lineIndex; });
+    let mark = _.find(cm.gitGutters, (o) => o.line === lineIndex);
     if (!mark || mark.type === "added") { return; }
 
     // we need to be able to identify cm instance from any mark
@@ -120,11 +120,11 @@ function gutterClick(cm, lineIndex, gutterId) {
             visible: false,
             element: $("<div class='" + gutterName + "-deleted-lines'></div>")
         };
-        var $btn = $("<button/>")
+        const $btn = $("<button/>")
             .addClass("brackets-git-gutter-copy-button")
             .text("R")
-            .on("click", function () {
-                var doc = DocumentManager.getCurrentDocument();
+            .on("click", () => {
+                const doc = DocumentManager.getCurrentDocument();
                 doc.replaceRange(mark.content + "\n", {
                     line: mark.line,
                     ch: 0
@@ -151,7 +151,7 @@ function gutterClick(cm, lineIndex, gutterId) {
     } else {
         mark.lineWidget.visible = false;
         mark.lineWidget.widget.clear();
-        var io = openWidgets.indexOf(mark);
+        const io = openWidgets.indexOf(mark);
         if (io !== -1) {
             openWidgets.splice(io, 1);
         }
@@ -159,29 +159,29 @@ function gutterClick(cm, lineIndex, gutterId) {
 }
 
 function getEditorFromPane(paneId) {
-    var currentPath = MainViewManager.getCurrentlyViewedPath(paneId),
-        doc = currentPath && DocumentManager.getOpenDocumentForPath(currentPath);
+    const currentPath = MainViewManager.getCurrentlyViewedPath(paneId);
+    const doc = currentPath && DocumentManager.getOpenDocumentForPath(currentPath);
     return doc && doc._masterEditor;
 }
 
 function processDiffResults(editor, diff) {
-    var added = [],
-        removed = [],
-        modified = [],
-        changesets = diff.split(/\n@@/).map(function (str) { return "@@" + str; });
+    const added = [];
+    const removed = [];
+    const modified = [];
+    const changesets = diff.split(/\n@@/).map((str) => "@@" + str);
 
     // remove part before first
     changesets.shift();
 
-    changesets.forEach(function (str) {
-        var m = str.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
-        var s1 = m[1].split(",");
-        var s2 = m[2].split(",");
+    changesets.forEach((str) => {
+        const m = str.match(/^@@ -([,0-9]+) \+([,0-9]+) @@/);
+        const s1 = m[1].split(",");
+        const s2 = m[2].split(",");
 
         // removed stuff
-        var lineRemovedFrom;
-        var lineFrom = parseInt(s2[0], 10);
-        var lineCount = parseInt(s1[1], 10);
+        let lineRemovedFrom;
+        let lineFrom = parseInt(s2[0], 10);
+        let lineCount = parseInt(s1[1], 10);
         if (isNaN(lineCount)) { lineCount = 1; }
         if (lineCount > 0) {
             lineRemovedFrom = lineFrom - 1;
@@ -189,8 +189,8 @@ function processDiffResults(editor, diff) {
                 type: "removed",
                 line: lineRemovedFrom,
                 content: str.split("\n")
-                            .filter(function (l) { return l.indexOf("-") === 0; })
-                            .map(function (l) { return l.substring(1); })
+                            .filter((l) => l.indexOf("-") === 0)
+                            .map((l) => l.substring(1))
                             .join("\n")
             });
         }
@@ -199,18 +199,19 @@ function processDiffResults(editor, diff) {
         lineFrom = parseInt(s2[0], 10);
         lineCount = parseInt(s2[1], 10);
         if (isNaN(lineCount)) { lineCount = 1; }
-        var isModifiedMark = false;
-        var firstAddedMark = false;
-        for (var i = lineFrom, lineTo = lineFrom + lineCount; i < lineTo; i++) {
-            var lineNo = i - 1;
+        let isModifiedMark = false;
+        let firstAddedMark = false;
+        const lineTo = lineFrom + lineCount;
+        for (let i = lineFrom; i < lineTo; i++) {
+            const lineNo = i - 1;
             if (lineNo === lineRemovedFrom) {
                 // modified
-                var o = removed.pop();
+                const o = removed.pop();
                 o.type = "modified";
                 modified.push(o);
                 isModifiedMark = o;
             } else {
-                var mark = {
+                const mark = {
                     type: isModifiedMark ? "modified" : "added",
                     line: lineNo,
                     parentMark: isModifiedMark || firstAddedMark || null
@@ -225,8 +226,8 @@ function processDiffResults(editor, diff) {
     });
 
     // fix displaying of removed lines
-    removed.forEach(function (o) {
-        o.line = o.line + 1;
+    removed.forEach((o) => {
+        o.line += 1;
     });
 
     showGutters(editor, [].concat(added, removed, modified));
@@ -241,10 +242,10 @@ function refresh() {
         return;
     }
 
-    var currentGitRoot = Preferences.get("currentGitRoot");
+    const currentGitRoot = Preferences.get("currentGitRoot");
 
     // we get a list of editors, which need to be refreshed
-    var editors = _.compact(_.map(MainViewManager.getPaneIdList(), function (paneId) {
+    const editors = _.compact(_.map(MainViewManager.getPaneIdList(), (paneId) => {
         return getEditorFromPane(paneId);
     }));
 
@@ -252,9 +253,9 @@ function refresh() {
     prepareGutters(editors);
 
     // now we launch a diff to fill the gutters in our editors
-    editors.forEach(function (editor) {
+    editors.forEach((editor) => {
 
-        var currentFilePath = null;
+        let currentFilePath = null;
 
         if (editor.document && editor.document.file) {
             currentFilePath = editor.document.file.fullPath;
@@ -265,11 +266,11 @@ function refresh() {
             return;
         }
 
-        var filename = currentFilePath.substring(currentGitRoot.length);
+        const filename = currentFilePath.substring(currentGitRoot.length);
 
-        Git.diffFile(filename).then(function (diff) {
+        Git.diffFile(filename).then((diff) => {
             processDiffResults(editor, diff);
-        }).catch(function (err) {
+        }).catch((err) => {
             // if this is launched in a non-git repository, just ignore
             if (ErrorHandler.contains(err, "Not a git repository")) {
                 return;
@@ -285,52 +286,54 @@ function refresh() {
 }
 
 export function goToPrev() {
-    var activeEditor = EditorManager.getActiveEditor();
+    const activeEditor = EditorManager.getActiveEditor();
     if (!activeEditor) { return; }
 
-    var results = activeEditor._codeMirror.gitGutters || [];
-    var searched = _.filter(results, function (i) { return !i.parentMark; });
+    const results = activeEditor._codeMirror.gitGutters || [];
+    const searched = _.filter(results, (i) => !i.parentMark);
 
-    var currentPos = activeEditor.getCursorPos();
-    var i = searched.length;
+    const currentPos = activeEditor.getCursorPos();
+    let i = searched.length;
     while (i--) {
         if (searched[i].line < currentPos.line) {
             break;
         }
     }
     if (i > -1) {
-        var goToMark = searched[i];
+        const goToMark = searched[i];
         activeEditor.setCursorPos(goToMark.line, currentPos.ch);
     }
 }
 
 export function goToNext() {
-    var activeEditor = EditorManager.getActiveEditor();
+    const activeEditor = EditorManager.getActiveEditor();
     if (!activeEditor) { return; }
 
-    var results = activeEditor._codeMirror.gitGutters || [];
-    var searched = _.filter(results, function (i) { return !i.parentMark; });
+    const results = activeEditor._codeMirror.gitGutters || [];
+    const searched = _.filter(results, (i) => !i.parentMark);
 
-    var currentPos = activeEditor.getCursorPos();
-    for (var i = 0, l = searched.length; i < l; i++) {
+    const currentPos = activeEditor.getCursorPos();
+    let i;
+    let l;
+    for (i = 0, l = searched.length; i < l; i++) {
         if (searched[i].line > currentPos.line) {
             break;
         }
     }
     if (i < searched.length) {
-        var goToMark = searched[i];
+        const goToMark = searched[i];
         activeEditor.setCursorPos(goToMark.line, currentPos.ch);
     }
 }
 
 /* // disable because of https://github.com/zaggino/brackets-git/issues/1019
-var _timer;
-var $line = $(),
+let _timer;
+let $line = $(),
     $gitGutterLines = $();
 
 $(document)
     .on("mouseenter", ".CodeMirror-linenumber", function (evt) {
-        var $target = $(evt.target);
+        let $target = $(evt.target);
 
         // Remove tooltip
         $line.attr("title", "");
@@ -351,7 +354,7 @@ $(document)
         }
     })
     .on("mouseleave", ".CodeMirror-linenumber", function (evt) {
-        var $target = $(evt.target);
+        let $target = $(evt.target);
 
         if (_timer) {
             clearTimeout(_timer);
@@ -365,22 +368,22 @@ $(document)
 */
 
 // Event handlers
-EventEmitter.on(Events.GIT_ENABLED, function () {
+EventEmitter.on(Events.GIT_ENABLED, () => {
     gitAvailable = true;
     refresh();
 });
-EventEmitter.on(Events.GIT_DISABLED, function () {
+EventEmitter.on(Events.GIT_DISABLED, () => {
     gitAvailable = false;
     // calling this with an empty array will remove gutters from all editor instances
     prepareGutters([]);
 });
-EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function (evt, file) {
+EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, (evt, file) => {
     // file will be null when switching to an empty pane
     if (!file) { return; }
 
     // document change gets launched even when switching panes,
     // so we check if the file hasn't already got the gutters
-    var alreadyOpened = _.filter(editorsWithGutters, function (editor) {
+    const alreadyOpened = _.filter(editorsWithGutters, (editor) => {
         return editor.document.file.fullPath === file.fullPath;
     }).length > 0;
 
@@ -389,11 +392,11 @@ EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function (evt, file) {
         refresh();
     }
 });
-EventEmitter.on(Events.GIT_COMMITED, function () {
+EventEmitter.on(Events.GIT_COMMITED, () => {
     refresh();
 });
-EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function (evt, file) {
-    var alreadyOpened = _.filter(editorsWithGutters, function (editor) {
+EventEmitter.on(Events.BRACKETS_FILE_CHANGED, (evt, file) => {
+    const alreadyOpened = _.filter(editorsWithGutters, (editor) => {
         return editor.document.file.fullPath === file.fullPath;
     }).length > 0;
 

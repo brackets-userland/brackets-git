@@ -145,7 +145,7 @@ function _showCommitDialog(stagedDiff, _lintResults, prefilledMessage, commitMod
     function getCommitMessageElement() {
         let r = $dialog.find("[name='commit-message']:visible");
         if (r.length !== 1) {
-            r = $dialog.find("[name='commit-message']");
+            r = $dialog.find("[name='commit-message']").toArray();
             for (const ri of r) {
                 const $ri = $(ri);
                 if ($ri.css("display") !== "none") {

@@ -115,10 +115,10 @@ export function showError(err: Error, title?: string) {
     }
 
     const compiledTemplate = Mustache.render(errorDialogTemplate, {
-        title: title,
+        title,
         body: errorBody,
-        showDetailsButton: showDetailsButton,
-        Strings: Strings
+        showDetailsButton,
+        Strings
     });
 
     const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
@@ -126,9 +126,9 @@ export function showError(err: Error, title?: string) {
     dialog.done((buttonId) => {
         if (buttonId === "report") {
             const mdReport = getMdReport({
-                title: title,
-                errorBody: errorBody,
-                errorStack: errorStack
+                title,
+                errorBody,
+                errorStack
             });
             _reportBug(ExtensionInfo.getSync().homepage + "/issues/new?title=" +
                        encodeURIComponent(title) +
