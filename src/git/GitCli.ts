@@ -922,7 +922,7 @@ export interface BlameInfo {
     content: string;
 }
 
-export function getBlame(file, from, to): Promise<BlameInfo[]> {
+export function getBlame(file, from?, to?): Promise<BlameInfo[]> {
     const args = ["blame", "-w", "--line-porcelain"];
     if (from || to) { args.push("-L" + from + "," + to); }
     args.push(file);

@@ -5,7 +5,8 @@ import {
 } from "./brackets-modules";
 import * as moment from "moment";
 import * as Promise from "bluebird";
-import * as Git from "./git/Git";
+import * as Git from "./git/GitCli";
+import * as Git2 from "./git/Git";
 import * as Events from "./Events";
 import EventEmitter from "./EventEmitter";
 import * as Preferences from "./Preferences";
@@ -111,9 +112,9 @@ function _showCommitDialog(stagedDiff, _lintResults, prefilledMessage, commitMod
 
     // Open the dialog
     const compiledTemplate = Mustache.render(gitCommitDialogTemplate, {
-        Strings: Strings,
+        Strings,
         hasLintProblems: lintResults.length > 0,
-        lintResults: lintResults
+        lintResults
     });
     const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
     const $dialog = dialog.getElement();
@@ -125,12 +126,12 @@ function _showCommitDialog(stagedDiff, _lintResults, prefilledMessage, commitMod
     $dialog.find(".commit-diff").append(Utils.formatDiff(stagedDiff));
 
     // Enable / Disable amend checkbox
-    const toggleAmendCheckbox = function (bool) {
+    function toggleAmendCheckbox(bool) {
         $dialog.find(".amend-commit")
             .prop("disabled", !bool)
             .parent()
             .attr("title", !bool ? Strings.AMEND_COMMIT_FORBIDDEN : null);
-    };
+    }
     toggleAmendCheckbox(false);
 
     Git.getCommitCounts()
@@ -145,9 +146,10 @@ function _showCommitDialog(stagedDiff, _lintResults, prefilledMessage, commitMod
         let r = $dialog.find("[name='commit-message']:visible");
         if (r.length !== 1) {
             r = $dialog.find("[name='commit-message']");
-            for (let i = 0; i < r.length; i++) {
-                if ($(r[i]).css("display") !== "none") {
-                    return $(r[i]);
+            for (const ri of r) {
+                const $ri = $(ri);
+                if ($ri.css("display") !== "none") {
+                    return $ri;
                 }
             }
         }
@@ -157,7 +159,7 @@ function _showCommitDialog(stagedDiff, _lintResults, prefilledMessage, commitMod
     const $commitMessageCount = $dialog.find("input[name='commit-message-count']");
 
     // Add event to count characters in commit message
-    const recalculateMessageLength = function () {
+    function recalculateMessageLength() {
         const val = getCommitMessageElement().val().trim();
         let length = val.length;
 
@@ -171,7 +173,7 @@ function _showCommitDialog(stagedDiff, _lintResults, prefilledMessage, commitMod
             .val(length)
             .toggleClass("over50", length > 50 && length <= 100)
             .toggleClass("over100", length > 100);
-    };
+    }
 
     let usingTextArea = false;
 
@@ -300,7 +302,7 @@ function _doGitCommit($dialog, getCommitMessageElement, stagedDiff) {
     });
 }
 
-function _showAuthors(file, blame, fromLine, toLine) {
+function _showAuthors(file, blame, fromLine?, toLine?) {
     const linesTotal = blame.length;
     let blameStats = blame.reduce((stats, lineInfo) => {
         const name = lineInfo.author + " " + lineInfo["author-mail"];
@@ -325,15 +327,11 @@ function _showAuthors(file, blame, fromLine, toLine) {
         file += " (" + Strings.LINES + " " + fromLine + "-" + toLine + ")";
     }
 
-    let compiledTemplate = Mustache.render(gitAuthorsDialogTemplate, {
-        file: file,
-        blameStats: blameStats,
-        Strings: Strings
-    });
+    const compiledTemplate = Mustache.render(gitAuthorsDialogTemplate, { file, blameStats, Strings });
     Dialogs.showModalDialogUsingTemplate(compiledTemplate);
 }
 
-function _getCurrentFilePath(editor) {
+function _getCurrentFilePath(editor?) {
     const gitRoot = Preferences.get("currentGitRoot");
     const document = editor ? editor.document : DocumentManager.getCurrentDocument();
     let filePath = document.file.fullPath;
@@ -344,16 +342,16 @@ function _getCurrentFilePath(editor) {
 }
 
 function handleAuthorsSelection() {
-    let editor = EditorManager.getActiveEditor(),
-        filePath = _getCurrentFilePath(editor),
-        currentSelection = editor.getSelection(),
-        fromLine = currentSelection.start.line + 1,
-        toLine = currentSelection.end.line + 1;
+    const editor = EditorManager.getActiveEditor();
+    const filePath = _getCurrentFilePath(editor);
+    const currentSelection = editor.getSelection();
+    const fromLine = currentSelection.start.line + 1;
+    let toLine = currentSelection.end.line + 1;
 
     // fix when nothing is selected on that line
-    if (currentSelection.end.ch === 0) { toLine = toLine - 1; }
+    if (currentSelection.end.ch === 0) { toLine -= 1; }
 
-    let isSomethingSelected = currentSelection.start.line !== currentSelection.end.line ||
+    const isSomethingSelected = currentSelection.start.line !== currentSelection.end.line ||
                               currentSelection.start.ch !== currentSelection.end.ch;
     if (!isSomethingSelected) {
         ErrorHandler.showError(new ExpectedError(Strings.ERROR_NOTHING_SELECTED));
@@ -365,18 +363,18 @@ function handleAuthorsSelection() {
         return;
     }
 
-    Git.getBlame(filePath, fromLine, toLine).then(function (blame) {
+    Git.getBlame(filePath, fromLine, toLine).then((blame) => {
         return _showAuthors(filePath, blame, fromLine, toLine);
-    }).catch(function (err) {
+    }).catch((err) => {
         ErrorHandler.showError(err, "Git Blame failed");
     });
 }
 
 function handleAuthorsFile() {
-    let filePath = _getCurrentFilePath();
-    Git.getBlame(filePath).then(function (blame) {
+    const filePath = _getCurrentFilePath();
+    Git.getBlame(filePath).then((blame) => {
         return _showAuthors(filePath, blame);
-    }).catch(function (err) {
+    }).catch((err) => {
         ErrorHandler.showError(err, "Git Blame failed");
     });
 }
@@ -385,14 +383,14 @@ function handleGitDiff(file) {
     if (Preferences.get("useDifftool")) {
         Git.difftool(file);
     } else {
-        Git.diffFileNice(file).then(function (diff) {
+        Git.diffFileNice(file).then((diff) => {
             // show the dialog with the diff
-            let compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file: file, Strings: Strings }),
-                dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-                $dialog          = dialog.getElement();
+            const compiledTemplate = Mustache.render(gitDiffDialogTemplate, { file, Strings });
+            const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+            const $dialog = dialog.getElement();
             _makeDialogBig($dialog);
             $dialog.find(".commit-diff").append(Utils.formatDiff(diff));
-        }).catch(function (err) {
+        }).catch((err) => {
             ErrorHandler.showError(err, "Git Diff failed");
         });
     }
@@ -400,39 +398,39 @@ function handleGitDiff(file) {
 
 function handleGitTag(file) {
     // Open the Tag Dialog
-    let compiledTemplate = Mustache.render(gitTagDialogTemplate, { file: file, Strings: Strings }),
-        dialog           = Dialogs.showModalDialogUsingTemplate(compiledTemplate),
-        $dialog          = dialog.getElement();
+    const compiledTemplate = Mustache.render(gitTagDialogTemplate, { file, Strings });
+    const dialog = Dialogs.showModalDialogUsingTemplate(compiledTemplate);
+    const $dialog = dialog.getElement();
     _makeDialogBig($dialog);
 
-    $dialog.find("button.primary").on("click", function () {
-        let tagname = $dialog.find("input.commit-message").val();
-        Git.setTagName(tagname).then(function () {
+    $dialog.find("button.primary").on("click", () => {
+        const tagname = $dialog.find("input.commit-message").val();
+        Git.setTagName(tagname).then(() => {
             refresh();
             EventEmitter.emit(Events.HISTORY_SHOW, "GLOBAL");
-        }).catch(function (err) {
+        }).catch((err) => {
             ErrorHandler.showError(err, "Create tag failed");
         });
     });
 }
 
 function handleGitUndo(file) {
-    let compiledTemplate = Mustache.render(questionDialogTemplate, {
+    const compiledTemplate = Mustache.render(questionDialogTemplate, {
         title: Strings.UNDO_CHANGES,
         question: StringUtils.format(Strings.Q_UNDO_CHANGES, _.escape(file)),
-        Strings: Strings
+        Strings
     });
-    Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
+    Dialogs.showModalDialogUsingTemplate(compiledTemplate).done((buttonId) => {
         if (buttonId === "ok") {
-            Git.discardFileChanges(file).then(function () {
-                let gitRoot = Preferences.get("currentGitRoot");
-                DocumentManager.getAllOpenDocuments().forEach(function (doc) {
+            Git2.discardFileChanges(file).then(() => {
+                const gitRoot = Preferences.get("currentGitRoot");
+                DocumentManager.getAllOpenDocuments().forEach((doc) => {
                     if (doc.file.fullPath === gitRoot + file) {
                         Utils.reloadDoc(doc);
                     }
                 });
                 refresh();
-            }).catch(function (err) {
+            }).catch((err) => {
                 ErrorHandler.showError(err, "Discard changes to a file failed");
             });
         }
@@ -440,43 +438,43 @@ function handleGitUndo(file) {
 }
 
 function handleGitDelete(file) {
-    let compiledTemplate = Mustache.render(questionDialogTemplate, {
+    const compiledTemplate = Mustache.render(questionDialogTemplate, {
         title: Strings.DELETE_FILE,
         question: StringUtils.format(Strings.Q_DELETE_FILE, _.escape(file)),
-        Strings: Strings
+        Strings
     });
-    Dialogs.showModalDialogUsingTemplate(compiledTemplate).done(function (buttonId) {
+    Dialogs.showModalDialogUsingTemplate(compiledTemplate).done((buttonId) => {
         if (buttonId === "ok") {
-            FileSystem.resolve(Preferences.get("currentGitRoot") + file, function (err, fileEntry) {
+            FileSystem.resolve(Preferences.get("currentGitRoot") + file, (err, fileEntry) => {
                 if (err) {
                     ErrorHandler.showError(err, "Could not resolve file");
                     return;
                 }
                 Promise.cast(ProjectManager.deleteItem(fileEntry))
-                    .then(function () {
+                    .then(() => {
                         refresh();
                     })
-                    .catch(function (err) {
-                        ErrorHandler.showError(err, "File deletion failed");
+                    .catch((err2) => {
+                        ErrorHandler.showError(err2, "File deletion failed");
                     });
             });
         }
     });
 }
 
-function _getStagedDiff(commitMode, files) {
+function _getStagedDiff(commitMode?, files?) {
     return ProgressDialog.show(_getStagedDiffForCommitMode(commitMode, files),
                                Strings.GETTING_STAGED_DIFF_PROGRESS,
                                { preDelay: 3, postDelay: 1 })
-    .catch(function (err) {
+    .catch((err) => {
         if (ErrorHandler.contains(err, "cleanup")) {
             return false; // will display list of staged files instead
         }
         throw err;
     })
-    .then(function (diff) {
+    .then((diff) => {
         if (!diff) {
-            return Git.getListOfStagedFiles().then(function (filesList) {
+            return Git.getListOfStagedFiles().then((filesList) => {
                 return Strings.DIFF_FAILED_SEE_FILES + "\n\n" + filesList;
             });
         }
@@ -495,24 +493,22 @@ function _getStagedDiffForCommitMode(commitMode, files) {
             return Promise.reject("_getStagedDiffForCommitMode() got files.length > 1");
         }
 
-        let isUntracked = files[0].status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1;
-        if (isUntracked) {
-            return _getDiffForUntrackedFiles(files[0].file);
-        } else {
-            return Git.getDiffOfAllIndexFiles(files[0].file);
-        }
+        const isUntracked = files[0].status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1;
+        return isUntracked ?
+            _getDiffForUntrackedFiles(files[0].file) :
+            Git.getDiffOfAllIndexFiles(files[0].file);
     }
 
     return Git.getDiffOfStagedFiles();
 }
 
 function _getStaggedDiffForAllFiles() {
-    return Git.status().then(function (statusFiles) {
-        let untrackedFiles = [];
-        let fileArray = [];
+    return Git.status().then((statusFiles) => {
+        const untrackedFiles = [];
+        const fileArray = [];
 
-        statusFiles.forEach(function (fileObject) {
-            let isUntracked = fileObject.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1;
+        statusFiles.forEach((fileObject) => {
+            const isUntracked = fileObject.status.indexOf(Git.FILE_STATUS.UNTRACKED) !== -1;
             if (isUntracked) {
                 untrackedFiles.push(fileObject.file);
             } else {
@@ -520,42 +516,36 @@ function _getStaggedDiffForAllFiles() {
             }
         });
 
-        if (untrackedFiles.length > 0) {
-            return _getDiffForUntrackedFiles(fileArray.concat(untrackedFiles));
-        } else {
-            return Git.getDiffOfAllIndexFiles(fileArray);
-        }
+        return untrackedFiles.length > 0 ?
+            _getDiffForUntrackedFiles(fileArray.concat(untrackedFiles)) :
+            Git.getDiffOfAllIndexFiles(fileArray);
     });
 }
 
 function _getDiffForUntrackedFiles(files) {
     let diff;
     return Git.stage(files, false)
-        .then(function () {
-            return Git.getDiffOfStagedFiles();
-        })
-        .then(function (_diff) {
+        .then(() => Git.getDiffOfStagedFiles())
+        .then((_diff) => {
             diff = _diff;
-            return Git.resetIndex();
+            return Git2.resetIndex();
         })
-        .then(function () {
-            return diff;
-        });
+        .then(() => diff);
 }
 
 // whatToDo gets values "continue" "skip" "abort"
 function handleRebase(whatToDo) {
-    Git.rebase(whatToDo).then(function () {
+    Git.rebase(whatToDo).then(() => {
         EventEmitter.emit(Events.REFRESH_ALL);
-    }).catch(function (err) {
+    }).catch((err) => {
         ErrorHandler.showError(err, "Rebase " + whatToDo + " failed");
     });
 }
 
 function abortMerge() {
-    Git.discardAllChanges().then(function () {
+    Git2.discardAllChanges().then(() => {
         EventEmitter.emit(Events.REFRESH_ALL);
-    }).catch(function (err) {
+    }).catch((err) => {
         ErrorHandler.showError(err, "Merge abort failed");
     });
 }
@@ -565,26 +555,26 @@ function findConflicts() {
 }
 
 function commitMerge() {
-    Utils.loadPathContent(Preferences.get("currentGitRoot") + "/.git/MERGE_MSG").then(function (msg) {
+    Utils.loadPathContent(Preferences.get("currentGitRoot") + "/.git/MERGE_MSG").then((msg) => {
         handleGitCommit(msg, true, COMMIT_MODE.DEFAULT);
-        EventEmitter.once(Events.GIT_COMMITED, function () {
+        EventEmitter.once(Events.GIT_COMMITED, () => {
             EventEmitter.emit(Events.REFRESH_ALL);
         });
-    }).catch(function (err) {
+    }).catch((err) => {
         ErrorHandler.showError(err, "Merge commit failed");
     });
 }
 
 function inspectFiles(gitStatusResults) {
-    let lintResults = [];
+    const lintResults = [];
 
-    let codeInspectionPromises = gitStatusResults.map(function (fileObj) {
-        let isDeleted = fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1;
+    const codeInspectionPromises = gitStatusResults.map((fileObj) => {
+        const isDeleted = fileObj.status.indexOf(Git.FILE_STATUS.DELETED) !== -1;
 
         // do a code inspection for the file, if it was not deleted
         if (!isDeleted) {
             return lintFile(fileObj.file)
-                .catch(function () {
+                .catch(() => {
                     return [
                         {
                             provider: { name: "See console [F12] for details" },
@@ -599,26 +589,23 @@ function inspectFiles(gitStatusResults) {
                         }
                     ];
                 })
-                .then(function (result) {
+                .then((result) => {
                     if (result) {
-                        lintResults.push({
-                            filename: fileObj.file,
-                            result: result
-                        });
+                        lintResults.push({ filename: fileObj.file, result });
                     }
                 });
         }
     });
 
-    return Promise.all(_.compact(codeInspectionPromises)).then(function () {
+    return Promise.all(_.compact(codeInspectionPromises)).then(() => {
         return lintResults;
     });
 }
 
 function handleGitCommit(prefilledMessage, isMerge, commitMode) {
 
-    let stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
-    let codeInspectionEnabled = Preferences.get("useCodeInspection");
+    const stripWhitespace = Preferences.get("stripWhitespaceFromCommits");
+    const codeInspectionEnabled = Preferences.get("useCodeInspection");
 
     // Disable button (it will be enabled when selecting files after reset)
     Utils.setLoading($gitPanel.find(".git-commit"));
@@ -627,8 +614,8 @@ function handleGitCommit(prefilledMessage, isMerge, commitMode) {
 
     // First reset staged files, then add selected files to the index.
     if (commitMode === COMMIT_MODE.DEFAULT) {
-        p = Git.status().then(function (files) {
-            files = _.filter(files, function (file) {
+        p = Git.status().then((files) => {
+            files = _.filter(files, (file) => {
                 return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
             });
 
@@ -646,7 +633,7 @@ function handleGitCommit(prefilledMessage, isMerge, commitMode) {
                                            prefilledMessage);
         });
     } else if (commitMode === COMMIT_MODE.ALL) {
-        p = Git.status().then(function (files) {
+        p = Git.status().then((files) => {
             return handleGitCommitInternal(stripWhitespace,
                                            files,
                                            codeInspectionEnabled,
@@ -654,33 +641,35 @@ function handleGitCommit(prefilledMessage, isMerge, commitMode) {
                                            prefilledMessage);
         });
     } else if (commitMode === COMMIT_MODE.CURRENT) {
-        p = Git.status().then(function (files) {
-            let gitRoot = Preferences.get("currentGitRoot");
-            let currentDoc = DocumentManager.getCurrentDocument();
+        p = Git.status().then((files) => {
+            const gitRoot = Preferences.get("currentGitRoot");
+            const currentDoc = DocumentManager.getCurrentDocument();
             if (currentDoc) {
-                let relativePath = currentDoc.file.fullPath.substring(gitRoot.length);
-                let currentFile = _.filter(files, function (next) {
+                const relativePath = currentDoc.file.fullPath.substring(gitRoot.length);
+                const currentFile = _.filter(files, (next) => {
                     return relativePath === next.file;
                 });
-                return handleGitCommitInternal(stripWhitespace, currentFile, codeInspectionEnabled, commitMode, prefilledMessage);
+                return handleGitCommitInternal(
+                    stripWhitespace, currentFile, codeInspectionEnabled, commitMode, prefilledMessage
+                );
             }
         });
     }
 
-    p.catch(function (err) {
+    p.catch((err) => {
         ErrorHandler.showError(err, "Preparing commit dialog failed");
-    }).finally(function () {
+    }).finally(() => {
         Utils.unsetLoading($gitPanel.find(".git-commit"));
     });
 
 }
 
 function handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, commitMode, prefilledMessage) {
-    let queue = Promise.resolve();
+    let queue: Promise<any> = Promise.resolve();
     let lintResults;
 
     if (stripWhitespace) {
-        queue = queue.then(function () {
+        queue = queue.then(() => {
             return ProgressDialog.show(Utils.stripWhitespaceFromFiles(files, commitMode === COMMIT_MODE.DEFAULT),
                                        Strings.CLEANING_WHITESPACE_PROGRESS,
                                        { preDelay: 3, postDelay: 1 });
@@ -688,28 +677,28 @@ function handleGitCommitInternal(stripWhitespace, files, codeInspectionEnabled, 
     }
 
     if (codeInspectionEnabled) {
-        queue = queue.then(function () {
-            return inspectFiles(files).then(function (_lintResults) {
+        queue = queue.then(() => {
+            return inspectFiles(files).then((_lintResults) => {
                 lintResults = _lintResults;
             });
         });
     }
 
-    return queue.then(function () {
+    return queue.then(() => {
         // All files are in the index now, get the diff and show dialog.
-        return _getStagedDiff(commitMode, files).then(function (diff) {
+        return _getStagedDiff(commitMode, files).then((diff) => {
             return _showCommitDialog(diff, lintResults, prefilledMessage, commitMode, files);
         });
     });
 }
 
 function refreshCurrentFile() {
-    let gitRoot = Preferences.get("currentGitRoot");
-    let currentDoc = DocumentManager.getCurrentDocument();
+    const gitRoot = Preferences.get("currentGitRoot");
+    const currentDoc = DocumentManager.getCurrentDocument();
     if (currentDoc) {
         $gitPanel.find("tr").each(function () {
-            let currentFullPath = currentDoc.file.fullPath,
-                thisFile = $(this).attr("x-file");
+            const currentFullPath = currentDoc.file.fullPath;
+            const thisFile = $(this).attr("x-file");
             $(this).toggleClass("selected", gitRoot + thisFile === currentFullPath);
         });
     } else {
@@ -730,15 +719,17 @@ function _refreshTableContainer(files) {
     }
 
     // remove files that we should not show
-    files = _.filter(files, function (file) {
+    files = _.filter(files, (file) => {
         return shouldShow(file);
     });
 
-    let allStaged = files.length > 0 && _.all(files, function (file) { return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1; });
+    const allStaged = files.length > 0 && _.all(files, (file) => {
+        return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
+    });
     $gitPanel.find(".check-all").prop("checked", allStaged).prop("disabled", files.length === 0);
 
-    let $editedList = $tableContainer.find(".git-edited-list");
-    let visibleBefore = $editedList.length ? $editedList.is(":visible") : true;
+    const $editedList = $tableContainer.find(".git-edited-list");
+    const visibleBefore = $editedList.length ? $editedList.is(":visible") : true;
     $editedList.remove();
 
     if (files.length === 0) {
@@ -746,14 +737,14 @@ function _refreshTableContainer(files) {
     } else {
         // if desired, remove untracked files from the results
         if (showingUntracked === false) {
-            files = _.filter(files, function (file) {
+            files = _.filter(files, (file) => {
                 return file.status.indexOf(Git.FILE_STATUS.UNTRACKED) === -1;
             });
         }
         // -
-        files.forEach(function (file) {
+        files.forEach((file) => {
             file.staged = file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1;
-            file.statusText = file.status.map(function (status) {
+            file.statusText = file.status.map((status) => {
                 return Strings["FILE_" + status];
             }).join(", ");
             file.allowDiff = file.status.indexOf(Git.FILE_STATUS.UNTRACKED) === -1 &&
@@ -764,10 +755,7 @@ function _refreshTableContainer(files) {
                                file.status.indexOf(Git.FILE_STATUS.ADDED) !== -1;
             file.allowUndo = !file.allowDelete;
         });
-        $tableContainer.append(Mustache.render(gitPanelResultsTemplate, {
-            files: files,
-            Strings: Strings
-        }));
+        $tableContainer.append(Mustache.render(gitPanelResultsTemplate, { files, Strings }));
 
         refreshCurrentFile();
     }
@@ -776,23 +764,23 @@ function _refreshTableContainer(files) {
 
 function refreshCommitCounts() {
     // Find Push and Pull buttons
-    let $pullBtn = $gitPanel.find(".git-pull");
-    let $pushBtn = $gitPanel.find(".git-push");
-    let clearCounts = function () {
+    const $pullBtn = $gitPanel.find(".git-pull");
+    const $pushBtn = $gitPanel.find(".git-push");
+    const clearCounts = function () {
         $pullBtn.children("span").remove();
         $pushBtn.children("span").remove();
     };
 
     // Check if there's a remote, resolve if there's not
-    let remotes = Preferences.get("defaultRemotes") || {};
-    let defaultRemote = remotes[Preferences.get("currentGitRoot")];
+    const remotes = Preferences.get("defaultRemotes") || {};
+    const defaultRemote = remotes[Preferences.get("currentGitRoot")];
     if (!defaultRemote) {
         clearCounts();
         return Promise.resolve();
     }
 
     // Get the commit counts and append them to the buttons
-    return Git.getCommitCounts().then(function (commits) {
+    return Git.getCommitCounts().then((commits) => {
         clearCounts();
         if (commits.behind > 0) {
             $pullBtn.append($("<span/>").text(" (" + commits.behind + ")"));
@@ -800,7 +788,7 @@ function refreshCommitCounts() {
         if (commits.ahead > 0) {
             $pushBtn.append($("<span/>").text(" (" + commits.ahead + ")"));
         }
-    }).catch(function (err) {
+    }).catch((err) => {
         clearCounts();
         ErrorHandler.logError(err);
     });
@@ -819,14 +807,15 @@ export function refresh() {
     $tableContainer.find("#git-history-list").remove();
     $tableContainer.find(".git-edited-list").show();
 
-    let p1 = Git.status().catch(function (err) {
+    const p1 = Git.status().catch((err) => {
         // this is an expected "error"
         if (ErrorHandler.contains(err, "Not a git repository")) {
             return;
         }
+        throw err;
     });
 
-    let p2 = refreshCommitCounts();
+    const p2 = refreshCommitCounts();
 
     // Clone button
     $gitPanel.find(".git-clone").prop("disabled", false);
@@ -867,10 +856,10 @@ function handleToggleUntracked() {
 function commitCurrentFile() {
     // do not return anything here, core expects jquery promise
     Promise.cast(CommandManager.execute("file.save"))
-        .then(function () {
-            return Git.resetIndex();
+        .then(() => {
+            return Git2.resetIndex();
         })
-        .then(function () {
+        .then(() => {
             return handleGitCommit(lastCommitMessage, false, COMMIT_MODE.CURRENT);
         });
 }
@@ -878,31 +867,31 @@ function commitCurrentFile() {
 function commitAllFiles() {
     // do not return anything here, core expects jquery promise
     Promise.cast(CommandManager.execute("file.saveAll"))
-        .then(function () {
-            return Git.resetIndex();
+        .then(() => {
+            return Git2.resetIndex();
         })
-        .then(function () {
+        .then(() => {
             return handleGitCommit(lastCommitMessage, false, COMMIT_MODE.ALL);
         });
 }
 
 // Disable "commit" button if there aren't staged files to commit
 function _toggleCommitButton(files) {
-    let anyStaged = _.any(files, function (file) { return file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1; });
+    const anyStaged = _.any(files, (file) => file.status.indexOf(Git.FILE_STATUS.STAGED) !== -1);
     $gitPanel.find(".git-commit").prop("disabled", !anyStaged);
 }
 
-EventEmitter.on(Events.GIT_STATUS_RESULTS, function (results) {
+EventEmitter.on(Events.GIT_STATUS_RESULTS, (results) => {
     _refreshTableContainer(results);
     _toggleCommitButton(results);
 });
 
 function undoLastLocalCommit() {
-    Git.undoLastLocalCommit()
-        .catch(function (err) {
+    Git2.undoLastLocalCommit()
+        .catch((err) => {
             ErrorHandler.showError(err, "Impossible to undo last commit");
         })
-        .finally(function () {
+        .finally(() => {
             refresh();
         });
 }
@@ -914,16 +903,16 @@ function attachDefaultTableHandlers() {
         .off()
         .on("click", ".check-one", function (e) {
             e.stopPropagation();
-            let $tr = $(this).closest("tr"),
-                file = $tr.attr("x-file"),
-                status = $tr.attr("x-status"),
-                isChecked = $(this).is(":checked");
+            const $tr = $(this).closest("tr");
+            const file = $tr.attr("x-file");
+            const status = $tr.attr("x-status");
+            const isChecked = $(this).is(":checked");
 
             if (e.shiftKey) {
                 // stage/unstage all file between
-                let lc = lastCheckOneClicked.localeCompare(file),
-                    lcClickedSelector = "[x-file='" + lastCheckOneClicked + "']",
-                    sequence;
+                const lc = lastCheckOneClicked.localeCompare(file);
+                const lcClickedSelector = "[x-file='" + lastCheckOneClicked + "']";
+                let sequence;
 
                 if (lc < 0) {
                     sequence = $tr.prevUntil(lcClickedSelector).andSelf();
@@ -933,16 +922,15 @@ function attachDefaultTableHandlers() {
 
                 if (sequence) {
                     sequence = sequence.add($tr.parent().children(lcClickedSelector));
-                    let promises = sequence.map(function () {
-                        let $this = $(this),
-                            method = isChecked ? "stage" : "unstage",
-                            file = $this.attr("x-file"),
-                            status = $this.attr("x-status");
-                        return Git[method](file, status === Git.FILE_STATUS.DELETED);
+                    const promises = sequence.map(function () {
+                        const $this = $(this);
+                        return isChecked ?
+                            Git.stage($this.attr("x-file"), $this.attr("x-status") === Git.FILE_STATUS.DELETED) :
+                            Git.unstage($this.attr("x-file"));
                     }).toArray();
-                    return Promise.all(promises).then(function () {
+                    return Promise.all(promises).then(() => {
                         return Git.status();
-                    }).catch(function (err) {
+                    }).catch((err) => {
                         ErrorHandler.showError(err, "Modifying file status failed");
                     });
                 }
@@ -951,32 +939,32 @@ function attachDefaultTableHandlers() {
             lastCheckOneClicked = file;
 
             if (isChecked) {
-                Git.stage(file, status === Git.FILE_STATUS.DELETED).then(function () {
+                Git.stage(file, status === Git.FILE_STATUS.DELETED).then(() => {
                     Git.status();
                 });
             } else {
-                Git.unstage(file).then(function () {
+                Git.unstage(file).then(() => {
                     Git.status();
                 });
             }
         })
-        .on("dblclick", ".check-one", function (e) {
+        .on("dblclick", ".check-one", (e) => {
             e.stopPropagation();
         })
-        .on("click", ".btn-git-diff", function (e) {
+        .on("click", ".btn-git-diff", (e) => {
             e.stopPropagation();
             handleGitDiff($(e.target).closest("tr").attr("x-file"));
         })
-        .on("click", ".btn-git-undo", function (e) {
+        .on("click", ".btn-git-undo", (e) => {
             e.stopPropagation();
             handleGitUndo($(e.target).closest("tr").attr("x-file"));
         })
-        .on("click", ".btn-git-delete", function (e) {
+        .on("click", ".btn-git-delete", (e) => {
             e.stopPropagation();
             handleGitDelete($(e.target).closest("tr").attr("x-file"));
         })
-        .on("click", ".modified-file", function (e) {
-            let $this = $(e.currentTarget);
+        .on("click", ".modified-file", (e) => {
+            const $this = $(e.currentTarget);
             if ($this.attr("x-status") === Git.FILE_STATUS.DELETED) {
                 return;
             }
@@ -984,8 +972,8 @@ function attachDefaultTableHandlers() {
                 fullPath: Preferences.get("currentGitRoot") + $this.attr("x-file")
             });
         })
-        .on("dblclick", ".modified-file", function (e) {
-            let $this = $(e.currentTarget);
+        .on("dblclick", ".modified-file", (e) => {
+            const $this = $(e.currentTarget);
             if ($this.attr("x-status") === Git.FILE_STATUS.DELETED) {
                 return;
             }
@@ -994,46 +982,50 @@ function attachDefaultTableHandlers() {
 
 }
 
-EventEmitter.on(Events.GIT_CHANGE_USERNAME, function (event, callback) {
-    return Git.getConfig("user.name").then(function (currentUserName) {
-        return Utils.askQuestion(Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, { defaultValue: currentUserName })
-            .then(function (userName) {
+EventEmitter.on(Events.GIT_CHANGE_USERNAME, (event, callback) => {
+    return Git.getConfig("user.name").then((currentUserName) => {
+        return Utils.askQuestion(
+            Strings.CHANGE_USER_NAME, Strings.ENTER_NEW_USER_NAME, { defaultValue: currentUserName }
+        )
+            .then((userName: string) => {
                 if (!userName.length) { userName = currentUserName; }
-                return Git.setConfig("user.name", userName, true).catch(function (err) {
+                return Git.setConfig("user.name", userName, true).catch((err) => {
                     ErrorHandler.showError(err, "Impossible to change username");
-                }).then(function () {
+                }).then(() => {
                     EventEmitter.emit(Events.GIT_USERNAME_CHANGED, userName);
-                }).finally(function () {
+                }).finally(() => {
                     if (callback) {
-                        callback(userName);
+                        return callback(userName);
                     }
                 });
             });
     });
 });
 
-EventEmitter.on(Events.GIT_CHANGE_EMAIL, function (event, callback) {
-    return Git.getConfig("user.email").then(function (currentUserEmail) {
-        return Utils.askQuestion(Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, { defaultValue: currentUserEmail })
-            .then(function (userEmail) {
+EventEmitter.on(Events.GIT_CHANGE_EMAIL, (event, callback) => {
+    return Git.getConfig("user.email").then((currentUserEmail) => {
+        return Utils.askQuestion(
+            Strings.CHANGE_USER_EMAIL, Strings.ENTER_NEW_USER_EMAIL, { defaultValue: currentUserEmail }
+        )
+            .then((userEmail: string) => {
                 if (!userEmail.length) { userEmail = currentUserEmail; }
-                return Git.setConfig("user.email", userEmail, true).catch(function (err) {
+                return Git.setConfig("user.email", userEmail, true).catch((err) => {
                     ErrorHandler.showError(err, "Impossible to change user email");
-                }).then(function () {
+                }).then(() => {
                     EventEmitter.emit(Events.GIT_EMAIL_CHANGED, userEmail);
-                }).finally(function () {
+                }).finally(() => {
                     if (callback) {
-                        callback(userEmail);
+                        return callback(userEmail);
                     }
                 });
             });
     });
 });
 
-EventEmitter.on(Events.GERRIT_TOGGLE_PUSH_REF, function (event, callback) {
+EventEmitter.on(Events.GERRIT_TOGGLE_PUSH_REF, (event, callback) => {
     // update preference and emit so the menu item updates
-    return Git.getConfig("gerrit.pushref").then(function (strEnabled) {
-        let toggledValue = strEnabled !== "true";
+    return Git.getConfig("gerrit.pushref").then((strEnabled) => {
+        const toggledValue = strEnabled !== "true";
 
         // Set the global preference
         // Saving a preference to tell the GitCli.push() method to check for gerrit push ref enablement
@@ -1041,20 +1033,20 @@ EventEmitter.on(Events.GERRIT_TOGGLE_PUSH_REF, function (event, callback) {
         Preferences.persist("gerritPushref", toggledValue);
 
         return Git.setConfig("gerrit.pushref", toggledValue, true)
-            .then(function () {
+            .then(() => {
                 EventEmitter.emit(Events.GERRIT_PUSH_REF_TOGGLED, toggledValue);
             })
-            .finally(function () {
+            .finally(() => {
                 if (callback) {
-                    callback(toggledValue);
+                    return callback(toggledValue);
                 }
             });
-    }).catch(function (err) {
+    }).catch((err) => {
         ErrorHandler.showError(err, "Impossible to toggle gerrit push ref");
     });
 });
 
-EventEmitter.on(Events.GERRIT_PUSH_REF_TOGGLED, function (enabled) {
+EventEmitter.on(Events.GERRIT_PUSH_REF_TOGGLED, (enabled) => {
     setGerritCheckState(enabled);
 });
 
@@ -1066,11 +1058,11 @@ function setGerritCheckState(enabled) {
 
 function discardAllChanges() {
     return Utils.askQuestion(Strings.RESET_LOCAL_REPO, Strings.RESET_LOCAL_REPO_CONFIRM, { booleanResponse: true })
-        .then(function (response) {
+        .then((response) => {
             if (response) {
-                return Git.discardAllChanges().catch(function (err) {
+                return Git2.discardAllChanges().catch((err) => {
                     ErrorHandler.showError(err, "Reset of local repository failed");
-                }).then(function () {
+                }).then(() => {
                     refresh();
                 });
             }
@@ -1079,12 +1071,12 @@ function discardAllChanges() {
 
 export function init() {
     // Add panel
-    let panelHtml = Mustache.render(gitPanelTemplate, {
+    const panelHtml = Mustache.render(gitPanelTemplate, {
         enableAdvancedFeatures: Preferences.get("enableAdvancedFeatures"),
         showBashButton: Preferences.get("showBashButton"),
         S: Strings
     });
-    let $panelHtml = $(panelHtml);
+    const $panelHtml = $(panelHtml);
     $panelHtml.find(".git-available, .git-not-available").hide();
 
     gitPanel = WorkspaceManager.createBottomPanel("brackets-git.panel", $panelHtml, 100);
@@ -1093,21 +1085,19 @@ export function init() {
     $gitPanel
         .on("click", ".close", toggle)
         .on("click", ".check-all", function () {
-            if ($(this).is(":checked")) {
-                return Git.stageAll().then(function () {
+            return $(this).is(":checked") ?
+                Git.stageAll().then(() => {
+                    Git.status();
+                }) :
+                Git2.resetIndex().then(() => {
                     Git.status();
                 });
-            } else {
-                return Git.resetIndex().then(function () {
-                    Git.status();
-                });
-            }
         })
         .on("click", ".git-refresh", EventEmitter.emitFactory(Events.REFRESH_ALL))
         .on("click", ".git-commit", EventEmitter.emitFactory(Events.HANDLE_GIT_COMMIT))
-        .on("click", ".git-rebase-continue", function (e) { handleRebase("continue", e); })
-        .on("click", ".git-rebase-skip", function (e) { handleRebase("skip", e); })
-        .on("click", ".git-rebase-abort", function (e) { handleRebase("abort", e); })
+        .on("click", ".git-rebase-continue", (e) => { handleRebase("continue"); })
+        .on("click", ".git-rebase-skip", (e) => { handleRebase("skip"); })
+        .on("click", ".git-rebase-abort", (e) => { handleRebase("abort"); })
         .on("click", ".git-commit-merge", commitMerge)
         .on("click", ".git-merge-abort", abortMerge)
         .on("click", ".git-find-conflicts", findConflicts)
@@ -1120,7 +1110,7 @@ export function init() {
         .on("click", ".git-history-toggle", EventEmitter.emitFactory(Events.HISTORY_SHOW, "GLOBAL"))
         .on("click", ".git-fetch", EventEmitter.emitFactory(Events.HANDLE_FETCH))
         .on("click", ".git-push", function () {
-            let typeOfRemote = $(this).attr("x-selected-remote-type");
+            const typeOfRemote = $(this).attr("x-selected-remote-type");
             if (typeOfRemote === "git") {
                 EventEmitter.emit(Events.HANDLE_PUSH);
             }
@@ -1134,11 +1124,11 @@ export function init() {
         .on("click", ".git-remote-new", EventEmitter.emitFactory(Events.HANDLE_REMOTE_CREATE))
         .on("click", ".git-settings", SettingsDialog.show)
         .on("contextmenu", "tr", function (e) {
-            let $this = $(this);
+            const $this = $(this);
             if ($this.hasClass("history-commit")) { return; }
 
             $this.click();
-            setTimeout(function () {
+            setTimeout(() => {
                 Menus.getContextMenu("git-panel-context-menu").open(e);
             }, 1);
         })
@@ -1147,7 +1137,7 @@ export function init() {
         .on("click", ".toggle-gerrit-push-ref", EventEmitter.emitFactory(Events.GERRIT_TOGGLE_PUSH_REF))
         .on("click", ".undo-last-commit", undoLastLocalCommit)
         .on("click", ".git-bash", EventEmitter.emitFactory(Events.TERMINAL_OPEN))
-        .on("click", ".tags", function (e) {
+        .on("click", ".tags", (e) => {
             e.stopPropagation();
             handleGitTag($(e.target).closest("tr").attr("x-file"));
         })
@@ -1166,14 +1156,14 @@ export function init() {
     attachDefaultTableHandlers();
 
     // Commit current and all shortcuts
-    let COMMIT_CURRENT_CMD = "brackets-git.commitCurrent",
-        COMMIT_ALL_CMD     = "brackets-git.commitAll",
-        BASH_CMD           = "brackets-git.launchBash",
-        PUSH_CMD           = "brackets-git.push",
-        PULL_CMD           = "brackets-git.pull",
-        GOTO_PREV_CHANGE   = "brackets-git.gotoPrevChange",
-        GOTO_NEXT_CHANGE   = "brackets-git.gotoNextChange",
-        REFRESH_GIT        = "brackets-git.refreshAll";
+    const COMMIT_CURRENT_CMD = "brackets-git.commitCurrent";
+    const COMMIT_ALL_CMD = "brackets-git.commitAll";
+    const BASH_CMD = "brackets-git.launchBash";
+    const PUSH_CMD = "brackets-git.push";
+    const PULL_CMD = "brackets-git.pull";
+    const GOTO_PREV_CHANGE = "brackets-git.gotoPrevChange";
+    const GOTO_NEXT_CHANGE = "brackets-git.gotoNextChange";
+    const REFRESH_GIT = "brackets-git.refreshAll";
 
     // Add command to menu.
     // Register command for opening bottom panel.
@@ -1243,32 +1233,32 @@ export function disable(cause) {
 }
 
 // Event listeners
-EventEmitter.on(Events.GIT_USERNAME_CHANGED, function (userName) {
+EventEmitter.on(Events.GIT_USERNAME_CHANGED, (userName) => {
     $gitPanel.find(".git-user-name").text(userName);
 });
 
-EventEmitter.on(Events.GIT_EMAIL_CHANGED, function (email) {
+EventEmitter.on(Events.GIT_EMAIL_CHANGED, (email) => {
     $gitPanel.find(".git-user-email").text(email);
 });
 
-EventEmitter.on(Events.GIT_REMOTE_AVAILABLE, function () {
+EventEmitter.on(Events.GIT_REMOTE_AVAILABLE, () => {
     $gitPanel.find(".git-pull, .git-push, .git-fetch").prop("disabled", false);
 });
 
-EventEmitter.on(Events.GIT_REMOTE_NOT_AVAILABLE, function () {
+EventEmitter.on(Events.GIT_REMOTE_NOT_AVAILABLE, () => {
     $gitPanel.find(".git-pull, .git-push, .git-fetch").prop("disabled", true);
 });
 
-EventEmitter.on(Events.GIT_ENABLED, function () {
+EventEmitter.on(Events.GIT_ENABLED, () => {
     // Add info from Git to panel
-    Git.getConfig("user.name").then(function (currentUserName) {
+    Git.getConfig("user.name").then((currentUserName) => {
         EventEmitter.emit(Events.GIT_USERNAME_CHANGED, currentUserName);
     });
-    Git.getConfig("user.email").then(function (currentEmail) {
+    Git.getConfig("user.email").then((currentEmail) => {
         EventEmitter.emit(Events.GIT_EMAIL_CHANGED, currentEmail);
     });
-    Git.getConfig("gerrit.pushref").then(function (strEnabled) {
-        let enabled = strEnabled === "true";
+    Git.getConfig("gerrit.pushref").then((strEnabled) => {
+        const enabled = strEnabled === "true";
         // Handle the case where we switched to a repo that is using gerrit
         if (enabled && !Preferences.get("gerritPushref")) {
             Preferences.persist("gerritPushref", true);
@@ -1277,51 +1267,51 @@ EventEmitter.on(Events.GIT_ENABLED, function () {
     });
 });
 
-EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, function () {
+EventEmitter.on(Events.BRACKETS_CURRENT_DOCUMENT_CHANGE, () => {
     if (!gitPanel) { return; }
     refreshCurrentFile();
 });
 
-EventEmitter.on(Events.BRACKETS_DOCUMENT_SAVED, function () {
+EventEmitter.on(Events.BRACKETS_DOCUMENT_SAVED, () => {
     if (!gitPanel) { return; }
     refresh();
 });
 
-EventEmitter.on(Events.BRACKETS_FILE_CHANGED, function (event, fileSystemEntry) {
+EventEmitter.on(Events.BRACKETS_FILE_CHANGED, (event, fileSystemEntry) => {
     // files are added or deleted from the directory
     if (fileSystemEntry.isDirectory) {
         refresh();
     }
 });
 
-EventEmitter.on(Events.REBASE_MERGE_MODE, function (rebaseEnabled, mergeEnabled) {
+EventEmitter.on(Events.REBASE_MERGE_MODE, (rebaseEnabled, mergeEnabled) => {
     $gitPanel.find(".git-rebase").toggle(rebaseEnabled);
     $gitPanel.find(".git-merge").toggle(mergeEnabled);
     $gitPanel.find("button.git-commit").toggle(!rebaseEnabled && !mergeEnabled);
 });
 
-EventEmitter.on(Events.FETCH_STARTED, function () {
+EventEmitter.on(Events.FETCH_STARTED, () => {
     $gitPanel.find(".git-fetch")
         .addClass("btn-loading")
         .prop("disabled", true);
 });
 
-EventEmitter.on(Events.FETCH_COMPLETE, function () {
+EventEmitter.on(Events.FETCH_COMPLETE, () => {
     $gitPanel.find(".git-fetch")
         .removeClass("btn-loading")
         .prop("disabled", false);
     refreshCommitCounts();
 });
 
-EventEmitter.on(Events.REFRESH_COUNTERS, function () {
+EventEmitter.on(Events.REFRESH_COUNTERS, () => {
     refreshCommitCounts();
 });
 
-EventEmitter.on(Events.HANDLE_GIT_COMMIT, function () {
+EventEmitter.on(Events.HANDLE_GIT_COMMIT, () => {
     handleGitCommit(lastCommitMessage, false, COMMIT_MODE.DEFAULT);
 });
 
-EventEmitter.on(Events.TERMINAL_DISABLE, function () {
+EventEmitter.on(Events.TERMINAL_DISABLE, () => {
     $gitPanel.find(".git-bash").prop("disabled", true).attr("title", Strings.TERMINAL_DISABLED);
 });
 

@@ -191,8 +191,8 @@ export interface AskQuestionOptions {
     password?: boolean;
 }
 
-export function askQuestion(title, question, options: AskQuestionOptions = {}) {
-    return new Promise((resolve, reject) => {
+export function askQuestion(title, question, options: AskQuestionOptions = {}): Promise<string | boolean> {
+    return new Promise((resolve: (result: string | boolean) => void, reject) => {
         options = options || {}; // eslint-disable-line
 
         const compiledTemplate = Mustache.render(questionDialogTemplate, {

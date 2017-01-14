@@ -1,14 +1,19 @@
 {
-    "extends": "tslint:latest",
-    "rules": {
-        "interface-name": false,
-        "no-console": false,
-        "no-string-literal": false,
-        "no-var-requires": false,
-        "object-literal-sort-keys": false,
-        "only-arrow-functions": false,
-        "ordered-imports": false,
-        "trailing-comma": false,
-        "variable-name": false
-    }
+  "extends": "tslint:latest",
+  "rules": {
+    "align": false,
+    "arrow-parens": false,
+    "forin": false,
+    "interface-name": false,
+    "no-empty-interface": false,
+    "no-var-requires": false,
+    "object-literal-sort-keys": false,
+    "only-arrow-functions": false,
+    "ordered-imports": false,
+    "promise-function-async": false,
+    "quotemark": false,
+    "space-before-function-paren": [true, {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
+    "trailing-comma": false,
+    "variable-name": false
+  }
 }
