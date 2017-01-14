@@ -1,3 +1,5 @@
+/* eslint max-lines:0 */
+
 import {
     _, CodeInspection, CommandManager, Commands, Dialogs, DocumentManager, EditorManager,
     FileViewController, KeyBindingManager, FileSystem, Menus, Mustache, FindInFiles,

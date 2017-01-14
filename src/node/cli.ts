@@ -103,7 +103,7 @@ function spawn(
     child.stdin.end();
 }
 
-function doIfExists(
+function doIfExists( // eslint-disable-line max-params
     method: Function,
     directory: string,
     command: string,
@@ -198,7 +198,7 @@ function pathExists(
     });
 }
 
-/**
+/*
  * Initializes the domain.
  * @param {DomainManager} DomainManager for the server
  */

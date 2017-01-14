@@ -345,7 +345,7 @@ export function consoleDebug(msg) {
     }
 }
 
-/**
+/*
  * Reloads the Document's contents from disk, discarding any unsaved changes in the editor.
  *
  * @param {!Document} doc
@@ -363,7 +363,7 @@ export function reloadDoc(doc) {
         });
 }
 
-/**
+/*
  *  strips trailing whitespace from all the diffs and adds \n to the end
  */
 function stripWhitespaceFromFile(filename: string, clearWholeFile: boolean = false) {

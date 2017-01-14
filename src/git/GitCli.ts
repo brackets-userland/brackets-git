@@ -1,3 +1,5 @@
+/* eslint max-lines:0 */
+
 /*
     This module is used to communicate with Git through Cli
     Output string from Git should always be parsed here

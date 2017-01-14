@@ -1,4 +1,4 @@
-/**
+/*
  * List of Events to be used in the extension.
  * Events should be structured by file who emits them.
  */

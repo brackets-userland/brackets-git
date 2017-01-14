@@ -324,12 +324,12 @@ function toggleDropdown(e) {
     Git.getBranches().catch((err) => {
         ErrorHandler.showError(err, "Getting branch list failed");
     }).then((_branches) => {
-        const branches = _branches.reduce((arr, branch) => {
+        const branches = _branches ? _branches.reduce((arr, branch) => {
             if (!branch.currentBranch && !branch.remote) {
                 arr.push(branch.name);
             }
             return arr;
-        }, []);
+        }, []) : [];
 
         $dropdown = $(renderList(branches));
 
@@ -363,7 +363,6 @@ function addHeadToTheFileIndex() {
     FileSystem.resolve(_getHeadFilePath(), (err) => {
         if (err) {
             ErrorHandler.logError(`Resolving .git/HEAD file failed: ${err}`);
-            return;
         }
     });
 }

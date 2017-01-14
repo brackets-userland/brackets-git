@@ -98,7 +98,7 @@ const setup = _.once(() => {
                     return;
                 }
                 Preferences.set("terminalCommand", validPaths[0]);
-                if (/git\-bash\.exe$/.test(validPaths[0])) {
+                if (/git-bash\.exe$/.test(validPaths[0])) {
                     Preferences.set("terminalCommandArgs", "--cd=$1");
                 } else {
                     Preferences.set("terminalCommandArgs", "$1");
