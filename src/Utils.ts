@@ -335,8 +335,8 @@ export function encodeSensitiveInformation(_str: string) {
     return str;
 }
 
-export function consoleLog(msg, type) {
-    console[type || "log"](encodeSensitiveInformation(msg)); // eslint-disable-line
+export function consoleLog(msg, type = "log") {
+    console[type](encodeSensitiveInformation(msg)); // eslint-disable-line
 }
 
 export function consoleDebug(msg) {
