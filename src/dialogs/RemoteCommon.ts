@@ -39,6 +39,7 @@ export function collectInfo(config) {
                     config.currentBranchName = currentBranchName;
                 });
             }
+            return null;
         });
     }).catch((err) => {
         ErrorHandler.showError(err, "Getting remote information failed");

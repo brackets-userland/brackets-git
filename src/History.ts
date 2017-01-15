@@ -113,7 +113,7 @@ function loadMoreHistory() {
     if ($historyList.is(":visible")) {
         if (($tableContainer.prop("scrollHeight") - $tableContainer.scrollTop()) === $tableContainer.height()) {
             if ($historyList.attr("x-finished") === "true") {
-                return;
+                return null;
             }
             return Git.getCurrentBranchName().then((branchName) => {
                 let p;
@@ -153,6 +153,7 @@ function loadMoreHistory() {
             .catch((err) => ErrorHandler.showError(err, "Failed to get current branch name"));
         }
     }
+    return null;
 }
 
 function addAdditionalCommitInfo(commits) {

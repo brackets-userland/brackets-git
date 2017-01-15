@@ -10,7 +10,7 @@
     "newLine": "lf",
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
-    "noImplicitReturns": false,
+    "noImplicitReturns": true,
     "noImplicitThis": false,
     "noUnusedLocals": false,
     "removeComments": false,

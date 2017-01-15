@@ -510,7 +510,7 @@ export function stripWhitespaceFromFiles(gitStatusResults, stageChanges) {
                         if (stageChanges) {
                             return Git.stage(fileObj.file).then(notifyProgress);
                         }
-                        notifyProgress();
+                        return notifyProgress();
                     });
                 });
 

@@ -49,7 +49,7 @@ function refreshIgnoreEntries() {
 
             line = line.trim();
             if (!line || line.indexOf("#") === 0) {
-                return;
+                return null;
             }
 
             // handle explicitly allowed files/folders with a leading !
@@ -142,6 +142,7 @@ if (Preferences.get("markModifiedInTree")) {
         } else if (isModified(fullPath)) {
             return "git-modified";
         }
+        return null;
     });
 
     // this will refresh ignore entries when .gitignore is modified

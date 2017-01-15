@@ -19,6 +19,7 @@ function createGitIgnore() {
         if (!exists) {
             return Promise.cast(FileUtils.writeText(FileSystem.getFileForPath(gitIgnorePath), gitignoreTemplate));
         }
+        return null;
     });
 }
 

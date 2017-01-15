@@ -139,6 +139,7 @@ function attachAdvancedEvents() {
                 if (response === true) {
                     return Git.checkout(commit.hash).then(refreshCallback);
                 }
+                return null;
             });
     });
 
@@ -151,6 +152,7 @@ function attachAdvancedEvents() {
                 if (response === true) {
                     return Git.reset("--hard", commit.hash).then(refreshCallback);
                 }
+                return null;
             });
     });
 
@@ -163,6 +165,7 @@ function attachAdvancedEvents() {
                 if (response === true) {
                     return Git.reset("--mixed", commit.hash).then(refreshCallback);
                 }
+                return null;
             });
     });
 
@@ -175,6 +178,7 @@ function attachAdvancedEvents() {
                 if (response === true) {
                     return Git.reset("--soft", commit.hash).then(refreshCallback);
                 }
+                return null;
             });
     });
 }

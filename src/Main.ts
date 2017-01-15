@@ -70,7 +70,7 @@ function _addRemoveItemInGitignore(selectedEntry, method) {
             if (err2) {
                 return ErrorHandler.showError(err2, "Failed modifying .gitignore");
             }
-            Panel.refresh();
+            return Panel.refresh();
         });
     });
 }

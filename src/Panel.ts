@@ -64,7 +64,7 @@ function lintFile(filename) {
 
 function _makeDialogBig($dialog) {
     const $wrapper = $dialog.parents(".modal-wrapper").first();
-    if ($wrapper.length === 0) { return; }
+    if ($wrapper.length === 0) { return null; }
 
     // We need bigger commit dialog
     const minWidth = 500;
@@ -295,9 +295,7 @@ function _doGitCommit($dialog, getCommitMessageElement, stagedDiff) {
             });
             return defer.promise;
         }
-
-        ErrorHandler.showError(err, "Git Commit failed");
-
+        return ErrorHandler.showError(err, "Git Commit failed");
     }).finally(() => {
         EventEmitter.emit(Events.GIT_COMMITED);
         refresh();
@@ -597,6 +595,7 @@ function inspectFiles(gitStatusResults) {
                     }
                 });
         }
+        return null;
     });
 
     return Promise.all(_.compact(codeInspectionPromises)).then(() => {
@@ -655,6 +654,7 @@ function handleGitCommit(prefilledMessage, isMerge, commitMode) {
                     stripWhitespace, currentFile, codeInspectionEnabled, commitMode, prefilledMessage
                 );
             }
+            return null;
         });
     }
 
@@ -941,14 +941,13 @@ function attachDefaultTableHandlers() {
             lastCheckOneClicked = file;
 
             if (isChecked) {
-                Git.stage(file, status === Git.FILE_STATUS.DELETED).then(() => {
-                    Git.status();
-                });
-            } else {
-                Git.unstage(file).then(() => {
+                return Git.stage(file, status === Git.FILE_STATUS.DELETED).then(() => {
                     Git.status();
                 });
             }
+            return Git.unstage(file).then(() => {
+                Git.status();
+            });
         })
         .on("dblclick", ".check-one", (e) => {
             e.stopPropagation();
@@ -1068,6 +1067,7 @@ function discardAllChanges() {
                     refresh();
                 });
             }
+            return null;
         });
 }
 

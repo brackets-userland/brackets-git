@@ -269,10 +269,12 @@ function handleEvents() {
                                     ErrorHandler.showError(err2, "Forced branch deletion failed");
                                 });
                             }
+                            return null;
                         });
 
                     });
                 }
+                return null;
             })
             .catch((err) => ErrorHandler.showError(err));
 
@@ -396,7 +398,7 @@ function checkBranch() {
 }
 
 export function refresh(): PromiseLike<void> {
-    if ($gitBranchName.length === 0) { return; }
+    if ($gitBranchName.length === 0) { return Promise.resolve(); }
 
     // show info that branch is refreshing currently
     $gitBranchName
@@ -419,7 +421,7 @@ export function refresh(): PromiseLike<void> {
                 .text("not a git repo");
             Panel.disable("not-repo");
 
-            return;
+            return null;
         }
 
         Preferences.set("currentGitRoot", gitRoot);

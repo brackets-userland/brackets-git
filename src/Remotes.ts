@@ -137,6 +137,7 @@ function deleteRemote(remoteName) {
             if (response === true) {
                 return Git.deleteRemote(remoteName).then(() => refreshRemotesPicker());
             }
+            return null;
         })
         .catch((err) => ErrorHandler.logError(err));
 }
@@ -169,7 +170,7 @@ function pushToRemote(remote) {
         return ErrorHandler.showError(new Error(msg), msg);
     }
 
-    PushDialog.show({ remote })
+    return PushDialog.show({ remote })
         .then((pushConfig) => {
             let q: Promise<any> = Promise.resolve();
             const additionalArgs = [];
@@ -226,7 +227,7 @@ function pullFromRemote(remote) {
         return ErrorHandler.showError(new Error(msg), msg);
     }
 
-    PullDialog.show({ remote })
+    return PullDialog.show({ remote })
         .then((pullConfig) => {
             let q: Promise<any> = Promise.resolve();
 
@@ -254,6 +255,7 @@ function pullFromRemote(remote) {
                         } else if (pullConfig.strategy === "RESET") {
                             return Git.resetRemote(pullConfig.remote, pullConfig.branch);
                         }
+                        throw new Error(`Unexpected pullConfig.strategy: ${pullConfig.strategy}`);
                     })
                     .then((result) => {
                         return ProgressDialog.waitForClose().then(() => {

@@ -133,6 +133,7 @@ function handleGitFtpScopeRemove($this) {
                 ErrorHandler.showError(err, "Remove scope failed");
             });
         }
+        return null;
     }).finally(() => {
         $gitPanel.find(".git-remotes")
             .removeClass("btn-loading")
@@ -158,6 +159,7 @@ function handleGitFtpInitScope($this) {
                 ErrorHandler.showError(err, "Init scope failed");
             });
         }
+        return null;
     }).finally(() => {
         $gitPanel.find(".git-remotes")
             .removeClass("btn-loading")

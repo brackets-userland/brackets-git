@@ -369,7 +369,7 @@ function doPushWithArgs(args): Promise<PushResult> {
         .catch(repositoryNotFoundHandler)
         .then((stdout) => {
             if (!stdout) {
-                return;
+                return null;
             }
 
             // this should clear lines from push hooks
