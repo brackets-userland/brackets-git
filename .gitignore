@@ -6,3 +6,4 @@
 /git.log
 /npm-debug.log
 /thirdparty/*.browser.js
+/.vscode
