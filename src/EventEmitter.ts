@@ -42,7 +42,7 @@ if (debugOn) {
             Utils.consoleLog("[brackets-git] Event invoked: " + eventName + argsString);
         }
 
-        return this._emit(...args);
+        return this._emit(eventName, ...args);
     };
 }
 
