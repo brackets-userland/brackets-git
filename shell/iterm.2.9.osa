@@ -4,10 +4,10 @@ on run argv
     set dir to quoted form of (first item of argv)
 
     -- set list of shells and other misc variables
-    set shells to {"bash", "zsh", "ksh", "tcsh", "sh"}
-    set run_cmd to "cd " & dir & " && git status"
+    set shells to {"bash", "zsh", "ksh", "tcsh", "sh", "fish"}
     set repo_name to basename(dir)
-
+    set run_cmd to "cd " & dir & " ; git status ; " & "alias fish_title=\"echo " & repo_name & "\""
+    
     set git_window to null
     set git_tab to null
     set git_session to null
