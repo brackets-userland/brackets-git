@@ -12,6 +12,7 @@ define(function (require, exports, module) {
         root: true,
         "en-gb": true,
         "de": true,
+        "pl": true,
         "pt-br": true,
         "zh-cn": true,
         "it": true,
