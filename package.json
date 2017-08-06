@@ -79,6 +79,7 @@
     "de",
     "fr",
     "it",
+    "pl",
     "pt-br",
     "zh-cn"
   ],
@@ -92,6 +93,16 @@
         "Versionsverwaltung",
         "Versionskontrollsystem"
       ]
+    },
+    "pl": {
+      "description": "Integracja Gita w Brackets",
+      "keywords": [
+        "git",
+        "version-control",
+        "source-control",
+        "kontrola-wersji",
+        "system-kontroli-wersji"
+        ]
     }
   }
 }
