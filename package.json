@@ -1,7 +1,7 @@
 {
   "name": "brackets-git",
   "title": "Brackets Git",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "engines": {
     "brackets": ">=1.8.0"
   },
