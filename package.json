@@ -47,7 +47,7 @@
     "eventemitter2": "2.2.1",
     "lodash": "4.17.4",
     "marked": "0.3.9",
-    "moment": "2.17.1",
+    "moment": "2.21.0",
     "urijs": "1.18.4",
     "webpack": "1.14.0",
     "which": "1.2.12"
