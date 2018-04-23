@@ -658,9 +658,18 @@ export function status(type = null) {
             const statusArr = [];
             let file = line.substring(3);
 
+            let display = file;
+            const io = file.indexOf("->");
+            if (io !== -1) {
+                file = file.substring(io + 2).trim();
+            }
+
             // check if the file is quoted
             if (_isquoted(file)) {
                 file = _unquote(file);
+                if (io === -1) {
+                    display = file;
+                }
                 if (_isescaped(file)) {
                     isEscaped = true;
                 }
@@ -710,12 +719,6 @@ export function status(type = null) {
                     break;
                 default:
                     throw new Error("Unexpected status: " + statusChar);
-            }
-
-            let display = file;
-            const io = file.indexOf("->");
-            if (io !== -1) {
-                file = file.substring(io + 2).trim();
             }
 
             // we don't want to display paths that lead to this file outside the project
