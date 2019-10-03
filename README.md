@@ -42,7 +42,7 @@ Currently **Brackets-Git** supports these features (this list may be incomplete 
 - manage different Git settings
 - support for [Git-FTP](http://git-ftp.github.io/git-ftp/) ([installation instructions](docs/GIT-FTP.md))
 
-A comprehensive list of Brackets-Git features is available reading the [`CHANGELOG.md`](CHANGELOG.md).
+A comprehensive list of Brackets-Git features is available in the [`CHANGELOG.md`](CHANGELOG.md).
 Most of the features available are configurable and it's possible to enable and disable them selectively.
 If you can't find the feature you were looking for, feel free to [open an issue](https://github.com/brackets-userland/brackets-git/issues) with your idea(s).
 
@@ -50,7 +50,7 @@ If you can't find the feature you were looking for, feel free to [open an issue]
 Push/Pull from and to password protected repositories is partially supported, currently it works only with `http` / `https` repositories.
 
 The [Git Credential Manager for Windows (GCM)](https://github.com/Microsoft/Git-Credential-Manager-for-Windows) is recommended to manage password protected repositories, **Brackets-Git** will eventually provide better support for them.
-You'll need to push manually the first time to setup your username/password into the credentials helper.
+The first time, you'll be required to push manually to setup your username/password into the credentials helper.
 
 **Working with SSH repositories:**
 SSH protocol is currently a bit more difficult, so you'll have to use command line or try to follow these [tips](https://github.com/zaggino/brackets-git/issues/524):
