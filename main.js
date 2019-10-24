@@ -25,7 +25,7 @@ define(function (require, exports, module) {
     require("text!templates/git-panel-history-commits.html");
     require("text!templates/history-viewer.html");
     require("text!templates/history-viewer-files.html");
-    require("text!templates/default-gitignore");
+    require("text!templates/default-gitignore");.....
     require("text!templates/git-panel.html");
     require("text!templates/git-panel-results.html");
     require("text!templates/authors-dialog.html");
