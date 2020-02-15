@@ -15,6 +15,7 @@ define(function (require, exports, module) {
         "pl": true,
         "pt-br": true,
         "zh-cn": true,
+        "sv": true,
         "it": true,
         "fr": true
     };

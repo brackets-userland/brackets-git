@@ -81,6 +81,7 @@
     "it",
     "pl",
     "pt-br",
+    "sv",
     "zh-cn"
   ],
   "package-i18n": {
@@ -102,6 +103,15 @@
         "source-control",
         "kontrola-wersji",
         "system-kontroli-wersji"
+        ]
+    },
+    "sv": {
+      "description": "Git-integration för Brackets",
+      "keywords": [
+        "git",
+        "versionskontroll",
+        "källkodshantering",
+        "versionshantering"
         ]
     }
   }
